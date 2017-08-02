@@ -6,7 +6,7 @@ import Dashboard from './Dashboard';
 
 
 const dataURLs = {
-    example: '/example.json',
+    example: process.env.PUBLIC_URL + '/example.json',
 };
 
 function lookupDataURL(key) {
