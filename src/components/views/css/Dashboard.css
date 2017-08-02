@@ -1,0 +1,13 @@
+#dashboard h2 {
+    margin: 20px;
+    text-align: center;
+}
+
+#dashboard .description {
+    text-align: center;
+}
+
+#chart-groups {
+    width: 80%;
+    margin: 0 auto;
+}

@@ -14,7 +14,6 @@ const DashboardContainer = props => {
     } else if (dataFetch.rejected) {
         return <Error message={dataFetch.reason.message} />;
     } else if (dataFetch.fulfilled) {
-        console.dir(dataFetch.value);
         return (
             <Dashboard
                 title={dataFetch.value.title}

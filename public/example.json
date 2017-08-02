@@ -2,14 +2,17 @@
     "title": "Hardware",
     "description": "Statistics about audio, graphics, and CPU hardware",
     "sections": [
-        { "key": "audio", "title": "Audio" },
         { "key": "gfx", "title": "Graphics" },
         { "key": "cpu", "title": "CPU" }
     ],
     "charts": [
         {
             "title": "Stream processors",
+            "description": "The number of processors in a graphics card",
             "section": "gfx",
+            "units": {
+                "y": "%"
+            },
             "data": [
                 { "x": 0, "y": 33.8 },
                 { "x": 32, "y": 0.8 },
@@ -19,6 +22,37 @@
                 { "x": 512, "y": 12.2 },
                 { "x": 1024, "y": 24.7 },
                 { "x": 2048, "y": 18.4 }
+            ]
+        },
+        {
+            "title": "Memory",
+            "description": "The amount of memory the graphics card has",
+            "section": "gfx",
+            "units": {
+                "y": "%"
+            },
+            "labels": {
+                "x": "Memory (MB)"
+            },
+            "data": [
+                { "x": 256, "y": 43.8 },
+                { "x": 512, "y": 21.2 },
+                { "x": 1024, "y": 31.4 },
+                { "x": 2048,  "y": 3.6 }
+            ]
+        },
+        {
+            "title": "Number of cores",
+            "description": "The number of cores the CPU has",
+            "section": "cpu",
+            "units": {
+                "y": "%"
+            },
+            "data": [
+                { "x": 1,  "y": 73.8 },
+                { "x": 2,    "y": 24.3 },
+                { "x": 4,  "y": 1.4 },
+                { "x": 8,  "y": 0.5 }
             ]
         }
     ]

@@ -1,6 +1,8 @@
 import React from 'react';
 
-import Chart from './Chart';
+import DashboardSection from './DashboardSection';
+
+import './css/Dashboard.css';
 
 
 export default props => (
@@ -8,13 +10,16 @@ export default props => (
         <h2>{props.title}</h2>
         <p className="description">{props.description}</p>
 
-        {props.sections.map(s => (
-            <section id={s.key}>
-                <h3>{s.title}</h3>
-                {props.charts.filter(c => c.section === s.key).map(c => (
-                    <Chart title={c.title} data={c.data} />
-                ))}
-            </section>
-        ))}
+        <section id="chart-groups">
+            {props.sections.map((s, index) => (
+                <DashboardSection
+                    key={index}
+
+                    sectionKey={s.key}
+                    title={s.title}
+                    charts={props.charts.filter(c => c.section === s.key)}
+                />
+            ))}
+        </section>
     </section>
 );
