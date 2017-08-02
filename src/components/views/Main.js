@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import Home from './Home';
-import Dashboard from './Dashboard';
+import DashboardContainer from '../containers/DashboardContainer';
 
 
 const dataURLs = {
@@ -19,7 +19,7 @@ export default () => (
             <Route exact path="/" component={Home} />
             <Route path="/dashboard/:key"
                    render={(props) => (
-                       <Dashboard {...props} dataURL={lookupDataURL(props.match.params.key)} />
+                       <DashboardContainer {...props} dataURL={lookupDataURL(props.match.params.key)} />
                    )}
             />
         </Switch>

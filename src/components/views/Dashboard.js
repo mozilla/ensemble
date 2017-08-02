@@ -1,22 +1,20 @@
 import React from 'react';
-import { connect } from 'react-refetch';
 
-import Loading from './Loading';
-import Error from './Error';
+import Chart from './Chart';
 
 
-const Dashboard = props => {
-    const dataFetch = props.dataFetch;
+export default props => (
+    <section id="dashboard">
+        <h2>{props.title}</h2>
+        <p className="description">{props.description}</p>
 
-    if (dataFetch.pending) {
-        return <Loading />;
-    } else if (dataFetch.rejected) {
-        return <Error message={dataFetch.reason.message} />;
-    } else if (dataFetch.fulfilled) {
-        return null;
-    }
-};
-
-export default connect(props => ({
-    dataFetch: { url: props.dataURL, refreshInterval: Number(process.env.REACT_APP_REFRESH_INTERVAL) },
-}))(Dashboard);
+        {props.sections.map(s => (
+            <section id={s.key}>
+                <h3>{s.title}</h3>
+                {props.charts.filter(c => c.section === s.key).map(c => (
+                    <Chart title={c.title} data={c.data} />
+                ))}
+            </section>
+        ))}
+    </section>
+);

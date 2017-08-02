@@ -1,14 +1,14 @@
 {
-    "name": "Hardware",
+    "title": "Hardware",
     "description": "Statistics about audio, graphics, and CPU hardware",
     "sections": [
-        { "key": "audio", "name": "Audio" },
-        { "key": "gfx", "name": "Graphics" },
-        { "key": "cpu", "name": "CPU" }
+        { "key": "audio", "title": "Audio" },
+        { "key": "gfx", "title": "Graphics" },
+        { "key": "cpu", "title": "CPU" }
     ],
     "charts": [
         {
-            "name": "Stream processors",
+            "title": "Stream processors",
             "section": "gfx",
             "data": [
                 { "x": 0, "y": 33.8 },
