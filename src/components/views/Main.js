@@ -6,7 +6,7 @@ import DashboardContainer from '../containers/DashboardContainer';
 
 
 const dataURLs = {
-    example: process.env.PUBLIC_URL + '/example.json',
+    example: process.env.PUBLIC_URL + '/dashboards/example/data.json',
 };
 
 function lookupDataURL(key) {
