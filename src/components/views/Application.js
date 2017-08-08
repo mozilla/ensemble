@@ -3,11 +3,11 @@ import React from 'react';
 import Header from './Header';
 import Main from './Main';
 
-import './css/Layout.css';
+import './css/Application.css';
 
 
 export default () => (
-    <div>
+    <div id="application">
         <Header />
         <Main />
     </div>

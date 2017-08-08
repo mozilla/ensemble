@@ -26,7 +26,7 @@ so this trade-off between elegance and scope is unavoidable. Saying no is hard,
 but it's necessary to build a maintainable product that large numbers of people
 actually want to use.
 
-Ensemble's target audience is the long tail of organizations that want to
-publish something rather than nothing. Those with highly-specialized or unique
-problems likely also have the resources to build their own dashboards. We
+Ensemble's target audience is the long tail of organizations and teams that want
+to publish something rather than nothing. Those with highly-specialized or
+unique problems likely also have the resources to build their own dashboards. We
 encourage them to do so and look forward to learning from one another.

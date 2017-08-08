@@ -1,13 +1,29 @@
 #dashboard h2 {
-    margin: 20px;
     text-align: center;
 }
 
-#dashboard .description {
+#dashboard-description {
     text-align: center;
 }
 
-#chart-groups {
-    width: 80%;
+#dashboard-sections {
+    display: grid;
+    grid-row-gap: 50px;
+
     margin: 0 auto;
+    width: 60%;
+}
+
+.charts {
+    display: grid;
+    grid-row-gap: 20px;
+}
+
+.chart-and-description {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.chart-description {
+    justify-self: end;
 }

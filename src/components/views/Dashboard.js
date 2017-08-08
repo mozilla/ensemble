@@ -6,11 +6,13 @@ import './css/Dashboard.css';
 
 
 export default props => (
-    <section id="dashboard">
-        <h2>{props.title}</h2>
-        <p className="description">{props.description}</p>
+    <article id="dashboard">
+        <header>
+            <h2>{props.title}</h2>
+            <p id="dashboard-description">{props.description}</p>
+        </header>
 
-        <section id="chart-groups">
+        <section id="dashboard-sections">
             {props.sections.map((s, index) => (
                 <DashboardSection
                     key={index}
@@ -21,5 +23,5 @@ export default props => (
                 />
             ))}
         </section>
-    </section>
+    </article>
 );
