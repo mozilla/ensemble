@@ -1,5 +1,5 @@
 Ensemble is a work in progress. It is not ready for production use, but an
-[example dashboard](http://moz-ensemble.herokuapp.com/dashboard/example/) is
+[example dashboard](http://moz-ensemble.herokuapp.com/dashboard/hardware/) is
 available as a proof of concept.
 
 Ensemble is a minimalist platform for publishing data dashboards. Ensemble is to

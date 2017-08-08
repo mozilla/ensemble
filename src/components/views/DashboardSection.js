@@ -11,12 +11,11 @@ export default props => (
         </header>
         <section className="charts-and-descriptions">
             {props.charts.map((c, index) => (
-                <div className="chart-and-description">
+                <div key={index} className="chart-and-description">
                     <Chart
-                        key={index}
                         title={c.title}
                         data={c.data}
-                        units={c.units}
+                        units={c.units || {}}
                         labels={c.labels || {}}
                         scales={c.scales || {}}
                     />

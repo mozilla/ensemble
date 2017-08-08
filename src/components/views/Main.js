@@ -1,12 +1,13 @@
 import React from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 
 import Home from './Home';
 import DashboardContainer from '../containers/DashboardContainer';
 
 
 const dataURLs = {
-    example: process.env.PUBLIC_URL + '/dashboards/example/data.json',
+    hardware: process.env.PUBLIC_URL + '/dashboards/hardware/data.json',
+    crashes: process.env.PUBLIC_URL + '/dashboards/crashes/data.json',
 };
 
 function lookupDataURL(key) {

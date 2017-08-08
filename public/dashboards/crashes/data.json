@@ -1,0 +1,137 @@
+{
+    "title": "Crash rates",
+    "description": "Crash rates across Mozilla products. This is an example. This is not real data.",
+    "sections": [
+        { "key": "desktop", "title": "CPU" },
+        { "key": "android", "title": "Graphics" },
+        { "key": "ios", "title": "CPU" }
+    ],
+    "charts": [
+        {
+            "title": "Average days since last crash",
+            "description": "The average number of days clients have gone without crashing",
+            "section": "android",
+            "labels": {
+                "x": "Release"
+            },
+            "data": [
+                { "x": 35, "y": 847 },
+                { "x": 36, "y": 644 },
+                { "x": 37, "y": 242 },
+                { "x": 38, "y": 271 },
+                { "x": 39, "y": 834 },
+                { "x": 40, "y": 383 },
+                { "x": 41, "y": 118 },
+                { "x": 42, "y": 112 },
+                { "x": 43, "y": 825 },
+                { "x": 44, "y": 468 },
+                { "x": 45, "y": 772 }
+            ]
+        },
+        {
+            "title": "Average seconds before crash",
+            "description": "The average session time of a client before crashing",
+            "section": "ios",
+            "labels": {
+                "x": "Release"
+            },
+            "data": [
+                { "x": 35, "y": 714 },
+                { "x": 36, "y": 365 },
+                { "x": 37, "y": 500 },
+                { "x": 38, "y": 268 },
+                { "x": 39, "y": 641 },
+                { "x": 40, "y": 629 },
+                { "x": 41, "y": 483 },
+                { "x": 42, "y": 685 },
+                { "x": 43, "y": 741 },
+                { "x": 44, "y": 691 },
+                { "x": 45, "y": 242 }
+            ]
+        },
+        {
+            "title": "Average days since last crash",
+            "description": "The average number of days clients have gone without crashing",
+            "section": "desktop",
+            "labels": {
+                "x": "Release"
+            },
+            "data": [
+                { "x": 35, "y": 346 },
+                { "x": 36, "y": 850 },
+                { "x": 37, "y": 277 },
+                { "x": 38, "y": 228 },
+                { "x": 39, "y": 235 },
+                { "x": 40, "y": 863 },
+                { "x": 41, "y": 776 },
+                { "x": 42, "y": 155 },
+                { "x": 43, "y": 212 },
+                { "x": 44, "y": 527 },
+                { "x": 45, "y": 617 }
+            ]
+        },
+        {
+            "title": "Average seconds before crash",
+            "description": "The average session time of a client before crashing",
+            "section": "desktop",
+            "labels": {
+                "x": "Release"
+            },
+            "data": [
+                { "x": 35, "y": 321 },
+                { "x": 36, "y": 580 },
+                { "x": 37, "y": 859 },
+                { "x": 38, "y": 548 },
+                { "x": 39, "y": 806 },
+                { "x": 40, "y": 819 },
+                { "x": 41, "y": 763 },
+                { "x": 42, "y": 437 },
+                { "x": 43, "y": 520 },
+                { "x": 44, "y": 488 },
+                { "x": 45, "y": 242 }
+            ]
+        },
+        {
+            "title": "Average days since last crash",
+            "description": "The average number of days clients have gone without crashing",
+            "section": "ios",
+            "labels": {
+                "x": "Release"
+            },
+            "data": [
+                { "x": 35, "y": 194 },
+                { "x": 36, "y": 429 },
+                { "x": 37, "y": 712 },
+                { "x": 38, "y": 375 },
+                { "x": 39, "y": 235 },
+                { "x": 40, "y": 826 },
+                { "x": 41, "y": 201 },
+                { "x": 42, "y": 798 },
+                { "x": 43, "y": 797 },
+                { "x": 44, "y": 360 },
+                { "x": 45, "y": 116 }
+            ]
+        },
+        {
+            "title": "Average seconds before crash",
+            "description": "The average session time of a client before crashing",
+            "section": "android",
+            "labels": {
+                "x": "Release"
+            },
+            "data": [
+                { "x": 35, "y": 574 },
+                { "x": 36, "y": 420 },
+                { "x": 37, "y": 473 },
+                { "x": 38, "y": 381 },
+                { "x": 39, "y": 178 },
+                { "x": 40, "y": 881 },
+                { "x": 41, "y": 220 },
+                { "x": 42, "y": 431 },
+                { "x": 43, "y": 461 },
+                { "x": 44, "y": 607 },
+                { "x": 45, "y": 232 }
+            ]
+        }
+    ]
+}
