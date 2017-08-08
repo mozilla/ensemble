@@ -1,6 +1,6 @@
 {
     "title": "Hardware",
-    "description": "Statistics about audio, graphics, and CPU hardware. This is an example. This is not real data.",
+    "description": "Statistics about audio, graphics, and CPU hardware",
     "sections": [
         { "key": "gfx", "title": "Graphics" },
         { "key": "cpu", "title": "CPU" }

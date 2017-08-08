@@ -4,6 +4,8 @@ import { Switch, Route } from 'react-router-dom';
 import Home from './Home';
 import DashboardContainer from '../containers/DashboardContainer';
 
+import './css/Main.css';
+
 
 const dataURLs = {
     hardware: process.env.PUBLIC_URL + '/dashboards/hardware/data.json',

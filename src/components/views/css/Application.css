@@ -3,3 +3,24 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+#main-header {
+    background: #eaeff2 url(../img/grain.png);
+    padding: 20px;
+}
+
+#main-header h1 {
+    margin: 0;
+    padding: 0;
+}
+
+#main-header a {
+    text-decoration: none;
+    color: #000;
+}
+
+#data-warning {
+    color: #f33;
+    margin-bottom: 0;
+    font-weight: bold;
+}
