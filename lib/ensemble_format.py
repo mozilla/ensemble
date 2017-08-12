@@ -199,6 +199,10 @@ class Report(object):
         self.charts.append(chart)
 
     def render_json(self):
+        """
+        Returns an Ensemble-formatted JSON string rendering of the report and
+        all of its charts.
+        """
         pre = {"title": self.title or self.name}
         if self.desc:
             pre["description"] = self.desc
