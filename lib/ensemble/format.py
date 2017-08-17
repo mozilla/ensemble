@@ -17,7 +17,7 @@ def _is_dict_w_strings(value, expected_keys):
         if key not in value:
             return False
     for v in value.values():
-        if not ininstance(v, basestring):
+        if not isinstance(v, basestring):
             return False
     return True
 
@@ -56,8 +56,12 @@ class Chart(object):
         self.section = section
         if units is not None:
             self.set_units(units)
+        else:
+            self.units = None
         if labels is not None:
             self.set_labels(labels)
+        else:
+            self.labels = None
         self.data = []
 
     def set_units(self, units):
@@ -127,12 +131,12 @@ class Chart(object):
         pre["data"] = data
         return pre
 
-    def render_json(self):
+    def render_json(self, sort_keys=True):
         """
         Returns an Ensemble-formatted JSON string rendering of the chart data.
         """
         pre = self._get_prerender()
-        return json.dumps(pre)
+        return json.dumps(pre, sort_keys=sort_keys)
 
 
 class Report(object):
@@ -182,7 +186,8 @@ class Report(object):
     def set_sections(self, sections):
         """
         Raises TypeError if sections is not an iterable containing only dicts w
-        'key' and 'title' values.
+        'key' and 'title' values. Raises ValueError if the same section key is
+        used more than once.
         """
         if not isinstance(sections, Iterable):
             raise TypeError("'sections' argument must be iterable")
@@ -198,7 +203,7 @@ class Report(object):
             raise TypeError("'chart' must be an instance of the Chart class.")
         self.charts.append(chart)
 
-    def render_json(self):
+    def render_json(self, sort_keys=True):
         """
         Returns an Ensemble-formatted JSON string rendering of the report and
         all of its charts.
@@ -212,5 +217,4 @@ class Report(object):
         for chart in self.charts:
             charts.append(chart._get_prerender())
         pre["charts"] = charts
-        return json.dumps(pre)
-
+        return json.dumps(pre, sort_keys=sort_keys)
