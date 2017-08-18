@@ -5,6 +5,7 @@ from format import _is_point
 from format import Chart
 from format import Report
 
+
 class IsFunctionTests(unittest.TestCase):
     def test_is_dict_w_strings(self):
         # Not a dict
@@ -51,37 +52,37 @@ class ChartTests(unittest.TestCase):
     def test_init_failures(self):
         # string args aren't strings
         with self.assertRaises(TypeError):
-            chart = Chart(1, "title", "desc", "section")
+            Chart(1, "title", "desc", "section")
         with self.assertRaises(TypeError):
-            chart = Chart("name", 1, "desc", "section")
+            Chart("name", 1, "desc", "section")
         with self.assertRaises(TypeError):
-            chart = Chart("name", "title", 1, "section")
+            Chart("name", "title", 1, "section")
         with self.assertRaises(TypeError):
-            chart = Chart("name", "title", "desc", 1)
+            Chart("name", "title", "desc", 1)
 
         # units not strings
         with self.assertRaises(TypeError):
-            chart = Chart("name", units={"x": 1, "y": 2})
+            Chart("name", units={"x": 1, "y": 2})
 
         # units wrong keys
         with self.assertRaises(TypeError):
-            chart = Chart("name", units={"y": "units", "z": "units"})
+            Chart("name", units={"y": "units", "z": "units"})
 
         # units extra value
         with self.assertRaises(TypeError):
-            chart = Chart("name", units={"x": "a", "y": "b", "z": "c"})
+            Chart("name", units={"x": "a", "y": "b", "z": "c"})
 
         # labels not strings
         with self.assertRaises(TypeError):
-            chart = Chart("name", labels={"x": 1, "y": 2})
+            Chart("name", labels={"x": 1, "y": 2})
 
         # labels wrong keys
         with self.assertRaises(TypeError):
-            chart = Chart("name", labels={"y": "label1", "z": "label2"})
+            Chart("name", labels={"y": "label1", "z": "label2"})
 
         # labels extra value
         with self.assertRaises(TypeError):
-            chart = Chart("name", labels={"x": "a", "y": "b", "z": "c"})
+            Chart("name", labels={"x": "a", "y": "b", "z": "c"})
 
     def test_output_add_point(self):
         chart = Chart("memory", "Memory",
@@ -109,30 +110,31 @@ class ReportTests(unittest.TestCase):
     def test_init_failures(self):
         # string args aren't strings
         with self.assertRaises(TypeError):
-            report = Report(1, "title", "desc")
+            Report(1, "title", "desc")
         with self.assertRaises(TypeError):
-            report = Report("name", 1, "desc")
+            Report("name", 1, "desc")
         with self.assertRaises(TypeError):
-            report = Report("name", "title", 1)
+            Report("name", "title", 1)
 
         # sections isn't iterable
         with self.assertRaises(TypeError):
-            report = Report("name", sections=1)
+            Report("name", sections=1)
 
         # sections contains a non-dict
         with self.assertRaises(TypeError):
             sections = [{"key": "k", "title": "t"}, ["k1", "t1"]]
-            report = Report("name", sections=sections)
+            Report("name", sections=sections)
 
         # sections has an incorrectly structured section
         with self.assertRaises(TypeError):
             sections = [{"key": "k", "title": "t"}, {"k": "k1", "t": "t1"}]
-            report = Report("name", sections=sections)
+            Report("name", sections=sections)
 
         # sections has a duplicate key
         with self.assertRaises(ValueError):
-            sections = [{"key": "k", "title": "t"}, {"key": "k", "title": "t1"}]
-            report = Report("name", sections=sections)
+            sections = [{"key": "k", "title": "t"},
+                        {"key": "k", "title": "t1"}]
+            Report("name", sections=sections)
 
     def test_output(self):
         report = Report("hardware", "Hardware",
@@ -144,13 +146,15 @@ class ReportTests(unittest.TestCase):
                        "The number of processors in a graphics card", "gfx",
                        {"x": "count", "y": "%"})
         chart0.add_points([(0, 33.8), (32, 0.8), (64, 1.2), (128, 3.6),
-                           (256, 5.3), (512, 12.2), (1024, 24.7), (2048, 18.4)])
+                           (256, 5.3), (512, 12.2), (1024, 24.7),
+                           (2048, 18.4)])
         report.add_chart(chart0)
 
         chart1 = Chart("memory", "Memory",
-                      "The amount of memory the graphics card has", "gfx",
-                      {"x": "MB", "y": "%"}, {"x": "Memory", "y": ""})
-        chart1.add_points([(256, 43.8), (512, 21.2), (1024, 31.4), (2048, 3.6)])
+                       "The amount of memory the graphics card has", "gfx",
+                       {"x": "MB", "y": "%"}, {"x": "Memory", "y": ""})
+        chart1.add_points([(256, 43.8), (512, 21.2), (1024, 31.4),
+                           (2048, 3.6)])
         report.add_chart(chart1)
 
         chart2 = Chart("num_cores", "Number of cores",
@@ -164,4 +168,3 @@ class ReportTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
