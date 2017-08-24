@@ -1,6 +1,6 @@
 {
     "title": "Crash rates",
-    "description": "Crash rates across Mozilla products",
+    "description": "Description goes here. This is example data. None of it is real.",
     "sections": [
         { "key": "desktop", "title": "CPU" },
         { "key": "android", "title": "Graphics" },

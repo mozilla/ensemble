@@ -18,9 +18,3 @@ body {
     text-decoration: none;
     color: #000;
 }
-
-#data-warning {
-    color: #f33;
-    margin-bottom: 0;
-    font-weight: bold;
-}
