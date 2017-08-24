@@ -2,13 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 
-const exampleFormatURL = 'https://github.com/openjck/ensemble/blob/master/public/dashboards/example/data.json';
+const exampleFormatURL = 'https://github.com/mozilla/ensemble/blob/master/public/example-dashboards/crashes/data.json';
 const registrationLink = 'mailto:data-tools@mozilla.com?subject=Ensemble%20registration&body=Shortname%20(your%20dashboard%20will%20be%20hosted%20at%20/dashboards/[shortname]):%0A%0AJSON%20URL%20for%20your%20data:';
 
 export default () => (
     <article>
-
-
         <section id="introduction">
             <h2>What is Ensemble?</h2>
             <p>
@@ -35,8 +33,8 @@ export default () => (
             <h2>Example dashboards</h2>
             <nav>
                 <ul>
-                    <li><Link to="/dashboard/hardware">Hardware</Link></li>
                     <li><Link to="/dashboard/crashes">Crash rates</Link></li>
+                    <li><Link to="/dashboard/hardware">Hardware</Link></li>
                 </ul>
             </nav>
         </section>
