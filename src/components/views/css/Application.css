@@ -4,6 +4,12 @@ body {
   font-family: sans-serif;
 }
 
+#application {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: min-content auto;
+}
+
 #main-header {
     background: #eaeff2 url(../img/grain.png);
     padding: 20px;
