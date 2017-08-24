@@ -1,12 +1,7 @@
-Ensemble is a work in progress. It is not ready for production use, but an
-[example dashboard](http://moz-ensemble.herokuapp.com/dashboard/hardware/) is
-available as a proof of concept.
+Ensemble is a minimalist platform for publishing data dashboards. You can think
+of it like [Read the Docs](https://readthedocs.org/) for data.
 
-Ensemble is a minimalist platform for publishing data dashboards. Ensemble is to
-data what [Read the Docs](https://readthedocs.org/) is to developer
-documentation.
-
-Creating an Ensemble dashboard will be easy. Publish your data anywhere in our
+Creating an Ensemble dashboard is easy. Publish your data anywhere in our
 standard JSON format ([example](public/dashboards/example/data.json)) and
 register it with this service. That's it.
 
