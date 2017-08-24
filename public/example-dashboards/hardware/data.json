@@ -8,7 +8,7 @@
     "charts": [
         {
             "title": "Stream processors",
-            "description": "The number of processors in a graphics card",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eleifend ultrices augue, in placerat velit fringilla eget. Curabitur faucibus augue purus, at lacinia massa cursus a. Fusce arcu libero, porta vel magna vitae, lobortis tempor sem. Maecenas lacinia lacus quis lectus laoreet, a consequat tortor dictum. Vestibulum ac pellentesque lacus. Proin dictum at mauris eu lacinia. Phasellus at turpis a lectus lacinia aliquam.",
             "section": "gfx",
             "units": {
                 "y": "%"
@@ -26,7 +26,7 @@
         },
         {
             "title": "Memory",
-            "description": "The amount of memory the graphics card has",
+            "description": "Praesent pulvinar orci ipsum, sagittis dapibus libero fermentum sagittis. Fusce sed turpis at dui interdum blandit sit amet et risus. Vivamus efficitur commodo laoreet. Nunc scelerisque vulputate condimentum. Cras cursus vulputate elit vitae feugiat. Fusce blandit dictum volutpat. Nulla faucibus lectus at sem mattis blandit.",
             "section": "gfx",
             "units": {
                 "y": "%"
@@ -38,21 +38,21 @@
                 { "x": 256, "y": 43.8 },
                 { "x": 512, "y": 21.2 },
                 { "x": 1024, "y": 31.4 },
-                { "x": 2048,  "y": 3.6 }
+                { "x": 2048, "y": 3.6 }
             ]
         },
         {
             "title": "Number of cores",
-            "description": "The number of cores the CPU has",
+            "description": "Mauris vel metus ipsum. Curabitur blandit rutrum nisi vitae rutrum. Praesent porta auctor sem in blandit. Duis nec odio dolor. Nam ac ipsum nec tellus rhoncus sodales. Morbi urna nisl, porta ut porta non, ornare malesuada dolor. Vivamus in sollicitudin eros, non rhoncus magna. Curabitur et dui vel ante imperdiet hendrerit non in augue. Sed a viverra velit, nec mattis lacus. Etiam vel massa sed enim scelerisque lobortis. Sed non tortor eu sem lobortis consequat vitae a velit. Phasellus eu velit suscipit, convallis ligula sit amet, sollicitudin arcu. Ut quis ligula magna.",
             "section": "cpu",
             "units": {
                 "y": "%"
             },
             "data": [
-                { "x": 1,  "y": 73.8 },
-                { "x": 2,    "y": 24.3 },
-                { "x": 4,  "y": 1.4 },
-                { "x": 8,  "y": 0.5 }
+                { "x": 1,"y": 73.8 },
+                { "x": 2, "y": 24.3 },
+                { "x": 4, "y": 1.4 },
+                { "x": 8, "y": 0.5 }
             ]
         }
     ]

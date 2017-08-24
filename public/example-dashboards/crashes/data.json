@@ -9,7 +9,7 @@
     "charts": [
         {
             "title": "Average days since last crash",
-            "description": "The average number of days clients have gone without crashing",
+            "description": "Praesent dapibus sapien nulla, et varius quam condimentum luctus. Donec molestie nunc a tortor posuere, eu porttitor sem elementum. Nam rhoncus eget odio et aliquam. Donec et semper orci, ut porta nisl. Aenean erat sapien, maximus et scelerisque quis, ornare et sapien. Sed sagittis purus ac odio ullamcorper sollicitudin. Maecenas dui tortor, elementum ac erat non, porta consequat justo. Suspendisse enim est, vestibulum a gravida in, gravida sit amet urna. Morbi justo ligula, aliquam vitae arcu id, iaculis maximus nisi. Proin dictum, eros vel gravida efficitur, leo enim sollicitudin ante, non hendrerit eros risus non velit. Etiam a tincidunt metus. Aliquam imperdiet et felis placerat imperdiet. Curabitur velit odio, maximus et posuere id, lobortis quis neque. Cras sodales ac ligula in placerat.",
             "section": "android",
             "labels": {
                 "x": "Release"
@@ -30,7 +30,7 @@
         },
         {
             "title": "Average seconds before crash",
-            "description": "The average session time of a client before crashing",
+            "description": "Curabitur justo arcu, sodales eu placerat eget, pharetra ac dui. Donec et ullamcorper tellus. Maecenas imperdiet, risus non venenatis fringilla, augue sem semper ipsum, id iaculis massa arcu nec sem. Fusce molestie imperdiet purus id finibus. Integer eu nulla nisi. Maecenas condimentum magna et dui blandit, id pretium orci tristique. Donec libero mi, vestibulum vestibulum rutrum in, faucibus ut elit. Aenean a dui eros.",
             "section": "ios",
             "labels": {
                 "x": "Release"
@@ -51,7 +51,7 @@
         },
         {
             "title": "Average days since last crash",
-            "description": "The average number of days clients have gone without crashing",
+            "description": "Vivamus sed facilisis nulla. Pellentesque odio mi, imperdiet non lobortis vel, eleifend quis enim. Quisque nisl orci, pharetra eu turpis eu, pulvinar finibus ligula. Quisque semper odio ut neque interdum lacinia. Cras eget euismod urna. Suspendisse tristique vel metus eget sagittis. Mauris massa est, posuere eget ipsum ac, vestibulum imperdiet mauris. Proin sit amet justo non nibh dictum accumsan. Cras auctor bibendum interdum. Aliquam sed auctor turpis. Cras nec sem eu lectus scelerisque congue non ut nibh. Maecenas eu magna mollis lectus sagittis congue eu in metus. Vestibulum vitae fringilla orci. Sed a dolor est.",
             "section": "desktop",
             "labels": {
                 "x": "Release"
@@ -72,7 +72,7 @@
         },
         {
             "title": "Average seconds before crash",
-            "description": "The average session time of a client before crashing",
+            "description": "In nisi sapien, elementum non ultrices in, porta ac est. Aenean augue sem, tempus pretium euismod porta, vestibulum quis lorem. Maecenas tincidunt, est vitae consectetur dignissim, tortor dolor auctor neque, accumsan tristique odio metus eu nulla. Aliquam auctor massa id porta tempor. Donec sit amet mollis diam. Curabitur scelerisque neque eget nibh faucibus tincidunt. Duis tristique sollicitudin elit, eu efficitur purus varius vel. Quisque posuere lorem ut justo tincidunt gravida. Proin aliquet urna lorem, ac interdum erat maximus a. Sed fermentum nulla arcu, eu varius lacus dapibus eu.",
             "section": "desktop",
             "labels": {
                 "x": "Release"
@@ -93,7 +93,7 @@
         },
         {
             "title": "Average days since last crash",
-            "description": "The average number of days clients have gone without crashing",
+            "description": "Aliquam nec odio posuere, feugiat eros eget, ultrices mi. Etiam viverra diam ut tristique elementum. Maecenas faucibus ornare magna, non sagittis tortor. Suspendisse potenti. Praesent luctus cursus velit, ultricies cursus arcu viverra non. Nunc eu ex dui. Nulla pellentesque in nisl et venenatis. Etiam tempus metus vitae nulla condimentum, non euismod mauris aliquet. Pellentesque fringilla orci in nibh tincidunt cursus ac nec turpis. Fusce feugiat nec augue pretium semper. Nulla vitae felis non ipsum volutpat dictum a pharetra felis. Fusce luctus nunc vel libero elementum porta. Donec commodo nunc elit, sed vestibulum ligula molestie sed. Mauris gravida nisl sit amet urna dictum, eu lacinia quam ornare. Aenean mattis sapien quis nisi sodales, sit amet vestibulum leo vestibulum. Nunc at augue tincidunt, imperdiet justo id, luctus arcu.",
             "section": "ios",
             "labels": {
                 "x": "Release"
@@ -114,7 +114,7 @@
         },
         {
             "title": "Average seconds before crash",
-            "description": "The average session time of a client before crashing",
+            "description": "Maecenas non semper mi. Cras elementum iaculis nisi et egestas. Nam ultricies ante odio. Nulla enim nunc, mattis quis pulvinar id, dictum ac orci. Praesent mollis efficitur massa. Aliquam ac ullamcorper odio. Donec ut vehicula ligula, vitae egestas ligula. Pellentesque tristique dui sit amet vestibulum vestibulum. Nam cursus dignissim lectus, a tristique dolor. Fusce volutpat urna pretium mauris feugiat ornare. Pellentesque porta diam in vestibulum euismod. Aenean molestie id nibh quis lacinia. Nulla semper eros vestibulum ipsum malesuada, sollicitudin accumsan urna posuere. Ut a vehicula odio. Mauris pretium erat et porta maximus. Donec ultricies tincidunt imperdiet.",
             "section": "android",
             "labels": {
                 "x": "Release"
