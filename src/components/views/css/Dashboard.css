@@ -9,9 +9,6 @@
 #dashboard-sections {
     display: grid;
     grid-row-gap: 50px;
-
-    margin: 0 auto;
-    width: 60%;
 }
 
 .charts-and-descriptions {
