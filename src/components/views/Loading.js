@@ -1,6 +1,4 @@
 import React from 'react';
 
 
-export default props => (
-    <span>Loading...</span>
-);
+export default props => <span>Loading...</span>;
