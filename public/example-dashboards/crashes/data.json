@@ -1,5 +1,6 @@
 {
     "title": "Crash rates",
+    "version": "0.0.1",
     "description": "Description goes here. This is example data. None of it is real.",
     "sections": [
         { "key": "desktop", "title": "CPU" },
