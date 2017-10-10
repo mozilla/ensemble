@@ -25,6 +25,3 @@ Ensemble's target audience is the long tail of organizations and teams that want
 to publish something rather than nothing. Those with highly-specialized or
 unique problems likely also have the resources to build their own dashboards. We
 encourage them to do so and look forward to learning from one another.
-
-
-[![Greenkeeper badge](https://badges.greenkeeper.io/mozilla/ensemble.svg)](https://greenkeeper.io/)
