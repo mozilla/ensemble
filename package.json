@@ -9,7 +9,7 @@
     "react-metrics-graphics": "^0.6.2",
     "react-refetch": "^1.0.1",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "1.0.14",
+    "react-scripts": "1.0.16",
     "react-spinkit": "^3.0.0"
   },
   "scripts": {
