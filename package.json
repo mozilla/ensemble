@@ -8,7 +8,7 @@
     "metrics-graphics": "^2.11.0",
     "react": "^15.6.2",
     "react-dom": "^15.6.2",
-    "react-metrics-graphics": "^0.6.2",
+    "react-metrics-graphics": "^1.0.0",
     "react-refetch": "^1.0.1",
     "react-router-dom": "^4.2.2",
     "react-scripts": "^1.0.17",
