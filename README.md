@@ -2,8 +2,8 @@ Ensemble is a minimalist platform for publishing data dashboards. You can think
 of it like [Read the Docs](https://readthedocs.org/) for data.
 
 Creating an Ensemble dashboard is easy. Publish your data anywhere in our
-standard JSON format ([example](public/example-dashboards/crashes/data.json)) and
-register it with this service. That's it.
+standard JSON format ([example](http://ensemble-transposer.herokuapp.com/firefox-hardware-report/))
+and register it with this service. That's it.
 
 Ensemble explicitly aims not to be highly-configurable. Our goal is not to
 support every feature imaginable, but instead to build a minimalist platform for

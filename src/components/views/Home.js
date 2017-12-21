@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 
-const exampleFormatURL = 'https://github.com/mozilla/ensemble/blob/master/public/example-dashboards/crashes/data.json';
+const exampleFormatURL = 'http://ensemble-transposer.herokuapp.com/firefox-hardware-report/'
 const registrationLink = 'mailto:data-tools@mozilla.com?subject=Ensemble%20registration&body=Shortname%20(your%20dashboard%20will%20be%20hosted%20at%20/dashboards/[shortname]):%0A%0AJSON%20URL%20for%20your%20data:';
 
 export default () => (
