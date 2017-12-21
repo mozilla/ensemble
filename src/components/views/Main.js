@@ -8,17 +8,10 @@ import './css/Main.css';
 
 
 const dashboards = [
-    // Example dashboards
     {
         subdirectory: 'hardware',
-        dataURL: process.env.PUBLIC_URL + '/example-dashboards/hardware/data.json',
+        dataURL: '//ensemble-transposer.herokuapp.com/firefox-hardware-report',
     },
-    {
-        subdirectory: 'crashes',
-        dataURL: process.env.PUBLIC_URL + '/example-dashboards/crashes/data.json',
-    },
-
-    // Real dashboards
 ];
 
 export default () => (

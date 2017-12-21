@@ -30,11 +30,10 @@ export default () => (
         </section>
 
         <section id="example-dashboards">
-            <h2>Example dashboards</h2>
+            <h2>Dashboards</h2>
             <nav>
                 <ul>
-                    <li><Link to="/dashboard/crashes">Crash rates</Link></li>
-                    <li><Link to="/dashboard/hardware">Hardware</Link></li>
+                    <li><Link to="/dashboard/hardware">Firefox Hardware Report</Link></li>
                 </ul>
             </nav>
         </section>

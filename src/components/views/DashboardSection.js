@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Chart from './Chart';
+import ChartContainer from '../containers/ChartContainer';
 import ChartDescription from './ChartDescription';
 
 
@@ -12,9 +12,9 @@ export default props => (
         <section className="charts-and-descriptions">
             {props.charts.map((c, index) => (
                 <div key={index} className="chart-and-description">
-                    <Chart
+                    <ChartContainer
                         title={c.title}
-                        data={c.data}
+                        populations={c.populations}
                         units={c.units || {}}
                         labels={c.labels || {}}
                         scales={c.scales || {}}
