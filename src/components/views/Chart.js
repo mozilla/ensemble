@@ -12,6 +12,9 @@ export default props => (
         x_accessor="x"
         y_accessor="y"
 
+        width={600}
+        height={500}
+
         yax_units_append={true}
         yax_units={props.units.y}
 
