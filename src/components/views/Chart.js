@@ -1,6 +1,7 @@
 import React from 'react';
 import MetricsGraphics from 'react-metrics-graphics';
 
+import './css/Chart.css';
 import 'metrics-graphics/dist/metricsgraphics.css';
 
 
@@ -13,7 +14,7 @@ export default props => (
         y_accessor="y"
 
         width={600}
-        height={500}
+        height={600}
 
         yax_units_append={true}
         yax_units={props.units.y}
@@ -23,5 +24,8 @@ export default props => (
 
         x_scale_type={props.scales.x}
         y_scale_type={props.scales.y}
+
+        legend={props.legend}
+        legend_target={props.legendTarget}
     />
 );

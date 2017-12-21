@@ -1,0 +1,24 @@
+.chart-wrapper {
+    display: grid;
+    grid-gap: 20px;
+    grid-template-areas:
+        "top-left top-right"
+        "bottom   bottom";
+}
+
+.chart-wrapper .metricsGraphicsCon {
+    grid-area: top-left;
+}
+
+.chart-wrapper .legend {
+    grid-area: top-right;
+}
+
+.chart-wrapper .legend span {
+    display: block;
+    margin: 5px 0;
+}
+
+.chart-wrapper p {
+    grid-area: chart-bottom;
+}

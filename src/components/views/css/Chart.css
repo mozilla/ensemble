@@ -1,0 +1,4 @@
+/* Make lines and circles black by default */
+.mg-main-line, .mg-line-rollover-circle {
+    stroke: #000;
+}

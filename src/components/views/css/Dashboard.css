@@ -11,7 +11,7 @@
     grid-row-gap: 50px;
 }
 
-.charts-and-descriptions {
+.chart-wrappers {
     display: grid;
     grid-row-gap: 20px;
 }
