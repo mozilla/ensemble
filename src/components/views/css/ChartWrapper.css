@@ -2,16 +2,20 @@
     display: grid;
     grid-gap: 20px;
     grid-template-areas:
-        "top-left top-right"
-        "bottom   bottom";
+        "left middle right";
+    grid-template-columns: 3fr 2fr 3fr;
+}
+
+.chart-wrapper:last-child {
+    border-bottom: 0;
 }
 
 .chart-wrapper .metricsGraphicsCon {
-    grid-area: top-left;
+    grid-area: left;
 }
 
 .chart-wrapper .legend {
-    grid-area: top-right;
+    grid-area: middle;
 }
 
 .chart-wrapper .legend span {
@@ -20,5 +24,9 @@
 }
 
 .chart-wrapper p {
-    grid-area: chart-bottom;
+    grid-area: right;
+    margin: 0;
+    padding: 20px;
+    background: #f6f6f6;
+    align-self: start;
 }

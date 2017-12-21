@@ -13,14 +13,5 @@
 
 .chart-wrappers {
     display: grid;
-    grid-row-gap: 20px;
-}
-
-.chart-and-description {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-}
-
-.chart-description {
-    justify-self: end;
+    grid-row-gap: 100px;
 }
