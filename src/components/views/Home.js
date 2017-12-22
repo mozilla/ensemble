@@ -33,7 +33,7 @@ export default () => (
             <h2>Dashboards</h2>
             <nav>
                 <ul>
-                    <li><Link to="/dashboard/hardware">Firefox Hardware Report</Link></li>
+                    <li><Link to="/dashboard/hardware">Firefox Hardware Report (Ensemble proof of concept)</Link></li>
                 </ul>
             </nav>
         </section>
