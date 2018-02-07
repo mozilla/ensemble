@@ -1,6 +1,6 @@
 {
-  "short_name": "Ensemble",
-  "name": "Ensemble",
+  "short_name": "Firefox Usage Report",
+  "name": "Firefox Usage Report",
   "icons": [
     {
       "src": "favicon.ico",

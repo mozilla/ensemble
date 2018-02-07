@@ -12,6 +12,10 @@ const dashboards = [
         subdirectory: 'hardware',
         dataURL: '//ensemble-transposer.herokuapp.com/firefox-hardware-report',
     },
+    {
+        subdirectory: 'usage',
+        dataURL: 'http://localhost:5000/blue',
+    },
 ];
 
 export default () => (
