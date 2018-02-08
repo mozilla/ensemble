@@ -1,32 +1,30 @@
 .chart-wrapper {
-    display: grid;
-    grid-gap: 20px;
-    grid-template-areas:
-        "left middle right";
-    grid-template-columns: 3fr 2fr 3fr;
+    align-items: flex-start;
+    display: flex;
+    justify-content: space-between;
+    margin: 50px 0;
+}
+
+.chart-description {
+    background: #f6f6f6;
+    margin: 0;
+    padding: 20px;
+    width: 20%;
+}
+
+.chart-wrapper:first-child {
+    margin-top: 0;
 }
 
 .chart-wrapper:last-child {
-    border-bottom: 0;
+    margin-bottom: 0;
 }
 
-.chart-wrapper .metricsGraphicsCon {
-    grid-area: left;
-}
-
-.chart-wrapper .legend {
-    grid-area: middle;
+.chart-wrapper .chart-and-legend div {
+    float: left;
 }
 
 .chart-wrapper .legend span {
     display: block;
     margin: 5px 0;
-}
-
-.chart-wrapper p {
-    grid-area: right;
-    margin: 0;
-    padding: 20px;
-    background: #f6f6f6;
-    align-self: start;
 }

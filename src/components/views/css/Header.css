@@ -1,0 +1,37 @@
+#main-header {
+    border-bottom: 1px solid #000;
+    display: flex;
+    justify-content: space-between;
+}
+
+h1 {
+    margin: 0;
+}
+
+h1 a {
+    color: #000;
+    text-decoration: none;
+}
+
+#main-navigation ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+}
+
+#main-navigation li {
+    margin: 0 20px;
+}
+
+#main-navigation li:first-child {
+    margin-left: 0;
+}
+
+#main-navigation li:last-child {
+    margin-right: 0;
+}
+
+#main-navigation li a {
+    color: #000;
+}

@@ -1,17 +1,4 @@
 #dashboard h2 {
     text-align: center;
-}
-
-#dashboard-description {
-    text-align: center;
-}
-
-#dashboard-sections {
-    display: grid;
-    grid-row-gap: 50px;
-}
-
-.chart-wrappers {
-    display: grid;
-    grid-row-gap: 100px;
+    margin: 0;
 }

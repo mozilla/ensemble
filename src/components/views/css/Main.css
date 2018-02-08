@@ -1,9 +1,3 @@
 main {
-    margin: 0 auto;
-    max-width: 1200px;
-    padding: 20px;
-
-    /* Needed to center the spinner */
-    /* See also: Spinner.css */
-    display: grid;
+    padding: 20px 0;
 }

@@ -23,12 +23,14 @@ export default class extends React.Component {
 
     render() {
         const formatted = this.formatData(this.props.populations);
+        const showLegend = Object.keys(this.props.populations).length > 1;
 
         return (
             <Chart
                 {...this.props}
                 data={formatted.data}
                 legend={formatted.legend}
+                showLegend={showLegend}
             />
         );
     }

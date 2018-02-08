@@ -5,27 +5,35 @@ import './css/Chart.css';
 import 'metrics-graphics/dist/metricsgraphics.css';
 
 
-export default props => (
-    <MetricsGraphics
-        title={props.title}
-        show_tooltips={false}
-        data={props.data}
-        x_accessor="x"
-        y_accessor="y"
+export default props => {
+    const extraOptions = {};
 
-        width={600}
-        height={600}
+    if (props.showLegend) {
+        extraOptions.legend = props.legend;
+        extraOptions.legend_target = props.legendTarget;
+    }
 
-        yax_units_append={true}
-        yax_units={props.units.y}
+    return (
+        <MetricsGraphics
+            title={props.title}
+            show_tooltips={false}
+            data={props.data}
+            x_accessor="x"
+            y_accessor="y"
 
-        x_label={props.labels.x}
-        y_label={props.labels.y}
+            width={600}
+            height={600}
 
-        x_scale_type={props.scales.x}
-        y_scale_type={props.scales.y}
+            yax_units_append={true}
+            yax_units={props.units.y}
 
-        legend={props.legend}
-        legend_target={props.legendTarget}
-    />
-);
+            x_label={props.labels.x}
+            y_label={props.labels.y}
+
+            x_scale_type={props.scales.x}
+            y_scale_type={props.scales.y}
+
+            {...extraOptions}
+        />
+    );
+};

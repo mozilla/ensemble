@@ -18,15 +18,17 @@ export default props => {
 
     return (
         <div className={`${props.identifier} chart-wrapper`}>
-            <ChartContainer
-                legendTarget={`.${props.identifier} .legend`}
-                title={props.title}
-                populations={props.populations}
-                units={props.units || {}}
-                labels={props.labels || {}}
-                scales={props.scales || {}}
-            />
-            <div className="legend" />
+            <div className="chart-and-legend">
+                <ChartContainer
+                    legendTarget={`.${props.identifier} .legend`}
+                    title={props.title}
+                    populations={props.populations}
+                    units={props.units || {}}
+                    labels={props.labels || {}}
+                    scales={props.scales || {}}
+                />
+                <div className="legend" />
+            </div>
             {maybeChartDescription}
         </div>
     );
