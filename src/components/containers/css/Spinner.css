@@ -1,11 +1,8 @@
 .sk-spinner {
     width: 50px;
     height: 50px;
-    margin: 0 auto;
 
-    /* Center vertically and horizontally */
-    /* Assumes the parent of this element is display: grid */
-    /* See also: Main.css */
-    align-self: center;
-    justify-self: center;
+    position: absolute;
+    top: calc(50vh - 25px);
+    left: calc(50vw - 25px);
 }
