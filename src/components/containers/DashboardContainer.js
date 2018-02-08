@@ -28,5 +28,5 @@ const DashboardContainer = props => {
 };
 
 export default connect(props => ({
-    dataFetch: { url: props.dataURL, refreshInterval: Number(process.env.REACT_APP_REFRESH_INTERVAL) },
+    dataFetch: { url: props.dataURL },
 }))(DashboardContainer);
