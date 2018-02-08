@@ -1,7 +1,6 @@
 import React from 'react';
 import MetricsGraphics from 'react-metrics-graphics';
 
-import './css/Chart.css';
 import 'metrics-graphics/dist/metricsgraphics.css';
 
 

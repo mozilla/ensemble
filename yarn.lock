@@ -4319,9 +4319,9 @@ methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
 
-metrics-graphics@^2.11.0:
-  version "2.11.0"
-  resolved "https://registry.yarnpkg.com/metrics-graphics/-/metrics-graphics-2.11.0.tgz#1585eb483a0b494f417a65c35a0ade8ece904a72"
+metrics-graphics@^2.12.0, metrics-graphics@^2.13.0:
+  version "2.13.0"
+  resolved "https://registry.yarnpkg.com/metrics-graphics/-/metrics-graphics-2.13.0.tgz#0a1804faa7de9e951055377422d7f439333160ed"
   dependencies:
     d3 "^4"
 
@@ -5399,12 +5399,12 @@ react-error-overlay@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-3.0.0.tgz#c2bc8f4d91f1375b3dad6d75265d51cd5eeaf655"
 
-react-metrics-graphics@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/react-metrics-graphics/-/react-metrics-graphics-0.6.2.tgz#b8dc5d945245e802a2014ce9aa9d78d22b5327c2"
+react-metrics-graphics@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-metrics-graphics/-/react-metrics-graphics-1.0.1.tgz#c62afeebd25d067b81964853b39db8ba5e3a99be"
   dependencies:
     classnames "^2.1.2"
-    metrics-graphics "^2.11.0"
+    metrics-graphics "^2.12.0"
 
 react-refetch@^1.0.1:
   version "1.0.3"
