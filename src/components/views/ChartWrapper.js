@@ -16,8 +16,10 @@ export default props => {
         );
     }
 
+    // The data-populations thing is a workaround for metrics-graphics issue
+    // #806. See the comment in PopulationColors.css for more information.
     return (
-        <div className={`${props.identifier} chart-wrapper`}>
+        <div className={`${props.identifier} chart-wrapper`} data-populations={Object.keys(props.populations).length}>
             <div className="chart-and-legend">
                 <ChartContainer
                     legendTarget={`.${props.identifier} .legend`}

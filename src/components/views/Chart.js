@@ -2,6 +2,7 @@ import React from 'react';
 import MetricsGraphics from 'react-metrics-graphics';
 
 import 'metrics-graphics/dist/metricsgraphics.css';
+import './css/PopulationColors.css';
 
 
 export default props => {
