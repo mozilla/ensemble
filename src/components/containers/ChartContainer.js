@@ -10,10 +10,15 @@ export default class extends React.Component {
 
         for (const populationName in populations) {
             legend.push(populationName);
-            data.push(populations[populationName].map(pd => {
+
+            // Don't show a data point if the y value is null. Active user
+            // metrics (YAU, MAU, etc.) have null y values for most dates.
+            const dataToShow = populations[populationName].filter(pd => pd.y !== null);
+
+            data.push(dataToShow.map(pd => {
                 return {
                     x: Date.parse(pd.x) ? new Date(pd.x) : pd.x,
-                    y: pd.y
+                    y: pd.y,
                 };
             }));
         };
