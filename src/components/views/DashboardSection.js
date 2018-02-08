@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ChartWrapper from './ChartWrapper';
+import ChartWrappers from './ChartWrappers';
 
 
 export default props => (
@@ -8,18 +8,6 @@ export default props => (
         <header>
             <h3>{props.title}</h3>
         </header>
-        <section className="chart-wrappers">
-            {props.charts.map((chartMeta, index) => {
-                const identifier = `${props.sectionKey}-chart-wrapper-${index + 1}`;
-
-                return (
-                    <ChartWrapper
-                        {...chartMeta}
-                        key={index}
-                        identifier={identifier}
-                    />
-                );
-            })}
-        </section>
+        <ChartWrappers charts={props.charts} sectionKey={props.sectionKey} />
     </section>
 );
