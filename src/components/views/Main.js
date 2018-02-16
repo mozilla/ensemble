@@ -14,7 +14,7 @@ const dashboards = [
     },
     {
         subdirectory: 'usage',
-        dataURL: 'http://localhost:5000/blue',
+        dataURL: 'http://localhost:8000/firefox-usage-report',
     },
 ];
 
