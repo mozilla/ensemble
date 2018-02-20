@@ -14,6 +14,20 @@ const DashboardContainer = props => {
     if (dataFetch.pending) {
         return <Spinner name="circle" fadeIn="none" />;
     } else if (dataFetch.rejected) {
+
+        // TODO: Remove this all when Ensemble launches
+        if (dataFetch.reason instanceof TypeError) {
+            if (props.match.params.key === 'usage') {
+                return (
+                    <p>
+                        The Usage dashboard is not currently public. Contact
+                        John Karahalis for a screenshot or for help setting up a
+                        demo on your local computer.
+                    </p>
+                );
+            }
+        }
+
         return <Error message={dataFetch.reason.message} />;
     } else if (dataFetch.fulfilled) {
         return (
