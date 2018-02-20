@@ -8,20 +8,18 @@ import dashboards from '../../config/dashboards.json';
 
 import './css/Main.css';
 
-export default () => {
-    return (
-        <main>
-            <Switch>
-                <Route exact path="/" component={Home} />
-                <Route path="/dashboard/:key"
-                       render={props => (
-                           <DashboardContainer
-                               {...props}
-                               source={dashboards.find(d => d.path === props.match.params.key).source}
-                           />
-                       )}
-                />
-            </Switch>
-        </main>
-    );
-};
+export default () => (
+    <main>
+        <Switch>
+            <Route exact path="/" component={Home} />
+            <Route path="/dashboard/:key"
+                   render={props => (
+                       <DashboardContainer
+                           {...props}
+                           source={dashboards.find(d => d.path === props.match.params.key).source}
+                       />
+                   )}
+            />
+        </Switch>
+    </main>
+);
