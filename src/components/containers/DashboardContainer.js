@@ -28,5 +28,5 @@ const DashboardContainer = props => {
 };
 
 export default connect(props => ({
-    dataFetch: { url: props.dataURL },
+    dataFetch: { url: props.source },
 }))(DashboardContainer);
