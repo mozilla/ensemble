@@ -6,7 +6,6 @@ import DashboardContainer from '../containers/DashboardContainer';
 
 import dashboards from '../../config/dashboards.json';
 
-import './css/Main.css';
 
 export default () => (
     <main>
