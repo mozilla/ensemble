@@ -1,5 +1,6 @@
 import React from 'react';
 import MetricsGraphics from 'react-metrics-graphics';
+import dateformat from 'dateformat';
 
 import 'metrics-graphics/dist/metricsgraphics.css';
 import './css/PopulationColors.css';
@@ -7,6 +8,17 @@ import './css/PopulationColors.css';
 
 export default props => {
     const extraOptions = {};
+    const yRolloverPrecision = 10;
+    const yUnit = props.units.y || '';
+
+    let yUnitString = '';
+    if (yUnit) {
+        if (yUnit === '%') {
+            yUnitString = yUnit;
+        } else {
+            yUnitString = ' ' + yUnit;
+        }
+    }
 
     if (props.showLegend) {
         extraOptions.legend = props.legend;
@@ -24,8 +36,8 @@ export default props => {
             width={600}
             height={600}
 
-            yax_units_append={true}
-            yax_units={props.units.y}
+            x_rollover_format={dp => `(${dateformat(dp.x, 'mmmm d, yyyy')}, `}
+            y_rollover_format={dp => `${dp.y.toPrecision(yRolloverPrecision)}${yUnitString})`}
 
             x_label={props.labels.x}
             y_label={props.labels.y}
