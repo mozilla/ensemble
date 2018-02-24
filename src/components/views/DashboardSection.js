@@ -8,6 +8,10 @@ export default props => (
         <header>
             <h3>{props.title}</h3>
         </header>
-        <ChartWrappers charts={props.charts} sectionKey={props.sectionKey} />
+        <ChartWrappers
+            charts={props.charts}
+            activeCategory={props.activeCategory}
+            sectionKey={props.sectionKey}
+        />
     </section>
 );

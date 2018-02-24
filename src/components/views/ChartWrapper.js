@@ -7,8 +7,6 @@ import './css/ChartWrapper.css';
 
 
 export default props => {
-    const activeCategory = 'All'; // TODO
-
     let maybeChartDescription = null;
     if (props.description) {
         maybeChartDescription = (
@@ -21,13 +19,13 @@ export default props => {
     // The data-populations thing is a workaround for metrics-graphics issue
     // #806. See the comment in PopulationColors.css for more information.
     return (
-        <div className={`${props.identifier} chart-wrapper`} data-populations={Object.keys(props.categories[activeCategory].populations).length}>
+        <div className={`${props.identifier} chart-wrapper`} data-populations={Object.keys(props.categories[props.activeCategory].populations).length}>
             <div className="chart-and-legend">
                 <ChartContainer
                     legendTarget={`.${props.identifier} .legend`}
                     title={props.title}
                     categories={props.categories}
-                    activeCategory={activeCategory}
+                    activeCategory={props.activeCategory}
                     units={props.units || {}}
                     labels={props.labels || {}}
                     scales={props.scales || {}}

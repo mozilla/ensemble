@@ -18,6 +18,7 @@ export default props => (
                     {...chartMeta}
                     key={index}
                     identifier={identifier}
+                    activeCategory={props.activeCategory}
                 />
             );
         })}
