@@ -27,8 +27,8 @@ export default class extends React.Component {
     }
 
     render() {
-        const formatted = this.formatData(this.props.populations);
-        const showLegend = Object.keys(this.props.populations).length > 1;
+        const formatted = this.formatData(this.props.categories[this.props.activeCategory].populations);
+        const showLegend = Object.keys(this.props.categories[this.props.activeCategory].populations).length > 1;
 
         return (
             <Chart
