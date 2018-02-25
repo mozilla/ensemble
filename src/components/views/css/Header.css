@@ -1,15 +1,23 @@
 #main-header {
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid #676767;
     display: flex;
     justify-content: space-between;
+    padding-bottom: 15px;
 }
 
 h1 {
     margin: 0;
+    font-size: 46px;
+    color: #f1f1f1;
+    font-weight: 300;
 }
 
 h1 a {
-    color: #000;
+    color: inherit;
+    text-decoration: none;
+}
+
+h1 a:hover {
     text-decoration: none;
 }
 
@@ -18,6 +26,7 @@ h1 a {
     justify-content: center;
     list-style: none;
     padding: 0;
+    color: #f1f1f1;
 }
 
 #main-navigation li {
@@ -30,8 +39,4 @@ h1 a {
 
 #main-navigation li:last-child {
     margin-right: 0;
-}
-
-#main-navigation li a {
-    color: #000;
 }

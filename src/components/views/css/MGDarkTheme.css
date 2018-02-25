@@ -1,0 +1,96 @@
+/* Taken from MetricsGraphics dark theme demo at:
+   https://www.metricsgraphicsjs.org/examples.htm */
+
+.mg-active-datapoint {
+    fill: #fff;
+}
+
+.mg-area1-color {
+    fill: #ffd300;
+}
+
+.mg-area2-color {
+    fill: #18ff00;
+}
+
+.mg-area3-color {
+    fill: #f57070;
+}
+
+.mg-area4-color {
+    fill: #28c5f8;
+}
+
+.mg-area5-color {
+    fill: #f7f7f7;
+}
+
+.mg-line1-color {
+    stroke: yellow;
+}
+
+.mg-barplot .mg-bar-prediction {
+    fill: #5b5b5b;
+}
+
+.mg-barplot .mg-bar-baseline {
+    stroke: #5b5b5b;
+}
+
+.mg-baselines line {
+    stroke: #676767;
+}
+
+.mg-baselines text {
+    fill: #fff;
+}
+
+circle.mg-points-mono {
+    fill-opacity: 0.6;
+    stroke: #a89641;
+    fill: #a89641;
+    stroke-opacity: 1;
+}
+
+tspan.mg-points-mono {
+    fill: #a89641;
+    stroke: #a89641;
+}
+
+circle.mg-points-mono.selected {
+    fill: #a89641;
+    fill-opacity: 1;
+    stroke-opacity: 1;
+}
+
+.popover {
+    color: #737373;
+}
+
+text {
+    fill: #cfcfcf;
+}
+
+.mg-x-rug-mono,
+.mg-y-rug-mono {
+    stroke: #a89641;
+}
+
+.mg-x-axis line,
+.mg-y-axis line {
+    stroke: #676767;
+}
+
+.mg-x-axis text,
+.mg-y-axis text,
+.mg-histogram .axis text {
+    fill: #fff;
+}
+
+.mg-year-marker text {
+    fill: #fff;
+}
+
+.mg-year-marker line {
+    stroke: #676767;
+}

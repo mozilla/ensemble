@@ -1,0 +1,21 @@
+.sk-spinner {
+    color: rgba(255, 255, 255, 0.7);
+    left: calc(50% - 25px);
+}
+
+.sk-spinner::after {
+    content: "";
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 1px solid #000;
+    border-radius: 12px;
+    z-index: 40;
+    left: -33px;
+    top: -33px;
+}
+
+.sk-spinner > div {
+    z-index: 50;
+}

@@ -6,10 +6,11 @@
 }
 
 .chart-description {
-    background: #f6f6f6;
+    background: #131313;
     margin: 0;
-    padding: 20px;
-    width: 20%;
+    padding: 12px;
+    width: 30%;
+    color: #a0a0a0;
 }
 
 .chart-wrapper:first-child {

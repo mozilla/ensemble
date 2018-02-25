@@ -1,16 +1,44 @@
+html {
+    background: #0253a7 url(../img/grain.jpg);
+    box-sizing: border-box;
+    font-size: 13px;
+}
+
+/* Jon Neal approach to a box-sizing reset. */
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
 body {
-    color: #000;
-    font-family: sans-serif;
+    color: #cfcfcf;
+    font-family: 'Open Sans', arial, sans-serif;
+    font-size: 14px;
     margin: 0;
     padding: 0;
+    background: url(../img/bg3.jpg) 50% -70px no-repeat;
+    background-size: 1920px auto;
 }
 
 #application {
     margin: 0 auto;
-    padding: 20px;
-    max-width: 1200px;
+    padding: 40px;
+    width: 1170px;
+    position: relative;
+    top: 40px;
+    background-color: rgba(0,0,0,0.8);
+}
+
+a {
+    color: rgb(112, 182, 241);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 p {
-    line-height: 1.3;
+    font-size: 1.1rem;
+    line-height: 24px;
+    margin: 10px 0;
 }
