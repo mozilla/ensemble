@@ -36,8 +36,8 @@ export default props => {
             width={600}
             height={600}
 
-            x_rollover_format={dp => `(${dateformat(dp.x, 'mmmm d, yyyy')}, `}
-            y_rollover_format={dp => `${dp.y.toPrecision(yRolloverPrecision)}${yUnitString})`}
+            x_mousover={dp => `(${dateformat(dp.x, 'mmmm d, yyyy')}, `}
+            y_mousover={dp => `${dp.y.toPrecision(yRolloverPrecision)}${yUnitString})`}
 
             x_label={props.labels.x}
             y_label={props.labels.y}
