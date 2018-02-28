@@ -1,12 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { render as reactSnapshotRender } from 'react-snapshot';
 import { BrowserRouter } from 'react-router-dom';
 import registerServiceWorker from './registerServiceWorker';
 
 import Application from './components/views/Application';
 
 
-ReactDOM.render((
+reactSnapshotRender((
     <BrowserRouter>
         <Application />
     </BrowserRouter>
