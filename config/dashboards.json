@@ -1,10 +1,10 @@
 [
     {
         "path": "hardware",
-        "source": "//ensemble-transposer.herokuapp.com/firefox-hardware-report"
+        "source": "https://ensemble-transposer.herokuapp.com/firefox-hardware-report/"
     },
     {
         "path": "usage",
-        "source": "http://localhost:8000/firefox-usage-report"
+        "source": "https://metrics.mozilla.com/protected/usage-report-demo/data/firefox-usage-report.json"
     }
 ]

@@ -2,22 +2,31 @@
   "name": "ensemble",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://metrics.mozilla.com/protected/usage-report-demo/",
   "dependencies": {
     "dateformat": "3.0.3",
     "jquery": "3.3.1",
     "metrics-graphics": "2.13.0",
+    "npm-run-all": "4.1.2",
     "react": "16.2.0",
     "react-dom": "16.2.0",
     "react-metrics-graphics": "1.0.2",
     "react-refetch": "1.0.4",
     "react-router-dom": "4.2.2",
     "react-scripts": "1.1.1",
+    "react-snap": "1.11.4",
     "react-spinkit": "3.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "react-snap": "npm-run-all build react-snap:*",
+    "react-snap:build": "react-snap",
+    "react-snap:generate-sw": "sw-precache --root=build --config sw-precache-config.js && uglifyjs build/service-worker.js -o build/service-worker.js",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "reactSnap": {
+      "skipThirdPartyRequests": true
   }
 }
