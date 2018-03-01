@@ -22,3 +22,7 @@ yarn-error.log*
 
 # We use yarn.lock, not package-lock.json
 /package-lock.json
+
+# Data that is currently private, but that will be made available in ensemble
+# in the future
+data
