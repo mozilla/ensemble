@@ -42,6 +42,9 @@ export default class extends React.Component {
 
                 yLabel = {this.props.axes.y && this.props.axes.y.label}
                 xLabel = {this.props.axes.x && this.props.axes.x.label}
+
+                suggestedYMin = {this.props.axes.y && this.props.axes.y.suggestedMin}
+                suggestedYMax = {this.props.axes.y && this.props.axes.y.suggestedMax}
             />
         );
     }

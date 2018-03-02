@@ -19,21 +19,25 @@ export default props => {
         yUnitString = '';
     }
 
-    // The maximum and minimum y values among all populations.
+    // The minimum and maximum y values among all populations.
     //
-    // For example, for the following input, maxY would be 9 and minY would be
-    // 2.
+    // Remember that props.data is a two-dimensional array. The outer array
+    // contains all populations and the inner array, which represents a single
+    // population, contains all of the data points for that population.
+    //
+    // For example, if props.data were the following two-dimensional array, minY
+    // would be 2 and maxY would be 9.
     //
     // [
     //     [
     //         { x: 1, y: 5 },
-    //         { x: 2, y: 8 },
-    //         { x: 3, y: 2 }
+    //         { x: 2, y: 4 },
+    //         { x: 3, y: 9 }
     //     ],
     //     [
     //         { x: 1, y: 7 },
-    //         { x: 2, y: 9 },
-    //         { x: 3, y: 4 }
+    //         { x: 2, y: 2 },
+    //         { x: 3, y: 8 }
     //     ]
     //  ]
     const allYValues = props.data.reduce((accumulator, currentDataset) => {
@@ -42,22 +46,40 @@ export default props => {
     const maxY = Math.max(...allYValues);
     const minY = Math.min(...allYValues);
 
-    // Manually choose the highest and lowest y values that should be shown on
-    // the y axis. Add some padding on the top so that the curve of the line
-    // isn't cut off and there is (hopefully) a tick near the very top of the
-    // axis. Add some padding on the bottom so that any changes in the data
-    // don't look more extreme than they really are.
+    // The minimum and maximum y values that can actually be used on the y
+    // scale.
     //
-    // This works around the following issues. Once these issues have been
-    // fixed, we can forego all of this math and can forego setting max_y and
-    // min_y altogether and simply set min_y_from_data to true instead.
+    // These numbers are just minY and maxY with some padding added. The padding
+    // is added because there is a bug in metrics-graphics where the curve of a
+    // line can be cut off unless this padding is added.
     //
-    // https://github.com/mozilla/metrics-graphics/issues/822
     // https://github.com/mozilla/metrics-graphics/issues/823
-    const highestY = maxY + ((maxY - minY) * .25);
-    let lowestY = minY - ((maxY - minY) * 5);
-    if (minY >= 0 && lowestY < 0) {
-        lowestY = 0;
+    const padding = .01;
+    const minVisibleY = minY - (minY * padding);
+    const maxVisibleY = maxY + (maxY * padding);
+
+    // The range of values that should be shown on the y-axis scale. The low
+    // value is chosen such that the graph doesn't look flat, but changes in
+    // data don't look more extreme than they really are either.
+    const multiplier = 5;
+    let minYToShow = minY - ((maxY - minY) * multiplier);
+    let maxYToShow = maxVisibleY;
+
+    // The math above is such that minYToShow might be below zero (sometimes way
+    // below zero) when the actual minimum y-value in the data is actually >0
+    // zero. When that happens, make minYToShow 0 so that we don't have a
+    // useless negative y space in the chart.
+    if (minY >= 0 && minYToShow < 0) {
+        minYToShow = 0;
+    }
+
+    // If the data suggests that different numbers be used for the low and high
+    // ticks, and those choices wouldn't crop out any data, use them instead.
+    if (props.suggestedYMin < minVisibleY) {
+        minYToShow = props.suggestedYMin;
+    }
+    if (props.suggestedYMax > maxVisibleY) {
+        maxYToShow = props.suggestedMax;
     }
 
     if (props.showLegend) {
@@ -85,8 +107,8 @@ export default props => {
             x_scale_type={props.scales.x}
             y_scale_type={props.scales.y}
 
-            max_y={highestY}
-            min_y={lowestY}
+            min_y={minYToShow}
+            max_y={maxYToShow}
 
             {...extraOptions}
         />
