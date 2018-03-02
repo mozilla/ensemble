@@ -5,29 +5,30 @@
     fill: #fff;
 }
 
-.mg-area1-color {
-    fill: #ffd300;
-}
+.mg-line1-color { stroke: #ffd300 }
+.mg-area1-color { fill: #ffd300 }
+.mg-hover-line1-color { fill: #ffd300 }
+.mg-line1-legend-color { color: #ffd300 }
 
-.mg-area2-color {
-    fill: #18ff00;
-}
+.mg-line2-color { stroke: #18ff00 }
+.mg-area2-color { fill: #18ff00 }
+.mg-hover-line2-color { fill: #18ff00 }
+.mg-line2-legend-color { color: #18ff00 }
 
-.mg-area3-color {
-    fill: #f57070;
-}
+.mg-line3-color { stroke: #f57070 }
+.mg-area3-color { fill: #f57070 }
+.mg-hover-line3-color { fill: #f57070 }
+.mg-line3-legend-color { color: #f57070 }
 
-.mg-area4-color {
-    fill: #28c5f8;
-}
+.mg-line4-color { stroke: #28c5f8 }
+.mg-area4-color { fill: #28c5f8 }
+.mg-hover-line4-color { fill: #28c5f8 }
+.mg-line4-legend-color { color: #28c5f8 }
 
-.mg-area5-color {
-    fill: #f7f7f7;
-}
-
-.mg-line1-color {
-    stroke: yellow;
-}
+.mg-line5-color { stroke: #f7f7f7 }
+.mg-area5-color { fill: #f7f7f7 }
+.mg-hover-line5-color { fill: #f7f7f7 }
+.mg-line5-legend-color { color: #f7f7f7 }
 
 .mg-barplot .mg-bar-prediction {
     fill: #5b5b5b;
