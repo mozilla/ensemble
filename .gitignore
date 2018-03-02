@@ -23,10 +23,6 @@ yarn-error.log*
 # We use yarn.lock, not package-lock.json
 /package-lock.json
 
-# Data that is currently private, but that will be made available in ensemble
-# in the future
-data
-
 # Just an extra precaution. At the moment, some demo instances of this site have
 # a data/ directory which should not be published.
 data/
