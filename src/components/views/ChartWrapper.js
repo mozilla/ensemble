@@ -26,7 +26,7 @@ export default props => {
                     title={props.title}
                     categories={props.categories}
                     activeCategory={props.activeCategory}
-                    units={props.units || {}}
+                    axes={props.axes || {}}
                     labels={props.labels || {}}
                     scales={props.scales || {}}
                 />

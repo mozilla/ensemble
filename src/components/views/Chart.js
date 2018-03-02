@@ -10,17 +10,14 @@ import './css/MGDarkTheme.css';
 export default props => {
     const extraOptions = {};
     const yRolloverSignificantDigits = 10;
-    const yUnit = props.units.y || '';
+    const spacelessUnits = ['%'];
 
-    let yUnitString = '';
-    if (yUnit) {
-        if (yUnit === '%') {
-            yUnitString = yUnit;
-        } else {
-            yUnitString = ' ' + yUnit;
-        }
+    let yUnitString;
+    if (props.yUnit) {
+        yUnitString = spacelessUnits.includes(props.yUnit) ? props.yUnit : ' ' + props.yUnit;
+    } else {
+        yUnitString = '';
     }
-
 
     // The maximum and minimum y values among all populations.
     //
@@ -82,8 +79,8 @@ export default props => {
             x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
             y_mouseover={dp => dp.y.toLocaleString('en-US', { maximumSignificantDigits: yRolloverSignificantDigits }) + yUnitString}
 
-            x_label={props.labels.x}
-            y_label={props.labels.y}
+            x_label={props.xLabel}
+            y_label={props.yLabel}
 
             x_scale_type={props.scales.x}
             y_scale_type={props.scales.y}

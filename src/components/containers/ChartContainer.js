@@ -36,6 +36,12 @@ export default class extends React.Component {
                 data={formatted.data}
                 legend={formatted.legend}
                 showLegend={showLegend}
+
+                yUnit = {this.props.axes.y && this.props.axes.y.unit}
+                xUnit = {this.props.axes.x && this.props.axes.x.unit}
+
+                yLabel = {this.props.axes.y && this.props.axes.y.label}
+                xLabel = {this.props.axes.x && this.props.axes.x.label}
             />
         );
     }
