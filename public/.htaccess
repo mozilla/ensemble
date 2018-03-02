@@ -1,0 +1,5 @@
+Options -MultiViews
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !^data/firefox-usage-report.json$
+RewriteRule ^ index.html [QSA,L]
