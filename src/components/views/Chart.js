@@ -21,6 +21,47 @@ export default props => {
         }
     }
 
+
+    // The maximum and minimum y values among all populations.
+    //
+    // For example, for the following input, maxY would be 9 and minY would be
+    // 2.
+    //
+    // [
+    //     [
+    //         { x: 1, y: 5 },
+    //         { x: 2, y: 8 },
+    //         { x: 3, y: 2 }
+    //     ],
+    //     [
+    //         { x: 1, y: 7 },
+    //         { x: 2, y: 9 },
+    //         { x: 3, y: 4 }
+    //     ]
+    //  ]
+    const allYValues = props.data.reduce((accumulator, currentDataset) => {
+        return accumulator.concat(currentDataset.map(dataPoint => dataPoint.y));
+    }, []);
+    const maxY = Math.max(...allYValues);
+    const minY = Math.min(...allYValues);
+
+    // Manually choose the highest and lowest y values that should be shown on
+    // the y axis, with some padding so that the curve of the line isn't cut
+    // off.
+    //
+    // This works around the following issues. Once these issues have been
+    // fixed, we can forego all of this math and can forego setting max_y and
+    // min_y altogether and simply set min_y_from_data to true instead.
+    //
+    // https://github.com/mozilla/metrics-graphics/issues/822
+    // https://github.com/mozilla/metrics-graphics/issues/823
+    const padding = .1;
+    const highestY = maxY + ((maxY - minY) * padding);
+    let lowestY = minY - ((maxY - minY) * padding);
+    if (minY >= 0 && lowestY < 0) {
+        lowestY = 0;
+    }
+
     if (props.showLegend) {
         extraOptions.legend = props.legend;
         extraOptions.legend_target = props.legendTarget;
@@ -45,6 +86,9 @@ export default props => {
 
             x_scale_type={props.scales.x}
             y_scale_type={props.scales.y}
+
+            max_y={highestY}
+            min_y={lowestY}
 
             {...extraOptions}
         />
