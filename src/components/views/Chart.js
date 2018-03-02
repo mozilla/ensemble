@@ -9,7 +9,7 @@ import './css/MGDarkTheme.css';
 
 export default props => {
     const extraOptions = {};
-    const yRolloverPrecision = 10;
+    const yRolloverSignificantDigits = 10;
     const yUnit = props.units.y || '';
 
     let yUnitString = '';
@@ -37,8 +37,8 @@ export default props => {
             width={600}
             height={600}
 
-            x_mouseover={dp => `(${dateformat(dp.x, 'mmmm d, yyyy')}, `}
-            y_mouseover={dp => `${dp.y.toPrecision(yRolloverPrecision)}${yUnitString})`}
+            x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
+            y_mouseover={dp => dp.y.toLocaleString('en-US', { maximumSignificantDigits: yRolloverSignificantDigits }) + yUnitString}
 
             x_label={props.labels.x}
             y_label={props.labels.y}
