@@ -46,9 +46,10 @@ export default props => {
     const minY = Math.min(...allYValues);
 
     // Manually choose the highest and lowest y values that should be shown on
-    // the y axis, with some padding on the top so that the curve of the line
-    // isn't cut off and some padding on the bottom so that the scale doesn't
-    // make changes in the data appear to be more extreme than they really are.
+    // the y axis. Add some padding on the top so that the curve of the line
+    // isn't cut off and there is (hopefully) a tick near the very top of the
+    // axis. Add some padding on the bottom so that any changes in the data
+    // don't look more extreme than they really are.
     //
     // This works around the following issues. Once these issues have been
     // fixed, we can forego all of this math and can forego setting max_y and
@@ -56,8 +57,8 @@ export default props => {
     //
     // https://github.com/mozilla/metrics-graphics/issues/822
     // https://github.com/mozilla/metrics-graphics/issues/823
-    const highestY = maxY + ((maxY - minY) * .1);
-    let lowestY = minY - ((maxY - minY) * 10);
+    const highestY = maxY + ((maxY - minY) * .25);
+    let lowestY = minY - ((maxY - minY) * 5);
     if (minY >= 0 && lowestY < 0) {
         lowestY = 0;
     }
