@@ -30,11 +30,13 @@ class DashboardContainer extends React.Component {
             // TODO: Remove this all when Ensemble launches
             if (dataFetch.reason instanceof TypeError) {
                 if (this.props.match.params.key === 'usage') {
+                    const privateUsageURL = 'https://metrics.mozilla.com/protected/usage-report-demo/dashboard/usage';
                     return (
                         <p>
-                            The Usage dashboard is not currently public. Contact
-                            John Karahalis for a screenshot or for help setting up a
-                            demo on your local computer.
+                            The usage dashboard is not currently public and
+                            cannot be shown here. Visit the <a
+                            href={privateUsageURL}>private demo</a> to see it.
+                            You will need to log in with your LDAP credentials.
                         </p>
                     );
                 }
