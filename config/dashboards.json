@@ -1,13 +1,13 @@
 [
     {
-        "path": "usage",
-        "menuTitle": "Usage",
-        "source": "http://localhost:8000/usage"
-    },
-    {
         "path": "health",
         "menuTitle": "Health",
         "source": "http://localhost:8000/health"
+    },
+    {
+        "path": "usage",
+        "menuTitle": "Usage",
+        "source": "http://localhost:8000/usage"
     },
     {
         "path": "hardware",
