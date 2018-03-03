@@ -12,10 +12,11 @@ export default props => {
         maybeCategorySelector = (
             <div id="category">
                 <label htmlFor="category">Region</label>
-                <select name="category" onChange={props.onCategoryChange}>
+                <select name="category" value={props.activeCategory} onChange={props.onCategoryChange}>
                     {props.categories.map(categoryName => {
                         return (
-                            <option key={categoryName} value={categoryName}> {categoryName}
+                            <option key={categoryName} value={categoryName}>
+                                {categoryName}
                             </option>
                         );
                     })}

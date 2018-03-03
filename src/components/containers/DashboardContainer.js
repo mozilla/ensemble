@@ -44,6 +44,7 @@ class DashboardContainer extends React.Component {
 
             return <Error message={dataFetch.reason.message} />;
         } else if (dataFetch.fulfilled) {
+            const activeCategory = this.state.activeCategory || dataFetch.value.defaultCategory || dataFetch.value.categories[0];
             return (
                 <Dashboard
                     title={dataFetch.value.title}
@@ -51,7 +52,7 @@ class DashboardContainer extends React.Component {
                     sections={dataFetch.value.sections}
                     charts={dataFetch.value.charts}
                     categories={dataFetch.value.categories}
-                    activeCategory={this.state.activeCategory || dataFetch.value.categories[0]}
+                    activeCategory={activeCategory}
                     onCategoryChange={this._onCategoryChange}
                 />
             );
