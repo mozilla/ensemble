@@ -39,6 +39,16 @@ class DashboardContainer extends React.Component {
                             You will need to log in with your LDAP credentials.
                         </p>
                     );
+                } else if (this.props.match.params.key === 'health') {
+                    const privateHealthURL = 'https://metrics.mozilla.com/protected/usage-report-demo/dashboard/health';
+                    return (
+                        <p>
+                            The health dashboard is not currently public and
+                            cannot be shown here. Visit the <a
+                            href={privateHealthURL}>private demo</a> to see it.
+                            You will need to log in with your LDAP credentials.
+                        </p>
+                    );
                 }
             }
 
