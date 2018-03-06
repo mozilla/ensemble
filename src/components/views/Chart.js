@@ -110,8 +110,7 @@ export default props => {
             data={props.data}
             x_accessor="x"
             y_accessor="y"
-
-            width={500}
+            width={props.width}
             height={500}
 
             x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
