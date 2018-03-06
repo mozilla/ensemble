@@ -3,17 +3,21 @@ import React from 'react';
 import DashboardSection from './DashboardSection';
 import ChartWrappers from './ChartWrappers';
 
+import { bumpSort } from '../../utils';
+
 import './css/Dashboard.css';
 
 
 export default props => {
     let maybeCategorySelector = null;
-    if (props.categories.length > 1) {
+    const sortedCategories = bumpSort(props.categories, 'All');
+
+    if (sortedCategories.length > 1) {
         maybeCategorySelector = (
             <div id="category">
                 <label htmlFor="category">Region</label>
                 <select name="category" value={props.activeCategory} onChange={props.onCategoryChange}>
-                    {props.categories.map(categoryName => {
+                    {sortedCategories.map(categoryName => {
                         return (
                             <option key={categoryName} value={categoryName}>
                                 {categoryName}
