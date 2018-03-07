@@ -7,18 +7,23 @@ import DashboardContainer from '../containers/DashboardContainer';
 import dashboards from '../../config/dashboards.json';
 
 
-export default () => (
-    <main>
-        <Switch>
-            <Route exact path="/" component={Home} />
-            <Route path="/dashboard/:key"
-                   render={props => (
-                       <DashboardContainer
-                           {...props}
-                           source={dashboards.find(d => d.path === props.match.params.key).source}
-                       />
-                   )}
-            />
-        </Switch>
-    </main>
-);
+export default () => {
+    function renderDashboardContainer(props, dashboardMeta) {
+        return <DashboardContainer {...props} source={dashboardMeta.source} />;
+    }
+
+    return (
+        <main>
+            <Switch>
+                <Route exact path="/" component={Home} />
+                {dashboards.map((dashboardMeta, index) => (
+                    <Route
+                        key={index}
+                        path={`/dashboard/${dashboardMeta.path}`}
+                        render={props => renderDashboardContainer(props, dashboardMeta)}
+                    />
+                ))}
+            </Switch>
+        </main>
+    );
+};
