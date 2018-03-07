@@ -1,10 +1,10 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import Home from './Home';
 import DashboardContainer from '../containers/DashboardContainer';
+import Home from '../viewRouters/Home.js';
 
-import dashboards from '../../config/dashboards.json';
+import { dashboards } from '../../config/site.json';
 
 
 export default () => (

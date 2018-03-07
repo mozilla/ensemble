@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ChartWrapper from './ChartWrapper';
+import ChartWrapper from '../viewRouters/ChartWrapper';
 
 
 export default props => (

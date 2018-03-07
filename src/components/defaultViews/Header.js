@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import './css/Header.css';
 
-import dashboards from '../../config/dashboards.json';
+import { dashboards } from '../../config/site.json';
 
 
 export default () => (

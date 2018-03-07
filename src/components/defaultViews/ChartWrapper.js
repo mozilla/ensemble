@@ -1,7 +1,7 @@
 import React from 'react';
 
 import ChartContainer from '../containers/ChartContainer';
-import ChartDescription from './ChartDescription';
+import ChartDescription from '../viewRouters/ChartDescription';
 
 import './css/ChartWrapper.css';
 

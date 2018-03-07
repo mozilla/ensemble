@@ -1,7 +1,7 @@
 import React from 'react';
 
-import DashboardSection from './DashboardSection';
-import ChartWrappers from './ChartWrappers';
+import DashboardSection from '../viewRouters/DashboardSection';
+import ChartWrappers from '../viewRouters/ChartWrappers';
 
 import { bumpSort } from '../../utils';
 

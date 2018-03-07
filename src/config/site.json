@@ -1,0 +1,20 @@
+{
+    "title": "Firefox Usage Report",
+    "dashboards": [
+        {
+            "path": "health",
+            "menuTitle": "Health",
+            "source": "http://localhost:8000/health"
+        },
+        {
+            "path": "usage",
+            "menuTitle": "Usage",
+            "source": "http://localhost:8000/usage"
+        },
+        {
+            "path": "hardware",
+            "menuTitle": "Hardware",
+            "source": "//ensemble-transposer.herokuapp.com/hardware"
+        }
+    ]
+}

@@ -2,8 +2,8 @@ import React from 'react';
 import Spinner from 'react-spinkit';
 import { connect } from 'react-refetch';
 
-import Error from '../views/Error';
-import Dashboard from '../views/Dashboard';
+import Error from '../viewRouters/Error';
+import Dashboard from '../viewRouters/Dashboard';
 
 import './css/Spinner.css';
 

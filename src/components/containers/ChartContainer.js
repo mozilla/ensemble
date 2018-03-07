@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Chart from '../views/Chart';
+import Chart from '../viewRouters/Chart';
 
 
 export default class extends React.Component {
