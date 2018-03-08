@@ -8,8 +8,12 @@ export default props => {
 
     return (
         <section className="data-table-wrapper">
-            <h3>{props.title}</h3>
             <table className="data-table">
+                <colgroup>
+                    <col className="rank" />
+                    <col className="name" />
+                    <col className="value" />
+                </colgroup>
                 <thead>
                     <tr>
                         <th>Rank</th>
