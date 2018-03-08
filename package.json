@@ -2,6 +2,7 @@
   "name": "ensemble",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://metrics.mozilla.com/protected/usage-report-demo",
   "dependencies": {
     "dateformat": "3.0.3",
     "jquery": "3.3.1",

@@ -7,7 +7,7 @@ import Application from './components/views/Application';
 
 
 ReactDOM.render((
-    <BrowserRouter>
+    <BrowserRouter basename="/protected/usage-report-demo">
         <Application />
     </BrowserRouter>
 ), document.getElementById('root'));

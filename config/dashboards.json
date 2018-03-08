@@ -2,12 +2,12 @@
     {
         "path": "health",
         "menuTitle": "Health",
-        "source": "http://localhost:8000/health"
+        "source": "https://metrics.mozilla.com/protected/usage-report-demo/data/health.json"
     },
     {
         "path": "usage",
         "menuTitle": "Usage",
-        "source": "http://localhost:8000/usage"
+        "source": "https://metrics.mozilla.com/protected/usage-report-demo/data/usage.json"
     },
     {
         "path": "hardware",
