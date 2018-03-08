@@ -33,15 +33,12 @@ export default () => (
             population.  Web Usage describes ways in which Firefox is being
             used.  Hardware Across the Web details hardware specs and
             configurations for the machines running Firefox.
-
         </p>
         <p>
             All data is from a representative 1% sample from our Release
             channel and the report runs once a week. Each datapoint covers a
             week’s worth of data (unless stated otherwise). All data is
-            anonymized and aggregated to ensure user privacy. Links to
-            definitions for specific metrics and how they were generated can
-            be found below.
+            anonymized and aggregated to ensure user privacy.
         </p>
     </article>
 );
