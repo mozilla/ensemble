@@ -8,7 +8,7 @@ import dashboards from '../../config/dashboards.json';
 
 export default () => (
     <header id="main-header">
-        <h1><Link to="/">Firefox Usage Report</Link></h1>
+        <h1><Link to="/">Firefox Public Data Report</Link></h1>
         <nav id="main-navigation">
             <ul>
                 {dashboards.map((dashboard, index) => {

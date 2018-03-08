@@ -1,1 +1,1 @@
-Ensemble is the platform that powers the Firefox Usage Report.
+Ensemble is the platform that powers the Firefox Public Data Report.

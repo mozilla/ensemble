@@ -1,6 +1,6 @@
 {
-  "short_name": "Firefox Usage Report",
-  "name": "Firefox Usage Report",
+  "short_name": "Firefox Public Data Report",
+  "name": "Firefox Public Data Report",
   "icons": [
     {
       "src": "favicon.ico",
