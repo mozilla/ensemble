@@ -1,6 +1,7 @@
 import React from 'react';
 
 import ChartContainer from '../containers/ChartContainer';
+import CustomizableDateMetricContainer from '../containers/CustomizableDateMetricContainer';
 import DataTableContainer from '../containers/DataTableContainer';
 import MetricDescription from './MetricDescription';
 
@@ -32,12 +33,14 @@ export default props => {
         );
     } else if (props.type === 'table') {
         MetricContainer = (
-            <DataTableContainer
+            <CustomizableDateMetricContainer
                 title={props.title}
                 categories={props.categories}
-                activeCategory={props.activeCategory}
-                columns={props.columns || {}}
-            />
+                activeCategory={props.activeCategory}>
+                <DataTableContainer
+                    columns={props.columns || {}}
+                />
+            </CustomizableDateMetricContainer>
         );
     }
 

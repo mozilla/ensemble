@@ -5,11 +5,8 @@ import DataTable from '../views/DataTable';
 
 export default class extends React.Component {
     formatData(dates) {
-        // For the time being, only show the latest date
-        const sortedDates = Object.keys(dates).sort((a, b) => new Date(a) > new Date(b));
-        const mostRecentDate = sortedDates[sortedDates.length - 1];
-
-        return dates[mostRecentDate].rows.sort((a, b) => b.value - a.value);
+        // Sort by value in descending order
+        return dates[this.props.activeDate].rows.sort((a, b) => b.value - a.value);
     }
 
     render() {
