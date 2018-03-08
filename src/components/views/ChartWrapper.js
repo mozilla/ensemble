@@ -7,6 +7,10 @@ import './css/ChartWrapper.css';
 
 
 export default props => {
+    // Temporarily hidden. See the following Issue.
+    // https://github.com/mozilla/ensemble/issues/50
+    if (props.title === 'Top Add-ons') return null;
+
     let maybeChartDescription = null;
     if (props.description) {
         maybeChartDescription = (
