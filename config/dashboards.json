@@ -12,6 +12,6 @@
     {
         "path": "hardware",
         "menuTitle": "Hardware",
-        "source": "//ensemble-transposer.herokuapp.com/hardware"
+        "source": "http://localhost:8000/hardware"
     }
 ]
