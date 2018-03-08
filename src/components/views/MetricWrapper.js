@@ -1,9 +1,9 @@
 import React from 'react';
 
-import ChartContainer from '../containers/ChartContainer';
-import ChartDescription from './ChartDescription';
+import MetricContainer from '../containers/MetricContainer';
+import MetricDescription from './MetricDescription';
 
-import './css/ChartWrapper.css';
+import './css/MetricWrapper.css';
 
 
 export default props => {
@@ -11,10 +11,10 @@ export default props => {
     // https://github.com/mozilla/ensemble/issues/50
     if (props.title === 'Top Add-ons') return null;
 
-    let maybeChartDescription = null;
+    let maybeMetricDescription = null;
     if (props.description) {
-        maybeChartDescription = (
-            <ChartDescription
+        maybeMetricDescription = (
+            <MetricDescription
                 description={props.description}
             />
         );
@@ -23,9 +23,9 @@ export default props => {
     // The data-populations thing is a workaround for metrics-graphics issue
     // #806. See the comment in PopulationColors.css for more information.
     return (
-        <div className={`${props.identifier} chart-wrapper`} data-populations={Object.keys(props.categories[props.activeCategory].populations).length}>
-            <div className="chart-and-legend">
-                <ChartContainer
+        <div className={`${props.identifier} metric-wrapper`} data-populations={Object.keys(props.categories[props.activeCategory].populations).length}>
+            <div className="metric-and-legend">
+                <MetricContainer
                     legendTarget={`.${props.identifier} .legend`}
                     title={props.title}
                     categories={props.categories}
@@ -36,7 +36,7 @@ export default props => {
                 />
                 <div className="legend" />
             </div>
-            {maybeChartDescription}
+            {maybeMetricDescription}
         </div>
     );
 };

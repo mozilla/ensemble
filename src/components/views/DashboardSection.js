@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ChartWrappers from './ChartWrappers';
+import MetricWrappers from './MetricWrappers';
 
 
 export default props => (
@@ -8,8 +8,8 @@ export default props => (
         <header>
             <h3>{props.title}</h3>
         </header>
-        <ChartWrappers
-            charts={props.charts}
+        <MetricWrappers
+            metrics={props.metrics}
             activeCategory={props.activeCategory}
             sectionKey={props.sectionKey}
         />

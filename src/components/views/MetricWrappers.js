@@ -1,21 +1,21 @@
 import React from 'react';
 
-import ChartWrapper from './ChartWrapper';
+import MetricWrapper from './MetricWrapper';
 
 
 export default props => (
-    <section className="chart-wrappers">
-        {props.charts.map((chartMeta, index) => {
+    <section className="metric-wrappers">
+        {props.metrics.map((metricMeta, index) => {
             let identifier = '';
             if (props.sectionKey) {
-                identifier = `${props.sectionKey}-chart-wrapper-${index + 1}`;
+                identifier = `${props.sectionKey}-metric-wrapper-${index + 1}`;
             } else {
-                identifier = `chart-wrapper-${index + 1}`;
+                identifier = `metric-wrapper-${index + 1}`;
             }
 
             return (
-                <ChartWrapper
-                    {...chartMeta}
+                <MetricWrapper
+                    {...metricMeta}
                     key={index}
                     identifier={identifier}
                     activeCategory={props.activeCategory}

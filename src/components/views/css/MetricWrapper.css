@@ -1,11 +1,11 @@
-.chart-wrapper {
+.metric-wrapper {
     align-items: flex-start;
     display: flex;
     justify-content: space-between;
     margin: 50px 0;
 }
 
-.chart-description {
+.metric-description {
     background: #131313;
     margin: 0;
     padding: 12px;
@@ -13,19 +13,19 @@
     color: #a0a0a0;
 }
 
-.chart-wrapper:first-child {
+.metric-wrapper:first-child {
     margin-top: 0;
 }
 
-.chart-wrapper:last-child {
+.metric-wrapper:last-child {
     margin-bottom: 0;
 }
 
-.chart-wrapper .chart-and-legend div {
+.metric-wrapper .metric-and-legend div {
     float: left;
 }
 
-.chart-wrapper .legend span {
+.metric-wrapper .legend span {
     display: block;
     margin: 5px 0;
 }

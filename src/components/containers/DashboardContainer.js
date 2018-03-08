@@ -60,7 +60,7 @@ class DashboardContainer extends React.Component {
                     title={dataFetch.value.title}
                     description={dataFetch.value.description}
                     sections={dataFetch.value.sections}
-                    charts={dataFetch.value.charts}
+                    metrics={dataFetch.value.metrics}
                     categories={dataFetch.value.categories}
                     activeCategory={activeCategory}
                     onCategoryChange={this._onCategoryChange}

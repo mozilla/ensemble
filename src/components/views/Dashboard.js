@@ -1,7 +1,7 @@
 import React from 'react';
 
 import DashboardSection from './DashboardSection';
-import ChartWrappers from './ChartWrappers';
+import MetricWrappers from './MetricWrappers';
 
 import { bumpSort } from '../../utils';
 
@@ -39,7 +39,7 @@ export default props => {
 
                         sectionKey={s.key}
                         title={s.title}
-                        charts={props.charts.filter(c => c.section === s.key)}
+                        metrics={props.metrics.filter(c => c.section === s.key)}
                         activeCategory={props.activeCategory}
                     />
                 ))}
@@ -47,7 +47,7 @@ export default props => {
         );
     } else {
         body = (
-            <ChartWrappers charts={props.charts} activeCategory={props.activeCategory} />
+            <MetricWrappers metrics={props.metrics} activeCategory={props.activeCategory} />
         );
     }
 

@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default props => (
-    <p className="chart-description">
+    <p className="metric-description">
         {props.description}
     </p>
 );
