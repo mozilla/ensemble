@@ -1,6 +1,6 @@
 import React from 'react';
 
-import MetricContainer from '../containers/MetricContainer';
+import ChartContainer from '../containers/ChartContainer';
 import MetricDescription from './MetricDescription';
 
 import './css/MetricWrapper.css';
@@ -25,14 +25,12 @@ export default props => {
     return (
         <div className={`${props.identifier} metric-wrapper`} data-populations={Object.keys(props.categories[props.activeCategory].populations).length}>
             <div className="metric-and-legend">
-                <MetricContainer
+                <ChartContainer
                     legendTarget={`.${props.identifier} .legend`}
                     title={props.title}
                     categories={props.categories}
                     activeCategory={props.activeCategory}
                     axes={props.axes || {}}
-                    labels={props.labels || {}}
-                    scales={props.scales || {}}
                 />
                 <div className="legend" />
             </div>

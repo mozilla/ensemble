@@ -10,8 +10,24 @@ import './css/MGDarkTheme.css';
 export default props => {
     const extraOptions = {};
     const yRolloverSignificantDigits = 10;
+
+    // Units that can appear right after a value, without a space in between
     const spacelessUnits = ['%'];
 
+    // Units that can appear to the right of the tick marks on the y-axis
+    const appendableUnits = ['%'];
+
+    // Some units are small enough that they can appear to the right of the tick
+    // marks on the y-axis. Everything else should be shown as a label instead;
+    if (appendableUnits.includes(props.yUnit)) {
+        extraOptions.yax_units = props.yUnit;
+        extraOptions.yax_units_append = true;
+    } else {
+        extraOptions.y_label = props.yUnit;
+    }
+
+    // Build the string that will be used to represent the y-axis unit in the
+    // tooltip.
     let yUnitString;
     if (props.yUnit) {
         yUnitString = spacelessUnits.includes(props.yUnit) ? props.yUnit : ' ' + props.yUnit;
@@ -100,12 +116,6 @@ export default props => {
 
             x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
             y_mouseover={dp => dp.y.toLocaleString('en-US', { maximumSignificantDigits: yRolloverSignificantDigits }) + yUnitString}
-
-            x_label={props.xLabel}
-            y_label={props.yLabel}
-
-            x_scale_type={props.scales.x}
-            y_scale_type={props.scales.y}
 
             min_y={minYToShow}
             max_y={maxYToShow}

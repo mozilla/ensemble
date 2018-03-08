@@ -40,9 +40,6 @@ export default class extends React.Component {
                 yUnit = {this.props.axes.y && this.props.axes.y.unit}
                 xUnit = {this.props.axes.x && this.props.axes.x.unit}
 
-                yLabel = {this.props.axes.y && this.props.axes.y.label}
-                xLabel = {this.props.axes.x && this.props.axes.x.label}
-
                 suggestedYMin = {this.props.axes.y && this.props.axes.y.suggestedMin}
                 suggestedYMax = {this.props.axes.y && this.props.axes.y.suggestedMax}
             />
