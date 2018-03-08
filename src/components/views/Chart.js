@@ -54,14 +54,14 @@ export default props => {
     // line can be cut off unless this padding is added.
     //
     // https://github.com/mozilla/metrics-graphics/issues/823
-    const padding = .01;
+    const padding = .1;
     const minVisibleY = minY - (minY * padding);
     const maxVisibleY = maxY + (maxY * padding);
 
     // The range of values that should be shown on the y-axis scale. The low
     // value is chosen such that the graph doesn't look flat, but changes in
     // data don't look more extreme than they really are either.
-    const multiplier = 5;
+    const multiplier = 8;
     let minYToShow = minY - ((maxY - minY) * multiplier);
     let maxYToShow = maxVisibleY;
 
