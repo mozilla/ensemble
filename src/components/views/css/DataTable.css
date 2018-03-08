@@ -1,0 +1,38 @@
+.data-table-wrapper {
+    /* Try to make it align (more or less) with the y-axis lines of any charts */
+    margin: -10px 50px;
+    width: 540px;
+}
+
+.data-table-wrapper h3 {
+    text-align: center;
+
+    /* Mimic metrics-graphics title styles */
+    font-size: 1.2rem;
+    font-weight: normal;
+}
+
+.data-table {
+    border-collapse: separate;
+    border-spacing: 0 15px;
+    width: 100%;
+}
+
+.data-table thead tr th {
+    border-bottom: 1px solid #cfcfcf;
+    border-collapse: separate;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+}
+
+.data-table th:first-child, .data-table td:first-child {
+    text-align: left;
+}
+
+.data-table th:nth-child(2), .data-table td:nth-child(2) {
+    text-align: left;
+}
+
+.data-table th:last-child, .data-table td:last-child {
+    text-align: right;
+}
