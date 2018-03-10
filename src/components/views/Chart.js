@@ -111,8 +111,8 @@ export default props => {
             x_accessor="x"
             y_accessor="y"
 
-            width={600}
-            height={600}
+            width={500}
+            height={500}
 
             x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
             y_mouseover={dp => dp.y.toLocaleString('en-US', { maximumSignificantDigits: yRolloverSignificantDigits }) + yUnitString}
