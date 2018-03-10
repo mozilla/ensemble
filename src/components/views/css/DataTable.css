@@ -1,7 +1,7 @@
 .data-table-wrapper {
     /* Try to make it align (more or less) with the y-axis lines of any charts */
     margin: 0 50px;
-    width: 540px;
+    width: 440px;
 }
 
 .data-table {
@@ -50,7 +50,7 @@
     /* Width set below */
 }
 .data-table .value {
-    width: 190px;
+    width: 220px;
 }
 
 /* Truncate long add-on names. These properties can't be set on a selector that
@@ -63,5 +63,5 @@
     white-space: nowrap;
 
     /* Needs to be max-width or else truncation won't work */
-    max-width: 300px;
+    max-width: 220px;
 }

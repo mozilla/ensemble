@@ -25,6 +25,10 @@
     float: left;
 }
 
+.metric-wrapper .legend {
+    font-size: .8em;
+}
+
 .metric-wrapper .legend span {
     display: block;
     margin: 5px 0;
