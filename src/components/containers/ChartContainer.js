@@ -8,7 +8,18 @@ export default class extends React.Component {
         const data = [];
         const legend = [];
 
-        for (const populationName in populations) {
+        // Sort population names by y value. The population with the highest y
+        // value is first and the population with the lowest y value is last.
+        const sortedPopulationNames = Object.keys(populations).sort((populationNameA, populationNameB) => {
+            const aMaxY = Math.max(...populations[populationNameA].map(dp => dp.y));
+            const bMaxY = Math.max(...populations[populationNameB].map(dp => dp.y));
+
+            if (aMaxY > bMaxY) return -1;
+            if (bMaxY > aMaxY) return 1;
+            return 0;
+        });
+
+        sortedPopulationNames.forEach(populationName => {
             legend.push(populationName);
 
             // Don't show a data point if the y value is null. Active user
@@ -21,7 +32,7 @@ export default class extends React.Component {
                     y: pd.y,
                 };
             }));
-        };
+        });
 
         return { data, legend };
     }
