@@ -20,12 +20,12 @@ body {
 }
 
 #application {
-    margin: 0 auto;
-    padding: 40px;
-    width: 1170px;
-    position: relative;
-    top: 40px;
     background-color: rgba(0,0,0,0.8);
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    top: 10px;
+    width: 95vw;
 }
 
 a {
@@ -41,4 +41,18 @@ p {
     font-size: 1.1rem;
     line-height: 24px;
     margin: 10px 0;
+}
+
+@media all and (min-width: 550px) {
+    #application {
+        padding: 40px;
+        top: 40px;
+        width: 85vw;
+    }
+}
+
+@media all and (min-width: 1200px) {
+    #application {
+        width: 1170px;
+    }
 }
