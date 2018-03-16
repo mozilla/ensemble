@@ -7,11 +7,12 @@ export default class extends React.Component {
     constructor(props) {
         super(props);
 
-        // Set the minimum chart width supported at 320px viewport width.
-        this.state = { chartWidth: 264 };
+        this.minChartWidth = 264;
+        this.maxChartWidth = 500;
 
-        // 500px SVG width.
-        this.desktopChartWidth = 500;
+        // The proper chart width can't be determined until it's parent element
+        // is rendered.
+        this.state = { chartWidth: null };
     }
 
     formatData(populations) {
@@ -50,10 +51,21 @@ export default class extends React.Component {
     // Get the responsive chart width up to a max of desktopChartWidth.
     getChartWidth() {
         const parentNode = document.querySelector('#application > main');
-        const width = parentNode ? parentNode.offsetWidth : this.desktopChartWidth;
+        const parentWidth = parentNode.offsetWidth;
 
-        return width > this.desktopChartWidth ? this.desktopChartWidth : width;
-    }
+        let width = 0;
+        if (parentNode && parentWidth <= this.minChartWidth) {
+            width = this.minChartWidth;
+        } else if (parentNode && parentWidth > this.maxChartWidth) {
+            width = this.maxChartWidth;
+        } else if (parentNode) {
+            width = parentWidth;
+        } else {
+            width = this.maxChartWidth;
+        }
+
+        return width;
+   }
 
     componentDidMount() {
         // Set the chart width based on the real, rendered parent container.
@@ -65,6 +77,12 @@ export default class extends React.Component {
     render() {
         const formatted = this.formatData(this.props.categories[this.props.activeCategory].populations);
         const showLegend = Object.keys(this.props.categories[this.props.activeCategory].populations).length > 1;
+
+        // Don't render the chart until a proper width has been determined. If
+        // we didn't do this, if we instead started with some default width and
+        // then switched to the proper width, the chart would animate shortly
+        // after loading.
+        if (!this.state.chartWidth) return null;
 
         return (
             <Chart
