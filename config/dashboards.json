@@ -1,13 +1,13 @@
 [
     {
-        "path": "health",
-        "menuTitle": "Health",
-        "source": "http://localhost:8000/health"
+        "path": "user-activity",
+        "menuTitle": "User Activity",
+        "source": "http://localhost:8000/user-activity"
     },
     {
-        "path": "usage",
-        "menuTitle": "Usage",
-        "source": "http://localhost:8000/usage"
+        "path": "usage-behavior",
+        "menuTitle": "Usage Behavior",
+        "source": "http://localhost:8000/usage-behavior"
     },
     {
         "path": "hardware",

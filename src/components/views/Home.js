@@ -6,7 +6,7 @@ export default () => (
     <article>
         <p>
             The Firefox Public Data Report is a weekly public report on the
-            health, usage, and hardware configuration of Firefox.
+            activity, behavior, and hardware configuration of Firefox users.
         </p>
         <p>
             The purpose of this report is twofold. One: empower developers,
@@ -25,13 +25,13 @@ export default () => (
               */}
             The report is split into 3 sections:{' '}
 
-            <Link to="/dashboard/health">Health of Firefox</Link>,{' '}
-            <Link to="/dashboard/usage">Web Usage</Link>, and{' '}
+            <Link to="/dashboard/user-activity">User Activity</Link>,{' '}
+            <Link to="/dashboard/usage-behavior">Usage Behavior</Link>, and{' '}
             <Link to="/dashboard/hardware">Hardware Across the Web</Link>.
 
-            Health of Firefox includes metrics for the the overall Firefox user
-            population.  Web Usage describes ways in which Firefox is being
-            used.  Hardware Across the Web details hardware specs and
+            User Activity includes metrics for the the overall Firefox user
+            population. Usage Behavior describes ways in which Firefox is being
+            used. Hardware Across the Web details hardware specs and
             configurations for the machines running Firefox.
         </p>
         <p>
