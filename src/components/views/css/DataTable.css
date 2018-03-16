@@ -1,9 +1,3 @@
-.data-table-wrapper {
-    /* Try to make it align (more or less) with the y-axis lines of any charts */
-    margin: 0 50px;
-    width: 440px;
-}
-
 .data-table {
     border-collapse: collapse;
     width: 100%;
@@ -63,5 +57,18 @@
     white-space: nowrap;
 
     /* Needs to be max-width or else truncation won't work */
-    max-width: 220px;
+    max-width: 145px;
+}
+
+@media all and (min-width: 550px) {
+    .data-table td:nth-child(2) {
+        max-width: 220px;
+    }
+}
+
+@media all and (min-width: 1200px) {
+    .data-table-wrapper {
+        margin: 0 50px;
+        width: 440px;
+    }
 }

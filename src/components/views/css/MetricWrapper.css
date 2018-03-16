@@ -1,6 +1,8 @@
 .metric-wrapper {
     align-items: flex-start;
     display: flex;
+    flex-direction: column-reverse;
+    flex-wrap: wrap;
     justify-content: space-between;
     margin: 50px 0;
 }
@@ -9,8 +11,8 @@
     background: #131313;
     margin: 0;
     padding: 12px;
-    width: 30%;
     color: #a0a0a0;
+    margin-bottom: 20px;
 }
 
 .metric-wrapper:first-child {
@@ -22,7 +24,9 @@
 }
 
 .metric-wrapper .metric-and-legend div {
-    float: left;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .metric-wrapper .legend {
@@ -31,5 +35,28 @@
 
 .metric-wrapper .legend span {
     display: block;
-    margin: 5px 0;
+    margin: 5px;
+}
+
+@media all and (min-width: 550px) {
+    .metric-wrapper .legend span {
+        margin: 5px;
+    }
+}
+
+@media all and (min-width: 1200px) {
+    .metric-wrapper {
+        flex-direction: row;
+    }
+    .metric-wrapper .metric-and-legend div {
+        display: block;
+        float: left;
+    }
+    .metric-wrapper .legend span {
+        margin: 5px 0;
+    }
+    .metric-description {
+        width: 30%;
+        margin: 0;
+    }
 }

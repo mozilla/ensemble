@@ -1,13 +1,13 @@
 [
     {
-        "path": "health",
-        "menuTitle": "Health",
-        "source": "https://metrics.mozilla.com/protected/usage-report-demo/data/health.json"
+        "path": "user-activity",
+        "menuTitle": "User Activity",
+        "source": "https://metrics.mozilla.com/protected/usage-report-demo/data/user-activity.json"
     },
     {
-        "path": "usage",
-        "menuTitle": "Usage",
-        "source": "https://metrics.mozilla.com/protected/usage-report-demo/data/usage.json"
+        "path": "usage-behavior",
+        "menuTitle": "Usage Behavior",
+        "source": "https://metrics.mozilla.com/protected/usage-report-demo/data/usage-behavior.json"
     },
     {
         "path": "hardware",

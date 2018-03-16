@@ -4,6 +4,16 @@ import Chart from '../views/Chart';
 
 
 export default class extends React.Component {
+    constructor(props) {
+        super(props);
+
+        // Set the minimum chart width supported at 320px viewport width.
+        this.state = { chartWidth: 264 };
+
+        // 500px SVG width.
+        this.desktopChartWidth = 500;
+    }
+
     formatData(populations) {
         const data = [];
         const legend = [];
@@ -37,6 +47,21 @@ export default class extends React.Component {
         return { data, legend };
     }
 
+    // Get the responsive chart width up to a max of desktopChartWidth.
+    getChartWidth() {
+        const parentNode = document.querySelector('#application > main');
+        const width = parentNode ? parentNode.offsetWidth : this.desktopChartWidth;
+
+        return width > this.desktopChartWidth ? this.desktopChartWidth : width;
+    }
+
+    componentDidMount() {
+        // Set the chart width based on the real, rendered parent container.
+        this.setState({
+            chartWidth: this.getChartWidth()
+        });
+    }
+
     render() {
         const formatted = this.formatData(this.props.categories[this.props.activeCategory].populations);
         const showLegend = Object.keys(this.props.categories[this.props.activeCategory].populations).length > 1;
@@ -47,6 +72,7 @@ export default class extends React.Component {
                 data={formatted.data}
                 legend={formatted.legend}
                 showLegend={showLegend}
+                width={this.state.chartWidth}
 
                 yUnit = {this.props.axes.y && this.props.axes.y.unit}
                 xUnit = {this.props.axes.x && this.props.axes.x.unit}
