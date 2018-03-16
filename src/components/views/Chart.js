@@ -103,15 +103,21 @@ export default props => {
         extraOptions.legend_target = props.legendTarget;
     }
 
+    if (props.markers) {
+        extraOptions.markers = props.markers;
+    }
+
     return (
         <MetricsGraphics
-            title={props.title}
-            show_tooltips={false}
             data={props.data}
             x_accessor="x"
             y_accessor="y"
-            width={props.width}
+
+            title={props.title}
+            show_tooltips={false}
+
             height={500}
+            width={props.width}
 
             x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
             y_mouseover={dp => dp.y.toLocaleString('en-US', { maximumSignificantDigits: yRolloverSignificantDigits }) + yUnitString}

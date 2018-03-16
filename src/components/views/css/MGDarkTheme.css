@@ -95,3 +95,7 @@ text {
 .mg-year-marker line {
     stroke: #676767;
 }
+
+.mg-markers text {
+    fill: #fff;
+}
