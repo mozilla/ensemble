@@ -125,6 +125,8 @@ export default props => {
             min_y={minYToShow}
             max_y={maxYToShow}
 
+            transition_on_update={false}
+
             {...extraOptions}
         />
     );
