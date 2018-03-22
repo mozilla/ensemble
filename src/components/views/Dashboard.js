@@ -3,7 +3,7 @@ import React from 'react';
 import DashboardSection from './DashboardSection';
 import MetricWrappers from './MetricWrappers';
 
-import { bumpSort } from '../../utils';
+import { bumpSort } from '../../lib/utils';
 
 import './css/Dashboard.css';
 

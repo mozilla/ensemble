@@ -8,6 +8,7 @@
     "metrics-graphics": "2.14.0",
     "react": "16.2.0",
     "react-dom": "16.2.0",
+    "react-ga": "^2.4.1",
     "react-metrics-graphics": "1.0.2",
     "react-refetch": "1.0.4",
     "react-router-dom": "4.2.2",
