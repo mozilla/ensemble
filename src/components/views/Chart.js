@@ -1,6 +1,7 @@
 import React from 'react';
 import MetricsGraphics from 'react-metrics-graphics';
 import dateformat from 'dateformat';
+import * as d3s from 'd3-shape';
 
 import 'metrics-graphics/dist/metricsgraphics.css';
 import './css/PopulationColors.css';
@@ -120,10 +121,29 @@ export default props => {
             width={props.width}
 
             x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
-            y_mouseover={dp => dp.y.toLocaleString('en-US', { maximumSignificantDigits: yRolloverSignificantDigits }) + yUnitString}
+            y_mouseover={dp => dp.y.toLocaleString('en-US',{ maximumSignificantDigits: yRolloverSignificantDigits }) + yUnitString}
 
             min_y={minYToShow}
             max_y={maxYToShow}
+
+            // interpolate={d3s.curveCatmullRom.alpha(0)}
+            // interpolate={d3s.curveLinearClosed}
+            // interpolate={d3s.curveStep}
+            // interpolate={d3s.curveStepBefore}
+            // interpolate={d3s.curveStepAfter}
+            // interpolate={d3s.curveBasis}
+            // interpolate={d3s.curveBasisOpen}
+            // interpolate={d3s.curveBasisClosed}
+            // interpolate={d3s.curveCardinal}
+            // interpolate={d3s.curveCardinalOpen}
+            // interpolate={d3s.curveCardinalClosed}
+            // interpolate={d3s.curveLinear}
+            // interpolate={d3s.curveLinearClosed}
+            // interpolate={d3s.curveMonotoneX}
+            // interpolate={d3s.curveMonotoneY}
+            // interpolate={d3s.curveNatural}
+            // interpolate={d3s.curveCatmullRomClosed}
+            // interpolate={d3s.curveCatmullRomOpen}
 
             {...extraOptions}
         />
