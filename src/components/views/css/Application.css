@@ -1,7 +1,5 @@
 html {
-    background: #292136 url(../img/grain.jpg);
     box-sizing: border-box;
-    font-size: 13px;
 }
 
 /* Jon Neal approach to a box-sizing reset. */
@@ -10,44 +8,56 @@ html {
 }
 
 body {
-    color: #cfcfcf;
-    font-family: 'Open Sans', arial, sans-serif;
-    font-size: 14px;
+    color: #000;
+    font-family: "Fira Sans OT", "Fira Sans", FiraSansWeb, sans-serif;
+    font-size: 13px;
+    font-weight: 200;
     margin: 0;
     padding: 0;
-    background: url(../img/bg3.jpg) 50% -70px no-repeat;
     background-size: 1920px auto;
 }
 
 #application {
-    background-color: rgba(0,0,0,0.8);
     margin: 0 auto;
-    padding: 20px;
     position: relative;
     top: 10px;
     width: 95vw;
 }
 
+main {
+    padding: 12px 0;
+}
+
 a {
-    color: rgb(112, 182, 241);
+    color: #0198E1;
     text-decoration: none;
+    border-bottom: 1px solid #0198E1;
 }
 
 a:hover {
-    text-decoration: underline;
+    color: #1874CD;
+    border-bottom: 1px solid #1874CD;
 }
 
 p {
-    font-size: 1.1rem;
-    line-height: 24px;
+    font-size: 1rem;
+    line-height: 28px;
     margin: 10px 0;
 }
 
 @media all and (min-width: 550px) {
+    body {
+        font-size: 14px;
+    }
     #application {
-        padding: 40px;
         top: 40px;
         width: 85vw;
+    }
+    p {
+        font-size: 1.1rem;
+    }
+    main {
+        padding: 20px 0;
     }
 }
 

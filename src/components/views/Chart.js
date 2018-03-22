@@ -4,7 +4,6 @@ import dateformat from 'dateformat';
 
 import 'metrics-graphics/dist/metricsgraphics.css';
 import './css/PopulationColors.css';
-import './css/MGDarkTheme.css';
 
 
 export default props => {
