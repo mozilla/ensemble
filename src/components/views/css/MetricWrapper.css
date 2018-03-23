@@ -33,8 +33,9 @@
 }
 
 .metric-wrapper .legend {
-    font-size: .8em;
+    font-size: .9em;
     max-width: 500px;
+    font-weight: 400;
 }
 
 .metric-wrapper .legend span {
