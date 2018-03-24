@@ -1,0 +1,27 @@
+{
+    "src_folders": ["./src/tests"],
+    "output_folder": false,
+
+    "selenium": {
+        "start_process" : true,
+        "log_path" : "",
+        "host" : "127.0.0.1",
+        "port" : 4444
+    },
+
+    "test_settings": {
+        "default": {
+            "launch_url" : "http://localhost:3000",
+            "globals": {
+                "waitForConditionTimeout": 5000,
+                "waitForConditionPollInterval": 5000
+            },
+            "desiredCapabilities": {
+                "browserName": "chrome",
+                "chromeOptions": {
+                    "args": ["--headless"]
+                }
+            }
+        }
+    }
+}
