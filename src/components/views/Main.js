@@ -3,24 +3,31 @@ import { Switch, Route } from 'react-router-dom';
 
 import Home from './Home';
 import DashboardContainer from '../containers/DashboardContainer';
+import withTracker from '../../lib/withTracker';
 
 import dashboards from '../../config/dashboards.json';
 
 
 export default () => {
-    function renderDashboardContainer(props, dashboardMeta) {
-        return <DashboardContainer {...props} source={dashboardMeta.source} />;
-    }
-
     return (
         <main>
             <Switch>
-                <Route exact path="/" component={Home} />
+                <Route exact path="/" component={withTracker(Home)} />
                 {dashboards.map((dashboardMeta, index) => (
                     <Route
                         key={index}
                         path={`/dashboard/${dashboardMeta.path}`}
-                        render={props => renderDashboardContainer(props, dashboardMeta)}
+                        render={props => {
+                            const ThisDashboardContainer = () => (
+                                <DashboardContainer
+                                    {...props}
+                                    source={dashboardMeta.source}
+                                />
+                            );
+                            const Tracker = withTracker(ThisDashboardContainer);
+
+                            return <Tracker {...props} />;
+                        }}
                     />
                 ))}
             </Switch>
