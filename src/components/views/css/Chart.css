@@ -1,0 +1,5 @@
+/* Work around this issue:
+   https://github.com/metricsgraphics/metrics-graphics/issues/839 */
+.metricsGraphicsCon:hover .mg-markers {
+    visibility: hidden;
+}
