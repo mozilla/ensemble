@@ -54,7 +54,7 @@ export default props => {
     return (
         <article id="dashboard">
             <header>
-                <h2>{props.title}</h2>
+                <h2 id="dashboard-title">{props.title}</h2>
                 <p id="dashboard-description">{props.description}</p>
             </header>
             {maybeCategorySelector}

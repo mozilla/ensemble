@@ -47,7 +47,7 @@ export default props => {
     // The data-populations thing is a workaround for metrics-graphics issue
     // #806. See the comment in PopulationColors.css for more information.
     return (
-        <div className={`${props.identifier} metric-wrapper`} data-populations={numPopulations}>
+        <div id={props.identifier} className="metric-wrapper" data-populations={numPopulations}>
             <div className="metric-and-legend">
                 {MetricContainer}
                 <div className="legend" />
