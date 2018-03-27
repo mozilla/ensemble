@@ -3,6 +3,10 @@ module.exports = {
         browser.url(`${browser.launchUrl}/dashboard/hardware`);
     },
 
+    'Dashboard loads': browser => {
+        browser.expect.element('#dashboard').to.be.visible;
+    },
+
     'Dashboard title is correct': browser => {
         browser.expect.element('#dashboard-title').text.to.be.equal('Hardware Across the Web');
     },

@@ -12,5 +12,4 @@ module.exports = {
         browser.moveToElement(chartSelector, 0, 0);
         browser.assert.hidden(`${chartSelector} .mg-markers`);
     },
-
 };

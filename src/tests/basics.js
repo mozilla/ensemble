@@ -4,7 +4,6 @@ module.exports = {
     },
 
     'React app renders': browser => {
-        browser.expect.element('#application').to.be.present;
         browser.expect.element('#application').to.be.visible;
     },
 
