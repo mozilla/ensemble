@@ -56,8 +56,8 @@ export default props => {
             <header>
                 <h2>{props.title}</h2>
                 <p id="dashboard-description">{props.description}</p>
-                {maybeCategorySelector}
             </header>
+            {maybeCategorySelector}
             {body}
         </article>
     );
