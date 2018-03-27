@@ -2,16 +2,16 @@
     {
         "path": "user-activity",
         "menuTitle": "User Activity",
-        "source": "http://localhost:8000/user-activity"
+        "source": "https://openjck-guarded-plains.herokuapp.com/user-activity/"
     },
     {
         "path": "usage-behavior",
         "menuTitle": "Usage Behavior",
-        "source": "http://localhost:8000/usage-behavior"
+        "source": "https://openjck-guarded-plains.herokuapp.com/usage-behavior/"
     },
     {
         "path": "hardware",
         "menuTitle": "Hardware",
-        "source": "//ensemble-transposer.herokuapp.com/hardware"
+        "source": "https://openjck-guarded-plains.herokuapp.com/hardware/"
     }
 ]
