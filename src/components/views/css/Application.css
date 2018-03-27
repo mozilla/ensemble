@@ -2,6 +2,18 @@ html {
     box-sizing: border-box;
 }
 
+@font-face {
+    src: local('FiraSansOTLight'),
+         local('FiraSansLight'),
+         local('Fira Sans OT Light'),
+         local('Fira Sans Light'),
+         url('../fonts/FiraSans/firasansot-light-webfont.woff') format('woff'),
+         url('../fonts/FiraSans/firasansot-light-webfont.ttf') format('truetype'),
+         url('../fonts/FiraSans/firasansot-light-webfont.svg#fira_sans_otlight') format('svg');
+    font-family: FiraSansWeb;
+    font-weight: 200;
+}
+
 /* Jon Neal approach to a box-sizing reset. */
 *, *:before, *:after {
     box-sizing: inherit;
