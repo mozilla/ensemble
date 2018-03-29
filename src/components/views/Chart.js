@@ -119,6 +119,10 @@ export default props => {
             height={500}
             width={props.width}
 
+            // Work around this bug:
+            // https://github.com/metricsgraphics/metrics-graphics/issues/838
+            left={80}
+
             x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
             y_mouseover={dp => dp.y.toLocaleString('en-US', { maximumSignificantDigits: yRolloverSignificantDigits }) + yUnitString}
 
