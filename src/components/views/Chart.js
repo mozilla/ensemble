@@ -24,6 +24,10 @@ export default props => {
         extraOptions.yax_units_append = true;
     } else {
         extraOptions.y_label = props.yUnit;
+
+        // Work around this bug:
+        // https://github.com/metricsgraphics/metrics-graphics/issues/838
+        extraOptions.left = 80;
     }
 
     // Build the string that will be used to represent the y-axis unit in the
@@ -118,10 +122,6 @@ export default props => {
 
             height={500}
             width={props.width}
-
-            // Work around this bug:
-            // https://github.com/metricsgraphics/metrics-graphics/issues/838
-            left={80}
 
             x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
             y_mouseover={dp => dp.y.toLocaleString('en-US', { maximumSignificantDigits: yRolloverSignificantDigits }) + yUnitString}
