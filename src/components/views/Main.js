@@ -4,6 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 import Home from './Home';
 import DashboardContainer from '../containers/DashboardContainer';
 import withTracker from '../../lib/withTracker';
+import NotFound from './NotFound';
 
 import dashboards from '../../config/dashboards.json';
 
@@ -29,6 +30,7 @@ export default () => (
                     }}
                 />
             ))}
+            <Route component={NotFound} />
         </Switch>
     </main>
 );
