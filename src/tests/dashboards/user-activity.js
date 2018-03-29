@@ -19,4 +19,24 @@ module.exports = {
         browser.expect.element('#metric-wrapper-5 .mg-chart-title').text.to.be.equal('New Users Percentage');
         browser.expect.element('#metric-wrapper-6 .mg-chart-title').text.to.be.equal('Latest Version');
     },
+
+    'Charts render': browser => {
+        browser.expect.element('#metric-wrapper-1 svg').to.be.visible;
+        browser.expect.element('#metric-wrapper-1 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#metric-wrapper-2 svg').to.be.visible;
+        browser.expect.element('#metric-wrapper-2 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#metric-wrapper-3 svg').to.be.visible;
+        browser.expect.element('#metric-wrapper-3 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#metric-wrapper-4 svg').to.be.visible;
+        browser.expect.element('#metric-wrapper-4 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#metric-wrapper-5 svg').to.be.visible;
+        browser.expect.element('#metric-wrapper-5 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#metric-wrapper-6 svg').to.be.visible;
+        browser.expect.element('#metric-wrapper-6 path.mg-line1').to.be.visible;
+    }
 };

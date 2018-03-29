@@ -17,4 +17,20 @@ module.exports = {
         browser.expect.element('#metric-wrapper-3 .mg-chart-title').text.to.be.equal('Has Add-on');
         browser.expect.element('#metric-wrapper-4 h3').text.to.be.equal('Top Add-ons');
     },
+
+    'Charts render': browser => {
+        browser.expect.element('#metric-wrapper-1 svg').to.be.visible;
+        browser.expect.element('#metric-wrapper-1 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#metric-wrapper-2 svg').to.be.visible;
+        browser.expect.element('#metric-wrapper-2 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#metric-wrapper-3 svg').to.be.visible;
+        browser.expect.element('#metric-wrapper-3 path.mg-line1').to.be.visible;
+    },
+
+    'Table renders': browser => {
+        browser.expect.element('#metric-wrapper-4 table').to.be.visible;
+        browser.expect.element('#metric-wrapper-4 tbody tr:first-child td:nth-child(2)').to.be.visible;
+    },
 };

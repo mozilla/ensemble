@@ -32,4 +32,42 @@ module.exports = {
         browser.expect.element('#dashboard-sections section:nth-child(4) #plugins-metric-wrapper-1 .mg-chart-title').text.to.be.equal('Flash');
         browser.expect.element('#dashboard-sections section:nth-child(4) #plugins-metric-wrapper-2 .mg-chart-title').text.to.be.equal('Unity');
     },
+
+    'Charts render': browser => {
+        browser.expect.element('#graphics-metric-wrapper-1 svg').to.be.visible;
+        browser.expect.element('#graphics-metric-wrapper-1 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#graphics-metric-wrapper-2 svg').to.be.visible;
+        browser.expect.element('#graphics-metric-wrapper-2 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#graphics-metric-wrapper-3 svg').to.be.visible;
+        browser.expect.element('#graphics-metric-wrapper-3 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#processor-metric-wrapper-1 svg').to.be.visible;
+        browser.expect.element('#processor-metric-wrapper-1 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#processor-metric-wrapper-2 svg').to.be.visible;
+        browser.expect.element('#processor-metric-wrapper-2 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#processor-metric-wrapper-3 svg').to.be.visible;
+        browser.expect.element('#processor-metric-wrapper-3 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#processor-metric-wrapper-4 svg').to.be.visible;
+        browser.expect.element('#processor-metric-wrapper-4 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#operatingsystem-metric-wrapper-1 svg').to.be.visible;
+        browser.expect.element('#operatingsystem-metric-wrapper-1 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#operatingsystem-metric-wrapper-2 svg').to.be.visible;
+        browser.expect.element('#operatingsystem-metric-wrapper-2 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#operatingsystem-metric-wrapper-3 svg').to.be.visible;
+        browser.expect.element('#operatingsystem-metric-wrapper-3 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#plugins-metric-wrapper-1 svg').to.be.visible;
+        browser.expect.element('#plugins-metric-wrapper-1 path.mg-line1').to.be.visible;
+
+        browser.expect.element('#plugins-metric-wrapper-2 svg').to.be.visible;
+        browser.expect.element('#plugins-metric-wrapper-2 path.mg-line1').to.be.visible;
+    },
 };
