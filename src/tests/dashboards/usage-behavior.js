@@ -4,7 +4,7 @@ module.exports = {
     },
 
     'Dashboard loads': browser => {
-        browser.expect.element('#dashboard').to.be.visible;
+        browser.expect.element('#dashboard').to.be.present;
     },
 
     'Dashboard title is correct': browser => {

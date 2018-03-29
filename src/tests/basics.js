@@ -4,7 +4,7 @@ module.exports = {
     },
 
     'React app renders': browser => {
-        browser.expect.element('#application').to.be.visible;
+        browser.expect.element('#application').to.be.present;
     },
 
     'HTML <title> is correct': browser => {
