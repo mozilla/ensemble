@@ -1,7 +1,7 @@
 import React from 'react';
 
 import DashboardSection from './DashboardSection';
-import MetricWrappers from './MetricWrappers';
+import MetricOverviewCollection from './MetricOverviewCollection';
 
 import { bumpSort } from '../../lib/utils';
 
@@ -44,7 +44,7 @@ export default props => {
         );
     } else {
         body = (
-            <MetricWrappers metrics={props.metrics} activeCategory={props.activeCategory} />
+            <MetricOverviewCollection metrics={props.metrics} activeCategory={props.activeCategory} />
         );
     }
 
