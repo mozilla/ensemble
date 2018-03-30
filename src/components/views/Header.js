@@ -11,13 +11,11 @@ export default () => (
         <h1><Link to="/">Firefox Public Data Report</Link></h1>
         <nav id="main-navigation">
             <ul>
-                {dashboards.map((dashboard, index) => {
-                    return (
-                        <li key={index}>
-                            <Link to={`/dashboard/${dashboard.path}`}>{dashboard.menuTitle}</Link>
-                        </li>
-                    );
-                })}
+                {dashboards.map((dashboard, index) => (
+                    <li key={index}>
+                        <Link to={`/dashboard/${dashboard.path}`}>{dashboard.menuTitle}</Link>
+                    </li>
+                ))}
             </ul>
         </nav>
     </header>

@@ -1,20 +1,20 @@
 import React from 'react';
 
-import MetricWrapper from './MetricWrapper';
+import MetricOverview from './MetricOverview';
 
 
 export default props => (
-    <section className="metric-wrappers">
+    <section className="metric-overview-collection">
         {props.metrics.map((metricMeta, index) => {
             let identifier = '';
             if (props.sectionKey) {
-                identifier = `${props.sectionKey}-metric-wrapper-${index + 1}`;
+                identifier = `${props.sectionKey}-metric-overview-${index + 1}`;
             } else {
-                identifier = `metric-wrapper-${index + 1}`;
+                identifier = `metric-overview-${index + 1}`;
             }
 
             return (
-                <MetricWrapper
+                <MetricOverview
                     {...metricMeta}
                     key={index}
                     identifier={identifier}

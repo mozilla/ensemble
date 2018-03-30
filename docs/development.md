@@ -1,3 +1,7 @@
 # Run
 
-* `yarn start`
+`yarn start`
+
+# Test
+
+`yarn test`

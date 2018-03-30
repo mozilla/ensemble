@@ -1,7 +1,7 @@
 import React from 'react';
 
 import DashboardSection from './DashboardSection';
-import MetricWrappers from './MetricWrappers';
+import MetricOverviewCollection from './MetricOverviewCollection';
 
 import { bumpSort } from '../../lib/utils';
 
@@ -9,23 +9,20 @@ import './css/Dashboard.css';
 
 
 export default props => {
-    let maybeCategorySelector = null;
+    let maybeCategory = null;
     const sortedCategories = bumpSort(props.categories, 'All');
-
     if (sortedCategories.length > 1) {
-        maybeCategorySelector = (
-            <div id="category">
+        maybeCategory = (
+            <aside id="category">
                 <label htmlFor="category">Region</label>
                 <select name="category" value={props.activeCategory} onChange={props.onCategoryChange}>
-                    {sortedCategories.map(categoryName => {
-                        return (
-                            <option key={categoryName} value={categoryName}>
-                                {categoryName}
-                            </option>
-                        );
-                    })}
+                    {sortedCategories.map(categoryName => (
+                        <option key={categoryName} value={categoryName}>
+                            {categoryName}
+                        </option>
+                    ))}
                 </select>
-            </div>
+            </aside>
         );
     }
 
@@ -47,17 +44,17 @@ export default props => {
         );
     } else {
         body = (
-            <MetricWrappers metrics={props.metrics} activeCategory={props.activeCategory} />
+            <MetricOverviewCollection metrics={props.metrics} activeCategory={props.activeCategory} />
         );
     }
 
     return (
         <article id="dashboard">
             <header>
-                <h2>{props.title}</h2>
+                <h2 id="dashboard-title">{props.title}</h2>
                 <p id="dashboard-description">{props.description}</p>
-                {maybeCategorySelector}
             </header>
+            {maybeCategory}
             {body}
         </article>
     );

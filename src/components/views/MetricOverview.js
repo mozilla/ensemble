@@ -3,28 +3,27 @@ import React from 'react';
 import ChartContainer from '../containers/ChartContainer';
 import CustomizableDateMetricContainer from '../containers/CustomizableDateMetricContainer';
 import DataTableContainer from '../containers/DataTableContainer';
-import MetricDescription from './MetricDescription';
 
-import './css/MetricWrapper.css';
+import './css/MetricOverview.css';
 
 
 export default props => {
     let maybeMetricDescription = null;
     if (props.description) {
         maybeMetricDescription = (
-            <MetricDescription
-                description={props.description}
-            />
+            <p className="metric-description">
+                {props.description}
+            </p>
         );
     }
 
     let MetricContainer = null;
-    let numPopulations = null;
+    let numPopulations;
     if (props.type === 'line') {
         numPopulations = Object.keys(props.categories[props.activeCategory].populations).length;
         MetricContainer = (
             <ChartContainer
-                legendTarget={`.${props.identifier} .legend`}
+                legendTarget={`#${props.identifier} .legend`}
                 title={props.title}
                 categories={props.categories}
                 activeCategory={props.activeCategory}
@@ -47,7 +46,7 @@ export default props => {
     // The data-populations thing is a workaround for metrics-graphics issue
     // #806. See the comment in PopulationColors.css for more information.
     return (
-        <div className={`${props.identifier} metric-wrapper`} data-populations={numPopulations}>
+        <div id={props.identifier} className="metric-overview" data-populations={numPopulations}>
             <div className="metric-and-legend">
                 {MetricContainer}
                 <div className="legend" />

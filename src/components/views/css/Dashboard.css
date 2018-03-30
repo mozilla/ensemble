@@ -5,18 +5,35 @@
     font-weight: 200;
 }
 
-#dashboard #category {
+#dashboard h2 {
+    margin-bottom: 0;
+}
+
+#dashboard-description:empty {
+    margin: 0;
+}
+
+#category {
     display: flex;
-    margin: 20px 0 50px 0;
 
     align-items: center;
     justify-content: center;
+
+    background: #fff;
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    width: 100%;
 }
 
-#dashboard #category label {
+#category label {
     margin-right: 10px;
 }
 
-#dashboard #category label:after {
+#category label:after {
     content: ": ";
+}
+
+.metric-overview-collection {
+    margin-top: 25px;
 }
