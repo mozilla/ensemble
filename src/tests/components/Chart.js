@@ -6,7 +6,7 @@ module.exports = {
     // This test assumes that the first chart in the Hardware Report has a
     // marker.
     'Markers are hidden upon chart hover': browser => {
-        const chartSelector = '#graphics #graphics-metric-wrapper-1 .metricsGraphicsCon';
+        const chartSelector = '#graphics #graphics-metric-overview-1 .metricsGraphicsCon';
         browser.waitForElementPresent(chartSelector);
         browser.assert.visible(`${chartSelector} .mg-markers`);
         browser.moveToElement(chartSelector, 0, 0);
