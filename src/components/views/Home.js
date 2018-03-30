@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 
 export default () => (
-    <article>
+    <article id="introduction">
         <p>
             The Firefox Public Data Report is a weekly public report on the
             activity, behavior, and hardware configuration of Firefox users.

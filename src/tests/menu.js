@@ -1,4 +1,4 @@
-const { linkWorks } = require('./utils');
+const { linksWork } = require('./utils');
 
 
 module.exports = {
@@ -12,9 +12,7 @@ module.exports = {
         browser.expect.element('#main-navigation li:nth-child(3) a').text.to.equal('Hardware');
     },
 
-    'Menu links work': browser => {
-        browser.getAttribute('#main-navigation li:nth-child(1) a', 'href', result => linkWorks(browser, result));
-        browser.getAttribute('#main-navigation li:nth-child(2) a', 'href', result => linkWorks(browser, result));
-        browser.getAttribute('#main-navigation li:nth-child(3) a', 'href', result => linkWorks(browser, result));
+    'All menu links work': browser => {
+        linksWork(browser, '#main-navigation a');
     },
 };
