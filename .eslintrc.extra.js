@@ -25,7 +25,7 @@ module.exports = {
     root: true,
     rules: {
         'jsx-a11y/label-has-for': ['error', {required: {every: ['id']}}],
-        'jsx-a11y/no-onchange': 'warn',
+        'jsx-a11y/no-onchange': 0,
         'react/display-name': 'off',
         'react/prop-types': 'off',
 

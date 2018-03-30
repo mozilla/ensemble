@@ -106,7 +106,7 @@ export default class extends React.Component {
         // after loading.
         if (!this.state.chartWidth) return null;
 
-        let extraProps = {};
+        const extraProps = {};
 
         if (this.markers) {
             extraProps.markers = this.markers;

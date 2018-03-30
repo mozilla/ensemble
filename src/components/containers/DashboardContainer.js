@@ -54,7 +54,7 @@ class DashboardContainer extends React.Component {
             );
         }
     }
-};
+}
 
 export default connect(props => ({
     dataFetch: { url: props.source },
