@@ -1,8 +1,6 @@
 import React from 'react';
 
+import Error from './Error';
 
-export default props => (
-    <section id="not-found">
-        <h2>Not Found</h2>
-    </section>
-);
+
+export default () => <Error id="not-found" title="Not Found" />;

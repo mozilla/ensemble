@@ -52,7 +52,13 @@ class DashboardContainer extends React.Component {
                 }
             }
 
-            return <Error message={dataFetch.reason.message} />;
+            return (
+                <Error
+                    id="dashboard-fetch-error"
+                    title="Error fetching dashboard"
+                    message={dataFetch.reason.message}
+                />
+            );
         } else if (dataFetch.fulfilled) {
             const activeCategory = this.state.activeCategory || dataFetch.value.defaultCategory || dataFetch.value.categories[0];
             return (

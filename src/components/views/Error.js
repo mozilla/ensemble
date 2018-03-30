@@ -1,9 +1,17 @@
 import React from 'react';
 
 
-export default props => (
-    <section id="error">
-        <h2>Error</h2>
-        <p>{props.message}</p>
-    </section>
-);
+export default props => {
+    let maybeMessage = null;
+
+    if (props.message) {
+        maybeMessage = <p>{props.message}</p>;
+    }
+
+    return (
+        <section id={props.id} className="error">
+            <h2>{props.title}</h2>
+            {maybeMessage}
+        </section>
+    );
+};
