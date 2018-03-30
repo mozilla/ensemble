@@ -1,3 +1,6 @@
+const { flagForUpdate } = require('../utils');
+
+
 module.exports = {
     before: browser => {
         browser.url(`${browser.launchUrl}/dashboard/user-activity`);
@@ -12,6 +15,8 @@ module.exports = {
     },
 
     'Chart titles and order are correct': browser => {
+        flagForUpdate(browser, '.metric-wrapper', 'metrics in the activity dashboard', 6);
+
         browser.expect.element('#metric-wrapper-1 .mg-chart-title').text.to.be.equal('Yearly Active Users');
         browser.expect.element('#metric-wrapper-2 .mg-chart-title').text.to.be.equal('Monthly Active Users');
         browser.expect.element('#metric-wrapper-3 .mg-chart-title').text.to.be.equal('Daily Usage');
@@ -21,6 +26,8 @@ module.exports = {
     },
 
     'Charts render': browser => {
+        flagForUpdate(browser, '.metric-wrapper', 'metrics in the activity dashboard', 6);
+
         browser.expect.element('#metric-wrapper-1 svg').to.be.visible;
         browser.expect.element('#metric-wrapper-1 path.mg-line1').to.be.visible;
 

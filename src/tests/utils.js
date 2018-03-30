@@ -52,8 +52,11 @@ function flagForUpdate(browser, selector, collectiveName, numExpectedElements) {
     browser.elements('css selector', selector, elements => {
         const numActualElements = elements.value.length;
 
+        const isAreExpected = numExpectedElements === 1 ? 'is' : 'are';
+        const isAreActual = numActualElements === 1 ? 'is' : 'are';
+
         if (numActualElements !== numExpectedElements) {
-            browser.assert.fail(`This test needs to be updated. It assumes that there are ${numExpectedElements} ${collectiveName}, but there are actually ${numActualElements}.`);
+            browser.assert.fail(`This test needs to be updated. It assumes that there ${isAreExpected} ${numExpectedElements} ${collectiveName}, but there ${isAreActual} actually ${numActualElements}.`);
         }
     });
 }
