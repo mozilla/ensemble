@@ -1,8 +1,25 @@
 .sk-spinner {
-    width: 50px;
+    color: #000;
     height: 50px;
+    width: 50px;
 
     position: absolute;
     top: calc(50vh - 25px);
-    left: calc(50vw - 25px);
+    left: calc(50% - 25px);
+}
+
+.sk-spinner::after {
+    content: "";
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    z-index: 40;
+    left: -33px;
+    top: -33px;
+}
+
+.sk-spinner > div {
+    z-index: 50;
 }
