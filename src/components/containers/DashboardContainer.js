@@ -26,11 +26,17 @@ class DashboardContainer extends React.Component {
         if (dataFetch.pending) {
             return <Spinner name="circle" fadeIn="none" />;
         } else if (dataFetch.rejected) {
+            const extraErrorProps = {};
+
+            if (dataFetch.reason && dataFetch.reason.message) {
+                extraErrorProps.message = dataFetch.reason.message;
+            }
+
             return (
                 <Error
                     id="dashboard-fetch-error"
                     title="Error fetching dashboard"
-                    message={dataFetch.reason.message}
+                    {...extraErrorProps}
                 />
             );
         } else if (dataFetch.fulfilled) {
