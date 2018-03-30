@@ -3,8 +3,9 @@ import MetricsGraphics from 'react-metrics-graphics';
 import dateformat from 'dateformat';
 
 import 'metrics-graphics/dist/metricsgraphics.css';
-import './css/Chart.css';
 import './css/PopulationColors.css';
+import './css/Chart.css';
+import './css/Metric.css';
 
 
 export default props => {
@@ -112,24 +113,26 @@ export default props => {
     }
 
     return (
-        <MetricsGraphics
-            data={props.data}
-            x_accessor="x"
-            y_accessor="y"
+        <div className="metric chart">
+            <h3 className="metric-title">{props.title}</h3>
+            <MetricsGraphics
+                data={props.data}
+                x_accessor="x"
+                y_accessor="y"
 
-            title={props.title}
-            show_tooltips={false}
+                show_tooltips={false}
 
-            height={500}
-            width={props.width}
+                height={500}
+                width={props.width}
 
-            x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
-            y_mouseover={dp => dp.y.toLocaleString('en-US', { maximumSignificantDigits: yRolloverSignificantDigits }) + yUnitString}
+                x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
+                y_mouseover={dp => dp.y.toLocaleString('en-US', { maximumSignificantDigits: yRolloverSignificantDigits }) + yUnitString}
 
-            min_y={minYToShow}
-            max_y={maxYToShow}
+                min_y={minYToShow}
+                max_y={maxYToShow}
 
-            {...extraOptions}
-        />
+                {...extraOptions}
+            />
+        </div>
     );
 };

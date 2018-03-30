@@ -1,12 +1,3 @@
-.customizable-date-metric h3 {
-    margin-bottom: 0;
-    text-align: center;
-
-    /* Mimic metrics-graphics title styles */
-    font-size: 1.2rem;
-    font-weight: normal;
-}
-
 .customizable-date-metric select {
     display: block;
     margin: 20px auto;

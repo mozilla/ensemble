@@ -14,17 +14,17 @@ module.exports = {
         browser.expect.element('#dashboard-title').text.to.be.equal('Usage Behavior');
     },
 
-    'Chart titles and order are correct': browser => {
-        flagForUpdate(browser, '.metric-overview', 'metrics in the usage dashboard', 4);
+    'Metric titles and order are correct': browser => {
+        flagForUpdate(browser, '.metric', 'metrics in the usage dashboard', 4);
 
-        browser.expect.element('#metric-overview-1 .mg-chart-title').text.to.be.equal('Top Languages');
-        browser.expect.element('#metric-overview-2 .mg-chart-title').text.to.be.equal('Tracking Protection');
-        browser.expect.element('#metric-overview-3 .mg-chart-title').text.to.be.equal('Has Add-on');
+        browser.expect.element('#metric-overview-1 h3').text.to.be.equal('Top Languages');
+        browser.expect.element('#metric-overview-2 h3').text.to.be.equal('Tracking Protection');
+        browser.expect.element('#metric-overview-3 h3').text.to.be.equal('Has Add-on');
         browser.expect.element('#metric-overview-4 h3').text.to.be.equal('Top Add-ons');
     },
 
     'Charts render': browser => {
-        flagForUpdate(browser, '.metricsGraphicsCon', 'charts in the usage dashboard', 3);
+        flagForUpdate(browser, '.chart', 'charts in the usage dashboard', 3);
 
         browser.expect.element('#metric-overview-1 svg').to.be.visible;
         browser.expect.element('#metric-overview-1 path.mg-line1').to.be.visible;
