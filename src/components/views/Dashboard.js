@@ -9,23 +9,20 @@ import './css/Dashboard.css';
 
 
 export default props => {
-    let maybeCategorySelector = null;
+    let maybeCategory = null;
     const sortedCategories = bumpSort(props.categories, 'All');
-
     if (sortedCategories.length > 1) {
-        maybeCategorySelector = (
-            <div id="category">
+        maybeCategory = (
+            <aside id="category">
                 <label htmlFor="category">Region</label>
                 <select name="category" value={props.activeCategory} onChange={props.onCategoryChange}>
-                    {sortedCategories.map(categoryName => {
-                        return (
-                            <option key={categoryName} value={categoryName}>
-                                {categoryName}
-                            </option>
-                        );
-                    })}
+                    {sortedCategories.map(categoryName => (
+                        <option key={categoryName} value={categoryName}>
+                            {categoryName}
+                        </option>
+                    ))}
                 </select>
-            </div>
+            </aside>
         );
     }
 
@@ -57,7 +54,7 @@ export default props => {
                 <h2 id="dashboard-title">{props.title}</h2>
                 <p id="dashboard-description">{props.description}</p>
             </header>
-            {maybeCategorySelector}
+            {maybeCategory}
             {body}
         </article>
     );
