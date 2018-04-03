@@ -1,7 +1,6 @@
 {
   "extends": "stylelint-config-recommended",
   "ignoreFiles": [
-    "src/components/views/css/MGDarkTheme.css",
     "src/components/views/css/PopulationColors.css"
   ],
   "rules": {
