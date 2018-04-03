@@ -3,21 +3,16 @@
     width: 100%;
 }
 
-.data-table thead tr th {
-    border-bottom: 1px solid #cfcfcf;
-}
-
 .data-table thead th {
     padding-bottom: 15px; /* Matches the value of rule with this keyword: header-space */
 }
 
-.data-table td {
-    padding: 8px 0;
+.data-table thead tr th {
+    border-bottom: 1px solid #cfcfcf;
 }
 
-.data-table tr:first-child td {
-    padding-top: 15px; /* Matches the value of rule with this keyword: header-space */
-
+.data-table td {
+    padding: 8px 0;
 }
 
 .data-table th:first-child, .data-table td:first-child {
@@ -30,6 +25,24 @@
 
 .data-table th:last-child, .data-table td:last-child {
     text-align: right;
+}
+
+/* Truncate long add-on names. These properties can't be set on a selector that
+   targets a <col>, so we need to select the <td> directly.
+
+   https://css-tricks.com/snippets/css/truncate-string-with-ellipsis/ */
+.data-table td:nth-child(2) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    /* Needs to be max-width or else truncation won't work */
+    max-width: 145px;
+}
+
+.data-table tr:first-child td {
+    padding-top: 15px; /* Matches the value of rule with this keyword: header-space */
+
 }
 
 /* Give the columns fixed widths, otherwise their widths might change when
@@ -45,19 +58,6 @@
 }
 .data-table .value {
     width: 220px;
-}
-
-/* Truncate long add-on names. These properties can't be set on a selector that
-   targets a <col>, so we need to select the <td> directly.
-
-   https://css-tricks.com/snippets/css/truncate-string-with-ellipsis/ */
-.data-table td:nth-child(2) {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    /* Needs to be max-width or else truncation won't work */
-    max-width: 145px;
 }
 
 @media all and (min-width: 550px) {

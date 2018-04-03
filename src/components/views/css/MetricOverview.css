@@ -8,11 +8,11 @@
 }
 
 .metric-description {
-    background-color: rgba(0,0,0,0.04);
+    background-color: rgba(0, 0, 0, 0.04);
     border-radius: 5px;
     font-size: 1rem;
-    margin-bottom: 20px;
     margin: 0;
+    margin-bottom: 20px;
     padding: 12px;
     position: relative;
     top: -20px;
@@ -33,7 +33,7 @@
 }
 
 .metric-overview .legend {
-    font-size: .9em;
+    font-size: 0.9em;
     max-width: 500px;
     font-weight: 400;
 }
