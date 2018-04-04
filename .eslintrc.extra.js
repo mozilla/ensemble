@@ -9,7 +9,7 @@ module.exports = {
         'plugin:react/recommended',
         'plugin:jsx-a11y/recommended',
     ],
-    parser: "babel-eslint",
+    parser: 'babel-eslint',
     parserOptions: {
         ecmaVersion: 2018,
         sourceType: 'module',
@@ -28,6 +28,7 @@ module.exports = {
         'jsx-a11y/no-onchange': 0,
         'react/display-name': 'off',
         'react/prop-types': 'off',
+        'react/no-unescaped-entities': ['error', {'forbid': ['>', '}']}],
 
         'eqeqeq': 'error',
         'no-console': 'warn',
