@@ -15,15 +15,18 @@
     padding: 8px 0;
 }
 
-.data-table th:first-child, .data-table td:first-child {
+.data-table th:first-child,
+.data-table td:first-child {
     text-align: left;
 }
 
-.data-table th:nth-child(2), .data-table td:nth-child(2) {
+.data-table th:nth-child(2),
+.data-table td:nth-child(2) {
     text-align: left;
 }
 
-.data-table th:last-child, .data-table td:last-child {
+.data-table th:last-child,
+.data-table td:last-child {
     text-align: right;
 }
 
@@ -42,7 +45,6 @@
 
 .data-table tr:first-child td {
     padding-top: 15px; /* Matches the value of rule with this keyword: header-space */
-
 }
 
 /* Give the columns fixed widths, otherwise their widths might change when
@@ -53,9 +55,11 @@
 .data-table .rank {
     width: 50px;
 }
+
 .data-table .name {
     /* Width set below */
 }
+
 .data-table .value {
     width: 220px;
 }
