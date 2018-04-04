@@ -4,4 +4,4 @@
 
 # Test
 
-`yarn test`
+`yarn verify`
