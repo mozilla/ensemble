@@ -48,8 +48,8 @@ export default () => (
             All data is from a representative 10% sample from our Release, Beta, ESR, and Other
             channels for Firefox Desktop and the report runs once a week. Each datapoint covers
             a week&apos;s worth of data (unless stated otherwise). All data is anonymized and
-            aggregated to ensure user privacy. Information about our {' '}
-            <Link to="https://www.mozilla.org/privacy/">privacy policy</Link>, {' '}
+            aggregated to ensure user privacy. Information about our{' '}
+            <Link to="https://www.mozilla.org/privacy/">privacy policy</Link>,{' '}
             <Link to="https://www.mozilla.org/privacy/principles">privacy principles</Link>,
             and <Link to="https://www.mozilla.org/privacy/firefox/">data collection process</Link>.
         </p>
