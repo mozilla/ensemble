@@ -6,12 +6,14 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "eject": "react-scripts eject",
-        "verify": "npm-run-all test lint",
-        "test": "npm-run-all test:*",
-        "test:nightwatch": "nightwatch",
         "lint": "npm-run-all lint:*",
-        "lint:source-extra": "eslint --config .eslintrc.extra.js --ext .js --ext .json src/",
-        "lint:deps": "nsp check"
+        "lint:css": "stylelint src/**/*.css",
+        "lint:deps": "nsp check",
+        "lint:js": "eslint --config .eslintrc.extra.js --ext .js --ext .json src/",
+        "test": "npm-run-all test:*",
+        "test:extra-eslint": "npm run lint:js",
+        "test:nightwatch": "nightwatch",
+        "verify": "npm-run-all test lint"
     },
     "dependencies": {
         "dateformat": "3.0.3",
@@ -34,6 +36,8 @@
         "nightwatch": "0.9.20",
         "npm-run-all": "4.1.2",
         "nsp": "3.2.1",
-        "selenium-server-standalone-jar": "3.9.1"
+        "selenium-server-standalone-jar": "3.9.1",
+        "stylelint": "9.2.0",
+        "stylelint-config-recommended": "2.1.0"
     }
 }

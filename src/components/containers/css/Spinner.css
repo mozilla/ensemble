@@ -2,7 +2,6 @@
     color: #000;
     height: 50px;
     width: 50px;
-
     position: absolute;
     top: calc(50vh - 25px);
     left: calc(50% - 25px);

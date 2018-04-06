@@ -1,0 +1,10 @@
+{
+  "extends": "stylelint-config-recommended",
+  "ignoreFiles": [
+    "src/components/views/css/PopulationColors.css"
+  ],
+  "rules": {
+    "indentation": 4,
+    "no-descending-specificity": null
+  }
+}

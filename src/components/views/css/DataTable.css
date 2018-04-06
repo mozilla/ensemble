@@ -3,48 +3,31 @@
     width: 100%;
 }
 
-.data-table thead tr th {
-    border-bottom: 1px solid #cfcfcf;
-}
-
 .data-table thead th {
     padding-bottom: 15px; /* Matches the value of rule with this keyword: header-space */
+}
+
+.data-table thead tr th {
+    border-bottom: 1px solid #cfcfcf;
 }
 
 .data-table td {
     padding: 8px 0;
 }
 
-.data-table tr:first-child td {
-    padding-top: 15px; /* Matches the value of rule with this keyword: header-space */
-
-}
-
-.data-table th:first-child, .data-table td:first-child {
+.data-table th:first-child,
+.data-table td:first-child {
     text-align: left;
 }
 
-.data-table th:nth-child(2), .data-table td:nth-child(2) {
+.data-table th:nth-child(2),
+.data-table td:nth-child(2) {
     text-align: left;
 }
 
-.data-table th:last-child, .data-table td:last-child {
+.data-table th:last-child,
+.data-table td:last-child {
     text-align: right;
-}
-
-/* Give the columns fixed widths, otherwise their widths might change when
-   values change.
-
-   These should all add up to the total width of the table. They need to be
-   fixed widhts because otherwise truncation (see below) wouldn't work. */
-.data-table .rank {
-    width: 50px;
-}
-.data-table .name {
-    /* Width set below */
-}
-.data-table .value {
-    width: 220px;
 }
 
 /* Truncate long add-on names. These properties can't be set on a selector that
@@ -58,6 +41,27 @@
 
     /* Needs to be max-width or else truncation won't work */
     max-width: 145px;
+}
+
+.data-table tr:first-child td {
+    padding-top: 15px; /* Matches the value of rule with this keyword: header-space */
+}
+
+/* Give the columns fixed widths, otherwise their widths might change when
+   values change.
+
+   These should all add up to the total width of the table. They need to be
+   fixed widhts because otherwise truncation (see below) wouldn't work. */
+.data-table .rank {
+    width: 50px;
+}
+
+.data-table .name {
+    /* Width set below */
+}
+
+.data-table .value {
+    width: 220px;
 }
 
 @media all and (min-width: 550px) {
