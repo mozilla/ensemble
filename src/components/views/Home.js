@@ -23,9 +23,9 @@ export default () => (
             <div>
                 <dt>Transparency</dt>
                 <dd>
-                    At Mozilla, we like to say that we are &ldquo;Open by Design&rdquo;. We
-                    believe in an open web, so data and insights from the public should be
-                    made public, so the public can benefit.
+                    At Mozilla, we like to say that we are "Open by Design". We
+                    believe in an open web, so data and insights from the public
+                    should be made public, so the public can benefit.
                 </dd>
             </div>
         </dl>
