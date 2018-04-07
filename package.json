@@ -4,7 +4,9 @@
     "private": true,
     "scripts": {
         "start": "react-scripts start",
-        "build": "react-scripts build",
+        "build": "npm-run-all build:*",
+        "build:app": "react-scripts build",
+        "build:version.json": "node scripts/generateVersionJSON",
         "eject": "react-scripts eject",
         "verify": "npm-run-all test lint",
         "test": "npm-run-all test:*",
