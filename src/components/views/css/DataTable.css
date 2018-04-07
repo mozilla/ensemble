@@ -17,7 +17,6 @@
 
 .data-table tr:first-child td {
     padding-top: 15px; /* Matches the value of rule with this keyword: header-space */
-
 }
 
 .data-table th:first-child, .data-table td:first-child {
@@ -40,9 +39,11 @@
 .data-table .rank {
     width: 50px;
 }
+
 .data-table .name {
     /* Width set below */
 }
+
 .data-table .value {
     width: 220px;
 }
