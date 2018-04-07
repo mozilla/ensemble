@@ -1,0 +1,14 @@
+{
+    "extends": "stylelint-config-standard",
+    "ignoreFiles": [
+        "src/components/views/css/PopulationColors.css"
+    ],
+    "rules": {
+        "indentation": 4,
+        "no-descending-specificity": null,
+        "declaration-empty-line-before": null,
+        "number-leading-zero": null,
+        "selector-list-comma-newline-after": null,
+        "declaration-colon-newline-after": null
+    }
+}
