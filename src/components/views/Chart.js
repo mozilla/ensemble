@@ -131,6 +131,9 @@ export default props => {
                 min_y={minYToShow}
                 max_y={maxYToShow}
 
+                // Transitions take forever with random data
+                transition_on_update={false}
+
                 {...extraOptions}
             />
         </div>
