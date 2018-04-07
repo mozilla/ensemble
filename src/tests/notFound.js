@@ -3,7 +3,7 @@ module.exports = {
         browser.url(browser.launchUrl + '/some-long-url-that-will-never-ever-exist');
     },
 
-    'React app renders': browser => {
+    'Not Found page loads for non-existent URLs': browser => {
         browser.expect.element('#not-found').to.be.present;
     },
 };

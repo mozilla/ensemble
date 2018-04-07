@@ -1,29 +1,42 @@
 {
     "name": "ensemble",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "private": true,
     "homepage": "https://metrics.mozilla.com/protected/usage-report-demo",
     "scripts": {
         "start": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "nightwatch",
-        "eject": "react-scripts eject"
+        "build": "npm-run-all build:*",
+        "build:app": "react-scripts build",
+        "build:version.json": "node scripts/generateVersionJSON",
+        "eject": "react-scripts eject",
+        "verify": "npm-run-all test lint",
+        "test": "npm-run-all test:*",
+        "test:nightwatch": "nightwatch",
+        "lint": "npm-run-all lint:*",
+        "lint:source-extra": "eslint --config .eslintrc.extra.js --ext .js --ext .json .",
+        "lint:deps": "nsp check"
     },
     "dependencies": {
         "dateformat": "3.0.3",
-        "jquery": "3.3.1",
         "metrics-graphics": "2.14.0",
-        "react": "16.2.0",
-        "react-dom": "16.2.0",
+        "react": "16.3.0",
+        "react-dom": "16.3.0",
         "react-ga": "2.4.1",
         "react-metrics-graphics": "1.0.2",
         "react-refetch": "1.0.4",
         "react-router-dom": "4.2.2",
         "react-scripts": "1.1.1",
-        "react-spinkit": "3.0.0",
-        "selenium-server-standalone-jar": "3.9.1"
+        "react-spinkit": "3.0.0"
     },
-    "devdependencies": {
-        "nightwatch": "0.9.20"
+    "devDependencies": {
+        "babel-eslint": "8.2.2",
+        "eslint": "4.19.1",
+        "eslint-plugin-json": "1.2.0",
+        "eslint-plugin-jsx-a11y": "6.0.3",
+        "eslint-plugin-react": "7.7.0",
+        "nightwatch": "0.9.20",
+        "npm-run-all": "4.1.2",
+        "nsp": "3.2.1",
+        "selenium-server-standalone-jar": "3.9.1"
     }
 }

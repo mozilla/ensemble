@@ -29,7 +29,7 @@ function linksWork(browser, selector) {
             });
         });
     });
-};
+}
 
 // If a test assumes that a certain number of elements exist, but a different
 // number of elements exist, fail the test and print an explanation.

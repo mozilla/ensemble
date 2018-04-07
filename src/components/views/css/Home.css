@@ -1,0 +1,80 @@
+.explanations {
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+    justify-content: space-between;
+    line-height: 1.5;
+}
+
+.explanations > div {
+    border: 1px solid #000;
+}
+
+.explanations dt {
+    background-color: #000;
+    color: #fff;
+    font-weight: 600;
+    line-height: 2;
+    text-align: center;
+}
+
+.explanations dt a {
+    color: #fff;
+    border-bottom: 1px solid #fff;
+}
+
+.explanations dd {
+    margin: 0;
+    padding: 10px;
+}
+
+.next-link {
+    display: flex;
+    justify-content: center;
+    margin: 25px 0;
+}
+
+.next-link a {
+    /* color stolen from "download firefox" button */
+    background-color: #16da00;
+    border: 0;
+    color: #fff;
+    display: inline-block;
+    height: 48px;
+    line-height: 28px;
+    padding: 10px 15px;
+    position: relative;
+}
+
+.next-link a:hover {
+    border-bottom: 0;
+    color: #fff;
+}
+
+.next-link a::after {
+    background-color: #16da00;
+    border: 24px solid #fff;
+    border-left: 24px solid #16da00;
+    content: "";
+    height: 0;
+    top: 0;
+    left: 100%;
+    position: absolute;
+    width: 0;
+    z-index: -1;
+}
+
+@media all and (min-width: 550px) {
+    .explanations {
+        flex-direction: row;
+    }
+    .explanations:not(.split) > div {
+        border-right: 0;
+    }
+    .explanations.split > div {
+        width: 45%;
+    }
+    .explanations > div:last-child {
+        border-right: 1px solid #000;
+    }
+}
