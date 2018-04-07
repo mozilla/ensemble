@@ -1,12 +1,8 @@
 #dashboard h2 {
-    text-align: center;
-    margin: 20px 0;
     font-size: 22px;
     font-weight: 200;
-}
-
-#dashboard h2 {
     margin-bottom: 0;
+    text-align: center;
 }
 
 #dashboard-description:empty {
@@ -24,13 +20,14 @@
     position: sticky;
     top: 0;
     width: 100%;
+    z-index: 10;
 }
 
 #category label {
     margin-right: 10px;
 }
 
-#category label:after {
+#category label::after {
     content: ": ";
 }
 

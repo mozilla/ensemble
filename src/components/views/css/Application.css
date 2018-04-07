@@ -3,6 +3,7 @@ html {
 }
 
 @font-face {
+    /* stylelint-disable indentation */
     src: local('FiraSansOTLight'),
          local('FiraSansLight'),
          local('Fira Sans OT Light'),
@@ -10,12 +11,13 @@ html {
          url('../fonts/FiraSans/firasansot-light-webfont.woff') format('woff'),
          url('../fonts/FiraSans/firasansot-light-webfont.ttf') format('truetype'),
          url('../fonts/FiraSans/firasansot-light-webfont.svg#fira_sans_otlight') format('svg');
+    /* stylelint-enable */
     font-family: FiraSansWeb;
     font-weight: 200;
 }
 
 /* Jon Neal approach to a box-sizing reset. */
-*, *:before, *:after {
+*, *::before, *::after {
     box-sizing: inherit;
 }
 
@@ -41,14 +43,14 @@ main {
 }
 
 a {
-    color: #0198E1;
+    color: #0198e1;
     text-decoration: none;
-    border-bottom: 1px solid #0198E1;
+    border-bottom: 1px solid #0198e1;
 }
 
 a:hover {
-    color: #1874CD;
-    border-bottom: 1px solid #1874CD;
+    color: #1874cd;
+    border-bottom: 1px solid #1874cd;
 }
 
 p {
@@ -66,13 +68,16 @@ p {
     body {
         font-size: 14px;
     }
+
     #application {
         top: 40px;
         width: 85vw;
     }
+
     p {
         font-size: 1.1rem;
     }
+
     main {
         padding: 20px 0;
     }

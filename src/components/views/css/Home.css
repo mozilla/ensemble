@@ -68,12 +68,15 @@
     .explanations {
         flex-direction: row;
     }
+
     .explanations:not(.split) > div {
         border-right: 0;
     }
+
     .explanations.split > div {
         width: 45%;
     }
+
     .explanations > div:last-child {
         border-right: 1px solid #000;
     }
