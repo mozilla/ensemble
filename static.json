@@ -2,6 +2,9 @@
     "root": "build/",
     "https_only": true,
     "headers": {
+        "/**": {
+            "Strict-Transport-Security": "max-age=7776000"
+        },
         "/__heartbeat__": {
             "Cache-Control": "no-cache, no-store, must-revalidate",
             "Pragma": "no-cache",
@@ -11,9 +14,6 @@
             "Cache-Control": "no-cache, no-store, must-revalidate",
             "Pragma": "no-cache",
             "Expires": 0
-        },
-        "/**": {
-            "Strict-Transport-Security": "max-age=7776000"
         }
     },
     "routes": {
