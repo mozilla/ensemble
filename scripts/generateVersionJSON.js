@@ -14,8 +14,10 @@ const versionJSON = {
 
 fs.writeFile(outFilename, JSON.stringify(versionJSON, null, 4), error => {
     if (error) {
+        // eslint-disable-next-line no-console
         console.error(error);
     }
 
+    // eslint-disable-next-line no-console
     console.log('Wrote ' + outFilename);
 });
