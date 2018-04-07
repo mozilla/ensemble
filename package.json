@@ -14,7 +14,7 @@
         "test:nightwatch": "nightwatch",
         "lint": "npm-run-all lint:*",
         "lint:source-extra": "eslint --config .eslintrc.extra.js --ext .js --ext .json .",
-        "lint:deps": "nsp check"
+        "lint:deps": "nsp check --warn-only"
     },
     "dependencies": {
         "dateformat": "3.0.3",
