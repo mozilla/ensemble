@@ -3,10 +3,3 @@
 .metricsGraphicsCon:hover .mg-markers {
     visibility: hidden;
 }
-
-/* Make the left side of the chart (which may include a y-axis label) flush with
-   the left side of the page. */
-.metricsGraphicsCon {
-    position: relative;
-    left: -14px;
-}
