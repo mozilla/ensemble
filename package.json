@@ -1,6 +1,6 @@
 {
     "name": "ensemble",
-    "version": "0.1.0",
+    "version": "2018-04-06",
     "private": true,
     "scripts": {
         "start": "react-scripts start",

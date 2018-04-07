@@ -1,11 +1,14 @@
 const childProcess = require('child_process');
 const fs = require('fs');
 
+const packageJSON = require('../package.json');
+
 
 const outFilename = './build/ops/version.json';
 
 const versionJSON = {
     source: "https://github.com/mozilla/ensemble",
+    version: packageJSON.version,
     commit: process.env.SOURCE_VERSION || childProcess.execSync('git rev-parse HEAD').toString().trim(),
 };
 
