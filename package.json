@@ -20,8 +20,8 @@
     "dependencies": {
         "dateformat": "3.0.3",
         "metrics-graphics": "2.14.0",
-        "react": "16.3.0",
-        "react-dom": "16.3.0",
+        "react": "16.3.1",
+        "react-dom": "16.3.1",
         "react-ga": "2.4.1",
         "react-metrics-graphics": "1.0.2",
         "react-refetch": "1.0.4",
