@@ -26,7 +26,7 @@
         "react-metrics-graphics": "1.0.2",
         "react-refetch": "1.0.4",
         "react-router-dom": "4.2.2",
-        "react-scripts": "1.1.1",
+        "react-scripts": "1.1.4",
         "react-spinkit": "3.0.0"
     },
     "devDependencies": {
