@@ -50,10 +50,11 @@ export default () => (
             ESR, and Other channels for Firefox Desktop and the report runs once
             a week. Each datapoint covers a week's worth of data (unless stated
             otherwise). All data is anonymized and aggregated to ensure user
-            privacy. Mozilla publishes additional information about its
-            {' '}<a href="https://www.mozilla.org/privacy/">privacy policy</a>,
-            {' '}<a href="https://www.mozilla.org/privacy/principles">privacy principles</a>,
-            and <a href="https://www.mozilla.org/privacy/firefox/">data collection process</a>.
+            privacy. Mozilla publishes additional information about
+            {' '}its <a href="https://www.mozilla.org/privacy/">privacy policy</a>,
+            {' '}its <a href="https://www.mozilla.org/privacy/principles">privacy principles</a>,
+            {' '}its <a href="https://wiki.mozilla.org/Firefox/Data_Collection">data collection process</a>,
+            {' '}and its thoughts on <a href="https://www.mozilla.org/privacy/firefox/">internet privacy</a> in general.
         </p>
         <p>
             You can learn more about this report by reading our announcement on
