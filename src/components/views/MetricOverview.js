@@ -10,11 +10,20 @@ import './css/MetricOverview.css';
 export default props => {
     let maybeMetricDescription = null;
     if (props.description) {
-        maybeMetricDescription = (
-            <p className="metric-description">
-                {props.description}
-            </p>
-        );
+        const multipleParagraphs = Array.isArray(props.description);
+        if (multipleParagraphs) {
+            maybeMetricDescription = (
+                <div className="metric-description">
+                    {props.description.map(paragraph => <p>{paragraph}</p>)}
+                </div>
+            );
+        } else {
+            maybeMetricDescription = (
+                <p className="metric-description">
+                    {props.description}
+                </p>
+            );
+        }
     }
 
     let MetricContainer = null;

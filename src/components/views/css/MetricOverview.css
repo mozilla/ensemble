@@ -17,6 +17,18 @@
     top: -20px;
 }
 
+/* Exclude the top margin of the first paragraph of a multi-paragraph
+   description */
+.metric-description p:first-child {
+    margin-top: 0;
+}
+
+/* Exclude the bottom margin of the last paragraph of a multi-paragraph
+   description */
+.metric-description p:last-child {
+    margin-bottom: 0;
+}
+
 .metric-overview:first-child {
     margin-top: 0;
 }
