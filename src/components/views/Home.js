@@ -51,9 +51,9 @@ export default () => (
             a week. Each datapoint covers a week's worth of data (unless stated
             otherwise). All data is anonymized and aggregated to ensure user
             privacy. Mozilla publishes additional information about its
-            {' '}<Link to="https://www.mozilla.org/privacy/">privacy policy</Link>,
-            {' '}<Link to="https://www.mozilla.org/privacy/principles">privacy principles</Link>,
-            and <Link to="https://www.mozilla.org/privacy/firefox/">data collection process</Link>.
+            {' '}<a href="https://www.mozilla.org/privacy/">privacy policy</a>,
+            {' '}<a href="https://www.mozilla.org/privacy/principles">privacy principles</a>,
+            and <a href="https://www.mozilla.org/privacy/firefox/">data collection process</a>.
         </p>
         <p>
             You can learn more about this report by reading our announcement on
