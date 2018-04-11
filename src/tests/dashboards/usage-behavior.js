@@ -18,7 +18,7 @@ module.exports = {
         flagForUpdate(browser, '.metric', 'metrics in the usage dashboard', 4);
 
         browser.expect.element('#metric-overview-1 h3').text.to.be.equal('Top Languages');
-        browser.expect.element('#metric-overview-2 h3').text.to.be.equal('Tracking Protection');
+        browser.expect.element('#metric-overview-2 h3').text.to.be.equal('Always On Tracking Protection');
         browser.expect.element('#metric-overview-3 h3').text.to.be.equal('Has Add-on');
         browser.expect.element('#metric-overview-4 h3').text.to.be.equal('Top Add-ons');
     },
