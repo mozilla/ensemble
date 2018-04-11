@@ -51,11 +51,25 @@ export default class extends React.Component {
     }
 
     _initialize = props => {
-        this.formattedData = this.formatData(props.categories[props.activeCategory].populations);
-        this.showLegend = Object.keys(props.categories[props.activeCategory].populations).length > 1;
+        this.formattedData = this.formatData(props.data[props.activeCategory].populations);
+        this.showLegend = Object.keys(props.data[props.activeCategory].populations).length > 1;
 
         this.markers = null;
-        if (props.axes.x && props.axes.x.annotations) {
+        if (props.annotations && props.annotations[props.activeCategory]) {
+            this.markers = props.annotations[props.activeCategory].map(annotationMeta => {
+                // Rename "date" to "x". MG requires that the name of this
+                // property matches the value of x_accessor.
+                const newAM = {};
+                newAM.x = new Date(annotationMeta.date);
+                newAM.label = annotationMeta.label;
+                return newAM;
+            });
+        }
+
+        // Specifying annotations in the axes object is deprecated. This is only
+        // done in the hardware dataset because the hardware dataset does not
+        // have an annotations JSON file published somewhere yet.
+        else if (props.axes.x && props.axes.x.annotations) {
             this.markers = props.axes.x.annotations.map(annotationMeta => {
                 // Rename "value" to "x". MG requires that the name of this
                 // property matches the value of x_accessor.

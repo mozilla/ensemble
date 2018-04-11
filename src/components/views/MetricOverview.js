@@ -14,7 +14,9 @@ export default props => {
         if (multipleParagraphs) {
             maybeMetricDescription = (
                 <div className="metric-description">
-                    {props.description.map(paragraph => <p>{paragraph}</p>)}
+                    {props.description.map((paragraph, index) => (
+                        <p key={index}>{paragraph}</p>
+                    ))}
                 </div>
             );
         } else {
@@ -29,21 +31,22 @@ export default props => {
     let MetricContainer = null;
     let numPopulations;
     if (props.type === 'line') {
-        numPopulations = Object.keys(props.categories[props.activeCategory].populations).length;
+        numPopulations = Object.keys(props.data[props.activeCategory].populations).length;
         MetricContainer = (
             <ChartContainer
                 legendTarget={`#${props.identifier} .legend`}
                 title={props.title}
-                categories={props.categories}
+                data={props.data}
                 activeCategory={props.activeCategory}
                 axes={props.axes || {}}
+                annotations={props.annotations || {}}
             />
         );
     } else if (props.type === 'table') {
         MetricContainer = (
             <CustomizableDateMetricContainer
                 title={props.title}
-                categories={props.categories}
+                data={props.data}
                 activeCategory={props.activeCategory}>
                 <DataTableContainer
                     columns={props.columns || {}}
