@@ -14,7 +14,7 @@ export default class extends React.Component {
     }
 
     render() {
-        const dates = Object.keys(this.props.categories[this.props.activeCategory].dates).sort((a, b) => {
+        const dates = Object.keys(this.props.data[this.props.activeCategory].dates).sort((a, b) => {
             return new Date(b) - new Date(a);
         });
 
