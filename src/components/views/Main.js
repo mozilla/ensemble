@@ -3,8 +3,9 @@ import { Switch, Route } from 'react-router-dom';
 
 import Home from './Home';
 import DashboardContainer from '../containers/DashboardContainer';
-import withTracker from '../../lib/withTracker';
 import NotFound from './NotFound';
+import withTracker from '../decorators/withTracker';
+import withNextButton from '../decorators/withNextButton';
 
 import dashboards from '../../config/dashboards.json';
 
@@ -12,7 +13,7 @@ import dashboards from '../../config/dashboards.json';
 export default () => (
     <main>
         <Switch>
-            <Route exact path="/" component={withTracker(Home)} />
+            <Route exact path="/" component={withTracker(withNextButton(Home))} />
             {dashboards.map((dashboardMeta, index) => (
                 <Route
                     key={index}
@@ -24,13 +25,13 @@ export default () => (
                                 source={dashboardMeta.source}
                             />
                         );
-                        const Tracker = withTracker(ThisDashboardContainer);
+                        const Component = withTracker(withNextButton(ThisDashboardContainer));
 
-                        return <Tracker {...props} />;
+                        return <Component {...props} />;
                     }}
                 />
             ))}
-            <Route component={NotFound} />
+            <Route component={withTracker(withNextButton(NotFound))} />
         </Switch>
     </main>
 );
