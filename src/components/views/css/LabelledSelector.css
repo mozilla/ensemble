@@ -1,0 +1,19 @@
+.labelled-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.labelled-selector select {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.labelled-selector label {
+    margin-right: 10px;
+}
+
+.labelled-selector label::after {
+    content: ": ";
+}
