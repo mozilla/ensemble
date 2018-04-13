@@ -24,15 +24,20 @@ module.exports = {
     ],
     root: true,
     rules: {
+        // Errors
+        'eqeqeq': 'error',
+        'no-var': 'error',
+        'prefer-const': 'error',
+
+        // Warnings
+        'prefer-arrow-callback': 'warn',
+        'no-console': 'warn',
+
+        // Plugins
         'jsx-a11y/label-has-for': ['error', {required: {every: ['id']}}],
         'jsx-a11y/no-onchange': 0,
         'react/display-name': 'off',
         'react/prop-types': 'off',
         'react/no-unescaped-entities': ['error', {'forbid': ['>', '}']}],
-
-        'eqeqeq': 'error',
-        'no-console': 'warn',
-        'no-var': 'error',
-        'prefer-const': 'error',
     },
 };

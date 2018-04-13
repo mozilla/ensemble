@@ -5,8 +5,10 @@ import { select } from 'd3-selection';
 import './css/StackedBarChart.css';
 
 
-// Mostly a React conversion of Ali Almosawi's work at:
-// https://github.com/mozilla/firefox-hardware-report/blob/master/js/main.js
+/**
+ * Based on Ali Ali Almosawi's work for the original Firefox Hardware Report:
+ * https://github.com/mozilla/firefox-hardware-report/blob/master/js/main.js
+ */
 export default class extends React.Component {
     constructor(props) {
         super(props);
@@ -86,14 +88,14 @@ export default class extends React.Component {
         svg.attr('viewBox', `0 0 ${this.size.width} ${this.size.height}`)
            .attr('preserveAspectRatio', 'xMinYMin meet');
 
-
         rects.data(data.data).enter().append('rect')
-            .attr('class', function(d) {
-                return 'bar bar_' + d.id;
-            })
-            .attr('width', function(d) {
-                return (d.value === undefined) ? xScale(0) :
-                xScale(d.value).toFixed(1);
+            .attr('class', d => 'bar bar-' + d.id)
+            .attr('width', d => {
+                if (d.value === undefined) {
+                    return xScale(0);
+                } else {
+                    return xScale(d.value).toFixed(1);
+                }
             })
             .attr('x', (d, i) => {
                 if (d.value === undefined) d.value = 0;
@@ -101,30 +103,26 @@ export default class extends React.Component {
                 const myXMarker = xMarker;
                 xMarker += d.value;
 
-                //append circle
+                // append circle
                 svg.append('circle')
                     .attr('r', 8)
-                    .attr('class', () => {
-                        return 'bar-arrow bar-arrow_' + d.id;
-                    })
-                    .attr('cx', () => {
-                        return this.size.xPaddingLeft + xScale(
-                        myXMarker + ((xMarker - myXMarker) / 2));
-                    })
+                    .attr('class', () => 'bar-arrow bar-arrow_' + d.id)
+                    .attr('cx', () => this.size.xPaddingLeft + xScale(
+                        myXMarker + ((xMarker - myXMarker) / 2)
+                    ))
                     .attr('cy', this.size.barYPosition + this.size.barHeight - 3)
                     .style('fill', () => this.colors[i])
                     .style('opacity', () => {
                         if (d.value < this.ignoreThreshold) return 0;
                     });
 
-                //append text labels
+                // append text labels
                 svg.append('text')
                     .attr('class', `bar-label bar-label_${d.id}`)
                     .attr('text-anchor', 'middle')
-                    .attr('x', () => {
-                        return this.size.xPaddingLeft + xScale(
-                            myXMarker + ((xMarker - myXMarker) / 2));
-                    })
+                    .attr('x', () => this.size.xPaddingLeft + xScale(
+                        myXMarker + ((xMarker - myXMarker) / 2))
+                    )
                     .attr('y', this.size.barYPosition + this.size.barHeight + 22)
                     .text(`${d.name} (${Math.round(d.value * 100)}%)`)
                     .style('fill', '#000000');
@@ -134,12 +132,14 @@ export default class extends React.Component {
             .attr('y', this.size.barYPosition)
             .attr('height', this.size.barHeight)
             .style('fill', (d, i) => this.colors[i])
+
             // Until a bar is hovered or clicked, show the first item of the bar chart.
             .style('display', (d, i) => {
                 if (i === 0) {
                     showBarItem(d);
                 }
             })
+
             // Show the currently hovered or clicked bar's arrow and label.
             .on('mouseenter click', showBarItem);
 
