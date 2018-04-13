@@ -36,7 +36,7 @@ module.exports = {
 
         // Plugins
         'jsx-a11y/label-has-for': ['error', {required: {every: ['id']}}],
-        'jsx-a11y/no-onchange': 0,
+        'jsx-a11y/no-onchange': 'off',
         'react/display-name': 'off',
         'react/prop-types': 'off',
         'react/no-unescaped-entities': ['error', {'forbid': ['>', '}']}],
