@@ -40,45 +40,12 @@ export default class extends React.Component {
 
         // Don't show arrows (since they'll be bigger than the bar) if they are
         // below this value threshold.
-        this.arrowIgnoreThreshold = 0.04;
+        this.arrowIgnoreThreshold = 4;
     }
 
     componentDidMount() {
         const xScale = scaleLinear().domain([0, 1])
                            .range([0, this.size.width - this.size.xPaddingRight]);
-
-        // TODO: faux data is all the rage these days
-        const data = {
-            id: 0,
-            name: 'Usage by OS',
-            data: [
-                {
-                    id: 0,
-                    name: 'Win 7',
-                    value: 0.44
-                },
-                {
-                    id: 1,
-                    name: 'Win 10',
-                    value: 0.37
-                },
-                {
-                    id: 2,
-                    name: 'Win 8.1',
-                    value: 0.08
-                },
-                {
-                    id: 3,
-                    name: 'macOS',
-                    value: 0.07
-                },
-                {
-                    id: 4,
-                    name: 'winXP',
-                    value: 0.03
-                }
-            ]
-        };
 
         const svg = select(this.ref.current);
         const rects = svg.selectAll('rect.bar');
@@ -90,20 +57,20 @@ export default class extends React.Component {
         svg.attr('viewBox', `0 0 ${this.size.width} ${this.size.height}`)
            .attr('preserveAspectRatio', 'xMinYMin meet');
 
-        rects.data(data.data).enter().append('rect')
+        rects.data(this.props.data).enter().append('rect')
             .attr('class', d => 'bar bar-' + d.id)
             .attr('width', d => {
                 if (d.value === undefined) {
                     return xScale(0);
                 } else {
-                    return xScale(d.value).toFixed(1);
+                    return xScale(d.value / 100).toFixed(1);
                 }
             })
             .attr('x', (d, i) => {
                 if (d.value === undefined) d.value = 0;
 
                 const myXMarker = xMarker;
-                xMarker += d.value;
+                xMarker += d.value / 100;
 
                 // append circle
                 svg.append('circle')
@@ -126,7 +93,10 @@ export default class extends React.Component {
                         myXMarker + ((xMarker - myXMarker) / 2))
                     )
                     .attr('y', this.size.barYPosition + this.size.barHeight + 22)
-                    .text(`${d.name} (${Math.round(d.value * 100)}%)`)
+                    .text(`${d.name} (${d.value.toLocaleString('en-US', {
+                        minimumFractionDigits: process.env.REACT_APP_VALUE_FRACTION_DIGITS,
+                        maximumFractionDigits: process.env.REACT_APP_VALUE_FRACTION_DIGITS
+                    })}%)`)
                     .style('fill', '#000000');
 
                 return this.size.xPaddingLeft + xScale(myXMarker);
