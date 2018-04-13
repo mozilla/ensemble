@@ -4,7 +4,7 @@ import './css/DataTable.css';
 
 
 export default props => {
-    const valuePrecision = 6;
+    const valueFractionDigits = 3;
 
     return (
         <section className="data-table-wrapper">
@@ -27,7 +27,12 @@ export default props => {
                         <tr key={index}>
                             <td>{index + 1}</td>
                             <td>{row.name}</td>
-                            <td>{row.value.toPrecision(valuePrecision)}{props.columns[1].unit}</td>
+                            <td>
+                                {row.value.toLocaleString('en-US', {
+                                    minimumFractionDigits: valueFractionDigits,
+                                    maximumFractionDigits: valueFractionDigits,
+                                })}{props.columns[1].unit}
+                            </td>
                         </tr>
                     ))}
                 </tbody>
