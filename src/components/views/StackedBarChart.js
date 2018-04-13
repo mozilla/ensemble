@@ -39,10 +39,6 @@ export default class extends React.Component {
         this.arrowIgnoreThreshold = 0.04;
     }
 
-    componentWillReceiveProps(nextProps) {
-
-    }
-
     componentDidMount() {
         const xScale = scaleLinear().domain([0, 1])
                            .range([0, this.size.width - this.size.xPaddingRight]);
