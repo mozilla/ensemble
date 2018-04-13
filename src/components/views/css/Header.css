@@ -41,7 +41,7 @@ h1 a:hover {
     margin-right: 0;
 }
 
-header h3 {
+#main-header h3 {
     font-size: 22px;
     font-weight: 200;
     line-height: 2.5;

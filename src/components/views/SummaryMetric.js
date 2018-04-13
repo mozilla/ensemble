@@ -2,7 +2,7 @@ import React from 'react';
 import { scaleLinear } from 'd3-scale';
 import { select } from 'd3-selection';
 
-import './css/StackedBarChart.css';
+import './css/SummaryMetric.css';
 
 
 /**
@@ -12,6 +12,8 @@ import './css/StackedBarChart.css';
 export default class extends React.Component {
     constructor(props) {
         super(props);
+
+        this.ref = React.createRef();
 
         this.size = {
             width: 450,
@@ -78,7 +80,7 @@ export default class extends React.Component {
             ]
         };
 
-        const svg = select(`#id_${data.id}`).select('svg');
+        const svg = select(this.ref.current);
         const rects = svg.selectAll('rect.bar');
         let xMarker = 0;
 
@@ -153,9 +155,11 @@ export default class extends React.Component {
     }
 
     render() {
-        // TODO: deal with id
         return (
-            <div className="stacked" id="id_0"><svg /></div>
+            <div className="summary-metric">
+                <h4>{this.props.title}</h4>
+                <svg ref={this.ref} />
+            </div>
         );
     }
 }

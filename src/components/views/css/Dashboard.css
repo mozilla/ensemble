@@ -1,8 +1,12 @@
 #dashboard h2 {
-    font-size: 22px;
+    font-size: 1.4rem;
     font-weight: 200;
     margin-bottom: 0;
     text-align: center;
+}
+
+#dashboard h3 {
+    display: none;
 }
 
 #dashboard-description:empty {
@@ -19,4 +23,14 @@
 
 .metric-overview-collection {
     margin-top: 25px;
+}
+
+#summary-metrics {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#summary-metrics h3 {
+    display: none;
 }

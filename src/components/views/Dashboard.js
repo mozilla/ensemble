@@ -2,6 +2,7 @@ import React from 'react';
 
 import DashboardSection from './DashboardSection';
 import MetricOverviewCollection from './MetricOverviewCollection';
+import SummaryMetricContainer from '../containers/SummaryMetricContainer';
 
 import { bumpSort } from '../../lib/utils';
 
@@ -10,6 +11,24 @@ import './css/LabelledSelector.css';
 
 
 export default props => {
+    let maybeSummaryMetrics = null;
+    if (props.summaryMetrics) {
+        maybeSummaryMetrics = (
+            <section id="summary-metrics">
+                <h3>Summary</h3>
+                {props.summaryMetrics.map((metricTitle, index) => (
+                    <SummaryMetricContainer
+                        key={index}
+
+                        title={metricTitle}
+                        data={props.metrics.find(m => m.title === metricTitle).data}
+                        activeCategory={props.activeCategory}
+                    />
+                ))}
+            </section>
+        );
+    }
+
     let maybeCategory = null;
     const sortedCategories = bumpSort(props.categories, 'All');
     if (sortedCategories.length > 1) {
@@ -58,6 +77,8 @@ export default props => {
                 <p id="dashboard-description">{props.description}</p>
             </header>
             {maybeCategory}
+            {maybeSummaryMetrics}
+            <h3>Metrics</h3>
             {body}
         </article>
     );

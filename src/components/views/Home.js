@@ -1,14 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import StackedBarChart from './StackedBarChart';
-
 import './css/Home.css';
 
 
 export default () => (
     <article id="introduction">
-        <StackedBarChart />
         <p>
             The Firefox Public Data Report is a weekly public report on the
             activity, behavior, and hardware configuration of Firefox Desktop
