@@ -29,7 +29,6 @@ export default props => {
             });
         }
 
-
         // Multi-population charts
         else {
             const otherThreshold = 5;
@@ -38,6 +37,8 @@ export default props => {
             let index = 0;
             populations.forEach(populationName => {
                 const numDataPoints = rawData.populations[populationName].length;
+
+                // TODO: For now, take the most recent date
                 const value = rawData.populations[populationName][numDataPoints - 1].y;
 
                 // If a population has >= otherThreshold representation, it
@@ -46,9 +47,7 @@ export default props => {
                     formattedData.push({
                         id: index,
                         name: populationName,
-
-                        // TODO: For now, take the most recent date
-                        value: rawData.populations[populationName][numDataPoints - 1].y,
+                        value,
                     });
                 }
 
