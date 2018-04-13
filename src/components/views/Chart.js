@@ -10,7 +10,7 @@ import './css/Metric.css';
 
 export default props => {
     const extraOptions = {};
-    const yRolloverMaximumFractionDigits = 3;
+    const yRolloverFractionDigits = 3;
 
     // Units that can appear right after a value, without a space in between
     const spacelessUnits = ['%'];
@@ -126,7 +126,10 @@ export default props => {
                 width={props.width}
 
                 x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
-                y_mouseover={dp => dp.y.toLocaleString('en-US', { maximumFractionDigits: yRolloverMaximumFractionDigits }) + yUnitString}
+                y_mouseover={dp => dp.y.toLocaleString('en-US', {
+                    minimumFractionDigits: yRolloverFractionDigits,
+                    maximumFractionDigits: yRolloverFractionDigits,
+                }) + yUnitString}
 
                 min_y={minYToShow}
                 max_y={maxYToShow}
