@@ -1,8 +1,8 @@
-const { flagForUpdate } = require('../utils');
+const { linkWorks, flagForUpdate } = require('../utils');
 
 
 module.exports = {
-    before: browser => {
+    beforeEach: browser => {
         browser.url(`${browser.launchUrl}/dashboard/usage-behavior`);
     },
 
@@ -15,6 +15,9 @@ module.exports = {
     },
 
     'Metric titles and order are correct': browser => {
+        // Wait for the dashboard to load
+        browser.waitForElementVisible('#dashboard');
+
         flagForUpdate(browser, '.metric', 'metrics in the usage dashboard', 4);
 
         browser.expect.element('#metric-overview-1 h3').text.to.be.equal('Top Languages');
@@ -24,6 +27,9 @@ module.exports = {
     },
 
     'Charts render': browser => {
+        // Wait for the dashboard to load
+        browser.waitForElementVisible('#dashboard');
+
         flagForUpdate(browser, '.chart', 'charts in the usage dashboard', 3);
 
         browser.expect.element('#metric-overview-1 svg').to.be.visible;
@@ -37,9 +43,16 @@ module.exports = {
     },
 
     'Table renders': browser => {
+        // Wait for the dashboard to load
+        browser.waitForElementVisible('#dashboard');
+
         flagForUpdate(browser, '.metric-overview table', 'table in the usage dashboard', 1);
 
         browser.expect.element('#metric-overview-4 table').to.be.visible;
         browser.expect.element('#metric-overview-4 tbody tr:first-child td:nth-child(2)').to.be.visible;
+    },
+
+    'The next button works': browser => {
+        linkWorks(browser, '.next-button a');
     },
 };

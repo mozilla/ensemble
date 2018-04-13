@@ -1,5 +1,5 @@
 module.exports = {
-    before: browser => {
+    beforeEach: browser => {
         browser.url(browser.launchUrl);
     },
 

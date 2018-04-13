@@ -1,7 +1,15 @@
-function linkWorks(browser, url) {
+function notNotFound(browser, url) {
     browser.url(url);
     browser.expect.element('#not-found').to.not.be.present;
     browser.back();
+}
+
+function linkWorks(browser, selector) {
+    browser.element('css selector', selector, element => {
+        browser.elementIdAttribute(element.value.ELEMENT, 'href', result => {
+            notNotFound(browser, result.value);
+        });
+    });
 }
 
 // This is pretty wonky, but it works.
@@ -23,7 +31,7 @@ function linksWork(browser, selector) {
 
                 if (index === (elementIds.length - 1)) {
                     urls.forEach(url => {
-                        linkWorks(browser, url);
+                        notNotFound(browser, url);
                     });
                 }
             });
@@ -62,6 +70,7 @@ function flagForUpdate(browser, selector, collectiveName, numExpectedElements) {
 }
 
 module.exports = {
+    linkWorks,
     linksWork,
     flagForUpdate,
 }
