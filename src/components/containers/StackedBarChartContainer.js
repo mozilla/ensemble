@@ -1,6 +1,6 @@
 import React from 'react';
 import { scaleLinear } from 'd3-scale';
-import { event, select, selectAll } from 'd3-selection';
+import { select } from 'd3-selection';
 
 import '../views/css/StackedBarChart.css';
 
@@ -44,11 +44,11 @@ export default class extends React.Component {
     }
 
     componentDidMount() {
-        let xScale = scaleLinear().domain([0, 1])
-                        .range([0, this.size.width - this.size.xPaddingRight]);
+        const xScale = scaleLinear().domain([0, 1])
+                           .range([0, this.size.width - this.size.xPaddingRight]);
 
         // TODO: faux data is all the rage these days
-        let data = {
+        const data = {
             id: 0,
             name: 'Usage by OS',
             data: [
@@ -80,8 +80,8 @@ export default class extends React.Component {
             ]
         };
 
-        let svg = select(`#id_${data.id}`).select('svg');
-        let rects = svg.selectAll('rect.bar');
+        const svg = select(`#id_${data.id}`).select('svg');
+        const rects = svg.selectAll('rect.bar');
         let xMarker = 0;
 
         svg.attr('width', this.size.width)
@@ -102,7 +102,7 @@ export default class extends React.Component {
             .attr('x', (d, i) => {
                 if (d.value === undefined) d.value = 0;
 
-                let myXMarker = xMarker;
+                const myXMarker = xMarker;
                 xMarker += d.value;
 
                 //append circle
