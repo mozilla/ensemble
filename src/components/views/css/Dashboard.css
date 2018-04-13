@@ -5,7 +5,7 @@
     text-align: center;
 }
 
-#dashboard h3 {
+#dashboard #metrics-heading {
     display: none;
 }
 
@@ -29,8 +29,4 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-#summary-metrics h3 {
-    display: none;
 }

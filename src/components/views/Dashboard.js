@@ -78,7 +78,7 @@ export default props => {
             </header>
             {maybeCategory}
             {maybeSummaryMetrics}
-            <h3>Metrics</h3>
+            <h3 id="metrics-heading">Metrics</h3>
             {body}
         </article>
     );
