@@ -6,7 +6,7 @@ import './css/SummaryMetric.css';
 
 
 /**
- * Based on Ali Ali Almosawi's work for the original Firefox Hardware Report:
+ * Based on Ali Almosawi's work for the original Firefox Hardware Report:
  * https://github.com/mozilla/firefox-hardware-report/blob/master/js/main.js
  */
 export default class extends React.Component {
@@ -65,7 +65,7 @@ export default class extends React.Component {
 
             this.svg.select(`.bar-label_${item.id}`).style('display', 'inline');
             this.svg.select(`.bar-arrow_${item.id}`).style('display', 'inline');
-        }
+        };
 
         const xScale = scaleLinear().domain([0, 1])
                            .range([0, this.size.width - this.size.xPaddingRight]);

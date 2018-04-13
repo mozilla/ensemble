@@ -5,7 +5,7 @@ import SummaryMetric from '../views/SummaryMetric';
 
 export default props => {
     function formatData(rawData) {
-        const formattedData = []
+        const formattedData = [];
         const populations = Object.keys(rawData.populations);
 
         // True/False charts
@@ -35,7 +35,7 @@ export default props => {
             populations.forEach(populationName => {
                 const activeDataPoint = rawData.populations[populationName].find(dp => dp.x === props.activeDate);
 
-                // There is not gauranteed to be a data point for the active
+                // There is not guaranteed to be a data point for the active
                 // date
                 if (!activeDataPoint) return;
 
