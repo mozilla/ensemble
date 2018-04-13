@@ -2,7 +2,7 @@ const { flagForUpdate } = require('../utils');
 
 
 module.exports = {
-    before: browser => {
+    beforeEach: browser => {
         browser.url(`${browser.launchUrl}/dashboard/hardware`);
     },
 
@@ -15,6 +15,9 @@ module.exports = {
     },
 
     'Section titles and order are correct': browser => {
+        // Wait for the dashboard to load
+        browser.waitForElementVisible('#dashboard');
+
         flagForUpdate(browser, '#dashboard-sections .dashboard-section', 'sections in the hardware dashboard', 4);
 
         browser.expect.element('#dashboard-sections .dashboard-section:nth-child(1) h3').text.to.be.equal('Graphics');
@@ -24,6 +27,9 @@ module.exports = {
     },
 
     'Chart titles and order are correct': browser => {
+        // Wait for the dashboard to load
+        browser.waitForElementVisible('#dashboard');
+
         flagForUpdate(browser, '.chart', 'charts in the hardware dashboard', 12);
 
         browser.expect.element('#dashboard-sections .dashboard-section:nth-child(1) #graphics-metric-overview-1 h3').text.to.be.equal('GPU Model');
@@ -41,6 +47,9 @@ module.exports = {
     },
 
     'Charts render': browser => {
+        // Wait for the dashboard to load
+        browser.waitForElementVisible('#dashboard');
+
         flagForUpdate(browser, '.chart', 'charts in the hardware dashboard', 12);
 
         browser.expect.element('#graphics-metric-overview-1 svg').to.be.visible;

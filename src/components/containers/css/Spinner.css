@@ -1,11 +1,7 @@
 .sk-spinner {
     color: #000;
     height: 50px;
-    width: 50px;
-
-    position: absolute;
-    top: calc(50vh - 25px);
-    left: calc(50% - 25px);
+    margin: 50px auto; /* 50px leaves enough room for the ::after styles */
 }
 
 .sk-spinner::after {

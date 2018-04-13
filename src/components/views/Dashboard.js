@@ -6,6 +6,7 @@ import MetricOverviewCollection from './MetricOverviewCollection';
 import { bumpSort } from '../../lib/utils';
 
 import './css/Dashboard.css';
+import './css/LabelledSelector.css';
 
 
 export default props => {
@@ -14,14 +15,16 @@ export default props => {
     if (sortedCategories.length > 1) {
         maybeCategory = (
             <aside id="category">
-                <label htmlFor="category-selector">Region</label>
-                <select id="category-selector" name="category" value={props.activeCategory} onChange={props.onCategoryChange}>
-                    {sortedCategories.map(categoryName => (
-                        <option key={categoryName} value={categoryName}>
-                            {categoryName}
-                        </option>
-                    ))}
-                </select>
+                <div className="labelled-selector">
+                    <label htmlFor="category-selector">Region</label>
+                    <select id="category-selector" name="category" value={props.activeCategory} onChange={props.onCategoryChange}>
+                        {sortedCategories.map(categoryName => (
+                            <option key={categoryName} value={categoryName}>
+                                {categoryName}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </aside>
         );
     }

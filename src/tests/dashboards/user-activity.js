@@ -1,8 +1,8 @@
-const { flagForUpdate } = require('../utils');
+const { linkWorks, flagForUpdate } = require('../utils');
 
 
 module.exports = {
-    before: browser => {
+    beforeEach: browser => {
         browser.url(`${browser.launchUrl}/dashboard/user-activity`);
     },
 
@@ -15,6 +15,9 @@ module.exports = {
     },
 
     'Chart titles and order are correct': browser => {
+        // Wait for the dashboard to load
+        browser.waitForElementVisible('#dashboard');
+
         flagForUpdate(browser, '.metric', 'metrics in the activity dashboard', 6);
 
         browser.expect.element('#metric-overview-1 h3').text.to.be.equal('Yearly Active Users');
@@ -26,6 +29,9 @@ module.exports = {
     },
 
     'Charts render': browser => {
+        // Wait for the dashboard to load
+        browser.waitForElementVisible('#dashboard');
+
         flagForUpdate(browser, '.metric', 'metrics in the activity dashboard', 6);
 
         browser.expect.element('#metric-overview-1 svg').to.be.visible;
@@ -45,5 +51,9 @@ module.exports = {
 
         browser.expect.element('#metric-overview-6 svg').to.be.visible;
         browser.expect.element('#metric-overview-6 path.mg-line1').to.be.visible;
-    }
+    },
+
+    'The next button works': browser => {
+        linkWorks(browser, '.next-button a');
+    },
 };

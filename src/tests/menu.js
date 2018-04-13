@@ -2,7 +2,7 @@ const { linksWork, flagForUpdate } = require('./utils');
 
 
 module.exports = {
-    before: browser => {
+    beforeEach: browser => {
         browser.url(browser.launchUrl);
     },
 

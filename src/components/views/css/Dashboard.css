@@ -10,25 +10,11 @@
 }
 
 #category {
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
     background: #fff;
     padding: 20px 0;
     position: sticky;
     top: 0;
-    width: 100%;
     z-index: 10;
-}
-
-#category label {
-    margin-right: 10px;
-}
-
-#category label::after {
-    content: ": ";
 }
 
 .metric-overview-collection {
