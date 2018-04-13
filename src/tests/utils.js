@@ -1,6 +1,22 @@
+const request = require('request');
+
+
 function notNotFound(browser, url) {
     browser.url(url);
-    browser.expect.element('#not-found').to.not.be.present;
+
+    // URLs that the React app manages. These don't return a 404 but instead
+    // display a "Not Found" message.
+    if (url.startsWith('http://localhost:3000')) {
+        browser.expect.element('#not-found').to.not.be.present;
+    }
+
+    // External URLs. These should return 404 if they're invalid.
+    else {
+        request(url, (error, response) => {
+            browser.assert.equal(response.statusCode, 200);
+        });
+    }
+
     browser.back();
 }
 
