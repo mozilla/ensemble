@@ -20,12 +20,12 @@ module.exports = {
 
         flagForUpdate(browser, '.metric', 'metrics in the activity dashboard', 6);
 
-        browser.expect.element('#metric-overview-1 h3').text.to.be.equal('Yearly Active Users');
-        browser.expect.element('#metric-overview-2 h3').text.to.be.equal('Monthly Active Users');
-        browser.expect.element('#metric-overview-3 h3').text.to.be.equal('Daily Usage');
-        browser.expect.element('#metric-overview-4 h3').text.to.be.equal('Average Intensity');
-        browser.expect.element('#metric-overview-5 h3').text.to.be.equal('New Users Percentage');
-        browser.expect.element('#metric-overview-6 h3').text.to.be.equal('Latest Version');
+        browser.expect.element('#metric-overview-1 h5').text.to.be.equal('Yearly Active Users');
+        browser.expect.element('#metric-overview-2 h5').text.to.be.equal('Monthly Active Users');
+        browser.expect.element('#metric-overview-3 h5').text.to.be.equal('Daily Usage');
+        browser.expect.element('#metric-overview-4 h5').text.to.be.equal('Average Intensity');
+        browser.expect.element('#metric-overview-5 h5').text.to.be.equal('New Users Percentage');
+        browser.expect.element('#metric-overview-6 h5').text.to.be.equal('Latest Version');
     },
 
     'Charts render': browser => {

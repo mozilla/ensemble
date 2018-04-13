@@ -3,6 +3,7 @@ import React from 'react';
 import DashboardSection from './DashboardSection';
 import MetricOverviewCollection from './MetricOverviewCollection';
 import SummaryMetricContainer from '../containers/SummaryMetricContainer';
+import CustomizableDateContainer from '../containers/CustomizableDateContainer';
 
 import { bumpSort } from '../../lib/utils';
 
@@ -13,18 +14,36 @@ import './css/LabelledSelector.css';
 export default props => {
     let maybeSummaryMetrics = null;
     if (props.summaryMetrics) {
+        const allDatesSet = new Set();
+        props.summaryMetrics.forEach(currentMetricTitle => {
+            const currentData = props.metrics.find(m => m.title === currentMetricTitle).data[props.activeCategory];
+            Object.keys(currentData.populations).forEach(populationName => {
+                currentData.populations[populationName].forEach(dp => allDatesSet.add(dp.x));
+            });
+        });
+
+        const summaryMetricContainers = [];
+        props.summaryMetrics.forEach((metricTitle, index) => {
+            summaryMetricContainers.push(
+                <SummaryMetricContainer
+                    key={index}
+
+                    title={metricTitle}
+                    data={props.metrics.find(m => m.title === metricTitle).data}
+                    activeCategory={props.activeCategory}
+                />
+            );
+        });
+
+        const titleComponent = <h3>Summary</h3>;
         maybeSummaryMetrics = (
             <section id="summary-metrics">
-                <h3>Summary</h3>
-                {props.summaryMetrics.map((metricTitle, index) => (
-                    <SummaryMetricContainer
-                        key={index}
-
-                        title={metricTitle}
-                        data={props.metrics.find(m => m.title === metricTitle).data}
-                        activeCategory={props.activeCategory}
-                    />
-                ))}
+                <CustomizableDateContainer
+                    dates={Array.from(allDatesSet)}
+                    titleComponent={titleComponent}
+                >
+                    {summaryMetricContainers}
+                </CustomizableDateContainer>
             </section>
         );
     }

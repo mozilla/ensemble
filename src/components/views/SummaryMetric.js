@@ -43,21 +43,44 @@ export default class extends React.Component {
         this.arrowIgnoreThreshold = 4;
     }
 
+    shouldComponentUpdate(nextProps) {
+        return nextProps.data !== this.props.data;
+    }
+
     componentDidMount() {
+        this._drawChart(this.props.data);
+    }
+
+    componentDidUpdate() {
+        // Clear the SVG before redrawing it
+        this.svg.text('');
+
+        this._drawChart(this.props.data);
+    }
+
+    _drawChart(data) {
+        const showBarItem = item => {
+            this.svg.selectAll('.bar-arrow').style('display', 'none');
+            this.svg.selectAll('.bar-label').style('display', 'none');
+
+            this.svg.select(`.bar-label_${item.id}`).style('display', 'inline');
+            this.svg.select(`.bar-arrow_${item.id}`).style('display', 'inline');
+        }
+
         const xScale = scaleLinear().domain([0, 1])
                            .range([0, this.size.width - this.size.xPaddingRight]);
 
-        const svg = select(this.ref.current);
-        const rects = svg.selectAll('rect.bar');
+        this.svg = select(this.ref.current);
+        const rects = this.svg.selectAll('rect.bar');
         let xMarker = 0;
 
-        svg.attr('width', this.size.width)
-           .attr('height', this.size.height);
+        this.svg.attr('width', this.size.width)
+            .attr('height', this.size.height);
 
-        svg.attr('viewBox', `0 0 ${this.size.width} ${this.size.height}`)
-           .attr('preserveAspectRatio', 'xMinYMin meet');
+        this.svg.attr('viewBox', `0 0 ${this.size.width} ${this.size.height}`)
+            .attr('preserveAspectRatio', 'xMinYMin meet');
 
-        rects.data(this.props.data).enter().append('rect')
+        rects.data(data).enter().append('rect')
             .attr('class', d => 'bar bar-' + d.id)
             .attr('width', d => {
                 if (d.value === undefined) {
@@ -73,7 +96,7 @@ export default class extends React.Component {
                 xMarker += d.value / 100;
 
                 // append circle
-                svg.append('circle')
+                this.svg.append('circle')
                     .attr('r', 8)
                     .attr('class', () => 'bar-arrow bar-arrow_' + d.id)
                     .attr('cx', () => this.size.xPaddingLeft + xScale(
@@ -86,7 +109,7 @@ export default class extends React.Component {
                     });
 
                 // append text labels
-                svg.append('text')
+                this.svg.append('text')
                     .attr('class', `bar-label bar-label_${d.id}`)
                     .attr('text-anchor', 'middle')
                     .attr('x', () => this.size.xPaddingLeft + xScale(
@@ -114,14 +137,6 @@ export default class extends React.Component {
 
             // Show the currently hovered or clicked bar's arrow and label.
             .on('mouseenter click', showBarItem);
-
-        function showBarItem(item) {
-            svg.selectAll('.bar-arrow').style('display', 'none');
-            svg.selectAll('.bar-label').style('display', 'none');
-
-            svg.select(`.bar-label_${item.id}`).style('display', 'inline');
-            svg.select(`.bar-arrow_${item.id}`).style('display', 'inline');
-        }
     }
 
     render() {

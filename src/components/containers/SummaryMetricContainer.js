@@ -11,21 +11,18 @@ export default props => {
         // True/False charts
         if (populations.length === 1) {
             const onlyPopulation = rawData.populations[populations[0]];
+            const trueValue = onlyPopulation.find(dp => dp.x === props.activeDate).y;
 
             formattedData.push({
                 id: 0,
                 name: "True",
-
-                // TODO: For now, take the most recent date
-                value: onlyPopulation[onlyPopulation.length - 1].y,
+                value: trueValue,
             });
 
             formattedData.push({
                 id: 1,
                 name: "False",
-
-                // TODO: For now, take the most recent date
-                value: 100 - onlyPopulation[onlyPopulation.length - 1].y,
+                value: 100 - trueValue,
             });
         }
 
@@ -36,10 +33,13 @@ export default props => {
 
             let index = 0;
             populations.forEach(populationName => {
-                const numDataPoints = rawData.populations[populationName].length;
+                const activeDataPoint = rawData.populations[populationName].find(dp => dp.x === props.activeDate);
 
-                // TODO: For now, take the most recent date
-                const value = rawData.populations[populationName][numDataPoints - 1].y;
+                // There is not gauranteed to be a data point for the active
+                // date
+                if (!activeDataPoint) return;
+
+                const value = activeDataPoint.y;
 
                 // If a population has >= otherThreshold representation, it
                 // should have its own section of the chart.
