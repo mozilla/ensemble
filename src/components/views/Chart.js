@@ -126,6 +126,7 @@ export default props => {
 
                 x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
                 y_mouseover={dp => dp.y.toLocaleString('en-US', {
+                    minimumFractionDigits: process.env.REACT_APP_VALUE_DECIMAL_PLACES,
                     maximumFractionDigits: process.env.REACT_APP_VALUE_DECIMAL_PLACES,
                 }) + yUnitString}
 
