@@ -2,7 +2,7 @@ import React from 'react';
 import { scaleLinear } from 'd3-scale';
 import { select } from 'd3-selection';
 
-import '../views/css/StackedBarChart.css';
+import './css/StackedBarChart.css';
 
 
 // Mostly a React conversion of Ali Almosawi's work at:
