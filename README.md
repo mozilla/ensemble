@@ -23,4 +23,11 @@ Run `yarn start`
 
 ### Test
 
-Run `yarn validate`
+Run `yarn validate` (**NB:** not `yarn test`; although `yarn test` does run some
+tests, `yarn validate` does additional quality assurance like linting JavaScript
+and checking for security vulnerabilities)
+
+### Analyze
+
+To analyze the size of the JavaScript bundle that will be served, run `yarn
+size`.
