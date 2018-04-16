@@ -1,4 +1,5 @@
 html {
+    background: #0253a7 url(../images/grain.jpg);
     box-sizing: border-box;
 }
 
@@ -17,11 +18,14 @@ html {
 }
 
 /* Jon Neal approach to a box-sizing reset. */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: inherit;
 }
 
 body {
+    background: url(../images/bg3.jpg) 50% -70px no-repeat;
     color: #000;
     font-family: "Fira Sans OT", "Fira Sans", FiraSansWeb, sans-serif;
     font-size: 13px;
@@ -36,6 +40,8 @@ body {
     position: relative;
     top: 10px;
     width: 95vw;
+    padding: 20px;
+    background-color: #fff;
 }
 
 main {
