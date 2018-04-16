@@ -42,8 +42,8 @@ module.exports = {
         browser.expect.element('#dashboard-sections .dashboard-section:nth-child(3) #operatingsystem-metric-overview-1 h3').text.to.be.equal('Operating System');
         browser.expect.element('#dashboard-sections .dashboard-section:nth-child(3) #operatingsystem-metric-overview-2 h3').text.to.be.equal('Browsers by Architecture');
         browser.expect.element('#dashboard-sections .dashboard-section:nth-child(3) #operatingsystem-metric-overview-3 h3').text.to.be.equal('Operating Systems by Architecture');
-        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(4) #plugins-metric-overview-1 h3').text.to.be.equal('Flash');
-        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(4) #plugins-metric-overview-2 h3').text.to.be.equal('Unity');
+        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(4) #plugins-metric-overview-1 h3').text.to.be.equal('Has Flash');
+        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(4) #plugins-metric-overview-2 h3').text.to.be.equal('Has Unity');
     },
 
     'Charts render': browser => {
