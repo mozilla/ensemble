@@ -1,8 +1,0 @@
-.customizable-date-metric select {
-    display: block;
-    margin: 20px auto;
-
-    /* Make the <select> clickable even if something overlaps it */
-    position: relative;
-    z-index: 10;
-}

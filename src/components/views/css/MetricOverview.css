@@ -37,7 +37,7 @@
     margin-bottom: 0;
 }
 
-.metric-overview .metric-and-legend div {
+.metric-overview .metric-and-legend > div {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -73,7 +73,7 @@
 }
 
 @media all and (min-width: 1200px) {
-    .metric-overview .metric-and-legend div {
+    .metric-overview .metric-and-legend > div {
         display: block;
         float: left;
     }
