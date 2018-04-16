@@ -1,4 +1,5 @@
 html {
+    background: #0253A7 url(../images/grain.jpg);
     box-sizing: border-box;
 }
 
@@ -22,6 +23,7 @@ html {
 }
 
 body {
+    background: url(../images/bg3.jpg) 50% -70px no-repeat;
     color: #000;
     font-family: "Fira Sans OT", "Fira Sans", FiraSansWeb, sans-serif;
     font-size: 13px;
