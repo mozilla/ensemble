@@ -1,5 +1,5 @@
 html {
-    background: #0253A7 url(../images/grain.jpg);
+    background: #0253a7 url(../images/grain.jpg);
     box-sizing: border-box;
 }
 
@@ -18,7 +18,9 @@ html {
 }
 
 /* Jon Neal approach to a box-sizing reset. */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: inherit;
 }
 
