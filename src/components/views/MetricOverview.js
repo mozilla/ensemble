@@ -1,7 +1,7 @@
 import React from 'react';
 
 import ChartContainer from '../containers/ChartContainer';
-import CustomizableDateMetricContainer from '../containers/CustomizableDateMetricContainer';
+import CustomizableDateContainer from '../containers/CustomizableDateContainer';
 import DataTableContainer from '../containers/DataTableContainer';
 
 import './css/MetricOverview.css';
@@ -43,15 +43,18 @@ export default props => {
             />
         );
     } else if (props.type === 'table') {
+        const titleComponent = <h5 className="metric-title">{props.title}</h5>;
         MetricContainer = (
-            <CustomizableDateMetricContainer
-                title={props.title}
-                data={props.data}
-                activeCategory={props.activeCategory}>
+            <CustomizableDateContainer
+                titleComponent={titleComponent}
+                dates={Object.keys(props.data[props.activeCategory].dates)}
+                metric={true}>
                 <DataTableContainer
+                    data={props.data}
+                    activeCategory={props.activeCategory}
                     columns={props.columns || {}}
                 />
-            </CustomizableDateMetricContainer>
+            </CustomizableDateContainer>
         );
     }
 

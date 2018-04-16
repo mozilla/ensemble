@@ -113,7 +113,7 @@ export default props => {
 
     return (
         <div className="metric chart">
-            <h3 className="metric-title">{props.title}</h3>
+            <h5 className="metric-title">{props.title}</h5>
             <MetricsGraphics
                 data={props.data}
                 x_accessor="x"

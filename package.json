@@ -18,6 +18,8 @@
         "size": "source-map-explorer build/static/js/main.*"
     },
     "dependencies": {
+        "d3-scale": "2.0.0",
+        "d3-selection": "1.3.0",
         "dateformat": "3.0.3",
         "metrics-graphics": "2.14.0",
         "react": "16.3.1",

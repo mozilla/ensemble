@@ -8,7 +8,7 @@ export default WrappedComponent => {
     const HOC = class extends React.Component {
         render() {
             const nextButtonMeta = nextButtonsConfig.find(nbm => {
-                return nbm.from === this.props.location.pathname
+                return nbm.from === this.props.location.pathname;
             });
 
             if (nextButtonMeta) {

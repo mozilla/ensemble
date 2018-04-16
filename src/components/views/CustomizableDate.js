@@ -2,7 +2,7 @@ import React from 'react';
 
 import dateformat from 'dateformat';
 
-import './css/CustomizableDateMetric.css';
+import './css/CustomizableDate.css';
 import './css/Metric.css';
 import './css/LabelledSelector.css';
 
@@ -10,9 +10,23 @@ import './css/LabelledSelector.css';
 export default props => {
     const childProps = Object.assign({}, ...props, { activeDate: props.activeDate });
 
+    let childrenWithProps;
+    if (Array.isArray(props.children)) {
+        childrenWithProps = props.children.map(child => {
+            return React.cloneElement(child, {...childProps});
+        });
+    } else {
+        childrenWithProps = React.cloneElement(props.children, {...childProps});
+    }
+
+    const classes = ['customizable-date'];
+    if (props.metric) {
+        classes.push('metric');
+    }
+
     return (
-        <div className="metric customizable-date-metric">
-            <h3 className="metric-title">{props.title}</h3>
+        <div className={classes.join(' ')}>
+            {props.titleComponent}
             <div className="labelled-selector">
                 <label htmlFor="date-selector">Date</label>
                 <select id="date-selector" value={props.activeDate} onChange={props.onDateChange}>
@@ -23,7 +37,7 @@ export default props => {
                     ))};
                 </select>
             </div>
-            { React.cloneElement(props.children, {...childProps}) }
+            { childrenWithProps }
         </div>
     );
 };
