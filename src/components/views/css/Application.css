@@ -38,6 +38,8 @@ body {
     position: relative;
     top: 10px;
     width: 95vw;
+    padding: 20px;
+    background-color: #fff;
 }
 
 main {
