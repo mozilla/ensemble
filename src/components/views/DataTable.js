@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { prettifyNumber } from '../../lib/utils';
+
 import './css/DataTable.css';
 
 
@@ -25,10 +27,7 @@ export default props => (
                         <td>{index + 1}</td>
                         <td>{row.name}</td>
                         <td>
-                            {row.value.toLocaleString('en-US', {
-                                minimumFractionDigits: process.env.REACT_APP_VALUE_DECIMAL_PLACES,
-                                maximumFractionDigits: process.env.REACT_APP_VALUE_DECIMAL_PLACES,
-                            })}{props.columns[1].unit}
+                            {prettifyNumber(row.value) + props.columns[1].unit}
                         </td>
                     </tr>
                 ))}

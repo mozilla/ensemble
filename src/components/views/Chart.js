@@ -3,6 +3,8 @@ import MetricsGraphics from 'react-metrics-graphics';
 import dateformat from 'dateformat';
 import { curveCatmullRom } from 'd3-shape';
 
+import { prettifyNumber } from '../../lib/utils';
+
 import 'metrics-graphics/dist/metricsgraphics.css';
 import './css/PopulationColors.css';
 import './css/Chart.css';
@@ -126,9 +128,7 @@ export default props => {
                 width={props.width}
 
                 x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
-                y_mouseover={dp => dp.y.toLocaleString('en-US', {
-                    maximumFractionDigits: process.env.REACT_APP_VALUE_DECIMAL_PLACES,
-                }) + yUnitString}
+                y_mouseover={dp => prettifyNumber(dp.y) + yUnitString}
 
                 min_y={minYToShow}
                 max_y={maxYToShow}
