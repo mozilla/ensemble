@@ -40,7 +40,7 @@ export function isFloat(n) {
  * prettifyNumber(5000) => 5,000
  * prettifyNumber(5000000) => 5,000,000
  * prettifyNumber(3.2) => 3.200
- *     - Assuming REACT_APP_VALUE_DECIMAL_PLACES = 3
+ *     - Assuming process.env.REACT_APP_VALUE_DECIMAL_PLACES === 3
  */
 export function prettifyNumber(n) {
     if (isFloat(n)) {
