@@ -1,0 +1,35 @@
+.next-button {
+    display: flex;
+    justify-content: center;
+    margin: 25px 0;
+}
+
+.next-button a {
+    /* color stolen from "download firefox" button */
+    background-color: #16da00;
+    border: 0;
+    color: #fff;
+    display: inline-block;
+    height: 48px;
+    line-height: 28px;
+    padding: 10px 15px;
+    position: relative;
+}
+
+.next-button a:hover {
+    border-bottom: 0;
+    color: #fff;
+}
+
+.next-button a::after {
+    background-color: #16da00;
+    border: 24px solid #fff;
+    border-left: 24px solid #16da00;
+    content: "";
+    height: 0;
+    top: 0;
+    left: 100%;
+    position: absolute;
+    width: 0;
+    z-index: -1;
+}

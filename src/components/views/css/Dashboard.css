@@ -1,8 +1,12 @@
 #dashboard h2 {
-    font-size: 22px;
+    font-size: 1.4rem;
     font-weight: 200;
     margin-bottom: 0;
     text-align: center;
+}
+
+#dashboard #metrics-heading {
+    display: none;
 }
 
 #dashboard-description:empty {
@@ -10,27 +14,19 @@
 }
 
 #category {
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
     background: #fff;
     padding: 20px 0;
     position: sticky;
     top: 0;
-    width: 100%;
     z-index: 10;
-}
-
-#category label {
-    margin-right: 10px;
-}
-
-#category label::after {
-    content: ": ";
 }
 
 .metric-overview-collection {
     margin-top: 25px;
+}
+
+#summary-metrics {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }

@@ -1,6 +1,9 @@
 import React from 'react';
 import MetricsGraphics from 'react-metrics-graphics';
 import dateformat from 'dateformat';
+import { curveCatmullRom } from 'd3-shape';
+
+import { prettifyNumber } from '../../lib/utils';
 
 import 'metrics-graphics/dist/metricsgraphics.css';
 import './css/PopulationColors.css';
@@ -10,7 +13,6 @@ import './css/Metric.css';
 
 export default props => {
     const extraOptions = {};
-    const yRolloverSignificantDigits = 10;
 
     // Units that can appear right after a value, without a space in between
     const spacelessUnits = ['%'];
@@ -114,7 +116,7 @@ export default props => {
 
     return (
         <div className="metric chart">
-            <h3 className="metric-title">{props.title}</h3>
+            <h5 className="metric-title">{props.title}</h5>
             <MetricsGraphics
                 data={props.data}
                 x_accessor="x"
@@ -126,7 +128,7 @@ export default props => {
                 width={props.width}
 
                 x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
-                y_mouseover={dp => dp.y.toLocaleString('en-US', { maximumSignificantDigits: yRolloverSignificantDigits }) + yUnitString}
+                y_mouseover={dp => prettifyNumber(dp.y) + yUnitString}
 
                 min_y={minYToShow}
                 max_y={maxYToShow}

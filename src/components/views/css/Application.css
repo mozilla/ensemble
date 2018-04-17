@@ -59,11 +59,6 @@ p {
     margin: 10px 0;
 }
 
-#introduction h2 {
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
 @media all and (min-width: 550px) {
     body {
         font-size: 14px;

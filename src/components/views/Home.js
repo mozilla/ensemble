@@ -60,8 +60,5 @@ export default () => (
             You can learn more about this report by reading our announcement on
             the Mozilla blog.
         </p>
-        <div className="next-link">
-            <Link to="/dashboard/user-activity">Proceed to User Activity</Link>
-        </div>
     </article>
 );
