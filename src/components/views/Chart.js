@@ -1,6 +1,7 @@
 import React from 'react';
 import MetricsGraphics from 'react-metrics-graphics';
 import dateformat from 'dateformat';
+import { curveCatmullRom } from 'd3-shape';
 
 import 'metrics-graphics/dist/metricsgraphics.css';
 import './css/PopulationColors.css';
@@ -131,6 +132,8 @@ export default props => {
 
                 min_y={minYToShow}
                 max_y={maxYToShow}
+
+                interpolate={curveCatmullRom.alpha(0.5)}
 
                 {...extraOptions}
             />
