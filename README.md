@@ -19,7 +19,14 @@ Facebook.
 
 ### Run
 
-Run `yarn start`
+#### Locally
+
+Run `yarn local`
+
+#### On production
+
+1. Run `yarn build`
+2. Run `NODE_ENV=production yarn start`
 
 ### Test
 
