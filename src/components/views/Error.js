@@ -9,7 +9,7 @@ export default props => {
     }
 
     return (
-        <section id={props.id} className="error">
+        <section id={props.id} className="error" data-http-status={props.httpStatus}>
             <h2>{props.title}</h2>
             {maybeMessage}
         </section>
