@@ -14,7 +14,7 @@ export default class extends React.Component {
         // is rendered.
         this.state = {
             chartWidth: 0,
-            chartHeight: this.maxChartHeight
+            chartHeight: this.maxChartHeight,
         };
 
         this._initialize(props);
@@ -98,7 +98,7 @@ export default class extends React.Component {
         // Set the chart width based on the real, rendered parent container.
         this.setState({
             chartWidth: this.getChartSize().width,
-            chartHeight: this.getChartSize().height
+            chartHeight: this.getChartSize().height,
         });
     }
 

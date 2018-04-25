@@ -21,7 +21,7 @@ export default class extends React.Component {
             xPaddingLeft: 0,
             xPaddingRight: 30,
             barYPosition: 15,
-            barHeight: 22
+            barHeight: 22,
         };
 
         this.colors = [
@@ -118,7 +118,7 @@ export default class extends React.Component {
                     .attr('y', this.size.barYPosition + this.size.barHeight + 22)
                     .text(`${d.name} (${d.value.toLocaleString('en-US', {
                         minimumFractionDigits: process.env.REACT_APP_VALUE_FRACTION_DIGITS,
-                        maximumFractionDigits: process.env.REACT_APP_VALUE_FRACTION_DIGITS
+                        maximumFractionDigits: process.env.REACT_APP_VALUE_FRACTION_DIGITS,
                     })}%)`)
                     .style('fill', '#000000');
 
