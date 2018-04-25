@@ -1,7 +1,7 @@
 .metric-overview {
-    align-items: flex-start;
+    align-items: center;
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     flex-wrap: wrap;
     justify-content: space-between;
     margin: 50px 0;
@@ -9,12 +9,11 @@
 
 .metric-description {
     background-color: rgba(0, 0, 0, 0.04);
-    border-radius: 5px;
     font-size: 1rem;
     margin: 0;
     padding: 12px;
     position: relative;
-    top: -20px;
+    top: 20px;
 }
 
 /* Exclude the top margin of the first paragraph of a multi-paragraph
@@ -45,7 +44,7 @@
 
 .metric-overview .legend {
     font-size: .9em;
-    max-width: 500px;
+    max-width: 1100px;
     font-weight: 400;
 }
 
@@ -60,25 +59,17 @@
     }
 }
 
-@media all and (min-width: 900px) {
-    .metric-overview {
-        flex-direction: row;
-    }
-
-    .metric-description {
-        width: 30%;
-        margin: 0;
-        position: static;
-    }
-}
-
 @media all and (min-width: 1200px) {
     .metric-overview .metric-and-legend > div {
-        display: block;
         float: left;
     }
 
     .metric-overview .legend span {
         margin: 5px 0;
+    }
+
+    .metric-description {
+        margin: 0;
+        position: static;
     }
 }

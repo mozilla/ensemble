@@ -62,6 +62,7 @@ export default props => {
     // #806. See the comment in PopulationColors.css for more information.
     return (
         <div id={props.identifier} className="metric-overview" data-populations={numPopulations}>
+            <h5 className="metric-title">{props.title}</h5>
             <div className="metric-and-legend">
                 {MetricContainer}
                 <div className="legend" />

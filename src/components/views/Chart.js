@@ -113,7 +113,6 @@ export default props => {
 
     return (
         <div className="metric chart">
-            <h5 className="metric-title">{props.title}</h5>
             <MetricsGraphics
                 data={props.data}
                 x_accessor="x"
@@ -121,7 +120,7 @@ export default props => {
 
                 show_tooltips={false}
 
-                height={500}
+                height={props.height}
                 width={props.width}
 
                 x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}

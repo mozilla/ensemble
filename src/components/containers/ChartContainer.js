@@ -8,11 +8,14 @@ export default class extends React.Component {
         super(props);
 
         this.minChartWidth = 264;
-        this.maxChartWidth = 500;
+        this.maxChartHeight = 400;
 
         // The proper chart width can't be determined until it's parent element
         // is rendered.
-        this.state = { chartWidth: null };
+        this.state = {
+            chartWidth: 0,
+            chartHeight: this.maxChartHeight
+        };
 
         this._initialize(props);
     }
@@ -67,23 +70,22 @@ export default class extends React.Component {
         }
     }
 
-    // Get the responsive chart width up to a max of desktopChartWidth.
-    getChartWidth() {
+    // Get the responsive chart size or set to minChartWidth and maxChartHeight.
+    getChartSize() {
         const parentNode = document.querySelector('#application > main');
         const parentWidth = parentNode.offsetWidth;
 
-        let width = 0;
-        if (parentNode && parentWidth <= this.minChartWidth) {
-            width = this.minChartWidth;
-        } else if (parentNode && parentWidth > this.maxChartWidth) {
-            width = this.maxChartWidth;
-        } else if (parentNode) {
-            width = parentWidth;
-        } else {
-            width = this.maxChartWidth;
+        let size = {width: this.minChartWidth, height: this.maxChartHeight};
+        if (parentNode && parentWidth > this.minChartWidth) {
+            size.width = parentWidth;
+
+            // Square ratio charts for small screens.
+            if (parentWidth <= this.maxChartHeight) {
+                size.height = parentWidth;
+            }
         }
 
-        return width;
+        return size;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -95,7 +97,8 @@ export default class extends React.Component {
     componentDidMount() {
         // Set the chart width based on the real, rendered parent container.
         this.setState({
-            chartWidth: this.getChartWidth()
+            chartWidth: this.getChartSize().width,
+            chartHeight: this.getChartSize().height
         });
     }
 
@@ -119,6 +122,7 @@ export default class extends React.Component {
                 legend={this.formattedData.legend}
                 showLegend={this.showLegend}
                 width={this.state.chartWidth}
+                height={this.state.chartHeight}
 
                 yUnit = {this.props.axes.y && this.props.axes.y.unit}
                 xUnit = {this.props.axes.x && this.props.axes.x.unit}
