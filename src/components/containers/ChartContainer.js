@@ -10,8 +10,8 @@ export default class extends React.Component {
         this.minChartWidth = 264;
         this.maxChartHeight = 400;
 
-        // The proper chart width can't be determined until it's parent element
-        // is rendered.
+        // Initial state of chart size.
+        // It will later be set based on the width of a rendered layout wrapper DOM node.
         this.state = {
             chartWidth: 0,
             chartHeight: this.maxChartHeight,
@@ -95,10 +95,11 @@ export default class extends React.Component {
     }
 
     componentDidMount() {
-        // Set the chart width based on the real, rendered parent container.
+        // Set the chart size based on the real, rendered parent container.
+        const {width, height} = this.getChartSize();
         this.setState({
-            chartWidth: this.getChartSize().width,
-            chartHeight: this.getChartSize().height,
+            chartWidth: width,
+            chartHeight: height,
         });
     }
 

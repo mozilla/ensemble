@@ -63,11 +63,11 @@ export default props => {
     return (
         <div id={props.identifier} className="metric-overview" data-populations={numPopulations}>
             <h5 className="metric-title">{props.title}</h5>
+            {maybeMetricDescription}
             <div className="metric-and-legend">
                 {MetricContainer}
                 <div className="legend" />
             </div>
-            {maybeMetricDescription}
         </div>
     );
 };

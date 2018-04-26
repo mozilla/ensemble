@@ -60,16 +60,7 @@
 }
 
 @media all and (min-width: 1200px) {
-    .metric-overview .metric-and-legend > div {
-        float: left;
-    }
-
     .metric-overview .legend span {
         margin: 5px 0;
-    }
-
-    .metric-description {
-        margin: 0;
-        position: static;
     }
 }
