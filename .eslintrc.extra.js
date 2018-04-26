@@ -26,6 +26,9 @@ module.exports = {
     rules: {
         // Errors
         'eqeqeq': 'error',
+        'no-global-assign': 'error',
+        'no-redeclare': ['error', {builtinGlobals: true}],
+        'no-shadow': ['error', {builtinGlobals: true}],
         'no-var': 'error',
         'prefer-const': 'error',
         'semi': ['error', 'always'],
@@ -39,6 +42,6 @@ module.exports = {
         'jsx-a11y/no-onchange': 'off',
         'react/display-name': 'off',
         'react/prop-types': 'off',
-        'react/no-unescaped-entities': ['error', {'forbid': ['>', '}']}],
+        'react/no-unescaped-entities': ['error', {forbid: ['>', '}']}],
     },
 };
