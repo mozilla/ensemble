@@ -32,6 +32,7 @@ module.exports = {
         'no-var': 'error',
         'prefer-const': 'error',
         'semi': ['error', 'always'],
+        'comma-dangle': ['error', 'always-multiline'],
 
         // Warnings
         'prefer-arrow-callback': 'warn',
