@@ -19,7 +19,7 @@ export default class extends React.Component {
             width: 450,
             height: 90,
             xPaddingLeft: 0,
-            xPaddingRight: 30,
+            xPaddingRight: 40,
             barYPosition: 15,
             barHeight: 22,
         };
