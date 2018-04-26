@@ -124,6 +124,7 @@ export default class extends React.Component {
                 showLegend={this.showLegend}
                 width={this.state.chartWidth}
                 height={this.state.chartHeight}
+                numPopulations={this.props.numPopulations}
 
                 yUnit = {this.props.axes.y && this.props.axes.y.unit}
                 xUnit = {this.props.axes.x && this.props.axes.x.unit}
