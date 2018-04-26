@@ -75,7 +75,7 @@ export default class extends React.Component {
         const parentNode = document.querySelector('#application > main');
         const parentWidth = parentNode.offsetWidth;
 
-        let size = {width: this.minChartWidth, height: this.maxChartHeight};
+        const size = {width: this.minChartWidth, height: this.maxChartHeight};
         if (parentNode && parentWidth > this.minChartWidth) {
             size.width = parentWidth;
 
