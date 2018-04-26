@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Error from './Error';
+import ErrorComponent from './Error';
 
 
-export default () => <Error id="not-found" title="Not Found" />;
+export default () => <ErrorComponent id="not-found" title="Not Found" />;
