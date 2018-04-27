@@ -36,16 +36,18 @@ export default class extends React.Component {
 
     render() {
         switch (this.state.fetchStatus) {
-            case 'pending':
+            case 'pending': {
                 return <Spinner />;
-            case 'error':
+            }
+            case 'error': {
                 return (
                     <ErrorComponent
                         id="dashboard-fetch-error"
                         title="Error fetching dashboard"
                     />
                 );
-            case 'success':
+            }
+            case 'success': {
                 const dashboard = this.state.dashboard;
                 const activeCategory = this.state.activeCategory || dashboard.defaultCategory || dashboard.categories[0];
 
@@ -61,8 +63,10 @@ export default class extends React.Component {
                         onCategoryChange={this._onCategoryChange}
                     />
                 );
-        default:
-            throw new Error(`Unexpected fetch status: ${this.state.fetchStatus}`);
+            }
+            default: {
+                throw new Error(`Unexpected fetch status: ${this.state.fetchStatus}`);
+            }
         }
     }
 }
