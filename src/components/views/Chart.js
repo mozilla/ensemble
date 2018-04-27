@@ -2,17 +2,22 @@ import React from 'react';
 import MetricsGraphics from 'react-metrics-graphics';
 import dateformat from 'dateformat';
 import { curveCatmullRom } from 'd3-shape';
+import distinctColors from 'distinct-colors';
 
 import { prettifyNumber } from '../../lib/utils';
 
 import 'metrics-graphics/dist/metricsgraphics.css';
-import './css/PopulationColors.css';
 import './css/Chart.css';
 import './css/Metric.css';
 
 
 export default props => {
     const extraOptions = {};
+
+    // metrics-graphics will give each population up to this number a unique
+    // color. (The 11th unique color is black.) If a chart has more populations
+    // than this, all remaining populations will also be colored black.
+    const mgNumUniqueColors = 11;
 
     // Units that can appear right after a value, without a space in between
     const spacelessUnits = ['%'];
@@ -114,9 +119,23 @@ export default props => {
         extraOptions.markers = props.markers;
     }
 
+    // If we have more populations than metrics-graphics can assign unique
+    // colors to, we need to generate a unique color for each population
+    // manually.
+    //
+    // The settings passed to distinctColors were chosen such that the generated
+    // colors will be readable on a white background.
+    if (props.numPopulations > mgNumUniqueColors) {
+        extraOptions.colors = distinctColors({
+            count: props.numPopulations,
+            lightMin: 30,
+            lightMax: 85,
+            chromaMin: 10,
+        }).map(c => c.hex());
+    }
+
     return (
         <div className="metric chart">
-            <h5 className="metric-title">{props.title}</h5>
             <MetricsGraphics
                 data={props.data}
                 x_accessor="x"
@@ -124,7 +143,7 @@ export default props => {
 
                 show_tooltips={false}
 
-                height={500}
+                height={props.height}
                 width={props.width}
 
                 x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
