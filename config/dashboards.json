@@ -2,11 +2,11 @@
     {
         "path": "example-dashboard-1",
         "menuTitle": "Example Dash 1",
-        "source": "//ensemble-transposer.herokuapp.com/user-activity"
+        "source": "//ensemble-transposer.herokuapp.com/example-dash-1"
     },
     {
         "path": "example-dashboard-2",
         "menuTitle": "Example Dash 2",
-        "source": "//ensemble-transposer.herokuapp.com/usage-behavior"
+        "source": "//ensemble-transposer.herokuapp.com/example-dash-2"
     }
 ]
