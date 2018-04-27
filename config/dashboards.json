@@ -1,17 +1,12 @@
 [
     {
-        "path": "user-activity",
-        "menuTitle": "User Activity",
+        "path": "example-dashboard-1",
+        "menuTitle": "Example Dash 1",
         "source": "//ensemble-transposer.herokuapp.com/user-activity"
     },
     {
-        "path": "usage-behavior",
-        "menuTitle": "Usage Behavior",
+        "path": "example-dashboard-2",
+        "menuTitle": "Example Dash 2",
         "source": "//ensemble-transposer.herokuapp.com/usage-behavior"
-    },
-    {
-        "path": "hardware",
-        "menuTitle": "Hardware",
-        "source": "//ensemble-transposer.herokuapp.com/hardware"
     }
 ]

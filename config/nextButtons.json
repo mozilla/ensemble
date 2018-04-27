@@ -1,17 +1,12 @@
 [
     {
         "from": "/",
-        "to": "/dashboard/user-activity",
-        "text": "Proceed to User Activity"
+        "to": "/dashboard/example-dashboard-1",
+        "text": "Proceed to Example Dash 1"
     },
     {
-        "from": "/dashboard/user-activity",
-        "to": "/dashboard/usage-behavior",
-        "text": "Proceed to Usage Behavior"
-    },
-    {
-        "from": "/dashboard/usage-behavior",
-        "to": "/dashboard/hardware",
-        "text": "Proceed to Hardware"
+        "from": "/dashboard/example-dashboard-1",
+        "to": "/dashboard/example-dashboard-2",
+        "text": "Proceed to Example Dash 2"
     }
 ]
