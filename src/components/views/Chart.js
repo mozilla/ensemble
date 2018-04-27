@@ -154,6 +154,10 @@ export default props => {
 
                 interpolate={curveCatmullRom.alpha(0.5)}
 
+                // Turn off animations when chart data changes. This isn't
+                // possible when code-splitting is used, anyway.
+                transition_on_update={false}
+
                 {...extraOptions}
             />
         </div>

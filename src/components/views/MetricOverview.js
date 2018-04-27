@@ -1,8 +1,6 @@
 import React from 'react';
 
-import ChartContainer from '../containers/ChartContainer';
-import CustomizableDateContainer from '../containers/CustomizableDateContainer';
-import DataTableContainer from '../containers/DataTableContainer';
+import lazyLoad from '../../lib/lazyLoad';
 
 import './css/MetricOverview.css';
 
@@ -30,6 +28,7 @@ export default props => {
 
     let MetricContainer = null;
     if (props.type === 'line') {
+        const ChartContainer = lazyLoad(import('../containers/ChartContainer'));
         const numPopulations = Object.keys(props.data[props.activeCategory].populations).length;
         MetricContainer = (
             <ChartContainer
@@ -43,6 +42,9 @@ export default props => {
             />
         );
     } else if (props.type === 'table') {
+        const CustomizableDateContainer = lazyLoad(import('../containers/CustomizableDateContainer'));
+        const DataTableContainer = lazyLoad(import('../containers/DataTableContainer'));
+
         const titleComponent = <h5 className="metric-title">{props.title}</h5>;
         MetricContainer = (
             <CustomizableDateContainer

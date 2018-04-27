@@ -2,6 +2,8 @@ import React from 'react';
 import { scaleLinear } from 'd3-scale';
 import { select } from 'd3-selection';
 
+import { prettifyNumber } from '../../lib/utils';
+
 import './css/SummaryMetric.css';
 
 
@@ -19,7 +21,7 @@ export default class extends React.Component {
             width: 450,
             height: 90,
             xPaddingLeft: 0,
-            xPaddingRight: 30,
+            xPaddingRight: 40,
             barYPosition: 15,
             barHeight: 22,
         };
@@ -116,10 +118,7 @@ export default class extends React.Component {
                         myXMarker + ((xMarker - myXMarker) / 2))
                     )
                     .attr('y', this.size.barYPosition + this.size.barHeight + 22)
-                    .text(`${d.name} (${d.value.toLocaleString('en-US', {
-                        minimumFractionDigits: process.env.REACT_APP_VALUE_FRACTION_DIGITS,
-                        maximumFractionDigits: process.env.REACT_APP_VALUE_FRACTION_DIGITS,
-                    })}%)`)
+                    .text(`${d.name} (${prettifyNumber(d.value)}%)`)
                     .style('fill', '#000000');
 
                 return this.size.xPaddingLeft + xScale(myXMarker);

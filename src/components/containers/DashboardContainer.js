@@ -1,11 +1,9 @@
 import React from 'react';
-import Spinner from 'react-spinkit';
 import request from 'request';
 
+import Spinner from '../views/Spinner';
 import ErrorComponent from '../views/Error';
 import Dashboard from '../views/Dashboard';
-
-import './css/Spinner.css';
 
 
 export default class extends React.Component {
@@ -39,7 +37,7 @@ export default class extends React.Component {
     render() {
         switch (this.state.fetchStatus) {
             case 'pending':
-                return <Spinner name="circle" fadeIn="none" />;
+                return <Spinner />;
             case 'error':
                 return (
                     <ErrorComponent
