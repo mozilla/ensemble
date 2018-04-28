@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 import './css/Home.css';
 
@@ -33,15 +32,15 @@ export default () => (
         <h2>The report is split into 3 sections:</h2>
         <dl className="explanations">
             <div>
-                <dt><Link to="/dashboard/user-activity">User Activity</Link></dt>
+                <dt><a href="/dashboard/user-activity">User Activity</a></dt>
                 <dd>Metrics for the the overall Firefox Desktop user population.</dd>
             </div>
             <div>
-                <dt><Link to="/dashboard/usage-behavior">Usage Behavior</Link></dt>
+                <dt><a href="/dashboard/usage-behavior">Usage Behavior</a></dt>
                 <dd>The ways in which Firefox Desktop is being used.</dd>
             </div>
             <div>
-                <dt><Link to="/dashboard/hardware">Hardware Across the Web</Link></dt>
+                <dt><a href="/dashboard/hardware">Hardware Across the Web</a></dt>
                 <dd>The specs and configurations for the machines running Firefox Desktop.</dd>
             </div>
         </dl>
