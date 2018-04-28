@@ -31,3 +31,21 @@ and checking for security vulnerabilities)
 
 To analyze the size of the JavaScript bundle that will be served, run `yarn
 size`.
+
+### Notes
+
+#### Adding new pages
+
+When adding a new page, be sure to update the `routes` object of *static.json*
+accordingly. For example, if an */about* page is added, the following property
+should be added to the `routes` object:
+
+```javascript
+"/about": "index.html"
+```
+
+If this is not done, the page will 404 on production.
+
+We could use a wildcard in *static.json* to send all unknown paths to
+*index.html*, but that would mean even non-existent paths would render
+successfully and the server would never return a 404.

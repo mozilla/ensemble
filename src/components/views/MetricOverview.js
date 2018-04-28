@@ -1,8 +1,6 @@
 import React from 'react';
 
-import ChartContainer from '../containers/ChartContainer';
-import CustomizableDateContainer from '../containers/CustomizableDateContainer';
-import DataTableContainer from '../containers/DataTableContainer';
+import lazyLoad from '../../lib/lazyLoad';
 
 import './css/MetricOverview.css';
 
@@ -29,9 +27,9 @@ export default props => {
     }
 
     let MetricContainer = null;
-    let numPopulations;
     if (props.type === 'line') {
-        numPopulations = Object.keys(props.data[props.activeCategory].populations).length;
+        const ChartContainer = lazyLoad(import('../containers/ChartContainer'));
+        const numPopulations = Object.keys(props.data[props.activeCategory].populations).length;
         MetricContainer = (
             <ChartContainer
                 legendTarget={`#${props.identifier} .legend`}
@@ -40,9 +38,13 @@ export default props => {
                 activeCategory={props.activeCategory}
                 axes={props.axes || {}}
                 annotations={props.annotations || {}}
+                numPopulations={numPopulations}
             />
         );
     } else if (props.type === 'table') {
+        const CustomizableDateContainer = lazyLoad(import('../containers/CustomizableDateContainer'));
+        const DataTableContainer = lazyLoad(import('../containers/DataTableContainer'));
+
         const titleComponent = <h5 className="metric-title">{props.title}</h5>;
         MetricContainer = (
             <CustomizableDateContainer
@@ -58,15 +60,14 @@ export default props => {
         );
     }
 
-    // The data-populations thing is a workaround for metrics-graphics issue
-    // #806. See the comment in PopulationColors.css for more information.
     return (
-        <div id={props.identifier} className="metric-overview" data-populations={numPopulations}>
+        <div id={props.identifier} className="metric-overview">
+            <h5 className="metric-title">{props.title}</h5>
+            {maybeMetricDescription}
             <div className="metric-and-legend">
                 {MetricContainer}
                 <div className="legend" />
             </div>
-            {maybeMetricDescription}
         </div>
     );
 };

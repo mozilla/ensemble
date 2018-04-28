@@ -1,11 +1,9 @@
 import React from 'react';
-import Spinner from 'react-spinkit';
 import { connect } from 'react-refetch';
 
-import Error from '../views/Error';
+import Spinner from '../views/Spinner';
+import ErrorComponent from '../views/Error';
 import Dashboard from '../views/Dashboard';
-
-import './css/Spinner.css';
 
 
 class DashboardContainer extends React.Component {
@@ -24,19 +22,19 @@ class DashboardContainer extends React.Component {
         const dataFetch = this.props.dataFetch;
 
         if (dataFetch.pending) {
-            return <Spinner name="circle" fadeIn="none" />;
+            return <Spinner />;
         } else if (dataFetch.rejected) {
-            const extraErrorProps = {};
+            const extraErrorComponentProps = {};
 
             if (dataFetch.reason && dataFetch.reason.message) {
-                extraErrorProps.message = dataFetch.reason.message;
+                extraErrorComponentProps.message = dataFetch.reason.message;
             }
 
             return (
-                <Error
+                <ErrorComponent
                     id="dashboard-fetch-error"
                     title="Error fetching dashboard"
-                    {...extraErrorProps}
+                    {...extraErrorComponentProps}
                 />
             );
         } else if (dataFetch.fulfilled) {
