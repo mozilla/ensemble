@@ -39,15 +39,15 @@ fs.readFile(indexPath, 'utf8', (error, indexHTML) => {
 
     // Use the renderReact middleware for all other paths
     app.use('/*', (req, res) => renderReact(req, res, indexHTML));
-});
 
-// Start the app
-app.listen(port, error => {
-    if (error) {
+    // Start the app
+    app.listen(port, error => {
+        if (error) {
+            // eslint-disable-next-line no-console
+            return console.error('Error:', error);
+        }
+
         // eslint-disable-next-line no-console
-        return console.error('Error:', error);
-    }
-
-    // eslint-disable-next-line no-console
-    console.log(`Listening on port ${port}...`);
+        console.log(`Listening on port ${port}...`);
+    });
 });

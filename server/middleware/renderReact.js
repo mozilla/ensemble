@@ -1,16 +1,21 @@
 import React from 'react';
-import ReactDOMServer from 'react-dom/server';
+import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
+import { Capture } from 'react-loadable';
 
 import Application from '../../src/components/views/Application';
 
 
 export default (req, res, indexHTML) => {
-    // Render this page's content as a string
+    const modules = [];
     const context = {};
-    const pageHTML = ReactDOMServer.renderToString(
-        <StaticRouter context={context} location={req.originalUrl}>
-            <Application />
+
+    // Render this page's content as a string
+    const pageHTML = renderToString(
+        <StaticRouter context={context} location={req.url}>
+            <Capture report={m => modules.push(m)}>
+                <Application />
+            </Capture>
         </StaticRouter>
     );
 
