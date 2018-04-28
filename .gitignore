@@ -7,7 +7,7 @@
 /coverage
 selenium-debug.log
 
-# production
+# generated files
 /build
 
 # misc
