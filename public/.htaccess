@@ -1,9 +1,7 @@
 Options -MultiViews
 RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_URI} !^static/
-RewriteCond %{REQUEST_URI} !^icons/
-RewriteCond %{REQUEST_URI} !^asset-manifest.json$
-RewriteCond %{REQUEST_URI} !^manifest.json$
-RewriteCond %{REQUEST_URI} !^servier-worker.js$
-RewriteRule ^ index.html [QSA,L]
+RewriteRule ^$ index.html
+RewriteRule ^dashboard/user-activity$ index.html
+RewriteRule ^dashboard/usage-behavior$ index.html
+RewriteRule ^dashboard/hardware$ index.html
+ErrorDocument 404 /protected/usage-report-demo/index.html
