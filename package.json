@@ -27,7 +27,7 @@
         "metrics-graphics": "2.14.0",
         "react": "16.3.1",
         "react-dom": "16.3.1",
-        "react-ga": "2.4.1",
+        "react-ga": "2.5.0",
         "react-loadable": "5.3.1",
         "react-metrics-graphics": "1.0.2",
         "react-refetch": "1.0.4",
