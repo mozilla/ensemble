@@ -2,6 +2,7 @@ import React from 'react';
 
 import DashboardSection from './DashboardSection';
 import MetricOverviewCollection from './MetricOverviewCollection';
+import StripedHeader from './StripedHeader';
 import SummaryMetricContainer from '../containers/SummaryMetricContainer';
 import CustomizableDateContainer from '../containers/CustomizableDateContainer';
 
@@ -91,11 +92,11 @@ export default props => {
 
     return (
         <article id="dashboard">
-            <header>
-                <h2 id="dashboard-title">{props.title}</h2>
+            <header className={props.description ? 'dashboard-header static' : 'dashboard-header'}>
+                <h2 id="dashboard-title" className="contrasted">{props.title}</h2>
                 <p id="dashboard-description">{props.description}</p>
+                {maybeCategory}
             </header>
-            {maybeCategory}
             {maybeSummaryMetrics}
             <h3 id="metrics-heading">Metrics</h3>
             {body}

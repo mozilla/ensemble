@@ -21,6 +21,7 @@
 
 .data-table th:first-child, .data-table td:first-child {
     text-align: left;
+    padding-left: 10px;
 }
 
 .data-table th:nth-child(2), .data-table td:nth-child(2) {
@@ -29,6 +30,7 @@
 
 .data-table th:last-child, .data-table td:last-child {
     text-align: right;
+    padding-right: 10px;
 }
 
 /* Give the columns fixed widths, otherwise their widths might change when
@@ -59,6 +61,10 @@
 
     /* Needs to be max-width or else truncation won't work */
     max-width: 145px;
+}
+
+.data-table tr:nth-child(even) td {
+    background-color: #efefef;
 }
 
 @media all and (min-width: 550px) {

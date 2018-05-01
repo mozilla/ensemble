@@ -1,14 +1,13 @@
 .next-button {
     display: flex;
     justify-content: center;
-    margin: 25px 0;
+    margin: 50px 0;
 }
 
 .next-button a {
-    /* color stolen from "download firefox" button */
-    background-color: #16da00;
+    background-color: #f5e14a;
     border: 0;
-    color: #fff;
+    color: #000;
     display: inline-block;
     height: 48px;
     line-height: 28px;
@@ -18,13 +17,12 @@
 
 .next-button a:hover {
     border-bottom: 0;
-    color: #fff;
 }
 
 .next-button a::after {
-    background-color: #16da00;
+    background-color: #f5e14a;
     border: 24px solid #fff;
-    border-left: 24px solid #16da00;
+    border-left: 24px solid #f5e14a;
     content: "";
     height: 0;
     top: 0;

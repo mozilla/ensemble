@@ -48,6 +48,10 @@
     font-weight: 400;
 }
 
+.metric-overview .striped {
+    width: 100%;
+}
+
 .metric-overview .legend span {
     display: block;
     margin: 5px;

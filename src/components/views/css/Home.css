@@ -6,31 +6,26 @@
     line-height: 1.5;
 }
 
-.explanations > div {
-    border: 1px solid #000;
-}
-
 .explanations dt {
-    background-color: #000;
-    color: #fff;
-    font-weight: 600;
-    line-height: 2;
-    text-align: center;
+    border: 1px solid #efefef;
+    font-weight: 800;
 }
 
-.explanations dt a {
-    color: #fff;
-    border-bottom: 1px solid #fff;
+.explanations dt, .explanations dd {
+    padding: 10px;
 }
 
 .explanations dd {
     margin: 0;
-    padding: 10px;
+    background-color: #efefef;
 }
 
-#introduction h2 {
-    font-size: 1.1rem;
-    font-weight: 600;
+.explanations > div {
+    margin-bottom: 20px;
+}
+
+.highlighted {
+    margin: 20px 0;
 }
 
 @media all and (min-width: 550px) {
@@ -38,15 +33,23 @@
         flex-direction: row;
     }
 
-    .explanations:not(.split) > div {
-        border-right: 0;
+    .explanations dd {
+        border-right: 1px solid #fff;
+    }
+
+    .explanations dt {
+        border-left: 0;
+    }
+
+    .explanations div:first-child dt {
+        border-left: 1px solid #efefef;
+    }
+
+    .explanations div:last-child dd {
+        border-right: 1px solid #efefef;
     }
 
     .explanations.split > div {
         width: 45%;
-    }
-
-    .explanations > div:last-child {
-        border-right: 1px solid #000;
     }
 }

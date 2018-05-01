@@ -1,6 +1,7 @@
 import React from 'react';
 
 import lazyLoad from '../../lib/lazyLoad';
+import StripedHeader from './StripedHeader';
 
 import './css/MetricOverview.css';
 
@@ -62,7 +63,7 @@ export default props => {
 
     return (
         <div id={props.identifier} className="metric-overview">
-            <h5 className="metric-title">{props.title}</h5>
+            <StripedHeader tag="h5" label={props.title} />
             {maybeMetricDescription}
             <div className="metric-and-legend">
                 {MetricContainer}
