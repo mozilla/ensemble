@@ -2,7 +2,6 @@ import React from 'react';
 
 import DashboardSection from './DashboardSection';
 import MetricOverviewCollection from './MetricOverviewCollection';
-import StripedHeader from './StripedHeader';
 import SummaryMetricContainer from '../containers/SummaryMetricContainer';
 import CustomizableDateContainer from '../containers/CustomizableDateContainer';
 

@@ -43,13 +43,13 @@ main {
 }
 
 a {
-    color: #0070FF;
+    color: #0070ff;
     text-decoration: none;
     font-weight: bold;
 }
 
 a:hover {
-    border-bottom: 1px solid #0070FF;
+    border-bottom: 1px solid #0070ff;
 }
 
 p {
