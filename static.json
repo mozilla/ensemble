@@ -24,6 +24,5 @@
         "/__heartbeat__": "/ops/heartbeat.html",
         "/__lbheartbeat__": "/ops/lbheartbeat.html",
         "/__version__": "/ops/version.json"
-    },
-    "error_page": "index.html"
+    }
 }
