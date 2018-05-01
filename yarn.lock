@@ -6290,9 +6290,9 @@ netmask@~1.0.4:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/netmask/-/netmask-1.0.6.tgz#20297e89d86f6f6400f250d9f4f6b4c1945fcd35"
 
-nightwatch@0.9.20:
-  version "0.9.20"
-  resolved "https://registry.yarnpkg.com/nightwatch/-/nightwatch-0.9.20.tgz#156d17cd058cbc31f43ab18e915f7ec297fb53e0"
+nightwatch@0.9.21:
+  version "0.9.21"
+  resolved "https://registry.yarnpkg.com/nightwatch/-/nightwatch-0.9.21.tgz#9e794a7514b4fd5f46602d368e50515232ab9e90"
   dependencies:
     chai-nightwatch "~0.1.x"
     ejs "2.5.7"
@@ -7814,9 +7814,9 @@ react-dev-utils@^5.0.1:
     strip-ansi "3.0.1"
     text-table "0.2.0"
 
-react-dom@16.3.1:
-  version "16.3.1"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.3.1.tgz#6a3c90a4fb62f915bdbcf6204422d93a7d4ca573"
+react-dom@16.3.2:
+  version "16.3.2"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.3.2.tgz#cb90f107e09536d683d84ed5d4888e9640e0e4df"
   dependencies:
     fbjs "^0.8.16"
     loose-envify "^1.1.0"
@@ -7827,9 +7827,9 @@ react-error-overlay@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-4.0.0.tgz#d198408a85b4070937a98667f500c832f86bd5d4"
 
-react-ga@2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/react-ga/-/react-ga-2.4.1.tgz#dfbd5f028ed39a07067f7a8bf57dc0d240000767"
+react-ga@2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/react-ga/-/react-ga-2.5.0.tgz#fbba2b33d41ce727f7d4cf383d54dbbfbf96c507"
   optionalDependencies:
     prop-types "^15.6.0"
     react "^15.6.2 || ^16.0"
@@ -7930,9 +7930,9 @@ react-spinkit@3.0.0:
     object-assign "^4.1.0"
     prop-types "^15.5.8"
 
-react@16.3.1:
-  version "16.3.1"
-  resolved "https://registry.yarnpkg.com/react/-/react-16.3.1.tgz#4a2da433d471251c69b6033ada30e2ed1202cfd8"
+react@16.3.2:
+  version "16.3.2"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.3.2.tgz#fdc8420398533a1e58872f59091b272ce2f91ea9"
   dependencies:
     fbjs "^0.8.16"
     loose-envify "^1.1.0"
