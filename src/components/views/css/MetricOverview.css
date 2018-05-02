@@ -8,12 +8,8 @@
 }
 
 .metric-description {
-    background-color: rgba(0, 0, 0, 0.04);
     font-size: 1rem;
     margin: 0;
-    padding: 12px;
-    position: relative;
-    top: 20px;
 }
 
 /* Exclude the top margin of the first paragraph of a multi-paragraph

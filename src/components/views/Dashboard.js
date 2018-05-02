@@ -4,6 +4,7 @@ import DashboardSection from './DashboardSection';
 import MetricOverviewCollection from './MetricOverviewCollection';
 import SummaryMetricContainer from '../containers/SummaryMetricContainer';
 import CustomizableDateContainer from '../containers/CustomizableDateContainer';
+import StripedHeader from './StripedHeader';
 
 import { bumpSort } from '../../lib/utils';
 
@@ -35,7 +36,7 @@ export default props => {
             );
         });
 
-        const titleComponent = <h3>Summary</h3>;
+        const titleComponent = <StripedHeader tag="h3" label="Summary" />;
         maybeSummaryMetrics = (
             <section id="summary-metrics">
                 <CustomizableDateContainer
@@ -91,7 +92,7 @@ export default props => {
 
     return (
         <article id="dashboard">
-            <header className={props.description ? 'dashboard-header static' : 'dashboard-header'}>
+            <header className="dashboard-header">
                 <h2 id="dashboard-title" className="contrasted">{props.title}</h2>
                 <p id="dashboard-description">{props.description}</p>
                 {maybeCategory}

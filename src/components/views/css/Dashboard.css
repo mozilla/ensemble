@@ -26,10 +26,10 @@
 .dashboard-header {
     background-color: #fff;
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
     top: 0;
     z-index: 10;
-    flex-direction: column;
 }
 
 .dashboard-header h2 {
@@ -48,11 +48,7 @@
 
 @media all and (min-width: 550px) {
     .dashboard-header {
-        position: sticky;
         flex-direction: row;
-    }
-
-    .dashboard-header.static {
-        position: static;
+        position: sticky;
     }
 }

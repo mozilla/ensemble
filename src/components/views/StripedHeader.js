@@ -6,7 +6,7 @@ import './css/StripedHeader.css';
 export default props => {
     return React.createElement(
         props.tag,
-        {class: 'striped'},
+        {className: 'striped'},
         <span>{props.label}</span>
     );
 };

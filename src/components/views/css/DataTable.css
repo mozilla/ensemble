@@ -1,3 +1,7 @@
+.data-table-wrapper {
+    width: 100%;
+}
+
 .data-table {
     border-collapse: collapse;
     width: 100%;
@@ -21,6 +25,9 @@
 
 .data-table th:first-child, .data-table td:first-child {
     text-align: left;
+}
+
+.data-table td:first-child {
     padding-left: 10px;
 }
 
@@ -67,15 +74,3 @@
     background-color: #efefef;
 }
 
-@media all and (min-width: 550px) {
-    .data-table td:nth-child(2) {
-        max-width: 220px;
-    }
-}
-
-@media all and (min-width: 1200px) {
-    .data-table-wrapper {
-        margin: 0 50px;
-        width: 440px;
-    }
-}
