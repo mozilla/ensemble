@@ -49,6 +49,7 @@
 @media all and (min-width: 550px) {
     .dashboard-header {
         flex-direction: row;
+        padding-bottom: 10px;
         position: sticky;
     }
 }
