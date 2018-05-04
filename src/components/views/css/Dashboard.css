@@ -9,6 +9,10 @@
     display: none;
 }
 
+#dashboard-description {
+    margin: 10px;
+}
+
 #dashboard-description:empty {
     margin: 0;
 }
@@ -16,9 +20,20 @@
 #category {
     background: #fff;
     padding: 20px 0;
-    position: sticky;
+    z-index: 10;
+}
+
+.dashboard-header {
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     top: 0;
     z-index: 10;
+}
+
+.dashboard-header h2 {
+    margin: 0;
 }
 
 .metric-overview-collection {
@@ -26,7 +41,15 @@
 }
 
 #summary-metrics {
+    align-items: center;
     display: flex;
     flex-direction: column;
-    align-items: center;
+}
+
+@media all and (min-width: 550px) {
+    .dashboard-header {
+        flex-direction: row;
+        padding-bottom: 10px;
+        position: sticky;
+    }
 }

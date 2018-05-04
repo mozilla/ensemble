@@ -15,9 +15,14 @@ h1 {
 h1 a {
     color: inherit;
     border-bottom: 0;
+    background-color: #f5e14a;
+    line-height: 1.5;
+    display: inline-block;
+    padding: 0 10px;
 }
 
 h1 a:hover {
+    color: #000;
     border-bottom: 0;
 }
 

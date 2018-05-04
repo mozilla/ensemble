@@ -1,20 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import StripedHeader from './StripedHeader';
+
 import './css/Home.css';
 
 
 export default () => (
     <article id="introduction">
-        <p>
+        <p className="highlighted">
             The Firefox Public Data Report is a weekly public report on the
             activity, behavior, and hardware configuration of Firefox Desktop
             users.
         </p>
-        <h2>The purpose of this report is twofold:</h2>
+        <h2 className="contrasted">The purpose of this report is twofold:</h2>
         <dl className="explanations split">
             <div>
-                <dt>Empowerment</dt>
+                <dt><StripedHeader tag="h3" label="Empowerment" /></dt>
                 <dd>
                     We want to empower developers, journalists, and the overall
                     public to better understand the state of the web and the
@@ -22,7 +24,7 @@ export default () => (
                 </dd>
             </div>
             <div>
-                <dt>Transparency</dt>
+                <dt><StripedHeader tag="h3" label="Transparency" /></dt>
                 <dd>
                     At Mozilla, we like to say that we are "Open by Design." We
                     believe in an open web, so data and insights from the public
@@ -30,8 +32,8 @@ export default () => (
                 </dd>
             </div>
         </dl>
-        <h2>The report is split into 3 sections:</h2>
-        <dl className="explanations">
+        <h2 className="contrasted">The report is split into 3 sections:</h2>
+        <dl className="explanations alt">
             <div>
                 <dt><Link to="/dashboard/user-activity">User Activity</Link></dt>
                 <dd>Metrics for the the overall Firefox Desktop user population.</dd>

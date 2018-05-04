@@ -1,3 +1,18 @@
+.customizable-date {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.customizable-date.spaced {
+    margin-top: 25px;
+}
+
 .customizable-date .labelled-selector {
     margin: 20px 0;
+}
+
+.customizable-date .striped {
+    width: 100%;
 }

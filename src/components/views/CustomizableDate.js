@@ -24,6 +24,10 @@ export default props => {
         classes.push('metric');
     }
 
+    if (!props.titleComponent) {
+        classes.push('spaced');
+    }
+
     return (
         <div className={classes.join(' ')}>
             {props.titleComponent}
