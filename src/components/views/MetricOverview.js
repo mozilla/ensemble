@@ -1,6 +1,7 @@
 import React from 'react';
 
 import lazyLoad from '../../lib/lazyLoad';
+import StripedHeader from './StripedHeader';
 
 import './css/MetricOverview.css';
 
@@ -45,10 +46,9 @@ export default props => {
         const CustomizableDateContainer = lazyLoad(import('../containers/CustomizableDateContainer'));
         const DataTableContainer = lazyLoad(import('../containers/DataTableContainer'));
 
-        const titleComponent = <h5 className="metric-title">{props.title}</h5>;
+        // We're omitting titleComponent here since the title is set in a previous sibling.
         MetricContainer = (
             <CustomizableDateContainer
-                titleComponent={titleComponent}
                 dates={Object.keys(props.data[props.activeCategory].dates)}
                 metric={true}>
                 <DataTableContainer
@@ -62,7 +62,7 @@ export default props => {
 
     return (
         <div id={props.identifier} className="metric-overview">
-            <h5 className="metric-title">{props.title}</h5>
+            <StripedHeader tag="h5" label={props.title} />
             {maybeMetricDescription}
             <div className="metric-and-legend">
                 {MetricContainer}

@@ -1,11 +1,4 @@
-#summary-metrics h3 {
-    text-align: center;
-}
-
-.bar-label {
-    display: none;
-}
-
+.bar-label,
 .bar-arrow {
     display: none;
 }
