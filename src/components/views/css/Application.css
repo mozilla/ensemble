@@ -73,6 +73,10 @@ h2, h3 {
     padding: 10px;
 }
 
+dd {
+    margin: 0;
+}
+
 @media all and (min-width: 550px) {
     body {
         font-size: 14px;

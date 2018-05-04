@@ -14,26 +14,26 @@ export default () => (
             users.
         </p>
         <h2 className="contrasted">The purpose of this report is twofold:</h2>
-        <div className="explanations split">
+        <dl className="explanations split">
             <div>
-                <StripedHeader tag="h3" label="Empowerment" />
-                <p>
+                <dt><StripedHeader tag="h3" label="Empowerment" /></dt>
+                <dd>
                     We want to empower developers, journalists, and the overall
                     public to better understand the state of the web and the
                     direction of trends in desktop web browsing.
-                </p>
+                </dd>
             </div>
             <div>
-                <StripedHeader tag="h3" label="Transparency" />
-                <div>
+                <dt><StripedHeader tag="h3" label="Transparency" /></dt>
+                <dd>
                     At Mozilla, we like to say that we are "Open by Design." We
                     believe in an open web, so data and insights from the public
                     should be made public, so the public can benefit.
-                </div>
+                </dd>
             </div>
-        </div>
+        </dl>
         <h2 className="contrasted">The report is split into 3 sections:</h2>
-        <dl className="explanations">
+        <dl className="explanations alt">
             <div>
                 <dt><Link to="/dashboard/user-activity">User Activity</Link></dt>
                 <dd>Metrics for the the overall Firefox Desktop user population.</dd>

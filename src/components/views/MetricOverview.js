@@ -46,9 +46,9 @@ export default props => {
         const CustomizableDateContainer = lazyLoad(import('../containers/CustomizableDateContainer'));
         const DataTableContainer = lazyLoad(import('../containers/DataTableContainer'));
 
+        // We're omitting titleComponent here since the title is set in a previous sibling.
         MetricContainer = (
             <CustomizableDateContainer
-                titleComponent={null}
                 dates={Object.keys(props.data[props.activeCategory].dates)}
                 metric={true}>
                 <DataTableContainer

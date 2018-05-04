@@ -6,17 +6,16 @@
     line-height: 1.5;
 }
 
-.explanations dt {
+.explanations.alt dt {
     border: 1px solid #efefef;
     font-weight: 800;
 }
 
-.explanations dt, .explanations dd {
+.explanations.alt dt, .explanations.alt dd {
     padding: 10px;
 }
 
-.explanations dd {
-    margin: 0;
+.explanations.alt dd {
     background-color: #efefef;
 }
 
@@ -33,19 +32,19 @@
         flex-direction: row;
     }
 
-    .explanations dd {
+    .explanations.alt dd {
         border-right: 1px solid #fff;
     }
 
-    .explanations dt {
+    .explanations.alt dt {
         border-left: 0;
     }
 
-    .explanations div:first-child dt {
+    .explanations.alt div:first-child dt {
         border-left: 1px solid #efefef;
     }
 
-    .explanations div:last-child dd {
+    .explanations.alt div:last-child dd {
         border-right: 1px solid #efefef;
     }
 
