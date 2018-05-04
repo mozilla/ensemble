@@ -43,20 +43,38 @@ main {
 }
 
 a {
-    color: #0198e1;
+    color: #0070ff;
     text-decoration: none;
-    border-bottom: 1px solid #0198e1;
+    font-weight: bold;
 }
 
 a:hover {
-    color: #1874cd;
-    border-bottom: 1px solid #1874cd;
+    border-bottom: 1px solid #0070ff;
 }
 
 p {
     font-size: 1rem;
     line-height: 28px;
     margin: 10px 0;
+}
+
+h2, h3 {
+    font-size: 17px;
+}
+
+.contrasted {
+    align-items: center;
+    background-color: #000;
+    color: #fff;
+    display: flex;
+    font-size: 14px;
+    font-weight: 200;
+    line-height: 1.2;
+    padding: 10px;
+}
+
+dd {
+    margin: 0;
 }
 
 @media all and (min-width: 550px) {

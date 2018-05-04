@@ -1,0 +1,24 @@
+.striped {
+    background: url(../img/diagonal-line_yellow.png) repeat-x left center;
+    background-size: 20px 40px;
+    line-height: 40px;
+    text-align: left;
+    font-size: 16px;
+}
+
+.striped span {
+    background-color: #f5e14a;
+    display: inline-block;
+    padding: 0 10px;
+    position: relative;
+}
+
+.striped span::before {
+    background-color: #f5e14a;
+    content: "";
+    height: 40px;
+    position: absolute;
+    transform: skew(-20deg);
+    width: 100%;
+    z-index: -1;
+}

@@ -1,3 +1,7 @@
+.data-table-wrapper {
+    width: 100%;
+}
+
 .data-table {
     border-collapse: collapse;
     width: 100%;
@@ -23,12 +27,17 @@
     text-align: left;
 }
 
+.data-table td:first-child {
+    padding-left: 10px;
+}
+
 .data-table th:nth-child(2), .data-table td:nth-child(2) {
     text-align: left;
 }
 
 .data-table th:last-child, .data-table td:last-child {
     text-align: right;
+    padding-right: 10px;
 }
 
 /* Give the columns fixed widths, otherwise their widths might change when
@@ -61,15 +70,7 @@
     max-width: 145px;
 }
 
-@media all and (min-width: 550px) {
-    .data-table td:nth-child(2) {
-        max-width: 220px;
-    }
+.data-table tr:nth-child(even) td {
+    background-color: #efefef;
 }
 
-@media all and (min-width: 1200px) {
-    .data-table-wrapper {
-        margin: 0 50px;
-        width: 440px;
-    }
-}
