@@ -32,9 +32,12 @@ body {
 }
 
 #application {
-    margin: 0 auto;
     position: relative;
     top: 10px;
+}
+
+#main-header, main, footer > div {
+    margin: 0 auto;
     width: 95vw;
 }
 
@@ -84,6 +87,9 @@ dd {
 
     #application {
         top: 40px;
+    }
+
+    #main-header, main, footer > div {
         width: 85vw;
     }
 
@@ -97,7 +103,7 @@ dd {
 }
 
 @media all and (min-width: 1200px) {
-    #application {
+    #main-header, main, footer > div {
         width: 1170px;
     }
 }
