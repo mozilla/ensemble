@@ -2,6 +2,7 @@ footer {
     padding: 40px 0 50px;
     background-color: #000;
     color: #fff;
+    text-align: center;
 }
 
 footer a {
@@ -16,13 +17,12 @@ footer a:hover {
 footer ul {
     list-style: none;
     padding: 0;
-    margin: 0;
     text-align: center;
-    margin-bottom: 40px;
+    margin: 0 0 40px;
 }
 
 footer h3 {
-    margin: 0;
+    margin: 0 0 6px;
     line-height: 32px;
 }
 
@@ -44,10 +44,6 @@ footer h3 {
     font-size: 10px;
 }
 
-.footer-secondary {
-    margin-top: 50px;
-}
-
 .footer-secondary ul {
     display: flex;
     justify-content: space-around;
@@ -63,7 +59,7 @@ footer h3 {
 }
 
 .footer-social a {
-    text-indent: -1200%;
+    text-indent: 120%;
     background: url(../img/social_logos_sprite.png) no-repeat;
     background-position: 0 2px;
     display: inline-block;
@@ -71,23 +67,30 @@ footer h3 {
     height: 16px;
     width: 16px;
     margin-right: 15px;
-    border-bottom: 0;
+    border: 0;
+    overflow: hidden;
 }
 
-.footer-social a:nth-child(2) {
+.footer-social ul {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+}
+
+.footer-social li:nth-child(2) a {
     background-position: 0 -16px;
 }
 
-.footer-social a:last-child {
+.footer-social li:last-child a {
     background-position: 0 -32px;
 }
 
-ul:last-child .footer-social a:last-child {
+.footer-primary > div:last-child .footer-social li:last-child a {
     background-position: 0 -48px;
 }
 
 .footer-social a:hover {
-    border-bottom: 0;
+    border: 0;
 }
 
 .footer-logo {
@@ -101,13 +104,17 @@ ul:last-child .footer-social a:last-child {
 }
 
 .footer-logo:hover {
-    border-bottom: 0;
+    border: 0;
 }
 
 @media all and (min-width: 550px) {
+    footer {
+        text-align: left;
+    }
+
     footer ul {
         text-align: left;
-        margin-bottom: 0;
+        margin: 0;
     }
 
     .footer-primary {
@@ -119,12 +126,16 @@ ul:last-child .footer-social a:last-child {
         display: inline-block;
     }
 
+    .footer-secondary {
+        margin-top: 50px;
+    }
+
     .footer-secondary ul {
         justify-content: flex-start;
     }
 
     .footer-secondary li {
-        padding-right: 20px;
+        padding: 0 20px 0 0;
     }
 
     .footer-secondary p {
@@ -132,6 +143,10 @@ ul:last-child .footer-social a:last-child {
     }
 
     footer a {
-        border-bottom: 0;
+        border: 0;
+    }
+
+    .footer-social ul {
+        justify-content: flex-start;
     }
 }
