@@ -106,7 +106,6 @@ export default class extends React.Component {
         maybeAddStateUpdate('annotations');
         maybeAddStateUpdate('activeCategory');
 
-
         if (stateUpdated) return stateUpdates;
         return null;
     }
