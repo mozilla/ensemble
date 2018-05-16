@@ -1,4 +1,4 @@
-const { linkWorks, flagForUpdate } = require('../utils');
+const { linkWorks, linksWork, flagForUpdate } = require('../utils');
 
 
 module.exports = {
@@ -24,7 +24,7 @@ module.exports = {
         browser.expect.element('#metric-overview-2 h5').text.to.be.equal('Monthly Active Users');
         browser.expect.element('#metric-overview-3 h5').text.to.be.equal('Daily Usage');
         browser.expect.element('#metric-overview-4 h5').text.to.be.equal('Average Intensity');
-        browser.expect.element('#metric-overview-5 h5').text.to.be.equal('New Users Percentage');
+        browser.expect.element('#metric-overview-5 h5').text.to.be.equal('New User Rate');
         browser.expect.element('#metric-overview-6 h5').text.to.be.equal('Latest Version');
     },
 
@@ -51,6 +51,10 @@ module.exports = {
 
         browser.expect.element('#metric-overview-6 svg').to.be.visible;
         browser.expect.element('#metric-overview-6 path.mg-line1').to.be.visible;
+    },
+
+    'All metric description links work': browser => {
+        linksWork(browser, '.metric-description a');
     },
 
     'The next button works': browser => {
