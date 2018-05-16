@@ -1,4 +1,5 @@
 import React from 'react';
+import markdownIt from 'markdown-it';
 
 import lazyLoad from '../../lib/lazyLoad';
 import StripedHeader from './StripedHeader';
@@ -7,6 +8,9 @@ import './css/MetricOverview.css';
 
 
 export default props => {
+    // Create a markdown parser that only parses links
+    const markdownParser = markdownIt('zero').enable('link');
+
     let maybeMetricDescription = null;
     if (props.description) {
         const multipleParagraphs = Array.isArray(props.description);
@@ -14,15 +18,17 @@ export default props => {
             maybeMetricDescription = (
                 <div className="metric-description">
                     {props.description.map((paragraph, index) => (
-                        <p key={index}>{paragraph}</p>
+                        <p key={index} dangerouslySetInnerHTML={
+                            {__html: markdownParser.renderInline(paragraph)}
+                        } />
                     ))}
                 </div>
             );
         } else {
             maybeMetricDescription = (
-                <p className="metric-description">
-                    {props.description}
-                </p>
+                <p className="metric-description" dangerouslySetInnerHTML={
+                    {__html: markdownParser.renderInline(props.description)}
+                } />
             );
         }
     }

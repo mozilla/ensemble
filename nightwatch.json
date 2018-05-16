@@ -1,5 +1,5 @@
 {
-    "src_folders": ["./src/tests"],
+    "src_folders": ["./src/tests/nightwatch"],
     "output_folder": false,
 
     "selenium": {

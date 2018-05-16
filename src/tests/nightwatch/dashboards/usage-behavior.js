@@ -1,4 +1,4 @@
-const { linkWorks, flagForUpdate } = require('../utils');
+const { linkWorks, linksWork, flagForUpdate } = require('../utils');
 
 
 module.exports = {
@@ -50,6 +50,10 @@ module.exports = {
 
         browser.expect.element('#metric-overview-4 table').to.be.visible;
         browser.expect.element('#metric-overview-4 tbody tr:first-child td:nth-child(2)').to.be.visible;
+    },
+
+    'All metric description links work': browser => {
+        linksWork(browser, '.metric-description a');
     },
 
     'The next button works': browser => {
