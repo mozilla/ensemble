@@ -3,11 +3,13 @@ module.exports = {
         browser: true,
         es6: true,
         node: true,
+        'jest/globals': true,
     },
     extends: [
         'eslint:recommended',
         'plugin:react/recommended',
         'plugin:jsx-a11y/recommended',
+        'plugin:jest/recommended',
     ],
     parser: 'babel-eslint',
     parserOptions: {
@@ -21,8 +23,21 @@ module.exports = {
         'json',
         'jsx-a11y',
         'react',
+        'jest',
     ],
     root: true,
+    overrides: [
+        {
+            files: ['src/tests/jest/*.js'],
+
+            // In src/setupTests.js, these globals are defined in such a way
+            // that they are available to all Jest tests
+            globals: {
+                React: true,
+                shallow: true,
+            },
+        },
+    ],
     rules: {
         // Errors
         'eqeqeq': 'error',
