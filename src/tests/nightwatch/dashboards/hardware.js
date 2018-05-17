@@ -1,4 +1,4 @@
-const { flagForUpdate } = require('../utils');
+const { flagForUpdate, linksWork } = require('../utils');
 
 
 module.exports = {
@@ -87,5 +87,9 @@ module.exports = {
 
         browser.expect.element('#plugins-metric-overview-2 svg').to.be.visible;
         browser.expect.element('#plugins-metric-overview-2 path.mg-line1').to.be.visible;
+    },
+
+    'All metric description links work': browser => {
+        linksWork(browser, '.metric-description a');
     },
 };

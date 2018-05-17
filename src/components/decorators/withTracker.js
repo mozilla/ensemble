@@ -17,18 +17,28 @@ export default (WrappedComponent, options = {}) => {
     };
 
     const HOC = class extends React.Component {
-        componentDidMount() {
-            const page = this.props.location.pathname;
-            trackPage(page);
+        constructor(props) {
+            super(props);
+            this.state = {
+                page: props.location.pathname,
+            };
         }
 
-        componentWillReceiveProps(nextProps) {
-            const currentPage = this.props.location.pathname;
+        componentDidMount() {
+            trackPage(this.state.page);
+        }
+
+        static getDerivedStateFromProps(nextProps, prevState) {
             const nextPage = nextProps.location.pathname;
 
-            if (currentPage !== nextPage) {
+            if (nextPage !== prevState.page) {
                 trackPage(nextPage);
+                return {
+                    page: nextPage,
+                };
             }
+
+            return null;
         }
 
         render() {

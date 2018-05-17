@@ -13,11 +13,14 @@ export default class extends React.Component {
         // Initial state of chart size.
         // It will later be set based on the width of a rendered layout wrapper DOM node.
         this.state = {
+            data: props.data,
+            annotations: props.annotations,
+            activeCategory: props.activeCategory,
             chartWidth: 0,
             chartHeight: this.maxChartHeight,
         };
 
-        this._initialize(props);
+        this._initialize();
     }
 
     formatData(populations) {
@@ -53,13 +56,13 @@ export default class extends React.Component {
         return { data, legend };
     }
 
-    _initialize = props => {
-        this.formattedData = this.formatData(props.data[props.activeCategory].populations);
-        this.showLegend = Object.keys(props.data[props.activeCategory].populations).length > 1;
+    _initialize = () => {
+        this.formattedData = this.formatData(this.state.data[this.state.activeCategory].populations);
+        this.showLegend = Object.keys(this.state.data[this.state.activeCategory].populations).length > 1;
 
         this.markers = [];
-        if (props.annotations && props.annotations[props.activeCategory]) {
-            this.markers = props.annotations[props.activeCategory].map(annotationMeta => {
+        if (this.state.annotations && this.state.annotations[this.state.activeCategory]) {
+            this.markers = this.state.annotations[this.state.activeCategory].map(annotationMeta => {
                 // Rename "date" to "x". MG requires that the name of this
                 // property matches the value of x_accessor.
                 return {
@@ -88,10 +91,23 @@ export default class extends React.Component {
         return size;
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps !== this.props) {
-            this._initialize(nextProps);
+    static getDerivedStateFromProps(nextProps, prevState) {
+        const stateUpdates = {};
+        let stateUpdated = false;
+
+        function maybeAddStateUpdate(key) {
+            if (nextProps[key] !== prevState[key]) {
+                stateUpdates[key] = nextProps[key];
+                stateUpdated = true;
+            }
         }
+
+        maybeAddStateUpdate('data');
+        maybeAddStateUpdate('annotations');
+        maybeAddStateUpdate('activeCategory');
+
+        if (stateUpdated) return stateUpdates;
+        return null;
     }
 
     componentDidMount() {
@@ -101,6 +117,10 @@ export default class extends React.Component {
             chartWidth: width,
             chartHeight: height,
         });
+    }
+
+    componentDidUpdate() {
+        this._initialize();
     }
 
     render() {
