@@ -1,0 +1,152 @@
+footer {
+    padding: 40px 0 50px;
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+}
+
+footer a {
+    color: #fff;
+    border-bottom: 1px solid #fff;
+}
+
+footer a:hover {
+    border-bottom: 1px solid #fff;
+}
+
+footer ul {
+    list-style: none;
+    padding: 0;
+    text-align: center;
+    margin: 0 0 40px;
+}
+
+footer h3 {
+    margin: 0 0 6px;
+    line-height: 32px;
+}
+
+.footer-primary {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-primary ul {
+    font-size: 12px;
+    line-height: 18px;
+}
+
+.footer-primary li {
+    margin: 0 0 10px;
+}
+
+.footer-secondary, .footer-secondary p {
+    font-size: 10px;
+}
+
+.footer-secondary ul {
+    display: flex;
+    justify-content: space-around;
+}
+
+.footer-secondary p {
+    text-align: center;
+    line-height: 18px;
+}
+
+.footer-social {
+    padding-top: 3px;
+}
+
+.footer-social a {
+    text-indent: 120%;
+    background: url(../img/social_logos_sprite.png) no-repeat;
+    background-position: 0 2px;
+    display: inline-block;
+    background-size: 16px;
+    height: 16px;
+    width: 16px;
+    margin-right: 15px;
+    border: 0;
+    overflow: hidden;
+}
+
+.footer-social ul {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+}
+
+.footer-social li:nth-child(2) a {
+    background-position: 0 -16px;
+}
+
+.footer-social li:last-child a {
+    background-position: 0 -32px;
+}
+
+.footer-primary > div:last-child .footer-social li:last-child a {
+    background-position: 0 -48px;
+}
+
+.footer-social a:hover {
+    border: 0;
+}
+
+.footer-logo {
+    background: url(../img/moz-wordmark-light-reverse.svg) no-repeat;
+    background-size: 100px 32px;
+    overflow: hidden;
+    text-indent: 120%;
+    display: none;
+    height: 32px;
+    width: 100px;
+}
+
+.footer-logo:hover {
+    border: 0;
+}
+
+@media all and (min-width: 550px) {
+    footer {
+        text-align: left;
+    }
+
+    footer ul {
+        text-align: left;
+        margin: 0;
+    }
+
+    .footer-primary {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .footer-logo {
+        display: inline-block;
+    }
+
+    .footer-secondary {
+        margin-top: 50px;
+    }
+
+    .footer-secondary ul {
+        justify-content: flex-start;
+    }
+
+    .footer-secondary li {
+        padding: 0 20px 0 0;
+    }
+
+    .footer-secondary p {
+        text-align: left;
+    }
+
+    footer a {
+        border: 0;
+    }
+
+    .footer-social ul {
+        justify-content: flex-start;
+    }
+}
