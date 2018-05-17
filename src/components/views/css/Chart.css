@@ -3,3 +3,9 @@
 .metricsGraphicsCon:hover .mg-markers {
     visibility: hidden;
 }
+
+/* Work around for this issue:
+   https://github.com/metricsgraphics/metrics-graphics/issues/852 */
+.metric svg {
+    user-select: none;
+}
