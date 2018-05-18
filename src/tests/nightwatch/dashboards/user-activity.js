@@ -15,8 +15,8 @@ module.exports = {
     },
 
     'Chart titles and order are correct': browser => {
-        // Wait for the dashboard to load
-        browser.waitForElementVisible('#dashboard');
+        // Wait for the charts to load
+        browser.waitForElementVisible('.chart');
 
         flagForUpdate(browser, '.metric', 'metrics in the activity dashboard', 6);
 
@@ -29,8 +29,8 @@ module.exports = {
     },
 
     'Charts render': browser => {
-        // Wait for the dashboard to load
-        browser.waitForElementVisible('#dashboard');
+        // Wait for the charts to load
+        browser.waitForElementVisible('.chart');
 
         flagForUpdate(browser, '.metric', 'metrics in the activity dashboard', 6);
 
