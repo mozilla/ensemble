@@ -3,7 +3,11 @@
     "https_only": true,
     "headers": {
         "/**": {
-            "Strict-Transport-Security": "max-age=7776000"
+            "Strict-Transport-Security": "max-age=31536000",
+            "Content-Security-Policy": "default-src 'none'; connect-src https://ensemble-transposer.herokuapp.com/; script-src 'self' 'unsafe-inline' https://www.google-analytics.com/; font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' blob:; form-action 'none'; base-uri 'none'; frame-ancestors 'none';",
+            "X-Content-Type-Options": "nosniff",
+            "X-Frame-Options": "deny",
+            "X-XSS-Protection": "1; mode=block"
         },
         "/__heartbeat__": {
             "Cache-Control": "no-cache, no-store, must-revalidate",
