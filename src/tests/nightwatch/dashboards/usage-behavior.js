@@ -15,8 +15,9 @@ module.exports = {
     },
 
     'Metric titles and order are correct': browser => {
-        // Wait for the dashboard to load
-        browser.waitForElementVisible('#dashboard');
+        // Wait for the metrics to load
+        browser.waitForElementVisible('.chart');
+        browser.waitForElementVisible('.data-table');
 
         flagForUpdate(browser, '.metric', 'metrics in the usage dashboard', 4);
 
@@ -27,8 +28,8 @@ module.exports = {
     },
 
     'Charts render': browser => {
-        // Wait for the dashboard to load
-        browser.waitForElementVisible('#dashboard');
+        // Wait for the charts to load
+        browser.waitForElementVisible('.chart');
 
         flagForUpdate(browser, '.chart', 'charts in the usage dashboard', 3);
 
@@ -43,8 +44,8 @@ module.exports = {
     },
 
     'Table renders': browser => {
-        // Wait for the dashboard to load
-        browser.waitForElementVisible('#dashboard');
+        // Wait for the table to load
+        browser.waitForElementVisible('.data-table');
 
         flagForUpdate(browser, '.metric-overview table', 'table in the usage dashboard', 1);
 
