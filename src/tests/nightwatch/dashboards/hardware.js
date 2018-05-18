@@ -26,9 +26,9 @@ module.exports = {
         browser.expect.element('#dashboard-sections .dashboard-section:nth-child(4) h4').text.to.be.equal('Plugins');
     },
 
-    'Chart titles and order are correct': browser => {
-        // Wait for the dashboard to load
-        browser.waitForElementVisible('#dashboard');
+    'Metric titles and order are correct': browser => {
+        // Wait for the metrics to load
+        browser.waitForElementVisible('.metric');
 
         flagForUpdate(browser, '.chart', 'charts in the hardware dashboard', 12);
 
@@ -47,8 +47,8 @@ module.exports = {
     },
 
     'Charts render': browser => {
-        // Wait for the dashboard to load
-        browser.waitForElementVisible('#dashboard');
+        // Wait for the metrics to load
+        browser.waitForElementVisible('.chart');
 
         flagForUpdate(browser, '.chart', 'charts in the hardware dashboard', 12);
 

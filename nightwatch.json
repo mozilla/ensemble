@@ -6,7 +6,10 @@
         "start_process" : true,
         "log_path" : "",
         "host" : "127.0.0.1",
-        "port" : 4444
+        "port" : 4444,
+        "cli_args" : {
+          "webdriver.gecko.driver" : "./node_modules/geckodriver/bin/geckodriver"
+        }
     },
 
     "test_settings": {
@@ -20,10 +23,23 @@
                 "waitForConditionPollInterval": 5000
             },
             "desiredCapabilities": {
+                "browserName": "firefox",
+                "moz:firefoxOptions": {
+                    "args": ["-headless"]
+                }
+            }
+        },
+        "chrome": {
+            "desiredCapabilities": {
                 "browserName": "chrome",
                 "chromeOptions": {
                     "args": ["--headless"]
                 }
+            }
+        },
+        "safari": {
+            "desiredCapabilities": {
+                "browserName": "safari"
             }
         }
     }

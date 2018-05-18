@@ -7,6 +7,8 @@ module.exports = {
     },
 
     'Menu items appear in correct order': browser => {
+        browser.waitForElementVisible('#main-navigation a');
+
         flagForUpdate(browser, '#main-navigation a', 'menu items', 3);
 
         browser.expect.element('#main-navigation li:nth-child(1) a').text.to.equal('User Activity');
