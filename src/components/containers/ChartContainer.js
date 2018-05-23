@@ -76,10 +76,16 @@ export default class extends React.Component {
 
     // Get the responsive chart size or set to minChartWidth and maxChartHeight.
     getChartSize() {
+        const size = {width: this.minChartWidth, height: this.maxChartHeight};
+
+        if (!this.parentNode) {
+            return size;
+        }
+
         const parentWidth = this.parentNode.offsetWidth;
 
-        const size = {width: this.minChartWidth, height: this.maxChartHeight};
-        if (this.parentNode && parentWidth > this.minChartWidth) {
+
+        if (parentWidth > this.minChartWidth) {
             size.width = parentWidth;
 
             // Square ratio charts for small screens.

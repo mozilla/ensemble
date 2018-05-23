@@ -70,9 +70,11 @@ export default class extends React.Component {
     }
 
     _setChartWidth() {
-        const parentWidth = this.parentNode.offsetWidth;
+        if (!this.parentNode) {
+            return;
+        }
 
-        this.size.width = parentWidth > this.size.maxWidth ? this.size.maxWidth : parentWidth;
+        this.size.width = Math.max(this.parentNode.offsetWidth, this.size.maxWidth);
     }
 
     _drawChart = (data) => {
