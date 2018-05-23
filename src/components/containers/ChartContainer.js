@@ -111,12 +111,22 @@ export default class extends React.Component {
     }
 
     componentDidMount() {
-        // Set the chart size based on the real, rendered parent container.
+        this.setChartSize();
+        window.addEventListener('resize', this.setChartSize);
+    }
+
+    // Set the chart size state based on the real, rendered parent container.
+    setChartSize = () => {
         const {width, height} = this.getChartSize();
+
         this.setState({
             chartWidth: width,
             chartHeight: height,
         });
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.setChartSize);
     }
 
     componentDidUpdate() {
