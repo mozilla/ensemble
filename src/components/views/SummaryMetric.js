@@ -44,6 +44,8 @@ export default class extends React.Component {
         // Don't show arrows (since they'll be bigger than the bar) if they are
         // below this value threshold.
         this.arrowIgnoreThreshold = 4;
+
+        this.parentNode = null;
     }
 
     shouldComponentUpdate(nextProps) {
@@ -51,6 +53,7 @@ export default class extends React.Component {
     }
 
     componentDidMount() {
+        this.parentNode = document.querySelector('#application > main');
         this._setChartWidth();
         this._drawChart(this.props.data);
     }
@@ -67,8 +70,7 @@ export default class extends React.Component {
     }
 
     _setChartWidth() {
-        const parentNode = document.querySelector('#application > main');
-        const parentWidth = parentNode.offsetWidth;
+        const parentWidth = this.parentNode.offsetWidth;
 
         this.size.width = parentWidth > this.size.maxWidth ? this.size.maxWidth : parentWidth;
     }
