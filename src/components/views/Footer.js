@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './css/Footer.css';
+
 
 export default class extends React.Component {
     componentDidMount() {
