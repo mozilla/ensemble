@@ -5,6 +5,7 @@ import Main from './Main';
 import Footer from './Footer';
 
 import './css/Application.css';
+import './css/BadBrowsers.css';
 
 
 export default () => (
