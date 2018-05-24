@@ -1,9 +1,4 @@
 .metric-overview {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    justify-content: space-between;
     margin: 50px 0;
 }
 
