@@ -1,21 +1,13 @@
-.sk-spinner {
-    color: #000;
-    height: 50px;
-    margin: 50px auto; /* 50px leaves enough room for the ::after styles */
+main > #spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Give this element a static height so that the next button doesn't get
+     * pushed down when the spinner appears. */
+    height: 200px;
 }
 
-.sk-spinner::after {
-    content: "";
-    position: absolute;
-    width: 120px;
-    height: 120px;
-    background-color: rgba(255, 255, 255, 0.6);
-    border-radius: 12px;
-    z-index: 40;
-    left: -33px;
-    top: -33px;
-}
-
-.sk-spinner > div {
-    z-index: 50;
+main > #spinner + .next-button {
+    margin-top: 0;
 }

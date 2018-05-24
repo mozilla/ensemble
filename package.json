@@ -9,7 +9,7 @@
         "build:app": "react-scripts build",
         "build:version.json": "node scripts/generateVersionJSON",
         "eject": "react-scripts eject",
-        "validate": "npm-run-all test lint",
+        "validate": "npm-run-all lint test",
         "test": "npm-run-all test:*",
         "test:jest": "CI=true react-scripts test --env=jsdom",
         "test:nightwatch": "nightwatch --env default,chrome,safari",
@@ -36,7 +36,7 @@
         "react-refetch": "1.0.4",
         "react-router-dom": "4.2.2",
         "react-scripts": "1.1.4",
-        "react-spinkit": "3.0.0",
+        "react-spinners": "0.3.2",
         "whatwg-fetch": "2.0.4"
     },
     "devDependencies": {
