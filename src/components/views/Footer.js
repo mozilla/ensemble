@@ -5,7 +5,13 @@ import './css/Footer.css';
 
 export default class extends React.Component {
     componentDidMount() {
-        document.querySelectorAll('footer a').forEach(anchor => {
+        let links = document.querySelectorAll('footer a');
+
+        // IE doesn't support NodeList.forEach, so we need to convert links to
+        // an array first.
+        links = Array.from(links);
+
+        links.forEach(anchor => {
             anchor.target = '_blank';
             anchor.rel = 'noopener noreferrer';
         });
