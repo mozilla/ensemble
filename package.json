@@ -8,7 +8,7 @@
         "build:app": "react-scripts build",
         "build:version.json": "node scripts/generateVersionJSON",
         "eject": "react-scripts eject",
-        "validate": "npm-run-all test lint",
+        "validate": "npm-run-all lint test",
         "test": "npm-run-all test:*",
         "test:jest": "CI=true react-scripts test --env=jsdom",
         "test:nightwatch": "nightwatch --env default,chrome,safari",
