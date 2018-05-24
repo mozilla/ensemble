@@ -1,6 +1,10 @@
-// Use polyfills in nasty browsers.
-//
-// babel-polyfill is big, but importing modules as-needed from core-js is a game
-// of whack-a-mole. We did use core-js in the past, but even after importing
-// many individual modules we were left unsure that we had covered everything.
-import 'babel-polyfill';
+// Internet Explorer 11 has no support for these...
+import 'core-js/fn/array/find';
+import 'core-js/fn/array/includes';
+import 'core-js/fn/object/assign';
+import 'core-js/es6/promise';
+import 'whatwg-fetch';
+
+// Internet Explorer 11 has incomplete support for these...
+import 'core-js/es6/map';
+import 'core-js/es6/set';
