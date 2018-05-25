@@ -50,6 +50,13 @@ export default props => {
         );
     }
 
+    let maybeDescription = null;
+    if (props.description) {
+        maybeDescription = (
+            <p id="dashboard-description">{props.description}</p>
+        );
+    }
+
     let maybeCategory = null;
     const sortedCategories = bumpSort(props.categories, 'All');
     if (sortedCategories.length > 1) {
@@ -99,7 +106,7 @@ export default props => {
             <article id="dashboard">
                 <header className="dashboard-header">
                     <h2 id="dashboard-title" className="contrasted">{props.title}</h2>
-                    <p id="dashboard-description">{props.description}</p>
+                    {maybeDescription}
                     {maybeCategory}
                 </header>
                 {maybeSummaryMetrics}
