@@ -3,7 +3,7 @@ import React from 'react';
 import Chart from '../views/Chart';
 
 
-export default class extends React.Component {
+class ChartContainer extends React.Component {
     constructor(props) {
         super(props);
 
@@ -16,15 +16,14 @@ export default class extends React.Component {
             data: props.data,
             annotations: props.annotations,
             activeCategory: props.activeCategory,
+            markers: [],
             chartWidth: 0,
             chartHeight: this.maxChartHeight,
         };
-
-        this._initialize();
         this.parentNode = null;
     }
 
-    formatData(populations) {
+    static formatData(populations) {
         const data = [];
         const legend = [];
 
@@ -57,23 +56,6 @@ export default class extends React.Component {
         return { data, legend };
     }
 
-    _initialize = () => {
-        this.formattedData = this.formatData(this.state.data[this.state.activeCategory].populations);
-        this.showLegend = Object.keys(this.state.data[this.state.activeCategory].populations).length > 1;
-
-        this.markers = [];
-        if (this.state.annotations && this.state.annotations[this.state.activeCategory]) {
-            this.markers = this.state.annotations[this.state.activeCategory].map(annotationMeta => {
-                // Rename "date" to "x". MG requires that the name of this
-                // property matches the value of x_accessor.
-                return {
-                    x: new Date(annotationMeta.date),
-                    label: annotationMeta.label,
-                };
-            });
-        }
-    }
-
     // Get the responsive chart size or set to minChartWidth and maxChartHeight.
     getChartSize() {
         const size = {width: this.minChartWidth, height: this.maxChartHeight};
@@ -97,22 +79,42 @@ export default class extends React.Component {
         return size;
     }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
-        const stateUpdates = {};
-        let stateUpdated = false;
+    static getDerivedStateFromProps(props, state) {
+        const newState = {};
 
-        function maybeAddStateUpdate(key) {
-            if (nextProps[key] !== prevState[key]) {
-                stateUpdates[key] = nextProps[key];
-                stateUpdated = true;
-            }
+        const dataChanged = props.data !== state.data;
+        const annotationsChanged = props.annotations !== state.annoations;
+        const activeCategoryChanged = props.activeCategory !== state.activeCategory;
+
+        if (dataChanged) {
+            newState.data = props.data;
         }
 
-        maybeAddStateUpdate('data');
-        maybeAddStateUpdate('annotations');
-        maybeAddStateUpdate('activeCategory');
+        if (annotationsChanged) {
+            newState.annotations = props.annotations;
+        }
 
-        if (stateUpdated) return stateUpdates;
+        if (activeCategoryChanged) {
+            newState.activeCategory = props.activeCategory;
+        }
+
+        if (!state.formattedData || !state.showLegend || dataChanged || activeCategoryChanged) {
+            newState.formattedData = ChartContainer.formatData(props.data[props.activeCategory].populations);
+            newState.showLegend = Object.keys(props.data[props.activeCategory].populations).length > 1;
+        }
+
+        if ((!state.markers || annotationsChanged || activeCategoryChanged) && props.annotations && props.annotations[props.activeCategory]) {
+            newState.markers = props.annotations[props.activeCategory].map(annotationMeta => {
+                // Rename "date" to "x". MG requires that the name of this
+                // property matches the value of x_accessor.
+                return {
+                    x: new Date(annotationMeta.date),
+                    label: annotationMeta.label,
+                };
+            });
+        }
+
+        if (Object.keys(newState).length) return newState;
         return null;
     }
 
@@ -136,10 +138,6 @@ export default class extends React.Component {
         window.removeEventListener('resize', this.setChartSize);
     }
 
-    componentDidUpdate() {
-        this._initialize();
-    }
-
     render() {
         // Don't render the chart until a proper width has been determined. If
         // we didn't do this, if we instead started with some default width and
@@ -150,15 +148,15 @@ export default class extends React.Component {
         const extraProps = {};
 
         if (this.markers) {
-            extraProps.markers = this.markers;
+            extraProps.markers = this.state.markers;
         }
 
         return (
             <Chart
                 {...this.props}
-                data={this.formattedData.data}
-                legend={this.formattedData.legend}
-                showLegend={this.showLegend}
+                data={this.state.formattedData.data}
+                legend={this.state.formattedData.legend}
+                showLegend={this.state.showLegend}
                 width={this.state.chartWidth}
                 height={this.state.chartHeight}
                 numPopulations={this.props.numPopulations}
@@ -174,3 +172,5 @@ export default class extends React.Component {
         );
     }
 }
+
+export default ChartContainer;
