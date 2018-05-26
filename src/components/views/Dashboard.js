@@ -1,4 +1,5 @@
 import React from 'react';
+import Helmet from 'react-helmet';
 
 import DashboardSection from './DashboardSection';
 import MetricOverviewCollection from './MetricOverviewCollection';
@@ -6,7 +7,7 @@ import SummaryMetricContainer from '../containers/SummaryMetricContainer';
 import CustomizableDateContainer from '../containers/CustomizableDateContainer';
 import StripedHeader from './StripedHeader';
 
-import { bumpSort } from '../../lib/utils';
+import { bumpSort, getPageTitle } from '../../lib/utils';
 
 import './css/Dashboard.css';
 import './css/LabelledSelector.css';
@@ -91,15 +92,20 @@ export default props => {
     }
 
     return (
-        <article id="dashboard">
-            <header className="dashboard-header">
-                <h2 id="dashboard-title" className="contrasted">{props.title}</h2>
-                <p id="dashboard-description">{props.description}</p>
-                {maybeCategory}
-            </header>
-            {maybeSummaryMetrics}
-            <h3 id="metrics-heading">Metrics</h3>
-            {body}
-        </article>
+        <React.Fragment>
+            <Helmet>
+                <title>{getPageTitle(props.title)}</title>
+            </Helmet>
+            <article id="dashboard">
+                <header className="dashboard-header">
+                    <h2 id="dashboard-title" className="contrasted">{props.title}</h2>
+                    <p id="dashboard-description">{props.description}</p>
+                    {maybeCategory}
+                </header>
+                {maybeSummaryMetrics}
+                <h3 id="metrics-heading">Metrics</h3>
+                {body}
+            </article>
+        </React.Fragment>
     );
 };

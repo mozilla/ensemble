@@ -52,3 +52,19 @@ export function prettifyNumber(n) {
         return n.toLocaleString('en-US');
     }
 }
+
+/**
+ * Return a title that can be used in a <title> element, incorporating a
+ * subtitle if one is provided.
+ */
+export function getPageTitle(subtitle) {
+    let pageTitle;
+
+    if (subtitle) {
+        pageTitle = `${subtitle} | ${process.env.REACT_APP_SITE_TITLE}`;
+    } else {
+        pageTitle = process.env.REACT_APP_SITE_TITLE;
+    }
+
+    return pageTitle;
+}
