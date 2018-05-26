@@ -5830,9 +5830,9 @@ methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
 
-metrics-graphics@2.14.0:
-  version "2.14.0"
-  resolved "https://registry.yarnpkg.com/metrics-graphics/-/metrics-graphics-2.14.0.tgz#f3d8748bdc78af697ea072118839492e62f50662"
+metrics-graphics@2.15.1:
+  version "2.15.1"
+  resolved "https://registry.yarnpkg.com/metrics-graphics/-/metrics-graphics-2.15.1.tgz#f89199599716747478c6b1d6744cf286ea1c1dd2"
   dependencies:
     d3 "^4"
 
@@ -7377,9 +7377,9 @@ react-loadable@5.4.0:
   dependencies:
     prop-types "^15.5.0"
 
-react-metrics-graphics@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/react-metrics-graphics/-/react-metrics-graphics-1.0.2.tgz#223100f2af910c12e01b26144507d7cd4635b837"
+react-metrics-graphics@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/react-metrics-graphics/-/react-metrics-graphics-1.0.3.tgz#ed0d4e95866728f4ec8095bd26b67b4b34873808"
 
 react-reconciler@^0.7.0:
   version "0.7.0"
