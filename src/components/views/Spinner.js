@@ -21,16 +21,20 @@ export default class extends React.Component {
         // react-spinkit, a competing library, does this by default
         //
         // https://www.nngroup.com/articles/response-times-3-important-limits/
-        setTimeout(() => {
+        this.showSpinnerTimeout = setTimeout(() => {
             this.setState({ showSpinner: true });
         }, 1000);
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this.showSpinnerTimeout);
     }
 
     render() {
         return (
             <div id="spinner">
                 <PulseLoader
-                    size="20"
+                    size={20}
                     loading={this.state.showSpinner}
                 />
             </div>
