@@ -21,6 +21,7 @@ export default class extends React.Component {
         };
 
         this._initialize();
+        this.parentNode = null;
     }
 
     formatData(populations) {
@@ -75,11 +76,16 @@ export default class extends React.Component {
 
     // Get the responsive chart size or set to minChartWidth and maxChartHeight.
     getChartSize() {
-        const parentNode = document.querySelector('#application > main');
-        const parentWidth = parentNode.offsetWidth;
-
         const size = {width: this.minChartWidth, height: this.maxChartHeight};
-        if (parentNode && parentWidth > this.minChartWidth) {
+
+        if (!this.parentNode) {
+            return size;
+        }
+
+        const parentWidth = this.parentNode.offsetWidth;
+
+
+        if (parentWidth > this.minChartWidth) {
             size.width = parentWidth;
 
             // Square ratio charts for small screens.
@@ -111,12 +117,23 @@ export default class extends React.Component {
     }
 
     componentDidMount() {
-        // Set the chart size based on the real, rendered parent container.
+        this.parentNode = document.querySelector('#application > main');
+        this.setChartSize();
+        window.addEventListener('resize', this.setChartSize);
+    }
+
+    // Set the chart size state based on the real, rendered parent container.
+    setChartSize = () => {
         const {width, height} = this.getChartSize();
+
         this.setState({
             chartWidth: width,
             chartHeight: height,
         });
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.setChartSize);
     }
 
     componentDidUpdate() {

@@ -24,6 +24,7 @@ export default class extends React.Component {
             xPaddingRight: 40,
             barYPosition: 15,
             barHeight: 22,
+            maxWidth: 450,
         };
 
         this.colors = [
@@ -43,6 +44,8 @@ export default class extends React.Component {
         // Don't show arrows (since they'll be bigger than the bar) if they are
         // below this value threshold.
         this.arrowIgnoreThreshold = 4;
+
+        this.parentNode = null;
     }
 
     shouldComponentUpdate(nextProps) {
@@ -50,17 +53,31 @@ export default class extends React.Component {
     }
 
     componentDidMount() {
+        this.parentNode = document.querySelector('#application > main');
+        this._setChartWidth();
         this._drawChart(this.props.data);
     }
 
     componentDidUpdate() {
         // Clear the SVG before redrawing it
         this.svg.text('');
-
         this._drawChart(this.props.data);
     }
 
-    _drawChart(data) {
+    _handleResize = () => {
+        this._setChartWidth();
+        this._drawChart(this.props.data);
+    }
+
+    _setChartWidth() {
+        if (!this.parentNode) {
+            return;
+        }
+
+        this.size.width = Math.max(this.parentNode.offsetWidth, this.size.maxWidth);
+    }
+
+    _drawChart = data => {
         const showBarItem = item => {
             this.svg.selectAll('.bar-arrow').style('display', 'none');
             this.svg.selectAll('.bar-label').style('display', 'none');
