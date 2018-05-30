@@ -60,7 +60,7 @@ export default class extends React.Component {
 
     componentDidUpdate() {
         // Clear the SVG before redrawing it
-        this.svg.empty();
+        this.svg.text('');
         this._drawChart(this.props.data);
     }
 
@@ -77,7 +77,7 @@ export default class extends React.Component {
         this.size.width = Math.max(this.parentNode.offsetWidth, this.size.maxWidth);
     }
 
-    _drawChart = (data) => {
+    _drawChart = data => {
         const showBarItem = item => {
             this.svg.selectAll('.bar-arrow').style('display', 'none');
             this.svg.selectAll('.bar-label').style('display', 'none');
