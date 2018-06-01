@@ -10,6 +10,11 @@ module.exports = {
         browser.expect.element('#dashboard').to.be.present;
     },
 
+    'Page <title> is correct': browser => {
+        browser.waitForElementVisible('#dashboard');
+        browser.assert.title('Usage Behavior | Firefox Public Data Report');
+    },
+
     'Dashboard title is correct': browser => {
         browser.expect.element('#dashboard-title').text.to.be.equal('Usage Behavior');
     },
