@@ -23,9 +23,7 @@ Run `yarn start`
 
 ### Test
 
-Run `yarn validate` (**NB:** not `yarn test`; although `yarn test` does run some
-tests, `yarn validate` does additional quality assurance like linting JavaScript
-and checking for security vulnerabilities)
+Run `yarn test`
 
 ### Analyze
 
