@@ -3,7 +3,7 @@ import React from 'react';
 import Chart from '../views/Chart';
 
 
-export default class extends React.Component {
+class ChartContainer extends React.Component {
     constructor(props) {
         super(props);
 
@@ -16,14 +16,14 @@ export default class extends React.Component {
             data: props.data,
             annotations: props.annotations,
             activeCategory: props.activeCategory,
+            markers: [],
             chartWidth: 0,
             chartHeight: this.maxChartHeight,
         };
-
-        this._initialize();
+        this.parentNode = null;
     }
 
-    formatData(populations) {
+    static formatData(populations) {
         const data = [];
         const legend = [];
 
@@ -56,30 +56,18 @@ export default class extends React.Component {
         return { data, legend };
     }
 
-    _initialize = () => {
-        this.formattedData = this.formatData(this.state.data[this.state.activeCategory].populations);
-        this.showLegend = Object.keys(this.state.data[this.state.activeCategory].populations).length > 1;
-
-        this.markers = [];
-        if (this.state.annotations && this.state.annotations[this.state.activeCategory]) {
-            this.markers = this.state.annotations[this.state.activeCategory].map(annotationMeta => {
-                // Rename "date" to "x". MG requires that the name of this
-                // property matches the value of x_accessor.
-                return {
-                    x: new Date(annotationMeta.date),
-                    label: annotationMeta.label,
-                };
-            });
-        }
-    }
-
     // Get the responsive chart size or set to minChartWidth and maxChartHeight.
     getChartSize() {
-        const parentNode = document.querySelector('#application > main');
-        const parentWidth = parentNode.offsetWidth;
-
         const size = {width: this.minChartWidth, height: this.maxChartHeight};
-        if (parentNode && parentWidth > this.minChartWidth) {
+
+        if (!this.parentNode) {
+            return size;
+        }
+
+        const parentWidth = this.parentNode.offsetWidth;
+
+
+        if (parentWidth > this.minChartWidth) {
             size.width = parentWidth;
 
             // Square ratio charts for small screens.
@@ -91,36 +79,63 @@ export default class extends React.Component {
         return size;
     }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
-        const stateUpdates = {};
-        let stateUpdated = false;
+    static getDerivedStateFromProps(props, state) {
+        const newState = {};
 
-        function maybeAddStateUpdate(key) {
-            if (nextProps[key] !== prevState[key]) {
-                stateUpdates[key] = nextProps[key];
-                stateUpdated = true;
-            }
+        const dataChanged = props.data !== state.data;
+        const annotationsChanged = props.annotations !== state.annoations;
+        const activeCategoryChanged = props.activeCategory !== state.activeCategory;
+
+        if (dataChanged) {
+            newState.data = props.data;
         }
 
-        maybeAddStateUpdate('data');
-        maybeAddStateUpdate('annotations');
-        maybeAddStateUpdate('activeCategory');
+        if (annotationsChanged) {
+            newState.annotations = props.annotations;
+        }
 
-        if (stateUpdated) return stateUpdates;
+        if (activeCategoryChanged) {
+            newState.activeCategory = props.activeCategory;
+        }
+
+        if (!state.formattedData || !state.showLegend || dataChanged || activeCategoryChanged) {
+            newState.formattedData = ChartContainer.formatData(props.data[props.activeCategory].populations);
+            newState.showLegend = Object.keys(props.data[props.activeCategory].populations).length > 1;
+        }
+
+        if ((!state.markers || annotationsChanged || activeCategoryChanged) && props.annotations && props.annotations[props.activeCategory]) {
+            newState.markers = props.annotations[props.activeCategory].map(annotationMeta => {
+                // Rename "date" to "x". MG requires that the name of this
+                // property matches the value of x_accessor.
+                return {
+                    x: new Date(annotationMeta.date),
+                    label: annotationMeta.label,
+                };
+            });
+        }
+
+        if (Object.keys(newState).length) return newState;
         return null;
     }
 
     componentDidMount() {
-        // Set the chart size based on the real, rendered parent container.
+        this.parentNode = document.querySelector('#application > main');
+        this.setChartSize();
+        window.addEventListener('resize', this.setChartSize);
+    }
+
+    // Set the chart size state based on the real, rendered parent container.
+    setChartSize = () => {
         const {width, height} = this.getChartSize();
+
         this.setState({
             chartWidth: width,
             chartHeight: height,
         });
     }
 
-    componentDidUpdate() {
-        this._initialize();
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.setChartSize);
     }
 
     render() {
@@ -133,15 +148,15 @@ export default class extends React.Component {
         const extraProps = {};
 
         if (this.markers) {
-            extraProps.markers = this.markers;
+            extraProps.markers = this.state.markers;
         }
 
         return (
             <Chart
                 {...this.props}
-                data={this.formattedData.data}
-                legend={this.formattedData.legend}
-                showLegend={this.showLegend}
+                data={this.state.formattedData.data}
+                legend={this.state.formattedData.legend}
+                showLegend={this.state.showLegend}
                 width={this.state.chartWidth}
                 height={this.state.chartHeight}
                 numPopulations={this.props.numPopulations}
@@ -157,3 +172,5 @@ export default class extends React.Component {
         );
     }
 }
+
+export default ChartContainer;

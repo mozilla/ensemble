@@ -1,0 +1,27 @@
+/* Target IE 10+
+   https://philipnewcomer.net/2014/04/target-internet-explorer-10-11-css/ */
+@media all and (-ms-high-contrast: none), all and (-ms-high-contrast: active) {
+    /* IE doesn't recognize the main element, so it treats it as inline by
+       default. */
+    main {
+        display: block;
+    }
+
+    /* For some reason, IE shows a horizontal scrollbar on the whole page when
+       this rule isn't present. There isn't great documentation about this
+       problem, but it may have something to do with this:
+
+       https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/7226597/ */
+    .metricsGraphicsCon svg {
+        overflow: hidden;
+    }
+
+    /* Fix issue where the contents of .metrics-overview overflow it in IE. It
+       appears to be this bug, although the suggested solution doesn't work for
+       some reason.
+
+       https://github.com/philipwalton/flexbugs#flexbug-2 */
+    #dashboard .metric-overview {
+        display: block;
+    }
+}
