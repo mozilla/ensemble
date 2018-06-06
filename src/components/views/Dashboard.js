@@ -50,8 +50,15 @@ export default props => {
         );
     }
 
-    let maybeDescription = null;
+    let maybeMetaDescription, maybeDescription = null;
     if (props.description) {
+        maybeMetaDescription = (
+            <meta
+                name="description"
+                content={props.description}
+            />
+        );
+
         maybeDescription = (
             <p id="dashboard-description">{props.description}</p>
         );
@@ -102,6 +109,7 @@ export default props => {
         <React.Fragment>
             <Helmet>
                 <title>{getPageTitle(props.title)}</title>
+                {maybeMetaDescription}
             </Helmet>
             <article id="dashboard">
                 <header className="dashboard-header">
