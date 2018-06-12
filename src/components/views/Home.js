@@ -12,6 +12,7 @@ export default () => (
     <React.Fragment>
         <Helmet>
             <title>{getPageTitle()}</title>
+            <meta name="description" content="The Firefox Public Data Report is a weekly public report on the activity, behavior, and hardware configuration of Firefox Desktop users." />
         </Helmet>
         <article id="introduction">
             <p className="highlighted">
