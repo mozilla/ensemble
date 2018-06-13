@@ -155,7 +155,6 @@ export default props => {
                 interpolate={curveCatmullRom.alpha(0.5)}
 
                 // Transitions take forever with random data
-                // This is disabled on master anyway.
                 transition_on_update={false}
 
                 {...extraOptions}
