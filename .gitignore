@@ -6,6 +6,7 @@
 # testing
 /coverage
 selenium-debug.log
+selenium-server.log
 
 # generated files
 /build
@@ -18,11 +19,11 @@ selenium-debug.log
 .env.production.local
 
 npm-debug.log*
+
+# We used Yarn in the past
+yarn.lock
 yarn-debug.log*
 yarn-error.log*
-
-# We use yarn.lock, not package-lock.json
-/package-lock.json
 
 # Just an extra precaution. At the moment, some demo instances of this site have
 # a data/ directory which should not be published.
