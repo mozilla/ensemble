@@ -10,8 +10,8 @@ class ChartContainer extends React.Component {
         this.minChartWidth = 264;
         this.maxChartHeight = 400;
 
-        // Initial state of chart size.
-        // It will later be set based on the width of a rendered layout wrapper DOM node.
+        // Initial state, including the initial chart size. It will later be set
+        // based on the width of a rendered layout wrapper DOM node.
         this.state = {
             data: props.data,
             annotations: props.annotations,
@@ -103,7 +103,7 @@ class ChartContainer extends React.Component {
             newState.showLegend = Object.keys(props.data[props.activeCategory].populations).length > 1;
         }
 
-        if ((!state.markers || annotationsChanged || activeCategoryChanged) && props.annotations && props.annotations[props.activeCategory]) {
+        if ((state.markers.length === 0 || annotationsChanged || activeCategoryChanged) && props.annotations && props.annotations[props.activeCategory]) {
             newState.markers = props.annotations[props.activeCategory].map(annotationMeta => {
                 // Rename "date" to "x". MG requires that the name of this
                 // property matches the value of x_accessor.
@@ -147,7 +147,7 @@ class ChartContainer extends React.Component {
 
         const extraProps = {};
 
-        if (this.markers) {
+        if (this.state.markers) {
             extraProps.markers = this.state.markers;
         }
 

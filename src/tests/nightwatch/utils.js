@@ -13,7 +13,11 @@ function notNotFound(browser, url) {
     // External URLs. These should return 404 if they're invalid.
     else {
         request(url, (error, response) => {
-            browser.assert.equal(response.statusCode, 200);
+            if (response === undefined) {
+                browser.assert.fail('response is undefined');
+            } else {
+                browser.assert.equal(response.statusCode, 200);
+            }
         });
     }
 }

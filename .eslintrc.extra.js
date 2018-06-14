@@ -59,5 +59,10 @@ module.exports = {
         'react/display-name': 'off',
         'react/prop-types': 'off',
         'react/no-unescaped-entities': ['error', {forbid: ['>', '}']}],
+
+        // Temporarily work around this bug:
+        // https://github.com/evcohen/eslint-plugin-jsx-a11y/pull/437
+        'jsx-a11y/heading-has-content': 'off',
+        'jsx-a11y/anchor-has-content': 'off',
     },
 };
