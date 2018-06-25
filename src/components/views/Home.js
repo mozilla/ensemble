@@ -12,13 +12,12 @@ export default () => (
     <React.Fragment>
         <Helmet>
             <title>{getPageTitle()}</title>
-            <meta name="description" content="The Firefox Public Data Report is a weekly public report on the activity, behavior, and hardware configuration of Firefox Desktop users." />
+            <meta name="description" content="The Firefox Public Data Report is a weekly public report on the activity, behavior, and hardware configuration of Firefox users." />
         </Helmet>
         <article id="introduction">
             <p className="highlighted">
                 The Firefox Public Data Report is a weekly public report on the
-                activity, behavior, and hardware configuration of Firefox Desktop
-                users.
+                activity, behavior, and hardware configuration of Firefox users.
             </p>
             <h2 className="contrasted">The purpose of this report is twofold:</h2>
             <dl className="explanations split">
@@ -27,7 +26,7 @@ export default () => (
                     <dd>
                         We want to empower developers, journalists, and the overall
                         public to better understand the state of the web and the
-                        direction of trends in desktop web browsing.
+                        direction of trends in web browsing.
                     </dd>
                 </div>
                 <div>
@@ -55,10 +54,11 @@ export default () => (
                 </div>
             </dl>
             <p>
-                All data is from a representative 10% sample from our Release, Beta,
-                ESR, and Other channels for Firefox Desktop and the report runs once
-                a week. Each datapoint covers a week's worth of data (unless stated
-                otherwise). All data is anonymized and aggregated to ensure user
+                All data is from a representative 10% sample from our Release,
+                Beta, ESR, and Other channels for Firefox and the report runs
+                once per week. Each datapoint covers a week's worth of data
+                (unless stated otherwise). All data is anonymized and aggregated
+                to ensure user
                 privacy. Mozilla publishes additional information about
                 {' '}its <a href="https://www.mozilla.org/privacy/">privacy policy</a>,
                 {' '}its <a href="https://www.mozilla.org/privacy/principles">privacy principles</a>,
