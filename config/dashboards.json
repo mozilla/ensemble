@@ -1,17 +1,30 @@
-[
-    {
-        "path": "user-activity",
-        "menuTitle": "User Activity",
-        "source": "https://openjck-guarded-plains.herokuapp.com/user-activity/"
-    },
-    {
-        "path": "usage-behavior",
-        "menuTitle": "Usage Behavior",
-        "source": "https://openjck-guarded-plains.herokuapp.com/usage-behavior/"
-    },
-    {
-        "path": "hardware",
-        "menuTitle": "Hardware",
-        "source": "https://openjck-guarded-plains.herokuapp.com/hardware/"
-    }
-]
+{
+    "sections": [
+        {
+            "title": "Desktop",
+            "key": "desktop",
+            "members": [
+                {
+                    "key": "user-activity",
+                    "menuTitle": "User Activity",
+                    "source": "https://openjck-guarded-plains.herokuapp.com/user-activity/"
+                },
+                {
+                    "key": "usage-behavior",
+                    "menuTitle": "Usage Behavior",
+                    "source": "https://openjck-guarded-plains.herokuapp.com/usage-behavior/"
+                },
+                {
+                    "key": "hardware",
+                    "menuTitle": "Hardware",
+                    "source": "https://openjck-guarded-plains.herokuapp.com/hardware/"
+                }
+            ]
+        },
+        {
+            "title": "Mobile",
+            "key": "mobile",
+            "comingSoon": true
+        }
+    ]
+}

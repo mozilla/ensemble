@@ -26,24 +26,87 @@ h1 a:hover {
     border-bottom: 0;
 }
 
+#main-navigation {
+    z-index: 20; /* Make any pop-up that appears draw over all other elements */
+}
+
 #main-navigation ul {
-    display: flex;
     justify-content: center;
     list-style: none;
     padding: 0;
-    color: #f1f1f1;
 }
 
-#main-navigation li {
+#main-navigation > ul {
+    display: flex;
+}
+
+#main-navigation > ul > li {
     margin: 0 20px;
+    position: relative;
 }
 
-#main-navigation li:first-child {
+#main-navigation > ul > li:first-child {
     margin-left: 0;
 }
 
-#main-navigation li:last-child {
+#main-navigation > ul > li:last-child {
     margin-right: 0;
+}
+
+.navigation-section-title {
+    color: #000;
+
+    /* Vertically align the title and the arrow */
+    display: flex;
+    align-items: center;
+}
+
+/* Add a down arrow to the right of the navigation section title */
+.navigation-section-title::after {
+    content: "\25BC";
+    padding-left: 8px;
+    font-size: .7em;
+}
+
+.navigation-section-members {
+    display: none;
+}
+
+.navigation-section:hover .navigation-section-members, .navigation-coming-soon-message {
+    background: #fff;
+    box-shadow: 3px 3px 3px #666;
+    white-space: nowrap;
+
+    position: absolute;
+}
+
+.navigation-section:hover .navigation-section-members {
+    display: flex;
+    flex-direction: column;
+
+    left: -20px; /* Equal to the left-padding of the li, so that text aligns */
+}
+
+.navigation-section:hover li {
+    padding: 8px 20px;
+}
+
+.navigation-section:hover li:first-child {
+    padding-top: 16px; /* 2x the normal padding */
+}
+
+.navigation-section:hover li:last-child {
+    padding-bottom: 16px; /* 2x the normal padding */
+}
+
+.navigation-coming-soon-message {
+    display: none;
+}
+
+.navigation-coming-soon:hover .navigation-coming-soon-message {
+    display: block;
+    padding: 15px;
+    left: -15px; /* Equal to the left-padding so that text aligns */
 }
 
 #main-header h3 {
