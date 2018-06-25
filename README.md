@@ -14,20 +14,20 @@ Facebook.
 
 ### Install
 
-1. [Install Yarn](https://yarnpkg.com/lang/en/docs/install/)
-2. Run `yarn`
+1. [Install Node and NPM](https://nodejs.org/en/download/)
+2. Run `npm install`
 
 ### Run
 
-Run `yarn start`
+Run `npm start`
 
 ### Test
 
-Run `yarn test`
+Run `npm test`
 
 ### Analyze
 
-To analyze the size of the JavaScript bundle that will be served, run `yarn
+To analyze the size of the JavaScript bundle that will be served, run `npm run
 size`.
 
 ### Notes

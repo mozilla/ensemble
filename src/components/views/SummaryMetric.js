@@ -74,7 +74,11 @@ export default class extends React.Component {
             return;
         }
 
-        this.size.width = Math.max(this.parentNode.offsetWidth, this.size.maxWidth);
+        if (this.parentNode.offsetWidth < this.size.maxWidth) {
+            this.size.width = this.parentNode.offsetWidth;
+        } else {
+            this.size.width = this.size.maxWidth;
+        }
     }
 
     _drawChart = data => {

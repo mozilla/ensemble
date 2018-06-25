@@ -17,23 +17,27 @@ export default () => {
         <main>
             <Switch>
                 <Route exact path="/" component={withTracker(withNextButton(Home))} />
-                {dashboards.map((dashboardMeta, index) => (
-                    <Route
-                        key={index}
-                        path={`/dashboard/${dashboardMeta.path}`}
-                        render={props => {
-                            const ThisDashboardContainer = () => (
-                                <DashboardContainer
-                                    {...props}
-                                    source={dashboardMeta.source}
-                                />
-                            );
-                            const Component = withTracker(withNextButton(ThisDashboardContainer));
+                {dashboards.sections.map(dashboardSection => {
+                    if (dashboardSection.comingSoon) return null;
 
-                            return <Component {...props} />;
-                        }}
-                    />
-                ))}
+                    return dashboardSection.members.map(dashboard => (
+                        <Route
+                            key={dashboardSection.key + dashboard.key}
+                            path={`/dashboard/${dashboard.key}`}
+                            render={props => {
+                                const ThisDashboardContainer = () => (
+                                    <DashboardContainer
+                                        {...props}
+                                        source={dashboard.source}
+                                    />
+                                );
+                                const Component = withTracker(withNextButton(ThisDashboardContainer));
+
+                                return <Component {...props} />;
+                            }}
+                        />
+                    ));
+                })}
                 <Route component={withTracker(withNextButton(NotFound))} />
             </Switch>
         </main>
