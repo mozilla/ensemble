@@ -2,11 +2,12 @@ const { linksWork } = require('./utils');
 
 
 module.exports = {
-    beforeEach: browser => {
+    before: browser => {
         browser.url(browser.launchUrl);
     },
 
     'All footer links work': browser => {
+        browser.waitForElementVisible('footer');
         linksWork(browser, 'footer a');
     },
 };
