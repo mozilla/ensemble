@@ -1,5 +1,5 @@
 module.exports = {
-    beforeEach: browser => {
+    before: browser => {
         browser.url(browser.launchUrl);
     },
 
@@ -13,6 +13,6 @@ module.exports = {
 
     '<noscript> message is not displayed': browser => {
         browser.expect.element('#enable-javascript').to.not.be.present;
-        browser.expect.element('body').text.to.not.contain('You need to enable JavaScript to run this app.');
+        browser.expect.element('body').text.to.not.contain('JavaScript');
     },
 };

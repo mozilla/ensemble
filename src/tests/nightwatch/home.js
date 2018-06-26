@@ -2,7 +2,7 @@ const { linkWorks, linksWork } = require('./utils');
 
 
 module.exports = {
-    beforeEach: browser => {
+    before: browser => {
         browser.url(browser.launchUrl);
     },
 
@@ -18,10 +18,20 @@ module.exports = {
     },
 
     'All introduction links work': browser => {
+        browser.waitForElementVisible('#introduction');
         linksWork(browser, '#introduction a');
     },
 
-    'The next button works': browser => {
+    'The "proceed button" appears': browser => {
+        browser.expect.element('.next-button').to.be.present;
+    },
+
+    'The "proceed button" text is correct': browser => {
+        browser.expect.element('.next-button').text.to.equal('Proceed to User Activity');
+    },
+
+    'The "proceed button" works': browser => {
+        browser.waitForElementVisible('.next-button');
         linkWorks(browser, '.next-button a');
     },
 };
