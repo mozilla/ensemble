@@ -1,17 +1,19 @@
-const { flagForUpdate, linksWork } = require('../utils');
+const { flagForUpdate } = require('../utils');
 
+
+const hardwareWait = 10000; // The Hardware dashboard takes a while to load
 
 module.exports = {
-    beforeEach: browser => {
+    before: browser => {
         browser.url(`${browser.launchUrl}/dashboard/hardware`);
     },
 
     'Dashboard loads': browser => {
-        browser.expect.element('#dashboard').to.be.present;
+        browser.expect.element('#dashboard').to.be.present.before(hardwareWait);
     },
 
     'Page <title> is correct': browser => {
-        browser.waitForElementVisible('#dashboard');
+        browser.waitForElementVisible('#dashboard', hardwareWait);
         browser.assert.title('Hardware Across the Web | Firefox Public Data Report');
     },
 
@@ -20,8 +22,7 @@ module.exports = {
     },
 
     'Section titles and order are correct': browser => {
-        // Wait for the dashboard to load
-        browser.waitForElementVisible('#dashboard');
+        browser.waitForElementVisible('#dashboard', hardwareWait);
 
         flagForUpdate(browser, '#dashboard-sections .dashboard-section', 'sections in the hardware dashboard', 4);
 
@@ -32,10 +33,9 @@ module.exports = {
     },
 
     'Metric titles and order are correct': browser => {
-        // Wait for the metrics to load
-        browser.waitForElementVisible('.metric');
+        browser.waitForElementVisible('.metric', hardwareWait);
 
-        flagForUpdate(browser, '.chart', 'charts in the hardware dashboard', 12);
+        flagForUpdate(browser, '.metric', 'metrics in the hardware dashboard', 12);
 
         browser.expect.element('#dashboard-sections .dashboard-section:nth-child(1) #graphics-metric-overview-1 h5').text.to.be.equal('GPU Model');
         browser.expect.element('#dashboard-sections .dashboard-section:nth-child(1) #graphics-metric-overview-2 h5').text.to.be.equal('GPU Vendor');
@@ -52,8 +52,7 @@ module.exports = {
     },
 
     'Charts render': browser => {
-        // Wait for the metrics to load
-        browser.waitForElementVisible('.chart');
+        browser.waitForElementVisible('.chart', hardwareWait);
 
         flagForUpdate(browser, '.chart', 'charts in the hardware dashboard', 12);
 
@@ -92,9 +91,5 @@ module.exports = {
 
         browser.expect.element('#plugins-metric-overview-2 svg').to.be.visible;
         browser.expect.element('#plugins-metric-overview-2 path.mg-line1').to.be.visible;
-    },
-
-    'All metric description links work': browser => {
-        linksWork(browser, '.metric-description a');
     },
 };

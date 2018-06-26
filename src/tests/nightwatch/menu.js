@@ -2,7 +2,7 @@ const { linksWork, flagForUpdate } = require('./utils');
 
 
 module.exports = {
-    beforeEach: browser => {
+    before: browser => {
         browser.url(browser.launchUrl);
     },
 
@@ -32,7 +32,7 @@ module.exports = {
         browser.expect.element('#navigation-mobile a').to.not.be.present;
     },
 
-    'The Desktop menu links are in the correct order': browser => {
+    'The correct Desktop menu links appear in the correct order': browser => {
         browser.moveToElement('#navigation-desktop', 0, 0);
 
         flagForUpdate(browser, '#navigation-desktop a', 'menu items', 3);
@@ -44,6 +44,7 @@ module.exports = {
 
     'All Desktop menu links work': browser => {
         browser.moveToElement('#navigation-desktop', 0, 0);
+        browser.waitForElementVisible('#navigation-desktop .navigation-section-members');
         linksWork(browser, '#navigation-desktop a');
     },
 };
