@@ -1,4 +1,5 @@
 import React from 'react';
+import memoizeOne from 'memoize-one';
 
 import Chart from '../views/Chart';
 
@@ -13,17 +14,13 @@ class ChartContainer extends React.Component {
         // Initial state, including the initial chart size. It will later be set
         // based on the width of a rendered layout wrapper DOM node.
         this.state = {
-            data: props.data,
-            annotations: props.annotations,
-            activeCategory: props.activeCategory,
-            markers: [],
             chartWidth: 0,
             chartHeight: this.maxChartHeight,
         };
         this.parentNode = null;
     }
 
-    static formatData(populations) {
+    formatData(populations) {
         const data = [];
         const legend = [];
 
@@ -79,45 +76,6 @@ class ChartContainer extends React.Component {
         return size;
     }
 
-    static getDerivedStateFromProps(props, state) {
-        const newState = {};
-
-        const dataChanged = props.data !== state.data;
-        const annotationsChanged = props.annotations !== state.annoations;
-        const activeCategoryChanged = props.activeCategory !== state.activeCategory;
-
-        if (dataChanged) {
-            newState.data = props.data;
-        }
-
-        if (annotationsChanged) {
-            newState.annotations = props.annotations;
-        }
-
-        if (activeCategoryChanged) {
-            newState.activeCategory = props.activeCategory;
-        }
-
-        if (!state.formattedData || !state.showLegend || dataChanged || activeCategoryChanged) {
-            newState.formattedData = ChartContainer.formatData(props.data[props.activeCategory].populations);
-            newState.showLegend = Object.keys(props.data[props.activeCategory].populations).length > 1;
-        }
-
-        if ((state.markers.length === 0 || annotationsChanged || activeCategoryChanged) && props.annotations && props.annotations[props.activeCategory]) {
-            newState.markers = props.annotations[props.activeCategory].map(annotationMeta => {
-                // Rename "date" to "x". MG requires that the name of this
-                // property matches the value of x_accessor.
-                return {
-                    x: new Date(annotationMeta.date),
-                    label: annotationMeta.label,
-                };
-            });
-        }
-
-        if (Object.keys(newState).length) return newState;
-        return null;
-    }
-
     componentDidMount() {
         this.parentNode = document.querySelector('#application > main');
         this.setChartSize();
@@ -138,6 +96,35 @@ class ChartContainer extends React.Component {
         window.removeEventListener('resize', this.setChartSize);
     }
 
+    memoizeFormattedData = memoizeOne(
+        (data, activeCategory) => {
+            return this.formatData(
+                data[activeCategory].populations,
+            );
+        }
+    );
+
+    memoizeShowLegend = memoizeOne(
+        (data, activeCategory) => {
+            return Object.keys(
+                data[activeCategory].populations,
+            ).length > 1;
+        }
+    );
+
+    memoizeMarkers = memoizeOne(
+        (annotations, activeCategory) => {
+            return annotations[activeCategory].map(annotationMeta => {
+                // Rename "date" to "x". MG requires that the name of this
+                // property matches the value of x_accessor.
+                return {
+                    x: new Date(annotationMeta.date),
+                    label: annotationMeta.label,
+                };
+            });
+        }
+    );
+
     render() {
         // Don't render the chart until a proper width has been determined. If
         // we didn't do this, if we instead started with some default width and
@@ -147,16 +134,24 @@ class ChartContainer extends React.Component {
 
         const extraProps = {};
 
-        if (this.state.markers) {
-            extraProps.markers = this.state.markers;
+        const formattedData = this.memoizeFormattedData(this.props.data, this.props.activeCategory);
+        const showLegend = this.memoizeShowLegend(this.props.data, this.props.activeCategory);
+
+        let markers;
+        if (this.props.annotations && this.props.annotations[this.props.activeCategory]) {
+            markers = this.memoizeMarkers(this.props.annotations, this.props.activeCategory);
+        }
+
+        if (markers) {
+            extraProps.markers = markers;
         }
 
         return (
             <Chart
                 {...this.props}
-                data={this.state.formattedData.data}
-                legend={this.state.formattedData.legend}
-                showLegend={this.state.showLegend}
+                data={formattedData.data}
+                legend={formattedData.legend}
+                showLegend={showLegend}
                 width={this.state.chartWidth}
                 height={this.state.chartHeight}
                 numPopulations={this.props.numPopulations}
