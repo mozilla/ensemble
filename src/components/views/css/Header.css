@@ -56,6 +56,12 @@ h1 a:hover {
 .navigation-section-title {
     color: #000;
 
+    /* In addition to making the cursor a pointer, this makes the "hover" effect
+       a "tap" effect on some mobile browsers. That is, in our case, tapping on
+       a section title will cause the submenu to appear when this rule is
+       present. */
+    cursor: pointer;
+
     /* Vertically align the title and the arrow */
     display: flex;
     align-items: center;
