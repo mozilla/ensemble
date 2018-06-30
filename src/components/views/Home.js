@@ -19,7 +19,7 @@ export default () => (
                 The Firefox Public Data Report is a weekly public report on the
                 activity, behavior, and hardware configuration of Firefox users.
             </p>
-            <h2 className="contrasted">The purpose of this report is twofold:</h2>
+            <span className="contrasted">The purpose of this report is twofold:</span>
             <dl className="explanations split">
                 <div>
                     <dt><StripedHeader tag="h3" label="Empowerment" /></dt>
@@ -38,7 +38,7 @@ export default () => (
                     </dd>
                 </div>
             </dl>
-            <h2 className="contrasted">The report is split into 3 sections:</h2>
+            <span className="contrasted">The report is split into Desktop and Mobile sections, with subsections for each:</span>
             <dl className="explanations alt">
                 <div>
                     <dt><Link to="/dashboard/user-activity">User Activity</Link></dt>
