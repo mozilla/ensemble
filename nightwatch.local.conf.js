@@ -16,7 +16,7 @@ module.exports = {
     test_settings: {
         default: {
             launch_url : 'http://localhost:3000',
-            exclude: ['utils.js'],
+            exclude: ['config', 'runners', 'utils.js'],
             globals: {
                 waitForConditionTimeout: 5000,
                 waitForConditionPollInterval: 5000,
