@@ -38,7 +38,7 @@ export default () => (
                     </dd>
                 </div>
             </dl>
-            <span className="contrasted">The report is split into Desktop and Mobile sections, with subsections for each:</span>
+            <span className="contrasted">The report is split into 3 sections:</span>
             <dl className="explanations alt">
                 <div>
                     <dt><Link to="/dashboard/user-activity">User Activity</Link></dt>
