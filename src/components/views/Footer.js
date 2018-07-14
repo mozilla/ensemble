@@ -30,11 +30,6 @@ export default class extends React.Component {
                                 <li><a href="https://www.mozilla.org/about/">About</a></li>
                                 <li><a href="https://www.mozilla.org/contact/">Contact Us</a></li>
                                 <li><a href="https://donate.mozilla.org/">Donate</a></li>
-                                <li>
-                                    <a href="https://wiki.mozilla.org/Webdev/GetInvolved/mozilla.org">
-                                        Contribute to this site
-                                    </a>
-                                </li>
                                 <li className="footer-social">
                                     <ul>
                                         <li><a href="https://twitter.com/mozilla">Twitter <span>(@mozilla)</span></a></li>
