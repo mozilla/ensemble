@@ -79,6 +79,7 @@ export default class extends React.Component {
                         <li><a href="https://www.mozilla.org/privacy/websites/#cookies">Cookies</a></li>
                         <li><a href="https://www.mozilla.org/about/legal/">Legal</a></li>
                         <li><a href="https://www.mozilla.org/about/legal/fraud-report/">Report Trademark Abuse</a></li>
+                        <li><a href="https://github.com/mozilla/ensemble">Contribute to this site</a></li>
                     </ul>
                     <p>Portions of this content are ©1998–{new Date().getFullYear()} by individual mozilla.org contributors. Content available under a {' '}
                     <a href="https://www.mozilla.org/foundation/licensing/website-content/">Creative Commons license</a>.</p>
