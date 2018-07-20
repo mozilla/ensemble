@@ -68,20 +68,25 @@ export default () => (
             <section>
                 <h2 className="contrasted">Methodology</h2>
                 <p>
-                    All data is from a representative 10% sample from our Release,
-                    Beta, ESR, and Other channels for Firefox and the report runs
-                    once per week. Each datapoint covers a week's worth of data
-                    (unless stated otherwise). All data is anonymized and aggregated
-                    to ensure user
-                    privacy. Mozilla publishes additional information about
+
+                    All data is from a representative 10% sample from our
+                    Release, Beta, ESR, and Other channels for Firefox and the
+                    report runs once per week. Each datapoint covers a week's
+                    worth of data (unless stated otherwise). All data is
+                    anonymized and aggregated to ensure user privacy. Mozilla
+                    publishes additional information about
                     {' '}its <a href="https://www.mozilla.org/privacy/">privacy policy</a>,
                     {' '}its <a href="https://www.mozilla.org/privacy/principles">privacy principles</a>,
                     {' '}its <a href="https://wiki.mozilla.org/Firefox/Data_Collection">data collection process</a>,
                     {' '}and its thoughts on <a href="https://www.mozilla.org/privacy/firefox/">internet privacy</a> in general.
                 </p>
                 <p>
-                    You can learn more about this report by reading our announcement on
-                    the Mozilla blog.
+                    You can learn more about this report by reading our
+                    announcement on the Mozilla blog and by exploring the
+                    projects that power it:
+                    {' '}<a href="https://github.com/mozilla/Fx_Usage_Report">FX_Usage_Report</a> (data processing and documentation),
+                    {' '}<a href="https://github.com/mozilla/ensemble-transposer">ensemble-transposer</a> (formatting and metadata), and
+                    {' '}<a href="https://github.com/mozilla/ensemble">ensemble</a> (data visualization).
                 </p>
             </section>
         </article>
