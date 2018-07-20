@@ -35,7 +35,8 @@ operating systems using BrowserStack.
    available with free accounts.
 2. Download, install, and run the [BrowserstackLocal
    app](https://www.browserstack.com/local-testing)
-3. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack`
+3. [Start Ensemble](#Run)
+4. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack`
 
 If you get an error about local testing through BrowserStack not being
 connected, try closing and reopening the BrowserstackLocal app.
