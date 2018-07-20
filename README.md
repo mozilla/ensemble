@@ -23,7 +23,22 @@ Run `npm start`
 
 ### Test
 
-Run `npm test`
+To run Jest, Nightwatch, and ESLint tests locally, run `npm test`.
+
+#### BrowserStack
+
+Follow these steps to run Nightwatch tests against even more browsers and
+operating systems using BrowserStack.
+
+1. Sign up for a BrowserStack account which supports automated testing (for
+   example, an Automate Pro account). Note that automated testing is not
+   available with free accounts.
+2. Download, install, and run the [BrowserstackLocal
+   app](https://www.browserstack.com/local-testing)
+3. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack`
+
+If you get an error about local testing through BrowserStack not being
+connected, try closing and reopening the BrowserstackLocal app.
 
 ### Analyze
 

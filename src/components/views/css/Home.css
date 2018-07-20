@@ -1,9 +1,14 @@
+#introduction section {
+    margin: 20px 0;
+}
+
 .explanations {
     display: flex;
     flex-direction: column;
     font-size: 1rem;
     justify-content: space-between;
     line-height: 1.5;
+    margin: 0;
 }
 
 .explanations.alt dt {
@@ -17,10 +22,6 @@
 
 .explanations.alt dd {
     background-color: #efefef;
-}
-
-.explanations > div {
-    margin-bottom: 20px;
 }
 
 .highlighted {

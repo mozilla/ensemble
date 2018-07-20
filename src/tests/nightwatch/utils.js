@@ -2,21 +2,25 @@ const request = require('request');
 
 
 function notNotFound(browser, url) {
+    const successMessage = `Loaded successfully: ${url}`;
+
     // URLs that the React app manages. These don't return a 404 but instead
     // display a "Not Found" message.
     if (url.startsWith('http://localhost:3000')) {
         browser.url(url);
-        browser.expect.element('#not-found').to.not.be.present;
+        browser.waitForElementNotPresent('#not-found', successMessage);
         browser.back();
     }
 
     // External URLs. These should return 404 if they're invalid.
     else {
         request(url, (error, response) => {
-            if (response === undefined) {
-                browser.assert.fail('response is undefined');
+            if (error) {
+                browser.assert.fail(error);
+            } else if (response === undefined) {
+                browser.assert.fail(`response is undefined for ${url}`);
             } else {
-                browser.assert.equal(response.statusCode, 200);
+                browser.assert.equal(response.statusCode, 200, successMessage);
             }
         });
     }
