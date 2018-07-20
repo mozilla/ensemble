@@ -1,14 +1,33 @@
 const request = require('request');
 
 
-function notNotFound(browser, url) {
-    const successMessage = `Loaded successfully: ${url}`;
+const acceptedHTTPStatusCodes = [200, 301, 302, 304];
 
+function requestWithRetry(browser, url, attemptNumber = 1) {
+    const maxAttempts = 3;
+    const wait = 5000 * (attemptNumber - 1);
+
+    setTimeout(() => {
+        request(url, (error, response) => {
+            if (!error && response && acceptedHTTPStatusCodes.includes(response.statusCode)) {
+                browser.assert.ok(`Loaded successfully: ${url}`);
+            } else {
+                if (attemptNumber === maxAttempts) {
+                    browser.assert.fail(`${url} did not load successfully after ${attemptNumber} attempts`);
+                } else {
+                    requestWithRetry(browser, url, attemptNumber + 1);
+                }
+            }
+        });
+    }, wait);
+}
+
+function loadsSuccessfully(browser, url) {
     // URLs that the React app manages. These don't return a 404 but instead
     // display a "Not Found" message.
     if (url.startsWith('http://localhost:3000')) {
         browser.url(url);
-        browser.waitForElementNotPresent('#not-found', successMessage);
+        browser.waitForElementNotPresent('#not-found', `Loaded successfully: ${200}`);
         browser.back();
     }
 
@@ -23,22 +42,14 @@ function notNotFound(browser, url) {
         ];
         if (ignoredURLs.includes(url)) return;
 
-        request(url, (error, response) => {
-            if (error) {
-                browser.assert.fail(error);
-            } else if (response === undefined) {
-                browser.assert.fail(`response is undefined for ${url}`);
-            } else {
-                browser.assert.equal(response.statusCode, 200, successMessage);
-            }
-        });
+        requestWithRetry(browser, url);
     }
 }
 
 function linkWorks(browser, selector) {
     browser.element('css selector', selector, element => {
         browser.elementIdAttribute(element.value.ELEMENT, 'href', result => {
-            notNotFound(browser, result.value);
+            loadsSuccessfully(browser, result.value);
         });
     });
 }
@@ -62,7 +73,7 @@ function linksWork(browser, selector) {
 
                 if (index === (elementIds.length - 1)) {
                     urls.forEach(url => {
-                        notNotFound(browser, url);
+                        loadsSuccessfully(browser, url);
                     });
                 }
             });
