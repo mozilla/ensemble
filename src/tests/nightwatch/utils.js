@@ -27,7 +27,7 @@ function loadsSuccessfully(browser, url) {
     // display a "Not Found" message.
     if (url.startsWith('http://localhost:3000')) {
         browser.url(url);
-        browser.waitForElementNotPresent('#not-found', `Loaded successfully: ${200}`);
+        browser.waitForElementNotPresent('#not-found', `Loaded successfully: ${url}`);
         browser.back();
     }
 
