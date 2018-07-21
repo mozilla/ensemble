@@ -5,7 +5,7 @@ const acceptedHTTPStatusCodes = [200, 301, 302, 304];
 
 function requestWithRetry(browser, url, attemptNumber = 1) {
     const maxAttempts = 3;
-    const wait = 5000 * (attemptNumber - 1);
+    const waitSeconds = Math.pow(5, (attemptNumber - 1));
 
     setTimeout(() => {
         request(url, (error, response) => {
@@ -19,7 +19,7 @@ function requestWithRetry(browser, url, attemptNumber = 1) {
                 }
             }
         });
-    }, wait);
+    }, waitSeconds * 1000);
 }
 
 function loadsSuccessfully(browser, url) {
