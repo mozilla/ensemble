@@ -39,7 +39,8 @@ operating systems using BrowserStack.
 4. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack`
 
 If you get an error about local testing through BrowserStack not being
-connected, try closing and reopening the BrowserstackLocal app.
+connected, wait about 30 seconds and try again. You could alternatively try
+closing and reopening the BrowserstackLocal app.
 
 ### Analyze
 
