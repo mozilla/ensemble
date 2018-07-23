@@ -74,7 +74,7 @@ const nightwatch_config = {
                 os_version: '7',
                 browser: 'Firefox',
                 browser_version: '58.0',
-            }
+            },
         },
         firefoxSierra: {
             desiredCapabilities: {
@@ -82,7 +82,7 @@ const nightwatch_config = {
                 os_version: 'Sierra',
                 browser: 'Firefox',
                 browser_version: '58.0',
-            }
+            },
         },
         chromeWin7: {
             desiredCapabilities: {
@@ -90,7 +90,7 @@ const nightwatch_config = {
                 os_version: '7',
                 browser: 'Chrome',
                 browser_version: '63.0',
-            }
+            },
         },
         chromeSierra: {
             desiredCapabilities: {
@@ -98,7 +98,7 @@ const nightwatch_config = {
                 os_version: 'Sierra',
                 browser: 'Chrome',
                 browser_version: '63.0',
-            }
+            },
         },
         operaWin7: {
             desiredCapabilities: {
@@ -106,7 +106,7 @@ const nightwatch_config = {
                 os_version: '7',
                 browser: 'Opera',
                 browser_version: '12.16',
-            }
+            },
         },
         operaSierra: {
             desiredCapabilities: {
@@ -114,7 +114,7 @@ const nightwatch_config = {
                 os_version: 'Sierra',
                 browser: 'Opera',
                 browser_version: '12.15',
-            }
+            },
         },
     },
 };
