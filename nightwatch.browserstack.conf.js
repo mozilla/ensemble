@@ -29,7 +29,10 @@ const nightwatch_config = {
     common_settings: {
         launch_url: localConfig.test_settings.default.launch_url,
         exclude: localConfig.test_settings.default.exclude,
-        globals: localConfig.test_settings.default.globals,
+        skip_testcases_on_fail: true,
+        globals: {
+            waitForConditionTimeout: 25000,
+        },
     },
 
     test_settings: {
@@ -139,7 +142,6 @@ for(const envName in nightwatch_config.test_settings) {
     // Support common_settings, which also helps us run tests in parallel. This
     // is needed for the same reason the code block above is needed, although
     // it's not discussed in the BrowserStack docs.
-    envConfig['desiredCapabilities'] = envConfig['desiredCapabilities'] || {};
     for(const csName in nightwatch_config.common_settings) {
         envConfig[csName] = envConfig[csName] ||
             nightwatch_config.common_settings[csName];

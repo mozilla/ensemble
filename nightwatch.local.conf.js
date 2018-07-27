@@ -19,7 +19,6 @@ module.exports = {
             exclude: ['config', 'runners', 'utils.js'],
             globals: {
                 waitForConditionTimeout: 5000,
-                waitForConditionPollInterval: 5000,
             },
             desiredCapabilities: {
                 browserName: 'firefox',
