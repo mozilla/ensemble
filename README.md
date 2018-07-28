@@ -19,7 +19,16 @@ Facebook.
 
 ### Run
 
-Run `npm start`
+#### For development
+
+Run `npm run dev`
+
+#### In production
+
+1. Install [Docker CE](https://docs.docker.com/install/)
+2. Run `PORT=3000 NODE_ENV=production docker-compose up`
+    * Other environment variables specified in *env* can optionally be
+      overridden here, too.
 
 ### Test
 
@@ -52,16 +61,6 @@ size`.
 
 #### Adding new pages
 
-When adding a new page, be sure to update the `routes` object of *static.json*
-accordingly. For example, if an */about* page is added, the following property
-should be added to the `routes` object:
-
-```javascript
-"/about": "index.html"
-```
-
-If this is not done, the page will 404 on production.
-
-We could use a wildcard in *static.json* to send all unknown paths to
-*index.html*, but that would mean even non-existent paths would render
-successfully and the server would never return a 404.
+When adding a new page, be sure to add its path to the `knownPaths` array of
+*production-server.js*. If this is not done, the page will 404 on production
+even though it will render successfully.
