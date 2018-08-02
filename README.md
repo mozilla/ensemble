@@ -33,12 +33,15 @@ operating systems using BrowserStack.
 1. Sign up for a BrowserStack account which supports automated testing (for
    example, an Automate Pro account). Note that automated testing is not
    available with free accounts.
-2. Download, install, and run the [BrowserstackLocal
-   app](https://www.browserstack.com/local-testing)
-3. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack`
+2. Follow the instructions in the *Live (using other browsers); Automate; App
+   Automate* section of [this page](https://www.browserstack.com/local-testing)
+   to download, install, and run the BrowserStackLocal executable.
+3. [Start Ensemble](#Run)
+4. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack`
 
 If you get an error about local testing through BrowserStack not being
-connected, try closing and reopening the BrowserstackLocal app.
+connected, wait about 30 seconds and try again. If it keeps happening, try
+stopping and re-starting the BrowserStackLocal process.
 
 ### Analyze
 

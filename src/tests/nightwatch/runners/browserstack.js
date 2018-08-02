@@ -9,6 +9,22 @@
 
 const nightwatch = require('nightwatch');
 const browserstack = require('browserstack-local');
+
+
+if (!process.env.BSUSER || !process.env.BSKEY) {
+    if (!process.env.BSUSER) {
+        // eslint-disable-next-line no-console
+        console.error('BSUSER is not set');
+    }
+
+    if (!process.env.BSKEY) {
+        // eslint-disable-next-line no-console
+        console.error('BSKEY is not set');
+    }
+
+    process.exit(1);
+}
+
 let bs_local;
 
 process.mainModule.filename = './node_modules/.bin/nightwatch';
