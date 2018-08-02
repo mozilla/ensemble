@@ -1,5 +1,6 @@
 import React from 'react';
 import markdownIt from 'markdown-it';
+import memoizeOne from 'memoize-one';
 
 import lazyLoad from '../../lib/lazyLoad';
 import StripedHeader from './StripedHeader';
@@ -22,48 +23,39 @@ class MetricOverview extends React.Component {
             this.CustomizableDateContainer = lazyLoad(import('../containers/CustomizableDateContainer'));
             this.DataTableContainer = lazyLoad(import('../containers/DataTableContainer'));
         }
-
-        this.state = { maybeMetricDescription: null };
     }
 
-    static getDerivedStateFromProps(props, state) {
-        const newState = {};
+    memoizeMetricDescription = memoizeOne(description => {
+        const multipleParagraphs = Array.isArray(description);
 
-        // Only build the description component if props.description is non-null
-        // and the description component hasn't been built yet.
-        //
-        // Only re-build the description component if props.description is
-        // non-null and has changed.
-        if (props.description && (!state.description || props.description !== state.description)) {
-            newState.description = props.description;
-
-            const multipleParagraphs = Array.isArray(props.description);
-
-            if (multipleParagraphs) {
-                newState.maybeMetricDescription = (
-                    <div className="metric-description">
-                        {props.description.map((paragraph, index) => (
-                            <p key={index} dangerouslySetInnerHTML={
-                                {__html: MetricOverview.markdownParser.renderInline(paragraph)}
-                            } />
-                        ))}
-                    </div>
-                );
-            } else {
-                newState.maybeMetricDescription = (
-                    <p className="metric-description" dangerouslySetInnerHTML={
-                        {__html: MetricOverview.markdownParser.renderInline(props.description)}
-                    } />
-                );
-            }
+        if (multipleParagraphs) {
+            return (
+                <div className="metric-description">
+                    {description.map((paragraph, index) => (
+                        <p key={index} dangerouslySetInnerHTML={
+                            {__html: MetricOverview.markdownParser.renderInline(paragraph)}
+                        } />
+                    ))}
+                </div>
+            );
+        } else {
+            return (
+                <p className="metric-description" dangerouslySetInnerHTML={
+                    {__html: MetricOverview.markdownParser.renderInline(description)}
+                } />
+            );
         }
-
-        if (Object.keys(newState).length > 0) return newState;
-        return null;
-    }
+    });
 
     render() {
         const props = this.props;
+
+        let maybeMetricDescription;
+        if (props.description) {
+            maybeMetricDescription = this.memoizeMetricDescription(
+                props.description,
+            );
+        }
 
         let MetricContainer = null;
         if (props.type === 'line') {
@@ -97,7 +89,7 @@ class MetricOverview extends React.Component {
         return (
             <div id={props.identifier} className="metric-overview">
                 <StripedHeader tag="h5" label={props.title} />
-                {this.state.maybeMetricDescription}
+                {maybeMetricDescription}
                 <div className="metric-and-legend">
                     {MetricContainer}
                     <div className="legend" />

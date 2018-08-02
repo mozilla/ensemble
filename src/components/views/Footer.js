@@ -30,11 +30,6 @@ export default class extends React.Component {
                                 <li><a href="https://www.mozilla.org/about/">About</a></li>
                                 <li><a href="https://www.mozilla.org/contact/">Contact Us</a></li>
                                 <li><a href="https://donate.mozilla.org/">Donate</a></li>
-                                <li>
-                                    <a href="https://wiki.mozilla.org/Webdev/GetInvolved/mozilla.org">
-                                        Contribute to this site
-                                    </a>
-                                </li>
                                 <li className="footer-social">
                                     <ul>
                                         <li><a href="https://twitter.com/mozilla">Twitter <span>(@mozilla)</span></a></li>
@@ -84,6 +79,7 @@ export default class extends React.Component {
                         <li><a href="https://www.mozilla.org/privacy/websites/#cookies">Cookies</a></li>
                         <li><a href="https://www.mozilla.org/about/legal/">Legal</a></li>
                         <li><a href="https://www.mozilla.org/about/legal/fraud-report/">Report Trademark Abuse</a></li>
+                        <li><a href="https://github.com/mozilla/ensemble">Contribute to this site</a></li>
                     </ul>
                     <p>Portions of this content are ©1998–{new Date().getFullYear()} by individual mozilla.org contributors. Content available under a {' '}
                     <a href="https://www.mozilla.org/foundation/licensing/website-content/">Creative Commons license</a>.</p>

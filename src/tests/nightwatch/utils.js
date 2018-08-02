@@ -1,31 +1,55 @@
 const request = require('request');
 
 
-function notNotFound(browser, url) {
+const acceptedHTTPStatusCodes = [200, 301, 302, 304];
+
+function requestWithRetry(browser, url, attemptNumber = 1) {
+    const maxAttempts = 3;
+    const waitSeconds = Math.pow(5, (attemptNumber - 1));
+
+    setTimeout(() => {
+        request(url, (error, response) => {
+            if (!error && response && acceptedHTTPStatusCodes.includes(response.statusCode)) {
+                browser.assert.ok(`Loaded successfully: ${url}`);
+            } else {
+                if (attemptNumber === maxAttempts) {
+                    browser.assert.fail(`${url} did not load successfully after ${attemptNumber} attempts`);
+                } else {
+                    requestWithRetry(browser, url, attemptNumber + 1);
+                }
+            }
+        });
+    }, waitSeconds * 1000);
+}
+
+function loadsSuccessfully(browser, url) {
     // URLs that the React app manages. These don't return a 404 but instead
     // display a "Not Found" message.
     if (url.startsWith('http://localhost:3000')) {
         browser.url(url);
-        browser.expect.element('#not-found').to.not.be.present;
+        browser.waitForElementNotPresent('#not-found', `Loaded successfully: ${url}`);
         browser.back();
     }
 
     // External URLs. These should return 404 if they're invalid.
     else {
-        request(url, (error, response) => {
-            if (response === undefined) {
-                browser.assert.fail('response is undefined');
-            } else {
-                browser.assert.equal(response.statusCode, 200);
-            }
-        });
+
+        // For the time being, these repos are private and will 404. These lines
+        // should be removed once Ensemble is launched.
+        const ignoredURLs = [
+            'https://github.com/mozilla/ensemble',
+            'https://github.com/mozilla/ensemble-transposer',
+        ];
+        if (ignoredURLs.includes(url)) return;
+
+        requestWithRetry(browser, url);
     }
 }
 
 function linkWorks(browser, selector) {
     browser.element('css selector', selector, element => {
         browser.elementIdAttribute(element.value.ELEMENT, 'href', result => {
-            notNotFound(browser, result.value);
+            loadsSuccessfully(browser, result.value);
         });
     });
 }
@@ -49,7 +73,7 @@ function linksWork(browser, selector) {
 
                 if (index === (elementIds.length - 1)) {
                     urls.forEach(url => {
-                        notNotFound(browser, url);
+                        loadsSuccessfully(browser, url);
                     });
                 }
             });
