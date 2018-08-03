@@ -39,6 +39,7 @@
         "dateformat": "3.0.3",
         "distinct-colors": "1.0.4",
         "markdown-it": "8.4.2",
+        "markdown-it-sup": "1.0.0",
         "memoize-one": "4.0.0",
         "metrics-graphics": "2.15.6",
         "react": "16.4.1",
