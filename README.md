@@ -36,6 +36,9 @@ operating systems using BrowserStack.
 2. Follow the instructions in the *Live (using other browsers); Automate; App
    Automate* section of [this page](https://www.browserstack.com/local-testing)
    to download, install, and run the BrowserStackLocal executable.
+    * BrowserStack tells users to use the command-line executable for automated
+      testing, but you may actually have better luck using the GUI app, which is
+      linked from the *Live* section.
 3. [Start Ensemble](#Run)
 4. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack`
 
