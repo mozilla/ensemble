@@ -1,5 +1,9 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
+# Docker
+.config
+.ash_history
+
 # dependencies
 /node_modules
 
@@ -15,6 +19,7 @@ local.err
 
 # generated files
 /build
+version.json
 
 # misc
 .DS_Store
