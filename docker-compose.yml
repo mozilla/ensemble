@@ -4,8 +4,8 @@ services:
     web:
         build: .
         environment:
+            - NODE_ENV=production
             - PORT
-            - NODE_ENV
             - REACT_APP_GA_TRACKING_ID
             - REACT_APP_VALUE_DECIMAL_PLACES
         ports:

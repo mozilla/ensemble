@@ -26,7 +26,7 @@ Run `npm run dev`
 #### In production
 
 1. Install [Docker CE](https://docs.docker.com/install/)
-2. Run `PORT=3000 NODE_ENV=production docker-compose up`
+2. Run `PORT=3000 docker-compose up`
     * Other environment variables specified in *env* can optionally be
       overridden here, too.
 
