@@ -1,0 +1,13 @@
+version: '3.2'
+
+services:
+    web:
+        build: .
+        environment:
+            - NODE_ENV=production
+            - PORT
+            - REACT_APP_GA_TRACKING_ID
+            - REACT_APP_VALUE_DECIMAL_PLACES
+        ports:
+            - target: ${PORT}
+              published: ${PORT}

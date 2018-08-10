@@ -1,5 +1,6 @@
 import React from 'react';
 import markdownIt from 'markdown-it';
+import markdownItSup from 'markdown-it-sup';
 import memoizeOne from 'memoize-one';
 
 import lazyLoad from '../../lib/lazyLoad';
@@ -9,9 +10,6 @@ import './css/MetricOverview.css';
 
 
 class MetricOverview extends React.Component {
-    // Create a markdown parser that only parses links. It needs to be static
-    // for static methods to use it.
-    static markdownParser = markdownIt('zero').enable('link');
 
     constructor(props) {
         super(props);
@@ -23,6 +21,9 @@ class MetricOverview extends React.Component {
             this.CustomizableDateContainer = lazyLoad(import('../containers/CustomizableDateContainer'));
             this.DataTableContainer = lazyLoad(import('../containers/DataTableContainer'));
         }
+
+        this.markdownParser = markdownIt('zero').use(markdownItSup)
+                                                .enable(['link', 'entity']);
     }
 
     memoizeMetricDescription = memoizeOne(description => {
@@ -33,7 +34,7 @@ class MetricOverview extends React.Component {
                 <div className="metric-description">
                     {description.map((paragraph, index) => (
                         <p key={index} dangerouslySetInnerHTML={
-                            {__html: MetricOverview.markdownParser.renderInline(paragraph)}
+                            {__html: this.markdownParser.renderInline(paragraph)}
                         } />
                     ))}
                 </div>
@@ -41,7 +42,7 @@ class MetricOverview extends React.Component {
         } else {
             return (
                 <p className="metric-description" dangerouslySetInnerHTML={
-                    {__html: MetricOverview.markdownParser.renderInline(description)}
+                    {__html: this.markdownParser.renderInline(description)}
                 } />
             );
         }
