@@ -32,6 +32,14 @@ USER app
 # Build the application
 RUN npm run build
 
+# Remove devDependencies. We don't need them in our container.
+#
+# We could have used the --production flag to "npm install" above, but
+# apparently that excludes even sub-devDependencies, including the
+# devDependencies of create-react-app, and create-react-app builds fail when its
+# own copy of eslint is not present.
+RUN npm prune --dev
+
 # Clear the NPM cache to keep the Docker image small. (We don't need to clear
 # the apk cache because we use apk's --no-cache flag above.)
 RUN npm cache clean --force
