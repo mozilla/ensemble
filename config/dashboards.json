@@ -7,17 +7,17 @@
                 {
                     "key": "user-activity",
                     "menuTitle": "User Activity",
-                    "source": "https://openjck-guarded-plains.herokuapp.com/user-activity/"
+                    "source": "https://openjck-guarded-plains.herokuapp.com/datasets/user-activity/"
                 },
                 {
                     "key": "usage-behavior",
                     "menuTitle": "Usage Behavior",
-                    "source": "https://openjck-guarded-plains.herokuapp.com/usage-behavior/"
+                    "source": "https://openjck-guarded-plains.herokuapp.com/datasets/usage-behavior/"
                 },
                 {
                     "key": "hardware",
                     "menuTitle": "Hardware",
-                    "source": "https://openjck-guarded-plains.herokuapp.com/hardware/"
+                    "source": "https://openjck-guarded-plains.herokuapp.com/datasets/hardware/"
                 }
             ]
         },
