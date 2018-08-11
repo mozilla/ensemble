@@ -28,24 +28,27 @@ class MetricOverview extends React.Component {
 
     memoizeMetricDescription = memoizeOne(description => {
         const multipleParagraphs = Array.isArray(description);
+        let paragraphComponents = [];
 
         if (multipleParagraphs) {
-            return (
-                <div className="metric-description">
-                    {description.map((paragraph, index) => (
-                        <p key={index} dangerouslySetInnerHTML={
-                            {__html: this.markdownParser.renderInline(paragraph)}
-                        } />
-                    ))}
-                </div>
-            );
+            paragraphComponents = description.map((paragraph, index) => (
+                <p key={index} dangerouslySetInnerHTML={
+                    {__html: this.markdownParser.renderInline(paragraph)}
+                } />
+            ));
         } else {
-            return (
-                <p className="metric-description" dangerouslySetInnerHTML={
+            paragraphComponents.push(
+                <p dangerouslySetInnerHTML={
                     {__html: this.markdownParser.renderInline(description)}
                 } />
             );
         }
+
+        return (
+            <div className="metric-description">
+                {paragraphComponents}
+            </div>
+        );
     });
 
     render() {

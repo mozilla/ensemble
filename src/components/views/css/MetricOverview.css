@@ -7,9 +7,13 @@
     margin: 50px 0;
 }
 
-.metric-description {
-    font-size: 1rem;
-    margin: 0;
+.metric-description p {
+    font-size: 1.1rem;
+}
+
+.metric-description p:only-child {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 /* Exclude the top margin of the first paragraph of a multi-paragraph
