@@ -7,9 +7,3 @@
 .mg-active-datapoint-container {
     transform: translate(0, -50px);
 }
-
-/* Work around for this issue:
-   https://github.com/metricsgraphics/metrics-graphics/issues/852 */
-.metric svg {
-    user-select: none;
-}
