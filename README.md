@@ -41,7 +41,7 @@ When adding a new page, be sure to add its path to the `knownPaths` array of
 *production-server.js*. If this is not done, the page will 404 on production
 even though it will render successfully.
 
-### Test
+### Testing
 
 To run Jest, Nightwatch, and ESLint tests locally, run `npm test`.
 
@@ -66,7 +66,7 @@ If you get an error about local testing through BrowserStack not being
 connected, wait about 30 seconds and try again. If it keeps happening, try
 stopping and re-starting the BrowserStackLocal process.
 
-### Analyze
+### Analyzing
 
 To analyze the size of the JavaScript bundle that will be served, run `npm run
 size`.
