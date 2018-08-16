@@ -7,7 +7,8 @@
     },
     "scripts": {
         "start": "node production-server",
-        "dev": "react-scripts start",
+        "dev": "PORT=${PORT:=3000} docker-compose --file docker-compose.dev.yml up",
+        "stopdev": "PORT=${PORT:=3000} docker-compose --file docker-compose.dev.yml stop",
         "build": "npm-run-all build:*",
         "build:app": "react-scripts build",
         "build:version.json": "node scripts/generateVersionJSON",

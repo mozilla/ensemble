@@ -44,5 +44,4 @@ RUN npm prune --dev
 # the apk cache because we use apk's --no-cache flag above.)
 RUN npm cache clean --force
 
-ENTRYPOINT ["npm"]
-CMD ["start"]
+CMD ["npm", "start"]

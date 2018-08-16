@@ -10,25 +10,36 @@ Ensemble is written in React with the help of the wonderful
 [create-react-app](https://github.com/facebook/create-react-app) tool from
 Facebook.
 
-## Development
+## Run
 
-### Install
-
-1. [Install Node and NPM](https://nodejs.org/en/download/)
-2. Run `npm install`
-
-### Run
-
-#### For development
-
-Run `npm run dev`
-
-#### In production
+### For development
 
 1. Install [Docker CE](https://docs.docker.com/install/)
-2. Run `PORT=3000 NODE_ENV=production docker-compose up`
-    * Other environment variables specified in *env* can optionally be
-      overridden here, too.
+2. Run `npm run dev`
+
+The `PORT` environment variable and any of the environment variables in *.env*
+can be overridden. For example:
+`PORT=1234 REACT_APP_SITE_TITLE="Firefox Public Lore Report" npm run dev`
+
+If docker-compose did not shut down properly the last time it was used, the
+development server may not work. To resolve this, run `npm run stopdev` (setting
+the same `PORT` that was used when the development server was started, if any)
+and then run `npm run dev` again.
+
+### In production
+
+Run the Docker container and a Redis server side-by-side. Any of the environment
+variables in *.env* can be overridden and most should be.
+
+## Development
+
+### Notes
+
+#### Adding new pages
+
+When adding a new page, be sure to add its path to the `knownPaths` array of
+*production-server.js*. If this is not done, the page will 404 on production
+even though it will render successfully.
 
 ### Test
 
@@ -59,11 +70,3 @@ stopping and re-starting the BrowserStackLocal process.
 
 To analyze the size of the JavaScript bundle that will be served, run `npm run
 size`.
-
-### Notes
-
-#### Adding new pages
-
-When adding a new page, be sure to add its path to the `knownPaths` array of
-*production-server.js*. If this is not done, the page will 404 on production
-even though it will render successfully.

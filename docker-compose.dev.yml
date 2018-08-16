@@ -3,11 +3,15 @@ version: '3.2'
 services:
     web:
         build: .
+        volumes:
+            - .:/app
         environment:
             - PORT
             - NODE_ENV
             - REACT_APP_GA_TRACKING_ID
+            - REACT_APP_SITE_TITLE
             - REACT_APP_VALUE_DECIMAL_PLACES
         ports:
             - target: ${PORT}
               published: ${PORT}
+        command: npx react-scripts start
