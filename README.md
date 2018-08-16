@@ -28,8 +28,8 @@ and then run `npm run dev` again.
 
 ### In production
 
-Run the Docker container and a Redis server side-by-side. Any of the environment
-variables in *.env* can be overridden and most should be.
+Run the Docker container. The `PORT` environment variable and any of the
+environment variables in *.env* can be overridden. Most should be.
 
 ## Development
 
