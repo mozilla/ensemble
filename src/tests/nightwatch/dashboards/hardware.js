@@ -1,19 +1,17 @@
 const { flagForUpdate } = require('../utils');
 
 
-const hardwareWait = 10000; // The Hardware dashboard takes a while to load
-
 module.exports = {
     before: browser => {
         browser.url(`${browser.launchUrl}/dashboard/hardware`);
     },
 
     'Dashboard loads': browser => {
-        browser.expect.element('#dashboard').to.be.present.before(hardwareWait);
+        browser.expect.element('#dashboard').to.be.present;
     },
 
     'Page <title> is correct': browser => {
-        browser.waitForElementVisible('#dashboard', hardwareWait);
+        browser.waitForElementVisible('#dashboard');
         browser.assert.title('Hardware Across the Web | Firefox Public Data Report');
     },
 
@@ -22,7 +20,7 @@ module.exports = {
     },
 
     'Section titles and order are correct': browser => {
-        browser.waitForElementVisible('#dashboard', hardwareWait);
+        browser.waitForElementVisible('#dashboard');
 
         flagForUpdate(browser, '#dashboard-sections .dashboard-section', 'sections in the hardware dashboard', 4);
 
@@ -33,7 +31,7 @@ module.exports = {
     },
 
     'Metric titles and order are correct': browser => {
-        browser.waitForElementVisible('.metric', hardwareWait);
+        browser.waitForElementVisible('.metric');
 
         flagForUpdate(browser, '.metric', 'metrics in the hardware dashboard', 12);
 
@@ -52,7 +50,7 @@ module.exports = {
     },
 
     'Charts render': browser => {
-        browser.waitForElementVisible('.chart', hardwareWait);
+        browser.waitForElementVisible('.chart');
 
         flagForUpdate(browser, '.chart', 'charts in the hardware dashboard', 12);
 

@@ -1,13 +1,18 @@
-main > #spinner {
+main > .spinner {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 20px 0;
 
     /* Give this element a static height so that the next button doesn't get
      * pushed down when the spinner appears. */
     height: 200px;
 }
 
-main > #spinner + .next-button {
+main > .spinner + .next-button {
     margin-top: 0;
+}
+
+.metric-overview .spinner {
+    margin: 50px 0;
 }

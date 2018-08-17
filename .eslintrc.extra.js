@@ -38,6 +38,11 @@ module.exports = {
             },
         },
     ],
+    settings: {
+        react: {
+            version: "16.4.2",
+        },
+    },
     rules: {
         // Errors
         'eqeqeq': 'error',

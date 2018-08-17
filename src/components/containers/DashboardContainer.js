@@ -44,10 +44,12 @@ class DashboardContainer extends React.Component {
                     title={dataFetch.value.title}
                     description={dataFetch.value.description}
                     sections={dataFetch.value.sections}
+                    dates={dataFetch.value.dates}
                     metrics={dataFetch.value.metrics}
                     summaryMetrics={dataFetch.value.summaryMetrics}
                     categories={dataFetch.value.categories}
                     activeCategory={activeCategory}
+                    dashboardSource={this.props.source}
                     onCategoryChange={this._onCategoryChange}
                 />
             );

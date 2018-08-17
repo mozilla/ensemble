@@ -97,24 +97,24 @@ class ChartContainer extends React.Component {
     }
 
     memoizeFormattedData = memoizeOne(
-        (data, activeCategory) => {
+        data => {
             return this.formatData(
-                data[activeCategory].populations,
+                data.populations,
             );
         }
     );
 
     memoizeShowLegend = memoizeOne(
-        (data, activeCategory) => {
+        data => {
             return Object.keys(
-                data[activeCategory].populations,
+                data.populations,
             ).length > 1;
         }
     );
 
     memoizeMarkers = memoizeOne(
-        (annotations, activeCategory) => {
-            return annotations[activeCategory].map(annotationMeta => {
+        annotations => {
+            return annotations.map(annotationMeta => {
                 // Rename "date" to "x". MG requires that the name of this
                 // property matches the value of x_accessor.
                 return {
@@ -134,12 +134,12 @@ class ChartContainer extends React.Component {
 
         const extraProps = {};
 
-        const formattedData = this.memoizeFormattedData(this.props.data, this.props.activeCategory);
-        const showLegend = this.memoizeShowLegend(this.props.data, this.props.activeCategory);
+        const formattedData = this.memoizeFormattedData(this.props.data);
+        const showLegend = this.memoizeShowLegend(this.props.data);
 
         let markers;
-        if (this.props.annotations && this.props.annotations[this.props.activeCategory]) {
-            markers = this.memoizeMarkers(this.props.annotations, this.props.activeCategory);
+        if (this.props.annotations) {
+            markers = this.memoizeMarkers(this.props.annotations);
         }
 
         if (markers) {

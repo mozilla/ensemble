@@ -10,7 +10,7 @@ export default class extends React.Component {
     }
 
     render() {
-        const formattedData = this.formatData(this.props.data[this.props.activeCategory].dates);
+        const formattedData = this.formatData(this.props.data.dates);
 
         return (
             <DataTable
