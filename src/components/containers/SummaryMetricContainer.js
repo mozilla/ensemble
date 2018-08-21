@@ -1,17 +1,20 @@
 import React from 'react';
+import { connect } from 'react-refetch';
 
 import SummaryMetric from '../views/SummaryMetric';
+import Spinner from '../views/Spinner';
+import ErrorComponent from '../views/Error';
 
 
-export default props => {
-    function formatData(rawData) {
+class SummaryMetricContainer extends React.Component {
+    formatData = rawData => {
         const formattedData = [];
         const populations = Object.keys(rawData.populations);
 
         // True/False charts
         if (populations.length === 1) {
             const onlyPopulation = rawData.populations[populations[0]];
-            const trueValue = onlyPopulation.find(dp => dp.x === props.activeDate).y;
+            const trueValue = onlyPopulation.find(dp => dp.x === this.props.activeDate).y;
 
             formattedData.push({
                 id: 0,
@@ -33,7 +36,7 @@ export default props => {
 
             let index = 0;
             populations.forEach(populationName => {
-                const activeDataPoint = rawData.populations[populationName].find(dp => dp.x === props.activeDate);
+                const activeDataPoint = rawData.populations[populationName].find(dp => dp.x === this.props.activeDate);
 
                 // There is not guaranteed to be a data point for the active
                 // date
@@ -80,10 +83,36 @@ export default props => {
         return formattedData;
     }
 
-    return (
-        <SummaryMetric
-            title={props.title}
-            data={formatData(props.data[props.activeCategory])}
-        />
-    );
-};
+    render() {
+        const dataFetch = this.props.dataFetch;
+
+        if (dataFetch.pending) {
+            return <Spinner />;
+        } else if (dataFetch.rejected) {
+            const extraErrorComponentProps = {};
+
+            if (dataFetch.reason && dataFetch.reason.message) {
+                extraErrorComponentProps.message = dataFetch.reason.message;
+            }
+
+            return (
+                <ErrorComponent
+                    id="summary-metric-fetch-error"
+                    title="Error fetching summary metric"
+                    {...extraErrorComponentProps}
+                />
+            );
+        } else if (dataFetch.fulfilled) {
+            return (
+                <SummaryMetric
+                    title={dataFetch.value.title}
+                    data={this.formatData(dataFetch.value.data)}
+                />
+            );
+        }
+    }
+}
+
+export default connect(props => ({
+    dataFetch: { url: `${props.dashboardSource}/${props.activeCategory}/${props.slug}` },
+}))(SummaryMetricContainer);

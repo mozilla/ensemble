@@ -16,22 +16,13 @@ import './css/LabelledSelector.css';
 export default props => {
     let maybeSummaryMetrics = null;
     if (props.summaryMetrics) {
-        const allDatesSet = new Set();
-        props.summaryMetrics.forEach(currentMetricTitle => {
-            const currentData = props.metrics.find(m => m.title === currentMetricTitle).data[props.activeCategory];
-            Object.keys(currentData.populations).forEach(populationName => {
-                currentData.populations[populationName].forEach(dp => allDatesSet.add(dp.x));
-            });
-        });
-
         const summaryMetricContainers = [];
-        props.summaryMetrics.forEach((metricTitle, index) => {
+        props.summaryMetrics.forEach(summaryMetricSlug => {
             summaryMetricContainers.push(
                 <SummaryMetricContainer
-                    key={index}
-
-                    title={metricTitle}
-                    data={props.metrics.find(m => m.title === metricTitle).data}
+                    key={summaryMetricSlug}
+                    slug={summaryMetricSlug}
+                    dashboardSource={props.dashboardSource}
                     activeCategory={props.activeCategory}
                 />
             );
@@ -41,7 +32,7 @@ export default props => {
         maybeSummaryMetrics = (
             <section id="summary-metrics">
                 <CustomizableDateContainer
-                    dates={Array.from(allDatesSet)}
+                    dates={props.dates}
                     titleComponent={titleComponent}
                 >
                     {summaryMetricContainers}
@@ -93,15 +84,20 @@ export default props => {
 
                         sectionKey={s.key}
                         title={s.title}
-                        metrics={props.metrics.filter(c => c.section === s.key)}
+                        metrics={s.metrics}
                         activeCategory={props.activeCategory}
+                        dashboardSource={props.dashboardSource}
                     />
                 ))}
             </section>
         );
     } else {
         body = (
-            <MetricOverviewCollection metrics={props.metrics} activeCategory={props.activeCategory} />
+            <MetricOverviewCollection
+                metrics={props.metrics}
+                activeCategory={props.activeCategory}
+                dashboardSource={props.dashboardSource}
+            />
         );
     }
 
