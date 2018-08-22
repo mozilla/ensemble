@@ -89,7 +89,7 @@ class MetricOverview extends React.Component {
 
         return (
             <div id={props.identifier} className="metric-overview">
-                <StripedHeader tag="h5" label={props.title} />
+                <StripedHeader tag={props.inSection ? 'h5' : 'h4'} label={props.title} />
                 {maybeMetricDescription}
                 <div className="metric-and-legend">
                     {MetricContainer}

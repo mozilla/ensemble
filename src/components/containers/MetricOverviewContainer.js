@@ -57,7 +57,6 @@ class MetricOverviewContainer extends React.Component {
             return (
                 <MetricOverview
                     identifier={props.identifier}
-
                     title={dataFetch.value.title}
                     description={dataFetch.value.description}
                     type={dataFetch.value.type}
@@ -65,6 +64,7 @@ class MetricOverviewContainer extends React.Component {
                     columns={dataFetch.value.columns}
                     data={dataFetch.value.data}
                     annotations={dataFetch.value.annotations}
+                    inSection={props.inSection}
                 />
             );
         }

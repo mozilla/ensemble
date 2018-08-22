@@ -20,6 +20,7 @@ export default props => (
                     identifier={identifier}
                     dashboardSource={props.dashboardSource}
                     activeCategory={props.activeCategory}
+                    inSection={props.inSection}
                 />
             );
         })}
