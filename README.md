@@ -1,6 +1,6 @@
-Ensemble is the platform that powers the Firefox Public Data Report, a weekly
-public report on the activity, behavior, and hardware configuration of Firefox
-Desktop users.
+Ensemble is the platform that powers the [Firefox Public Data
+Report](https://data.firefox.com), a weekly public report on the activity,
+behavior, and hardware configuration of Firefox Desktop users.
 
 Ensemble fetches data from
 [ensemble-transposer](https://github.com/mozilla/ensemble-transposer), a JSON
