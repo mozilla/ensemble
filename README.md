@@ -14,32 +14,20 @@ Facebook.
 
 ### For development
 
-1. Install [Docker CE](https://docs.docker.com/install/)
-2. Run `npm run dev`
+Run `npm start`
 
-The `PORT` environment variable and any of the environment variables in *.env*
-can be overridden. For example:
-`PORT=1234 REACT_APP_SITE_TITLE="Firefox Public Lore Report" npm run dev`
+Any of the environment variables in *.env* can be overridden. For example:
 
-If docker-compose did not shut down properly the last time it was used, the
-development server may not work. To resolve this, run `npm run stopdev` (setting
-the same `PORT` that was used when the development server was started, if any)
-and then run `npm run dev` again.
+`REACT_APP_SITE_TITLE='Firefox Public Lore Report' npm start`
 
 ### In production
 
-Run the Docker container. The `PORT` environment variable and any of the
-environment variables in *.env* can be overridden. Most should be.
+See the [create-react-app documentation on
+deployment](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#deployment).
+
+Any of the environment variables in *.env* can be overridden.
 
 ## Development
-
-### Notes
-
-#### Adding new pages
-
-When adding a new page, be sure to add its path to the `knownPaths` array of
-*production-server.js*. If this is not done, the page will 404 on production
-even though it will render successfully.
 
 ### Testing
 

@@ -1,9 +1,0 @@
-README.md
-nightwatch.conf.js
-nightwatch.json
-renovate.json
-src/tests/
-docs/
-
-# Art sources
-*.xcf
