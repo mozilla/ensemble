@@ -1,17 +1,2 @@
 [
-    {
-        "from": "/",
-        "to": "/dashboard/user-activity",
-        "text": "Proceed to User Activity"
-    },
-    {
-        "from": "/dashboard/user-activity",
-        "to": "/dashboard/usage-behavior",
-        "text": "Proceed to Usage Behavior"
-    },
-    {
-        "from": "/dashboard/usage-behavior",
-        "to": "/dashboard/hardware",
-        "text": "Proceed to Hardware"
-    }
 ]
