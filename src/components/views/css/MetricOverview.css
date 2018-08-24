@@ -7,9 +7,13 @@
     margin: 50px 0;
 }
 
-.metric-description {
-    font-size: 1rem;
-    margin: 0;
+.metric-description p {
+    font-size: 1.1rem;
+}
+
+.metric-description p:only-child {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 /* Exclude the top margin of the first paragraph of a multi-paragraph
@@ -39,28 +43,16 @@
 }
 
 .metric-overview .legend {
-    font-size: .9em;
     max-width: 1100px;
-    font-weight: 400;
-}
-
-.metric-overview .striped {
-    width: 100%;
 }
 
 .metric-overview .legend span {
     display: block;
+    font-size: .9rem;
+    font-weight: 400;
     margin: 5px;
 }
 
-@media all and (min-width: 550px) {
-    .metric-overview .legend span {
-        margin: 5px;
-    }
-}
-
-@media all and (min-width: 1200px) {
-    .metric-overview .legend span {
-        margin: 5px 0;
-    }
+.metric-overview .striped {
+    width: 100%;
 }

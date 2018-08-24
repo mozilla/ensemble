@@ -1,11 +1,11 @@
 import React from 'react';
 
-import MetricOverview from './MetricOverview';
+import MetricOverviewContainer from '../containers/MetricOverviewContainer';
 
 
 export default props => (
     <section className="metric-overview-collection">
-        {props.metrics.map((metricMeta, index) => {
+        {props.metrics.map((metricSlug, index) => {
             let identifier = '';
             if (props.sectionKey) {
                 identifier = `${props.sectionKey}-metric-overview-${index + 1}`;
@@ -14,11 +14,13 @@ export default props => (
             }
 
             return (
-                <MetricOverview
-                    {...metricMeta}
-                    key={index}
+                <MetricOverviewContainer
+                    key={identifier}
+                    slug={metricSlug}
                     identifier={identifier}
+                    dashboardSource={props.dashboardSource}
                     activeCategory={props.activeCategory}
+                    inSection={props.inSection}
                 />
             );
         })}

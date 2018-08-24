@@ -14,6 +14,8 @@ export default props => (
             metrics={props.metrics}
             activeCategory={props.activeCategory}
             sectionKey={props.sectionKey}
+            dashboardSource={props.dashboardSource}
+            inSection={true}
         />
     </section>
 );

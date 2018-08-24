@@ -2,14 +2,9 @@
     margin-top: 20px;
 }
 
-/* Work around this issue:
+/* Work around the following issue, which has been fixed, but not yet released
+   to NPM. Any version of metrics-graphics after 2.15.6 should include the fix.
    https://github.com/metricsgraphics/metrics-graphics/issues/839 */
 .mg-active-datapoint-container {
     transform: translate(0, -50px);
-}
-
-/* Work around for this issue:
-   https://github.com/metricsgraphics/metrics-graphics/issues/852 */
-.metric svg {
-    user-select: none;
 }

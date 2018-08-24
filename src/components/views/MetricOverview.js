@@ -10,7 +10,6 @@ import './css/MetricOverview.css';
 
 
 class MetricOverview extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -29,23 +28,26 @@ class MetricOverview extends React.Component {
     memoizeMetricDescription = memoizeOne(description => {
         const multipleParagraphs = Array.isArray(description);
 
+        let descriptionMarkup;
         if (multipleParagraphs) {
-            return (
-                <div className="metric-description">
-                    {description.map((paragraph, index) => (
-                        <p key={index} dangerouslySetInnerHTML={
-                            {__html: this.markdownParser.renderInline(paragraph)}
-                        } />
-                    ))}
-                </div>
-            );
+            descriptionMarkup = description.map((paragraph, index) => (
+                <p key={index} dangerouslySetInnerHTML={
+                    {__html: this.markdownParser.renderInline(paragraph)}
+                } />
+            ));
         } else {
-            return (
-                <p className="metric-description" dangerouslySetInnerHTML={
+            descriptionMarkup = (
+                <p dangerouslySetInnerHTML={
                     {__html: this.markdownParser.renderInline(description)}
                 } />
             );
         }
+
+        return (
+            <div className="metric-description">
+                {descriptionMarkup}
+            </div>
+        );
     });
 
     render() {
@@ -60,15 +62,14 @@ class MetricOverview extends React.Component {
 
         let MetricContainer = null;
         if (props.type === 'line') {
-            const numPopulations = Object.keys(props.data[props.activeCategory].populations).length;
+            const numPopulations = Object.keys(props.data.populations).length;
             MetricContainer = (
                 <this.ChartContainer
                     legendTarget={`#${props.identifier} .legend`}
                     title={props.title}
                     data={props.data}
-                    activeCategory={props.activeCategory}
-                    axes={props.axes || {}}
-                    annotations={props.annotations || {}}
+                    axes={props.axes}
+                    annotations={props.annotations}
                     numPopulations={numPopulations}
                 />
             );
@@ -76,12 +77,11 @@ class MetricOverview extends React.Component {
             // We're omitting titleComponent here since the title is set in a previous sibling.
             MetricContainer = (
                 <this.CustomizableDateContainer
-                    dates={Object.keys(props.data[props.activeCategory].dates)}
+                    dates={Object.keys(props.data.dates)}
                     metric={true}>
                     <this.DataTableContainer
                         data={props.data}
-                        activeCategory={props.activeCategory}
-                        columns={props.columns || {}}
+                        columns={props.columns}
                     />
                 </this.CustomizableDateContainer>
             );
@@ -89,7 +89,7 @@ class MetricOverview extends React.Component {
 
         return (
             <div id={props.identifier} className="metric-overview">
-                <StripedHeader tag="h5" label={props.title} />
+                <StripedHeader tag={props.inSection ? 'h5' : 'h4'} label={props.title} />
                 {maybeMetricDescription}
                 <div className="metric-and-legend">
                     {MetricContainer}

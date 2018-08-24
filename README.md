@@ -1,6 +1,6 @@
-Ensemble is the platform that powers the Firefox Public Data Report, a weekly
-public report on the activity, behavior, and hardware configuration of Firefox
-Desktop users.
+Ensemble is the platform that powers the [Firefox Public Data
+Report](https://data.firefox.com), a weekly public report on the activity,
+behavior, and hardware configuration of Firefox Desktop users.
 
 Ensemble fetches data from
 [ensemble-transposer](https://github.com/mozilla/ensemble-transposer), a JSON
@@ -10,27 +10,26 @@ Ensemble is written in React with the help of the wonderful
 [create-react-app](https://github.com/facebook/create-react-app) tool from
 Facebook.
 
+## Run
+
+### For development
+
+Run `npm start`
+
+Any of the environment variables in *.env* can be overridden. For example:
+
+`REACT_APP_SITE_TITLE='Firefox Public Lore Report' npm start`
+
+### In production
+
+See the [create-react-app documentation on
+deployment](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#deployment).
+
+Any of the environment variables in *.env* can be overridden.
+
 ## Development
 
-### Install
-
-1. [Install Node and NPM](https://nodejs.org/en/download/)
-2. Run `npm install`
-
-### Run
-
-#### For development
-
-Run `npm run dev`
-
-#### In production
-
-1. Install [Docker CE](https://docs.docker.com/install/)
-2. Run `PORT=3000 NODE_ENV=production docker-compose up`
-    * Other environment variables specified in *env* can optionally be
-      overridden here, too.
-
-### Test
+### Testing
 
 To run Jest, Nightwatch, and ESLint tests locally, run `npm test`.
 
@@ -55,15 +54,7 @@ If you get an error about local testing through BrowserStack not being
 connected, wait about 30 seconds and try again. If it keeps happening, try
 stopping and re-starting the BrowserStackLocal process.
 
-### Analyze
+### Analyzing
 
 To analyze the size of the JavaScript bundle that will be served, run `npm run
 size`.
-
-### Notes
-
-#### Adding new pages
-
-When adding a new page, be sure to add its path to the `knownPaths` array of
-*production-server.js*. If this is not done, the page will 404 on production
-even though it will render successfully.

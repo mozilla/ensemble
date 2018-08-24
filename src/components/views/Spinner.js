@@ -32,7 +32,7 @@ export default class extends React.Component {
 
     render() {
         return (
-            <div id="spinner">
+            <div className="spinner">
                 <PulseLoader
                     size={20}
                     loading={this.state.showSpinner}
