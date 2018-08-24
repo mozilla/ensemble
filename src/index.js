@@ -9,7 +9,7 @@ import Application from './components/views/Application';
 
 
 ReactDOM.render((
-    <HashRouter basename="/protected/usage-report-demo">
+    <HashRouter>
         <Application />
     </HashRouter>
 ), document.getElementById('root'));
