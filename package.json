@@ -53,8 +53,7 @@
         "react-refetch": "2.0.0",
         "react-router-dom": "4.3.1",
         "react-scripts": "1.1.4",
-        "react-spinners": "0.4.4",
-        "whatwg-fetch": "2.0.4"
+        "react-spinners": "0.4.4"
     },
     "devDependencies": {
         "babel-eslint": "8.2.6",
