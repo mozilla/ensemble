@@ -22,6 +22,7 @@ const nightwatch_config = {
         'browserstack.user': process.env.BSUSER,
         'browserstack.key': process.env.BSKEY,
         'browserstack.local': true,
+        'browserstack.selenium_version': '3.10.0',
         project: packageJSON.name,
         build: packageJSON.version,
     },
@@ -38,7 +39,7 @@ const nightwatch_config = {
     test_settings: {
         jsDisabled: {
             desiredCapabilities: {
-                browser: 'firefox',
+                browserName: 'firefox',
                 'moz:firefoxOptions': {
                     args: ['-headless'],
                     prefs: {
@@ -51,7 +52,7 @@ const nightwatch_config = {
             desiredCapabilities: {
                 os: 'Windows',
                 os_version: '7',
-                browser: 'IE',
+                browserName: 'IE',
                 browser_version: '11.0',
             },
         },
@@ -59,7 +60,7 @@ const nightwatch_config = {
             desiredCapabilities: {
                 os: 'Windows',
                 os_version: '10',
-                browser: 'Edge',
+                browserName: 'Edge',
                 browser_version: '15.0',
             },
         },
@@ -67,7 +68,7 @@ const nightwatch_config = {
             desiredCapabilities: {
                 os: 'OS X',
                 os_version: 'Sierra',
-                browser: 'Safari',
+                browserName: 'Safari',
                 browser_version: '10.0',
             },
         },
@@ -75,7 +76,7 @@ const nightwatch_config = {
             desiredCapabilities: {
                 os: 'Windows',
                 os_version: '7',
-                browser: 'Firefox',
+                browserName: 'Firefox',
                 browser_version: '58.0',
             },
         },
@@ -83,7 +84,7 @@ const nightwatch_config = {
             desiredCapabilities: {
                 os: 'OS X',
                 os_version: 'Sierra',
-                browser: 'Firefox',
+                browserName: 'Firefox',
                 browser_version: '58.0',
             },
         },
@@ -91,7 +92,7 @@ const nightwatch_config = {
             desiredCapabilities: {
                 os: 'Windows',
                 os_version: '7',
-                browser: 'Chrome',
+                browserName: 'Chrome',
                 browser_version: '63.0',
             },
         },
@@ -99,7 +100,7 @@ const nightwatch_config = {
             desiredCapabilities: {
                 os: 'OS X',
                 os_version: 'Sierra',
-                browser: 'Chrome',
+                browserName: 'Chrome',
                 browser_version: '63.0',
             },
         },
@@ -107,7 +108,7 @@ const nightwatch_config = {
             desiredCapabilities: {
                 os: 'Windows',
                 os_version: '7',
-                browser: 'Opera',
+                browserName: 'Opera',
                 browser_version: '12.16',
             },
         },
@@ -115,7 +116,7 @@ const nightwatch_config = {
             desiredCapabilities: {
                 os: 'OS X',
                 os_version: 'Sierra',
-                browser: 'Opera',
+                browserName: 'Opera',
                 browser_version: '12.15',
             },
         },
