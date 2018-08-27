@@ -50,6 +50,12 @@ operating systems using BrowserStack.
 3. [Start Ensemble](#Run)
 4. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack`
 
+This command will print a ton of output. If any tests fail, the errors will be
+printed and subsequent browsers will be skipped. If the command finishes
+printing output and the last thing that was printed was not an error, you can
+rest assured that all tests passed in all configured browsers. We'd like to find
+a better way of presenting this information in the future.
+
 If you get an error about local testing through BrowserStack not being
 connected, wait about 30 seconds and try again. If it keeps happening, try
 stopping and re-starting the BrowserStackLocal process.
