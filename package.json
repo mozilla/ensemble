@@ -19,7 +19,6 @@
         "test:nightwatch:browserstack:js-disabled": "./src/tests/nightwatch/runners/browserstack.js --config nightwatch.browserstack.conf.js --env jsDisabled --tag 'js-disabled'",
         "test:nightwatch:browserstack:ie": "./src/tests/nightwatch/runners/browserstack.js --config nightwatch.browserstack.conf.js --env ie --skiptags 'js-disabled'",
         "test:nightwatch:browserstack:edge": "./src/tests/nightwatch/runners/browserstack.js --config nightwatch.browserstack.conf.js --env edge --skiptags 'js-disabled'",
-        "test:nightwatch:browserstack:safari": "./src/tests/nightwatch/runners/browserstack.js --config nightwatch.browserstack.conf.js --env safari --skiptags 'js-disabled'",
         "test:nightwatch:browserstack:firefoxWin7": "./src/tests/nightwatch/runners/browserstack.js --config nightwatch.browserstack.conf.js --env firefoxWin7 --skiptags 'js-disabled'",
         "test:nightwatch:browserstack:firefoxSierra": "./src/tests/nightwatch/runners/browserstack.js --config nightwatch.browserstack.conf.js --env firefoxSierra --skiptags 'js-disabled'",
         "test:nightwatch:browserstack:chromeWin7": "./src/tests/nightwatch/runners/browserstack.js --config nightwatch.browserstack.conf.js --env chromeWin7 --skiptags 'js-disabled'",

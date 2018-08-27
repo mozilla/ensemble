@@ -64,14 +64,26 @@ const nightwatch_config = {
                 browser_version: '15.0',
             },
         },
-        safari: {
-            desiredCapabilities: {
-                os: 'OS X',
-                os_version: 'Sierra',
-                browserName: 'Safari',
-                browser_version: '10.0',
-            },
-        },
+
+        // For some unkown reason, many tests fail when run against Safari using
+        // BrowserStack Automate. These same tests pass when run against Safari
+        // locally. The website also functions correctly in Safari on
+        // BrowserStack Live.
+        //
+        // A support issue with BrowserStack was not able to resolve the issue.
+        // It's possible that the tests will stop failing once BrowserStack
+        // provides and we use a newer version of Selenium. We currently use
+        // Selenium 3.10.0. See the common_capabilities section above.
+        //
+        // safari: {
+        //     desiredCapabilities: {
+        //         os: 'OS X',
+        //         os_version: 'Sierra',
+        //         browserName: 'Safari',
+        //         browser_version: '10.0',
+        //     },
+        // },
+
         firefoxWin7: {
             desiredCapabilities: {
                 os: 'Windows',
