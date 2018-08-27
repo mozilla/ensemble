@@ -104,22 +104,6 @@ const nightwatch_config = {
                 browser_version: '63.0',
             },
         },
-        operaWin7: {
-            desiredCapabilities: {
-                os: 'Windows',
-                os_version: '7',
-                browserName: 'Opera',
-                browser_version: '12.16',
-            },
-        },
-        operaSierra: {
-            desiredCapabilities: {
-                os: 'OS X',
-                os_version: 'Sierra',
-                browserName: 'Opera',
-                browser_version: '12.15',
-            },
-        },
     },
 };
 
