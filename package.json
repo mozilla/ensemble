@@ -1,6 +1,5 @@
 {
     "name": "ensemble",
-    "version": "0.2.0",
     "private": true,
     "homepage": "https://metrics.mozilla.com/protected/usage-report-demo",
     "engines": {
