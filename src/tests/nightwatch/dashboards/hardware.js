@@ -7,7 +7,7 @@ module.exports = {
     },
 
     'Dashboard loads': browser => {
-        browser.expect.element('#dashboard').to.be.present;
+        browser.expect.element('#dashboard').to.be.visible;
     },
 
     'Page <title> is correct': browser => {
@@ -16,6 +16,7 @@ module.exports = {
     },
 
     'Dashboard title is correct': browser => {
+        browser.waitForElementVisible('#dashboard');
         browser.expect.element('#dashboard-title').text.to.be.equal('Hardware Across the Web');
     },
 
@@ -31,7 +32,7 @@ module.exports = {
     },
 
     'Metric titles and order are correct': browser => {
-        browser.waitForElementVisible('.metric');
+        browser.pause(browser.globals.waitForMetricsToLoad);
 
         flagForUpdate(browser, '.metric', 'metrics in the hardware dashboard', 12);
 
@@ -50,7 +51,7 @@ module.exports = {
     },
 
     'Charts render': browser => {
-        browser.waitForElementVisible('.chart');
+        browser.pause(browser.globals.waitForMetricsToLoad);
 
         flagForUpdate(browser, '.chart', 'charts in the hardware dashboard', 12);
 
