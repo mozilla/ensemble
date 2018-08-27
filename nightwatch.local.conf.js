@@ -18,7 +18,8 @@ module.exports = {
             launch_url : 'http://localhost:3000',
             exclude: ['config', 'runners', 'utils.js'],
             globals: {
-                waitForConditionTimeout: 5000,
+                waitForConditionTimeout: 10000,
+                waitForMetricsToLoad: 10000,
             },
             desiredCapabilities: {
                 browserName: 'firefox',

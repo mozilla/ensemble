@@ -51,12 +51,12 @@ module.exports = {
         'no-shadow': ['error', {builtinGlobals: true}],
         'no-var': 'error',
         'prefer-const': 'error',
-        'semi': ['error', 'always'],
-        'comma-dangle': ['error', 'always-multiline'],
+        'no-console': 'error',
 
-        // Warnings
+        // Stylistic warnings
+        'semi': ['warn', 'always'],
+        'comma-dangle': ['warn', 'always-multiline'],
         'prefer-arrow-callback': 'warn',
-        'no-console': 'warn',
 
         // Plugins
         'jsx-a11y/label-has-for': ['error', {required: {every: ['id']}}],

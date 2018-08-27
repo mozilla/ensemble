@@ -7,7 +7,7 @@ module.exports = {
     },
 
     'Dashboard loads': browser => {
-        browser.expect.element('#dashboard').to.be.present;
+        browser.expect.element('#dashboard').to.be.visible;
     },
 
     'Page <title> is correct': browser => {
@@ -16,11 +16,12 @@ module.exports = {
     },
 
     'Dashboard title is correct': browser => {
+        browser.waitForElementVisible('#dashboard');
         browser.expect.element('#dashboard-title').text.to.be.equal('User Activity');
     },
 
     'Chart titles and order are correct': browser => {
-        browser.waitForElementVisible('.chart');
+        browser.pause(browser.globals.waitForMetricsToLoad);
 
         flagForUpdate(browser, '.metric', 'metrics in the activity dashboard', 6);
 
@@ -33,7 +34,7 @@ module.exports = {
     },
 
     'Charts render': browser => {
-        browser.waitForElementVisible('.chart');
+        browser.pause(browser.globals.waitForMetricsToLoad);
 
         flagForUpdate(browser, '.metric', 'metrics in the activity dashboard', 6);
 
@@ -67,5 +68,23 @@ module.exports = {
     'The "proceed button" works': browser => {
         browser.waitForElementVisible('.next-button');
         linkWorks(browser, '.next-button a');
+    },
+
+    'Page does not crash when category selector is used': browser => {
+        const effectWait = 10000;
+
+        browser.waitForElementVisible('#category-selector');
+
+        browser.click('#category-selector option:nth-child(1)');
+        browser.pause(effectWait);
+        browser.expect.element('#dashboard').to.be.visible;
+
+        browser.click('#category-selector option:nth-child(2)');
+        browser.pause(effectWait);
+        browser.expect.element('#dashboard').to.be.visible;
+
+        browser.click('#category-selector option:nth-child(3)');
+        browser.pause(effectWait);
+        browser.expect.element('#dashboard').to.be.visible;
     },
 };
