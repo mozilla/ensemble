@@ -72,4 +72,20 @@ module.exports = {
         browser.waitForElementVisible('.next-button');
         linkWorks(browser, '.next-button a');
     },
+
+    'Page does not crash when category selector is used': browser => {
+        const effectWait = 5000;
+
+        browser.click('#category-selector option:nth-child(1)');
+        browser.pause(effectWait);
+        browser.expect.element('#dashboard').to.be.visible;
+
+        browser.click('#category-selector option:nth-child(2)');
+        browser.pause(effectWait);
+        browser.expect.element('#dashboard').to.be.visible;
+
+        browser.click('#category-selector option:nth-child(3)');
+        browser.pause(effectWait);
+        browser.expect.element('#dashboard').to.be.visible;
+    },
 };
