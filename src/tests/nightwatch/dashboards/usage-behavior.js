@@ -1,4 +1,4 @@
-const { linkWorks, linksWork, flagForUpdate } = require('../utils');
+const { linkWorks, linksWork, flagForUpdate, metricTitleIsCorrect } = require('../utils');
 
 
 module.exports = {
@@ -21,21 +21,15 @@ module.exports = {
     },
 
     'Metric titles and order are correct': browser => {
-        browser.pause(browser.globals.waitForMetricsToLoad);
+        metricTitleIsCorrect(browser, '#metric-overview-1 h4', 'Top Languages');
+        metricTitleIsCorrect(browser, '#metric-overview-2 h4', 'Always On Tracking Protection');
+        metricTitleIsCorrect(browser, '#metric-overview-3 h4', 'Has Add-on');
+        metricTitleIsCorrect(browser, '#metric-overview-4 h4', 'Top Add-ons');
 
         flagForUpdate(browser, '.metric', 'metrics in the usage dashboard', 4);
-
-        browser.expect.element('#metric-overview-1 h4').text.to.be.equal('Top Languages');
-        browser.expect.element('#metric-overview-2 h4').text.to.be.equal('Always On Tracking Protection');
-        browser.expect.element('#metric-overview-3 h4').text.to.be.equal('Has Add-on');
-        browser.expect.element('#metric-overview-4 h4').text.to.be.equal('Top Add-ons');
     },
 
     'Charts render': browser => {
-        browser.pause(browser.globals.waitForMetricsToLoad);
-
-        flagForUpdate(browser, '.chart', 'charts in the usage dashboard', 3);
-
         browser.expect.element('#metric-overview-1 svg').to.be.visible;
         browser.expect.element('#metric-overview-1 path.mg-line1').to.be.visible;
 
@@ -44,19 +38,20 @@ module.exports = {
 
         browser.expect.element('#metric-overview-3 svg').to.be.visible;
         browser.expect.element('#metric-overview-3 path.mg-line1').to.be.visible;
+
+        flagForUpdate(browser, '.chart', 'charts in the usage dashboard', 3);
     },
 
     'Table renders': browser => {
         browser.waitForElementVisible('.data-table');
 
-        flagForUpdate(browser, '.metric-overview table', 'table in the usage dashboard', 1);
-
         browser.expect.element('#metric-overview-4 table').to.be.visible;
         browser.expect.element('#metric-overview-4 tbody tr:first-child td:nth-child(2)').to.be.visible;
+
+        flagForUpdate(browser, '.metric-overview table', 'table in the usage dashboard', 1);
     },
 
     'All metric description links work': browser => {
-        browser.pause(browser.globals.waitForMetricsToLoad);
         browser.waitForElementVisible('.metric-description a');
         linksWork(browser, '.metric-description a');
     },

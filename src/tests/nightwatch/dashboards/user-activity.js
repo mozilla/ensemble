@@ -1,4 +1,4 @@
-const { linkWorks, flagForUpdate } = require('../utils');
+const { linkWorks, flagForUpdate, metricTitleIsCorrect } = require('../utils');
 
 
 module.exports = {
@@ -21,23 +21,17 @@ module.exports = {
     },
 
     'Chart titles and order are correct': browser => {
-        browser.pause(browser.globals.waitForMetricsToLoad);
+        metricTitleIsCorrect(browser, '#metric-overview-1 h4', 'Yearly Active Users');
+        metricTitleIsCorrect(browser, '#metric-overview-2 h4', 'Monthly Active Users');
+        metricTitleIsCorrect(browser, '#metric-overview-3 h4', 'Daily Usage');
+        metricTitleIsCorrect(browser, '#metric-overview-4 h4', 'Average Intensity');
+        metricTitleIsCorrect(browser, '#metric-overview-5 h4', 'New Profile Rate');
+        metricTitleIsCorrect(browser, '#metric-overview-6 h4', 'Latest Version');
 
         flagForUpdate(browser, '.metric', 'metrics in the activity dashboard', 6);
-
-        browser.expect.element('#metric-overview-1 h4').text.to.be.equal('Yearly Active Users');
-        browser.expect.element('#metric-overview-2 h4').text.to.be.equal('Monthly Active Users');
-        browser.expect.element('#metric-overview-3 h4').text.to.be.equal('Daily Usage');
-        browser.expect.element('#metric-overview-4 h4').text.to.be.equal('Average Intensity');
-        browser.expect.element('#metric-overview-5 h4').text.to.be.equal('New Profile Rate');
-        browser.expect.element('#metric-overview-6 h4').text.to.be.equal('Latest Version');
     },
 
     'Charts render': browser => {
-        browser.pause(browser.globals.waitForMetricsToLoad);
-
-        flagForUpdate(browser, '.metric', 'metrics in the activity dashboard', 6);
-
         browser.expect.element('#metric-overview-1 svg').to.be.visible;
         browser.expect.element('#metric-overview-1 path.mg-line1').to.be.visible;
 
@@ -55,6 +49,8 @@ module.exports = {
 
         browser.expect.element('#metric-overview-6 svg').to.be.visible;
         browser.expect.element('#metric-overview-6 path.mg-line1').to.be.visible;
+
+        flagForUpdate(browser, '.metric', 'metrics in the activity dashboard', 6);
     },
 
     'The "proceed button" appears': browser => {

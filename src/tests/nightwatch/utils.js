@@ -111,8 +111,14 @@ function flagForUpdate(browser, selector, collectiveName, numExpectedElements) {
     });
 }
 
+function metricTitleIsCorrect(browser, selector, title) {
+    browser.waitForElementVisible(selector);
+    browser.expect.element(selector).text.to.be.equal(title);
+}
+
 module.exports = {
     linkWorks,
     linksWork,
     flagForUpdate,
+    metricTitleIsCorrect,
 };

@@ -1,4 +1,4 @@
-const { flagForUpdate } = require('../utils');
+const { flagForUpdate, metricTitleIsCorrect } = require('../utils');
 
 
 module.exports = {
@@ -23,38 +23,32 @@ module.exports = {
     'Section titles and order are correct': browser => {
         browser.waitForElementVisible('#dashboard');
 
-        flagForUpdate(browser, '#dashboard-sections .dashboard-section', 'sections in the hardware dashboard', 4);
-
         browser.expect.element('#dashboard-sections .dashboard-section:nth-child(1) h4').text.to.be.equal('Graphics');
         browser.expect.element('#dashboard-sections .dashboard-section:nth-child(2) h4').text.to.be.equal('Processor');
         browser.expect.element('#dashboard-sections .dashboard-section:nth-child(3) h4').text.to.be.equal('Operating System');
         browser.expect.element('#dashboard-sections .dashboard-section:nth-child(4) h4').text.to.be.equal('Plugins');
+
+        flagForUpdate(browser, '#dashboard-sections .dashboard-section', 'sections in the hardware dashboard', 4);
     },
 
     'Metric titles and order are correct': browser => {
-        browser.pause(browser.globals.waitForMetricsToLoad);
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(1) #graphics-metric-overview-1 h5', 'GPU Model');
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(1) #graphics-metric-overview-2 h5', 'GPU Vendor');
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(1) #graphics-metric-overview-3 h5', 'Display Resolution');
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(2) #processor-metric-overview-1 h5', 'CPU Vendor');
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(2) #processor-metric-overview-2 h5', 'CPU Cores');
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(2) #processor-metric-overview-3 h5', 'CPU Speeds');
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(2) #processor-metric-overview-4 h5', 'Memory');
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(3) #operatingsystem-metric-overview-1 h5', 'Operating System');
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(3) #operatingsystem-metric-overview-2 h5', 'Browsers by Architecture');
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(3) #operatingsystem-metric-overview-3 h5', 'Operating Systems by Architecture');
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(4) #plugins-metric-overview-1 h5', 'Has Flash');
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(4) #plugins-metric-overview-2 h5', 'Has Unity');
 
         flagForUpdate(browser, '.metric', 'metrics in the hardware dashboard', 12);
-
-        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(1) #graphics-metric-overview-1 h5').text.to.be.equal('GPU Model');
-        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(1) #graphics-metric-overview-2 h5').text.to.be.equal('GPU Vendor');
-        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(1) #graphics-metric-overview-3 h5').text.to.be.equal('Display Resolution');
-        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(2) #processor-metric-overview-1 h5').text.to.be.equal('CPU Vendor');
-        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(2) #processor-metric-overview-2 h5').text.to.be.equal('CPU Cores');
-        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(2) #processor-metric-overview-3 h5').text.to.be.equal('CPU Speeds');
-        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(2) #processor-metric-overview-4 h5').text.to.be.equal('Memory');
-        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(3) #operatingsystem-metric-overview-1 h5').text.to.be.equal('Operating System');
-        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(3) #operatingsystem-metric-overview-2 h5').text.to.be.equal('Browsers by Architecture');
-        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(3) #operatingsystem-metric-overview-3 h5').text.to.be.equal('Operating Systems by Architecture');
-        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(4) #plugins-metric-overview-1 h5').text.to.be.equal('Has Flash');
-        browser.expect.element('#dashboard-sections .dashboard-section:nth-child(4) #plugins-metric-overview-2 h5').text.to.be.equal('Has Unity');
     },
 
     'Charts render': browser => {
-        browser.pause(browser.globals.waitForMetricsToLoad);
-
-        flagForUpdate(browser, '.chart', 'charts in the hardware dashboard', 12);
-
         browser.expect.element('#graphics-metric-overview-1 svg').to.be.visible;
         browser.expect.element('#graphics-metric-overview-1 path.mg-line1').to.be.visible;
 
@@ -90,5 +84,7 @@ module.exports = {
 
         browser.expect.element('#plugins-metric-overview-2 svg').to.be.visible;
         browser.expect.element('#plugins-metric-overview-2 path.mg-line1').to.be.visible;
+
+        flagForUpdate(browser, '.chart', 'charts in the hardware dashboard', 12);
     },
 };

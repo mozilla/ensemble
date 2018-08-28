@@ -35,11 +35,11 @@ module.exports = {
     'The correct Desktop menu links appear in the correct order': browser => {
         browser.moveToElement('#navigation-desktop', 0, 0);
 
-        flagForUpdate(browser, '#navigation-desktop a', 'menu items', 3);
-
         browser.expect.element('#navigation-desktop li:nth-child(1) a').text.to.equal('User Activity');
         browser.expect.element('#navigation-desktop li:nth-child(2) a').text.to.equal('Usage Behavior');
         browser.expect.element('#navigation-desktop li:nth-child(3) a').text.to.equal('Hardware');
+
+        flagForUpdate(browser, '#navigation-desktop a', 'menu items', 3);
     },
 
     'All Desktop menu links work': browser => {
