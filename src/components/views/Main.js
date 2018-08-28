@@ -23,7 +23,7 @@ export default () => {
                     return dashboardSection.members.map(dashboard => (
                         <Route
                             key={dashboardSection.key + dashboard.key}
-                            path={`/dashboard/${dashboard.key}`}
+                            exact path={`/dashboard/${dashboard.key}`}
                             render={props => {
                                 const ThisDashboardContainer = () => (
                                     <DashboardContainer
