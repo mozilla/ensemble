@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-refetch';
 
 import SummaryMetric from '../views/SummaryMetric';
-import Spinner from '../views/Spinner';
 import ErrorComponent from '../views/Error';
 
 
