@@ -19,6 +19,7 @@ module.exports = {
             exclude: ['config', 'runners', 'utils.js'],
             globals: {
                 waitForConditionTimeout: 10000,
+                siteTitle: 'Firefox Public Data Report',
             },
             desiredCapabilities: {
                 browserName: 'firefox',

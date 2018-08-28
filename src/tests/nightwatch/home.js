@@ -14,7 +14,7 @@ module.exports = {
         // Home.js wrongly changed the <title> to something else.
         browser.waitForElementVisible('#introduction');
 
-        browser.assert.title('Firefox Public Data Report');
+        browser.getTitle(title => browser.assert.equal(title, browser.globals.siteTitle));
     },
 
     'All introduction links work': browser => {

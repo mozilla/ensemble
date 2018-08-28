@@ -33,6 +33,10 @@ Any of the environment variables in *.env* can be overridden.
 
 To run Jest, Nightwatch, and ESLint tests locally, run `npm test`.
 
+Nightwatch tests can optionally be run against the staging and production sites.
+Run `npm run test:nightwatch:stage` or `npm run test:nightwatch:prod`
+respectively.
+
 #### BrowserStack
 
 Follow these steps to run Nightwatch tests against even more browsers and
@@ -48,7 +52,10 @@ operating systems using BrowserStack.
       testing, but you may actually have better luck using the GUI app, which is
       linked from the *Live* section.
 3. [Start Ensemble](#run)
-4. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack`
+4. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack:local`
+
+Alternatively, the tests can be run against staging or production. Just change
+*local* to *stage* or *prod* in the command above.
 
 This command will print a ton of output. If any tests fail, the errors will be
 printed and subsequent browsers will be skipped. If the command finishes
