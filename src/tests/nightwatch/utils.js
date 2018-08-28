@@ -33,15 +33,6 @@ function loadsSuccessfully(browser, url) {
 
     // External URLs. These should return 404 if they're invalid.
     else {
-
-        // For the time being, these repos are private and will 404. These lines
-        // should be removed once Ensemble is launched.
-        const ignoredURLs = [
-            'https://github.com/mozilla/ensemble',
-            'https://github.com/mozilla/ensemble-transposer',
-        ];
-        if (ignoredURLs.includes(url)) return;
-
         requestWithRetry(browser, url);
     }
 }
