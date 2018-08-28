@@ -87,7 +87,9 @@ class SummaryMetricContainer extends React.Component {
         const dataFetch = this.props.dataFetch;
 
         if (dataFetch.pending) {
-            return <Spinner />;
+            // Don't show a spinner for the same reason we don't show a spinner
+            // when metric data is loading. See MetricOverviewContainer.js.
+            return null;
         } else if (dataFetch.rejected) {
             const extraErrorComponentProps = {};
 
