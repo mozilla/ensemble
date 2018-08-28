@@ -41,8 +41,12 @@ export default props => {
         );
     }
 
-    let maybeMetaDescription, maybeDescription = null;
+    let maybeDescription, maybeMetaDescription, maybeGraphDescription = null;
     if (props.description) {
+        maybeDescription = (
+            <p id="dashboard-description">{props.description}</p>
+        );
+
         maybeMetaDescription = (
             <meta
                 name="description"
@@ -50,8 +54,11 @@ export default props => {
             />
         );
 
-        maybeDescription = (
-            <p id="dashboard-description">{props.description}</p>
+        maybeGraphDescription = (
+            <meta
+                property="og:description"
+                content={props.description}
+            />
         );
     }
 
@@ -101,10 +108,14 @@ export default props => {
         );
     }
 
+    const pageTitle = getPageTitle(props.title);
+
     return (
         <React.Fragment>
             <Helmet>
-                <title>{getPageTitle(props.title)}</title>
+                <title>{pageTitle}</title>
+                <meta property="og:title" content={pageTitle} />
+                {maybeGraphDescription}
                 {maybeMetaDescription}
             </Helmet>
             <article id="dashboard">
