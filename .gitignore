@@ -34,11 +34,3 @@ npm-debug.log*
 yarn.lock
 yarn-debug.log*
 yarn-error.log*
-
-# Just an extra precaution. At the moment, some demo instances of this site have
-# a data/ directory which should not be published.
-data/
-
-# Scripts that help me (openjck) deploy the site to various platforms. These
-# scripts would be of no use to anyone else and would disclose full paths.
-deploy-scripts/
