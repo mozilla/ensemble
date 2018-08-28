@@ -22,8 +22,6 @@
         "test:nightwatch:browserstack:firefoxSierra": "./src/tests/nightwatch/runners/browserStackRunner.js --config nightwatch.browserstack.conf.js --env firefoxSierra --skiptags 'js-disabled'",
         "test:nightwatch:browserstack:chromeWin7": "./src/tests/nightwatch/runners/browserStackRunner.js --config nightwatch.browserstack.conf.js --env chromeWin7 --skiptags 'js-disabled'",
         "test:nightwatch:browserstack:chromeSierra": "./src/tests/nightwatch/runners/browserStackRunner.js --config nightwatch.browserstack.conf.js --env chromeSierra --skiptags 'js-disabled'",
-        "test:nightwatch:browserstack:operaWin7": "./src/tests/nightwatch/runners/browserStackRunner.js --config nightwatch.browserstack.conf.js --env operaWin7 --skiptags 'js-disabled'",
-        "test:nightwatch:browserstack:operaSierra": "./src/tests/nightwatch/runners/browserStackRunner.js --config nightwatch.browserstack.conf.js --env operaSierra --skiptags 'js-disabled'",
         "lint": "npm-run-all lint:*",
         "lint:js-extra": "eslint --config .eslintrc.extra.js --ext .js --ext .json .",
         "lint:css": "stylelint src/**/*.css",
