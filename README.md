@@ -47,7 +47,7 @@ operating systems using BrowserStack.
     * BrowserStack tells users to use the command-line executable for automated
       testing, but you may actually have better luck using the GUI app, which is
       linked from the *Live* section.
-3. [Start Ensemble](#Run)
+3. [Start Ensemble](#run)
 4. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack`
 
 This command will print a ton of output. If any tests fail, the errors will be
