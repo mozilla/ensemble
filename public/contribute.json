@@ -1,0 +1,21 @@
+{
+    "name": "ensemble",
+    "description": "Ensemble is the platform that powers the Firefox Public Data Report (https://data.firefox.com), a weekly public report on the activity, behavior, and hardware configuration of Firefox Desktop users.",
+    "repository": {
+        "url": "https://github.com/mozilla/ensemble",
+        "license": "MPL-2.0"
+    },
+    "keywords": [
+        "D3",
+        "JavaScript",
+        "Node",
+        "React"
+    ],
+    "bugs": {
+        "list": "https://github.com/mozilla/ensemble/issues",
+        "report": "https://github.com/mozilla/ensemble/issues/new"
+    },
+    "urls": {
+        "prod": "https://data.firefox.com/"
+    }
+}
