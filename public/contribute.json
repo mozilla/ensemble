@@ -1,21 +1,43 @@
 {
-    "name": "ensemble",
-    "description": "Ensemble is the platform that powers the Firefox Public Data Report (https://data.firefox.com), a weekly public report on the activity, behavior, and hardware configuration of Firefox Desktop users.",
+    "name": "Ensemble",
+    "description": "Ensemble is the platform that powers the Firefox Public Data Report (https://data.firefox.com), a weekly public report on the activity, behavior, and hardware configuration of Firefox users.",
     "repository": {
+        "type": "git",
         "url": "https://github.com/mozilla/ensemble",
-        "license": "MPL-2.0"
+        "clone": "https://github.com/mozilla/ensemble.git",
+        "license": "MPL2"
+    },
+    "participate": {
+        "docs": "https://github.com/mozilla/ensemble/blob/master/README.md",
+        "irc": "irc://irc.mozilla.org/#datareport",
+        "irc-contacts": [
+            "openjck",
+            "megan",
+            "su",
+            "frank",
+            "RaFromBRC"
+        ]
     },
     "keywords": [
-        "D3",
-        "JavaScript",
-        "Node",
-        "React"
+        "create-react-app",
+        "css",
+        "d3",
+        "enzyme",
+        "javascript",
+        "jest",
+        "metrics-graphics",
+        "nightwatch",
+        "node",
+        "react",
+        "react-refetch"
     ],
     "bugs": {
         "list": "https://github.com/mozilla/ensemble/issues",
-        "report": "https://github.com/mozilla/ensemble/issues/new"
+        "report": "https://github.com/mozilla/ensemble/issues/new",
+        "mentored": "https://github.com/mozilla/ensemble/labels/help%20wanted"
     },
     "urls": {
+        "stage": "https://data-ensemble.stage.mozaws.net/",
         "prod": "https://data.firefox.com/"
     }
 }
