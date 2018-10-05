@@ -23,7 +23,7 @@ export default props => {
                     key={summaryMetricSlug}
                     slug={summaryMetricSlug}
                     dashboardSource={props.dashboardSource}
-                    activeCategory={props.activeCategory}
+                    activeRegion={props.activeRegion}
                 />
             );
         });
@@ -62,17 +62,17 @@ export default props => {
         );
     }
 
-    let maybeCategory = null;
-    const sortedCategories = bumpSort(props.categories, 'All');
-    if (sortedCategories.length > 1) {
-        maybeCategory = (
-            <aside id="category">
+    let maybeRegion = null;
+    const sortedRegions = bumpSort(props.regions, 'All');
+    if (sortedRegions.length > 1) {
+        maybeRegion = (
+            <aside id="region">
                 <div className="labelled-selector">
-                    <label htmlFor="category-selector">Region</label>
-                    <select id="category-selector" name="category" value={props.activeCategory} onChange={props.onCategoryChange}>
-                        {sortedCategories.map(categoryName => (
-                            <option key={categoryName} value={categoryName}>
-                                {categoryName}
+                    <label htmlFor="region-selector">Region</label>
+                    <select id="region-selector" name="region" value={props.activeRegion} onChange={props.onRegionChange}>
+                        {sortedRegions.map(regionName => (
+                            <option key={regionName} value={regionName}>
+                                {regionName}
                             </option>
                         ))}
                     </select>
@@ -92,7 +92,7 @@ export default props => {
                         sectionKey={s.key}
                         title={s.title}
                         metrics={s.metrics}
-                        activeCategory={props.activeCategory}
+                        activeRegion={props.activeRegion}
                         dashboardSource={props.dashboardSource}
                     />
                 ))}
@@ -102,7 +102,7 @@ export default props => {
         body = (
             <MetricOverviewCollection
                 metrics={props.metrics}
-                activeCategory={props.activeCategory}
+                activeRegion={props.activeRegion}
                 dashboardSource={props.dashboardSource}
             />
         );
@@ -122,7 +122,7 @@ export default props => {
                 <header className="dashboard-header">
                     <h2 id="dashboard-title" className="contrasted">{props.title}</h2>
                     {maybeDescription}
-                    {maybeCategory}
+                    {maybeRegion}
                 </header>
                 {maybeSummaryMetrics}
                 <h3 id="metrics-heading">Metrics</h3>

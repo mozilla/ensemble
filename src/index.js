@@ -16,12 +16,12 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { unregister } from './registerServiceWorker';
 
-import Application from './components/views/Application';
+import ApplicationContainer from './components/containers/ApplicationContainer';
 
 
 ReactDOM.render((
     <BrowserRouter>
-        <Application />
+        <ApplicationContainer />
     </BrowserRouter>
 ), document.getElementById('root'));
 

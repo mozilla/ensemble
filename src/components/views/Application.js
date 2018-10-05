@@ -9,7 +9,7 @@ import './css/Application.css';
 import './css/BrowserHacks.css';
 
 
-export default () => {
+export default props => {
     let maybeGraphURL = null;
     if (window.location.href) {
         maybeGraphURL = (
@@ -25,8 +25,14 @@ export default () => {
             <Helmet>
                 {maybeGraphURL}
             </Helmet>
-            <Header />
-            <Main />
+            <Header
+                regionlessDashboards={props.regionlessDashboards}
+                preferredRegion={props.preferredRegion}
+            />
+            <Main
+                regionlessDashboards={props.regionlessDashboards}
+                preferredRegion={props.preferredRegion}
+            />
             <Footer />
         </div>
     );

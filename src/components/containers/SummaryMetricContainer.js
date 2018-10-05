@@ -115,5 +115,5 @@ class SummaryMetricContainer extends React.Component {
 }
 
 export default connect(props => ({
-    dataFetch: { url: `${props.dashboardSource}/${props.activeCategory}/${props.slug}` },
+    dataFetch: { url: `${props.dashboardSource}/${props.activeRegion}/${props.slug}` },
 }))(SummaryMetricContainer);
