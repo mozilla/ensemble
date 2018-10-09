@@ -14,16 +14,16 @@ export default () => (
                 {dashboards.sections.map(dashboardSection => {
                     if (dashboardSection.comingSoon) {
                         return (
-                            <li key={dashboardSection.key} id={`navigation-${dashboardSection.key}`} className="navigation-coming-soon">
-                                <span className="navigation-section-title">{dashboardSection.title}</span>
-                                <span className="navigation-coming-soon-message">Coming soon</span>
+                            <li key={dashboardSection.key} id={`navigation-${dashboardSection.key}`} className="navigation-coming-soon has-subnav">
+                                <span className="subnav-title">{dashboardSection.title}</span>
+                                <span className="subnav">Coming soon</span>
                             </li>
                         );
                     } else {
                         return (
-                            <li key={dashboardSection.key} id={`navigation-${dashboardSection.key}`} className="navigation-section">
-                                <span className="navigation-section-title">{dashboardSection.title}</span>
-                                <ul className="navigation-section-members">
+                            <li key={dashboardSection.key} id={`navigation-${dashboardSection.key}`} className="navigation-group has-subnav">
+                                <span className="subnav-title">{dashboardSection.title}</span>
+                                <ul className="subnav">
                                     {dashboardSection.members.map(dashboard => (
                                         <li key={dashboardSection.key + dashboard.key}>
                                             <Link to={`/dashboard/${dashboard.key}`}>{dashboard.menuTitle}</Link>
@@ -34,6 +34,7 @@ export default () => (
                         );
                     }
                 })}
+                <li><Link to="/contact">Contact</Link></li>
             </ul>
         </nav>
     </header>

@@ -10,6 +10,7 @@ import dashboards from '../../config/dashboards.json';
 
 export default () => {
     const Home = lazyLoad(import('./Home'));
+    const Contact = lazyLoad(import('./Contact'));
     const DashboardContainer = lazyLoad(import('../containers/DashboardContainer'));
     const NotFound = lazyLoad(import('./NotFound'));
 
@@ -17,6 +18,7 @@ export default () => {
         <main>
             <Switch>
                 <Route exact path="/" component={withTracker(withNextButton(Home))} />
+                <Route exact path="/contact" component={withTracker(Contact)} />
                 {dashboards.sections.map(dashboardSection => {
                     if (dashboardSection.comingSoon) return null;
 

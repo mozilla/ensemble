@@ -11,7 +11,7 @@ module.exports = {
     },
 
     'Upon page load, no message is displayed beneath the word Mobile': browser => {
-        browser.expect.element('.navigation-coming-soon-message').to.not.be.visible;
+        browser.expect.element('.navigation-coming-soon .subnav').to.not.be.visible;
     },
 
     'When hovering over the word Desktop, the Desktop menu links appear': browser => {
@@ -21,8 +21,8 @@ module.exports = {
 
     'When hovering over the word Mobile, the phrase "Coming soon" appears': browser => {
         browser.moveToElement('#navigation-mobile', 0, 0);
-        browser.expect.element('.navigation-coming-soon-message').to.be.visible;
-        browser.expect.element('.navigation-coming-soon-message').text.to.equal('Coming soon');
+        browser.expect.element('.navigation-coming-soon .subnav').to.be.visible;
+        browser.expect.element('.navigation-coming-soon .subnav').text.to.equal('Coming soon');
     },
 
     'There are no Mobile menu links': browser => {
@@ -44,7 +44,7 @@ module.exports = {
 
     'All Desktop menu links work': browser => {
         browser.moveToElement('#navigation-desktop', 0, 0);
-        browser.waitForElementVisible('#navigation-desktop .navigation-section-members');
+        browser.waitForElementVisible('#navigation-desktop .subnav');
         linksWork(browser, '#navigation-desktop a');
     },
 };
