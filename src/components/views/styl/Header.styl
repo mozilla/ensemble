@@ -1,15 +1,15 @@
 #main-header {
-    align-items: center;
-    border-bottom: 1px solid #676767;
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: space-between;
-    padding-bottom: 15px;
+
+    border-bottom: 1px solid #676767;
 }
 
 h1 {
-    margin: 0;
     font-weight: 300;
+    margin: 0;
 }
 
 h1 a {
@@ -22,63 +22,73 @@ h1 a {
 }
 
 h1 a:hover {
-    color: #000;
     border-bottom: 0;
 }
 
-#main-navigation {
-    z-index: 20; /* Make any pop-up that appears draw over all other elements */
-}
-
-#main-navigation ul {
-    justify-content: center;
-    list-style: none;
-    padding: 0;
+#main-navigation span {
+    margin: 0;
 }
 
 #main-navigation > ul {
     display: flex;
+    flex-wrap: wrap;
 }
 
 #main-navigation > ul > li {
-    margin: 0 20px;
+    margin: 10px 20px;
     position: relative;
-}
-
-#main-navigation > ul > li:first-child {
-    margin-left: 0;
 }
 
 #main-navigation > ul > li:last-child {
     margin-right: 0;
 }
 
-.navigation-section-title {
+#main-navigation ul {
+    list-style: none;
+    padding: 0;
+}
+
+#main-navigation > ul > li > a,
+.subnav-title {
+    font-size: 1.1rem;
+    font-weight: 200;
+}
+
+#main-navigation > ul > li > a {
+    border-bottom: none;
     color: #000;
+}
 
-    /* In addition to making the cursor a pointer, this makes the "hover" effect
-       a "tap" effect on some mobile browsers. That is, in our case, tapping on
-       a section title will cause the submenu to appear when this rule is
-       present. */
-    cursor: pointer;
-
-    /* Vertically align the title and the arrow */
+/* This rule vertically aligns menu items with themselves and also aligns
+   section titles with their corresponding arrows. */
+#main-navigation > ul > li:not(.has-subnav),
+.subnav-title {
     display: flex;
     align-items: center;
 }
 
+.subnav-title {
+    /* In addition to making the cursor a pointer, this makes the "hover" effect
+       a "tap" effect on some mobile browsers. That is, in our case, tapping on
+       a section title will cause the subnav to appear when this rule is
+       present. */
+    cursor: pointer;
+}
+
 /* Add a down arrow to the right of the navigation section title */
-.navigation-section-title::after {
+.subnav-title::after {
     content: "\25BC";
-    padding-left: 8px;
     font-size: .7em;
+    padding-left: 8px;
 }
 
-.navigation-section-members {
+.subnav {
+    /* By default, don't show any subnavs */
     display: none;
-}
 
-.navigation-section:hover .navigation-section-members, .navigation-coming-soon-message {
+    /* Draw over everything else */
+    z-index: 20;
+
     background: #fff;
     box-shadow: 3px 3px 3px #666;
     white-space: nowrap;
@@ -86,37 +96,27 @@ h1 a:hover {
     position: absolute;
 }
 
-.navigation-section:hover .navigation-section-members {
+.navigation-group:hover .subnav {
     display: flex;
     flex-direction: column;
 
     left: -20px; /* Equal to the left-padding of the li, so that text aligns */
 }
 
-.navigation-section:hover li {
-    padding: 8px 20px;
-}
-
-.navigation-section:hover li:first-child {
-    padding-top: 16px; /* 2x the normal padding */
-}
-
-.navigation-section:hover li:last-child {
-    padding-bottom: 16px; /* 2x the normal padding */
-}
-
-.navigation-coming-soon-message {
-    display: none;
-}
-
-.navigation-coming-soon:hover .navigation-coming-soon-message {
+.navigation-coming-soon:hover .subnav {
     display: block;
     padding: 15px;
     left: -15px; /* Equal to the left-padding so that text aligns */
 }
 
-#main-header h3 {
-    font-size: 22px;
-    font-weight: 200;
-    line-height: 2.5;
+.navigation-group:hover li {
+    padding: 8px 20px;
+}
+
+.navigation-group:hover li:first-child {
+    padding-top: 16px; /* 2x the normal padding */
+}
+
+.navigation-group:hover li:last-child {
+    padding-bottom: 16px; /* 2x the normal padding */
 }
