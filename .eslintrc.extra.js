@@ -11,7 +11,7 @@ module.exports = {
         'plugin:jsx-a11y/recommended',
         'plugin:jest/recommended',
     ],
-    parser: 'babel-eslint',
+    parser: './node_modules/babel-eslint',
     parserOptions: {
         ecmaVersion: 2018,
         sourceType: 'module',

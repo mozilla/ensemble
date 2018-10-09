@@ -13,7 +13,7 @@
         "eject": "react-scripts eject",
         "validate": "npm run test",
         "test": "npm-run-all lint test:jest test:nightwatch:local",
-        "test:jest": "CI=true react-scripts test --env=jsdom",
+        "test:jest": "CI=true react-scripts test",
         "test:nightwatch:local": "npm-run-all test:nightwatch:local:*",
         "test:nightwatch:local:js-disabled": "nightwatch --config nightwatch.local.conf.js --env jsDisabled --tag 'js-disabled'",
         "test:nightwatch:local:js-enabled": "nightwatch --config nightwatch.local.conf.js --env default,chrome,safari --skiptags 'js-disabled'",
@@ -53,6 +53,7 @@
         "metrics-graphics": "2.15.6",
         "npm-run-all": "4.1.3",
         "react": "16.5.2",
+        "react-app-polyfill": "0.1.3",
         "react-dom": "16.5.2",
         "react-ga": "2.5.3",
         "react-helmet": "5.2.0",
@@ -64,7 +65,6 @@
         "react-spinners": "0.4.5"
     },
     "devDependencies": {
-        "babel-eslint": "10.0.1",
         "browserstack-local": "1.3.4",
         "enzyme": "3.7.0",
         "enzyme-adapter-react-16": "1.6.0",

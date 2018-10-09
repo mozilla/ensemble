@@ -1,9 +1,20 @@
+// Polyfills for older browsers. We can get rid of these if our tests are
+// thorough enough and if they pass in enough of the most commonly-used browsers
+// according to GA.
+//
+// react-app-polyfill needs to be the first import, according to its
+// documentation.
+//
+// babel-polyfill is big, but importing modules as-needed from core-js is a game
+// of whack-a-mole. We did use core-js in the past, but even after importing
+// many individual modules we were left unsure that we had covered everything.
+import 'react-app-polyfill/ie11';
+import 'babel-polyfill';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { unregister } from './registerServiceWorker';
-
-import './lib/polyfills';
 
 import Application from './components/views/Application';
 

@@ -33,6 +33,7 @@ const nightwatch_config = {
         skip_testcases_on_fail: true,
         globals: {
             waitForConditionTimeout: 25000,
+            siteTitle: 'Firefox Public Data Report',
         },
     },
 
