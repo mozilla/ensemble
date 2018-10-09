@@ -8,7 +8,7 @@ import './css/LabelledSelector.css';
 
 
 export default props => {
-    const childProps = Object.assign({}, ...props, { activeDate: props.activeDate });
+    const childProps = Object.assign({}, props, { activeDate: props.activeDate });
 
     let childrenWithProps;
     if (Array.isArray(props.children)) {
