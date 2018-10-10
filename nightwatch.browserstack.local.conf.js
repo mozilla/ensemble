@@ -22,7 +22,7 @@ const nightwatch_config = {
         'browserstack.user': process.env.BSUSER,
         'browserstack.key': process.env.BSKEY,
         'browserstack.local': true,
-        'browserstack.selenium_version': '3.10.0',
+        'browserstack.selenium_version': '3.14.0',
         project: packageJSON.name,
         build: packageJSON.version,
     },
