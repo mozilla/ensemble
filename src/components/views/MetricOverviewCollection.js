@@ -19,7 +19,7 @@ export default props => (
                     slug={metricSlug}
                     identifier={identifier}
                     dashboardSource={props.dashboardSource}
-                    activeCategory={props.activeCategory}
+                    activeRegion={props.activeRegion}
                     inSection={props.inSection}
                 />
             );

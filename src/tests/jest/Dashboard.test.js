@@ -6,7 +6,7 @@ let requiredProps;
 beforeAll(() => {
     requiredProps = {
         metrics: [],
-        categories: [],
+        regions: [],
     };
 });
 

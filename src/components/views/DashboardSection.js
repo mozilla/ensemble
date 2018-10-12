@@ -12,7 +12,7 @@ export default props => (
         </header>
         <MetricOverviewCollection
             metrics={props.metrics}
-            activeCategory={props.activeCategory}
+            activeRegion={props.activeRegion}
             sectionKey={props.sectionKey}
             dashboardSource={props.dashboardSource}
             inSection={true}
