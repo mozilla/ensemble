@@ -7,14 +7,14 @@
  * > bumpSort(['group B', 'group A', 'group C', 'control'], 'control');
  * ['control', 'group A', 'group B', 'group C']
  */
-export function bumpSort(array, valueToBump) {
-  const arrayCopy = array.slice();
-  const valueIndex = arrayCopy.indexOf(valueToBump);
+export function bumpSort(arr, valueToBump) {
+  const arrCopy = arr.slice();
+  const valueIndex = arrCopy.indexOf(valueToBump);
 
-  if (valueIndex === -1) return arrayCopy.sort();
+  if (valueIndex === -1) return arrCopy.sort();
 
-  const arrayOfBumped = arrayCopy.splice(valueIndex, 1);
-  return arrayOfBumped.concat(arrayCopy.sort());
+  const arrOfBumped = arrCopy.splice(valueIndex, 1);
+  return arrOfBumped.concat(arrCopy.sort());
 }
 
 /**

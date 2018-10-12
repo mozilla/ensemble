@@ -54,7 +54,7 @@ class SummaryMetricContainer extends React.Component {
                 }
 
                 // Otherwise, if a chart has < otherThreshold representation, it
-                // should be grouped into an "Other" category.
+                // should be grouped into an "Other" region.
                 else {
                     otherValue += value;
                 }
@@ -115,5 +115,5 @@ class SummaryMetricContainer extends React.Component {
 }
 
 export default connect(props => ({
-    dataFetch: { url: `${props.dashboardSource}/${props.activeCategory}/${props.slug}` },
+    dataFetch: { url: `${props.dashboardSource}/${props.activeRegion}/${props.slug}` },
 }))(SummaryMetricContainer);

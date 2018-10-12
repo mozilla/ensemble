@@ -66,20 +66,20 @@ module.exports = {
         linkWorks(browser, '.next-button a');
     },
 
-    'Page does not crash when category selector is used': browser => {
+    'Page does not crash when region selector is used': browser => {
         const effectWait = 10000;
 
-        browser.waitForElementVisible('#category-selector');
+        browser.waitForElementVisible('#region-selector');
 
-        browser.click('#category-selector option:nth-child(1)');
+        browser.click('#region-selector option:nth-child(1)');
         browser.pause(effectWait);
         browser.expect.element('#dashboard').to.be.visible;
 
-        browser.click('#category-selector option:nth-child(2)');
+        browser.click('#region-selector option:nth-child(2)');
         browser.pause(effectWait);
         browser.expect.element('#dashboard').to.be.visible;
 
-        browser.click('#category-selector option:nth-child(3)');
+        browser.click('#region-selector option:nth-child(3)');
         browser.pause(effectWait);
         browser.expect.element('#dashboard').to.be.visible;
     },

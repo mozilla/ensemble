@@ -9,12 +9,12 @@ import Dashboard from '../views/Dashboard';
 class DashboardContainer extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { activeCategory: null };
+        this.state = { activeRegion: null };
     }
 
-    _onCategoryChange = e => {
+    _onRegionChange = e => {
         this.setState({
-            activeCategory: e.target.value,
+            activeRegion: e.target.value,
         });
     }
 
@@ -36,7 +36,7 @@ class DashboardContainer extends React.Component {
                 />
             );
         } else if (dataFetch.fulfilled) {
-            const activeCategory = this.state.activeCategory || dataFetch.value.defaultCategory || dataFetch.value.categories[0];
+            const activeRegion = this.state.activeRegion || dataFetch.value.defaultCategory || dataFetch.value.categories[0];
             return (
                 <Dashboard
                     title={dataFetch.value.title}
@@ -45,10 +45,10 @@ class DashboardContainer extends React.Component {
                     dates={dataFetch.value.dates}
                     metrics={dataFetch.value.metrics}
                     summaryMetrics={dataFetch.value.summaryMetrics}
-                    categories={dataFetch.value.categories}
-                    activeCategory={activeCategory}
+                    regions={dataFetch.value.categories}
+                    activeRegion={activeRegion}
                     dashboardSource={this.props.source}
-                    onCategoryChange={this._onCategoryChange}
+                    onRegionChange={this._onRegionChange}
                 />
             );
         }
