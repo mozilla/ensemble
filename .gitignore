@@ -18,6 +18,8 @@ local.log
 local.err
 
 # generated files
+/src/**/css/*
+!/src/**/css/README
 /build
 version.json
 
