@@ -13,9 +13,14 @@ class DashboardContainer extends React.Component {
     }
 
     _onRegionChange = e => {
-        this.setState({
-            activeRegion: e.target.value,
-        });
+        if (!e.target) return;
+
+        const region = e.target.value;
+        sessionStorage.setItem('preferredRegion', region);
+
+        // For browsers that don't support sessionStorage. Changing state also
+        // triggers a re-render which we need.
+        this.setState({ activeRegion: region });
     }
 
     render() {
@@ -36,7 +41,10 @@ class DashboardContainer extends React.Component {
                 />
             );
         } else if (dataFetch.fulfilled) {
-            const activeRegion = this.state.activeRegion || dataFetch.value.defaultCategory || dataFetch.value.categories[0];
+            const activeRegion = sessionStorage.getItem('preferredRegion') ||
+                                 this.state.activeRegion ||
+                                 dataFetch.value.defaultCategory ||
+                                 dataFetch.value.categories[0];
             return (
                 <Dashboard
                     title={dataFetch.value.title}
