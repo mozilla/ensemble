@@ -4,6 +4,8 @@ const request = require('request');
 const acceptedHTTPStatusCodes = [200, 301, 302, 304];
 
 function requestWithRetry(browser, url, attemptNumber = 1) {
+    if (url.startsWith('mailto:')) return;
+
     const maxAttempts = 3;
     const waitSeconds = Math.pow(5, (attemptNumber - 1));
 
