@@ -1,20 +1,23 @@
-#dashboard h2 {
-    font-size: 1.4rem;
-    font-weight: 200;
-    margin-bottom: 0;
-    text-align: center;
-}
+@import 'includes/lib';
 
-#dashboard #metrics-heading {
-    display: none;
+#dashboard {
+    h2 {
+        font-size: 1.4rem;
+        font-weight: 200;
+        margin-bottom: 0;
+        text-align: center;
+    }
+    #metrics-heading {
+        display: none;
+    }
 }
 
 #dashboard-description {
     margin: 10px;
-}
 
-#dashboard-description:empty {
-    margin: 0;
+    &:empty {
+        margin: 0;
+    }
 }
 
 #region {
@@ -30,10 +33,10 @@
     justify-content: space-between;
     top: 0;
     z-index: 10;
-}
 
-.dashboard-header h2 {
-    margin: 0;
+    h2 {
+        margin: 0;
+    }
 }
 
 .metric-overview-collection {
@@ -46,7 +49,7 @@
     flex-direction: column;
 }
 
-@media all and (min-width: 550px) {
+@media $base-tablet {
     .dashboard-header {
         flex-direction: row;
         padding-bottom: 10px;

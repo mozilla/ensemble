@@ -1,3 +1,5 @@
+@import 'includes/lib';
+
 html {
     box-sizing: border-box;
 }
@@ -11,7 +13,7 @@ html {
  * The SVG IDs (which come after the # in the svg filename) can be determined by
  * inspecting the raw text content of the SVG files.
  */
-
+// @stylint off
 @font-face {
     src: local('FiraSansOTLight'),
          local('FiraSansLight'),
@@ -25,7 +27,6 @@ html {
 }
 
 @font-face {
-    /* stylelint-disable indentation */
     src: local('FiraSansOT'),
          local('FiraSans'),
          local('Fira Sans OT'),
@@ -33,13 +34,11 @@ html {
          url('../fonts/FiraSans/firasansot-regular-webfont.woff') format('woff'),
          url('../fonts/FiraSans/firasansot-regular-webfont.ttf') format('truetype'),
          url('../fonts/FiraSans/firasansot-regular-webfont.svg#fira_sans_otregular') format('svg');
-    /* stylelint-enable */
     font-family: FiraSansWeb;
     font-weight: 400;
 }
 
 @font-face {
-    /* stylelint-disable indentation */
     src: local('FiraSansOTMedium'),
          local('FiraSansMedium'),
          local('Fira Sans OT Medium'),
@@ -47,14 +46,12 @@ html {
          url('../fonts/FiraSans/firasansot-medium-webfont.woff') format('woff'),
          url('../fonts/FiraSans/firasansot-medium-webfont.ttf') format('truetype'),
          url('../fonts/FiraSans/firasansot-medium-webfont.svg#fira_sans_otmedium') format('svg');
-    /* stylelint-enable */
     font-family: FiraSansWeb;
     font-weight: 500;
 }
 
 @font-face {
     /* Yes, the PostScript name contains a hyphen. Not a typo. */
-    /* stylelint-disable indentation */
     src: local('FiraSansOT-Bold'),
          local('FiraSans-Bold'),
          local('Fira Sans OT Bold'),
@@ -62,14 +59,12 @@ html {
          url('../fonts/FiraSans/firasansot-bold-webfont.woff') format('woff'),
          url('../fonts/FiraSans/firasansot-bold-webfont.ttf') format('truetype'),
          url('../fonts/FiraSans/firasansot-bold-webfont.svg#fira_sans_otbold') format('svg');
-    /* stylelint-enable */
     font-family: FiraSansWeb;
     font-weight: 600;
 }
 
 @font-face {
     /* Yes, the PostScript name contains a hyphen. Not a typo. */
-    /* stylelint-disable indentation */
     src: local('FiraSansOTLight-Italic'),
          local('FiraSansLight-Italic'),
          local('Fira Sans OT Light Italic'),
@@ -77,7 +72,6 @@ html {
          url('../fonts/FiraSans/firasansot-lightitalic-webfont.woff') format('woff'),
          url('../fonts/FiraSans/firasansot-lightitalic-webfont.ttf') format('truetype'),
          url('../fonts/FiraSans/firasansot-lightitalic-webfont.svg#fira_sans_otlight_italic') format('svg');
-    /* stylelint-enable */
     font-family: FiraSansWeb;
     font-weight: 200;
     font-style: italic;
@@ -85,7 +79,6 @@ html {
 
 @font-face {
     /* Yes, the PostScript name contains a hyphen. Not a typo. */
-    /* stylelint-disable indentation */
     src: local('FiraSansOT-Italic'),
          local('FiraSans-Italic'),
          local('Fira Sans OT Italic'),
@@ -93,7 +86,6 @@ html {
          url('../fonts/FiraSans/firasansot-regularitalic-webfont.woff') format('woff'),
          url('../fonts/FiraSans/firasansot-regularitalic-webfont.ttf') format('truetype'),
          url('../fonts/FiraSans/firasansot-regularitalic-webfont.svg#fira_sans_otitalic') format('svg');
-    /* stylelint-enable */
     font-family: FiraSansWeb;
     font-weight: 400;
     font-style: italic;
@@ -101,7 +93,6 @@ html {
 
 @font-face {
     /* Yes, the PostScript name contains a hyphen. Not a typo. */
-    /* stylelint-disable indentation */
     src: local('FiraSansOTMedium-Italic'),
          local('FiraSansMedium-Italic'),
          local('Fira Sans OT Medium Italic'),
@@ -109,7 +100,6 @@ html {
          url('../fonts/FiraSans/firasansot-mediumitalic-webfont.woff') format('woff'),
          url('../fonts/FiraSans/firasansot-mediumitalic-webfont.ttf') format('truetype'),
          url('../fonts/FiraSans/firasansot-mediumitalic-webfont.svg#fira_sans_otmedium_italic') format('svg');
-    /* stylelint-enable */
     font-family: FiraSansWeb;
     font-weight: 500;
     font-style: italic;
@@ -117,11 +107,10 @@ html {
 
 @font-face {
     /**
-     * Yes, the PostScript name contains a hypten. And yes, the word Bold comes
+     * Yes, the PostScript name contains a hyphen. And yes, the word Bold comes
      * after the hyphen, not before the hyphen like Medium and Light. Weird, but
      * not a typo.
      */
-    /* stylelint-disable indentation */
     src: local('FiraSansOT-BoldItalic'),
          local('FiraSans-BoldItalic'),
          local('Fira Sans OT Bold Italic'),
@@ -129,20 +118,20 @@ html {
          url('../fonts/FiraSans/firasansot-bolditalic-webfont.woff') format('woff'),
          url('../fonts/FiraSans/firasansot-bolditalic-webfont.ttf') format('truetype'),
          url('../fonts/FiraSans/firasansot-bolditalic-webfont.svg#fira_sans_otbold_italic') format('svg');
-    /* stylelint-enable */
     font-family: FiraSansWeb;
     font-weight: 600;
     font-style: italic;
 }
+// @stylint on
 
 /* Jon Neal approach to a box-sizing reset. */
-*, *::before, *::after {
+*, *::before, *::after { // @stylint ignore
     box-sizing: inherit;
 }
 
 body {
     color: #000;
-    font-family: "Fira Sans OT", "Fira Sans", FiraSansWeb, sans-serif;
+    font-family: 'Fira Sans OT', 'Fira Sans', FiraSansWeb, sans-serif;
     font-size: 13px;
     font-weight: 200;
     margin: 0;
@@ -165,13 +154,13 @@ main {
 }
 
 a {
-    color: #0070ff;
+    color: $link-color-normal;
     text-decoration: none;
     font-weight: bold;
 }
 
 a:hover {
-    border-bottom: 1px solid #0070ff;
+    border-bottom: 1px solid $link-color-normal;
 }
 
 p, span {
@@ -199,7 +188,7 @@ dd {
     margin: 0;
 }
 
-@media all and (min-width: 550px) {
+@media $base-tablet {
     body {
         font-size: 14px;
     }
@@ -221,7 +210,7 @@ dd {
     }
 }
 
-@media all and (min-width: 1200px) {
+@media $base-desktop {
     #main-header, main, footer > div {
         width: 1170px;
     }

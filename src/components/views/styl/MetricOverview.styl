@@ -5,54 +5,48 @@
     flex-wrap: wrap;
     justify-content: space-between;
     margin: 50px 0;
+
+    &:first-child {
+        margin-top: 0;
+    }
+    &:last-child {
+        margin-bottom: 0;
+    }
+    .metric-and-legend > div {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .legend {
+        max-width: 1100px;
+
+        span {
+            display: block;
+            font-size: .9rem;
+            font-weight: 400;
+            margin: 5px;
+        }
+    }
+    .striped {
+        width: 100%;
+    }
 }
 
 .metric-description p {
     font-size: 1.1rem;
-}
 
-.metric-description p:only-child {
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-/* Exclude the top margin of the first paragraph of a multi-paragraph
-   description */
-.metric-description p:first-child {
-    margin-top: 0;
-}
-
-/* Exclude the bottom margin of the last paragraph of a multi-paragraph
-   description */
-.metric-description p:last-child {
-    margin-bottom: 0;
-}
-
-.metric-overview:first-child {
-    margin-top: 0;
-}
-
-.metric-overview:last-child {
-    margin-bottom: 0;
-}
-
-.metric-overview .metric-and-legend > div {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.metric-overview .legend {
-    max-width: 1100px;
-}
-
-.metric-overview .legend span {
-    display: block;
-    font-size: .9rem;
-    font-weight: 400;
-    margin: 5px;
-}
-
-.metric-overview .striped {
-    width: 100%;
+    &:only-child {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+    /* Exclude the top margin of the first paragraph of a multi-paragraph
+       description */
+    &:first-child {
+        margin-top: 0;
+    }
+    /* Exclude the bottom margin of the last paragraph of a multi-paragraph
+       description */
+    &:last-child {
+        margin-bottom: 0;
+    }
 }

@@ -1,5 +1,11 @@
+@import 'includes/lib';
+
+$accent-color = #efefef;
+$border-style = 1px solid $accent-color;
+$section-spacing = 20px 0;
+
 #introduction section {
-    margin: 20px 0;
+    margin: $section-spacing;
 }
 
 .explanations {
@@ -9,47 +15,45 @@
     justify-content: space-between;
     line-height: 1.5;
     margin: 0;
-}
 
-.explanations.alt dt {
-    border: 1px solid #efefef;
-    font-weight: 800;
-}
-
-.explanations.alt dt, .explanations.alt dd {
-    padding: 10px;
-}
-
-.explanations.alt dd {
-    background-color: #efefef;
+    &.alt {
+        dt {
+            border: $border-style;
+            font-weight: 800;
+        }
+        dt, dd {
+            padding: 10px;
+        }
+        dd {
+            background-color: $accent-color;
+        }
+    }
 }
 
 .highlighted {
-    margin: 20px 0;
+    margin: $section-spacing;
 }
 
-@media all and (min-width: 550px) {
+@media $base-tablet {
     .explanations {
         flex-direction: row;
-    }
 
-    .explanations.alt dd {
-        border-right: 1px solid #fff;
-    }
-
-    .explanations.alt dt {
-        border-left: 0;
-    }
-
-    .explanations.alt div:first-child dt {
-        border-left: 1px solid #efefef;
-    }
-
-    .explanations.alt div:last-child dd {
-        border-right: 1px solid #efefef;
-    }
-
-    .explanations.split > div {
-        width: 45%;
+        &.alt {
+            dd {
+                border-right: $border-style;
+            }
+            dt {
+                border-left: 0;
+            }
+            div:first-child dt {
+                border-left: $border-style;
+            }
+            div:last-child dd {
+                border-right: $border-style;
+            }
+        }
+        &.split > div {
+            width: 45%;
+        }
     }
 }

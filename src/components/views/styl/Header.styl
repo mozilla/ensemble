@@ -1,3 +1,7 @@
+$subnav-spacing = 15px;
+$navgroup-h-spacing = 20px;
+$navgroup-v-spacing = 8px;
+
 #main-header {
     display: flex;
     flex-wrap: wrap;
@@ -10,53 +14,52 @@
 h1 {
     font-weight: 300;
     margin: 0;
+
+    a {
+        color: inherit;
+        border-bottom: 0;
+        background-color: #f5e14a;
+        line-height: 1.5;
+        display: inline-block;
+        padding: 0 10px;
+
+        &:hover {
+            border-bottom: 0;
+        }
+    }
 }
 
-h1 a {
-    color: inherit;
-    border-bottom: 0;
-    background-color: #f5e14a;
-    line-height: 1.5;
-    display: inline-block;
-    padding: 0 10px;
-}
+#main-navigation {
+    span {
+        margin: 0;
+    }
+    ul {
+        list-style: none;
+        padding: 0;
+    }
+    > ul {
+        display: flex;
+        flex-wrap: wrap;
 
-h1 a:hover {
-    border-bottom: 0;
-}
+        > li {
+            margin: 10px 20px;
+            position: relative;
 
-#main-navigation span {
-    margin: 0;
-}
-
-#main-navigation > ul {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-#main-navigation > ul > li {
-    margin: 10px 20px;
-    position: relative;
-}
-
-#main-navigation > ul > li:last-child {
-    margin-right: 0;
-}
-
-#main-navigation ul {
-    list-style: none;
-    padding: 0;
+            &:last-child {
+                margin-right: 0;
+            }
+            > a {
+                border-bottom: none;
+                color: #000;
+            }
+        }
+    }
 }
 
 #main-navigation > ul > li > a,
 .subnav-title {
     font-size: 1.1rem;
     font-weight: 200;
-}
-
-#main-navigation > ul > li > a {
-    border-bottom: none;
-    color: #000;
 }
 
 /* This rule vertically aligns menu items with themselves and also aligns
@@ -73,13 +76,13 @@ h1 a:hover {
        a section title will cause the subnav to appear when this rule is
        present. */
     cursor: pointer;
-}
 
-/* Add a down arrow to the right of the navigation section title */
-.subnav-title::after {
-    content: "\25BC";
-    font-size: .7em;
-    padding-left: 8px;
+    // Add a down arrow to the right of the navigation section title.
+    &::after {
+        content: '\25BC';
+        font-size: .7em;
+        padding-left: 8px;
+    }
 }
 
 .subnav {
@@ -96,27 +99,27 @@ h1 a:hover {
     position: absolute;
 }
 
-.navigation-group:hover .subnav {
-    display: flex;
-    flex-direction: column;
-
-    left: -20px; /* Equal to the left-padding of the li, so that text aligns */
-}
-
 .navigation-coming-soon:hover .subnav {
     display: block;
-    padding: 15px;
-    left: -15px; /* Equal to the left-padding so that text aligns */
+    padding: $subnav-spacing;
+    left: -($subnav-spacing);
 }
 
-.navigation-group:hover li {
-    padding: 8px 20px;
-}
+.navigation-group:hover {
+    .subnav {
+        display: flex;
+        flex-direction: column;
 
-.navigation-group:hover li:first-child {
-    padding-top: 16px; /* 2x the normal padding */
-}
+        left: -($navgroup-h-spacing);
+    }
+    li {
+        padding: $navgroup-v-spacing $navgroup-h-spacing;
 
-.navigation-group:hover li:last-child {
-    padding-bottom: 16px; /* 2x the normal padding */
+        &:first-child {
+            padding-top: 2*($navgroup-v-spacing);
+        }
+        &:last-child {
+            padding-bottom: 2*($navgroup-v-spacing);
+        }
+    }
 }
