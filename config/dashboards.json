@@ -7,17 +7,20 @@
                 {
                     "key": "user-activity",
                     "menuTitle": "User Activity",
-                    "source": "https://data.firefox.com/datasets/desktop/user-activity"
+                    "source": "https://data.firefox.com/datasets/desktop/user-activity",
+                    "supportsRegions": true
                 },
                 {
                     "key": "usage-behavior",
                     "menuTitle": "Usage Behavior",
-                    "source": "https://data.firefox.com/datasets/desktop/usage-behavior"
+                    "source": "https://data.firefox.com/datasets/desktop/usage-behavior",
+                    "supportsRegions": true
                 },
                 {
                     "key": "hardware",
                     "menuTitle": "Hardware",
-                    "source": "https://data.firefox.com/datasets/desktop/hardware"
+                    "source": "https://data.firefox.com/datasets/desktop/hardware",
+                    "supportsRegions": false
                 }
             ]
         },

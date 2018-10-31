@@ -1,13 +1,31 @@
+const dashboards = require('../../../config/dashboards.json');
+
+
 const defaultRegion = 'Worldwide';
 
-const regionedDashboards = [
-    'user-activity',
-    'usage-behavior',
-];
+const regionedDashboards = dashboards.sections.reduce((acc, section) => {
+    if (!section.members) return acc;
 
-const regionlessDashboards = [
-    'hardware',
-];
+    section.members.forEach(member => {
+        if (member.supportsRegions === true) {
+            acc.push(member.key);
+        }
+    });
+
+    return acc;
+}, []);
+
+const regionlessDashboards = dashboards.sections.reduce((acc, section) => {
+    if (!section.members) return acc;
+
+    section.members.forEach(member => {
+        if (!member.supportsRegions || member.supportsRegions !== true) {
+            acc.push(member.key);
+        }
+    });
+
+    return acc;
+}, []);
 
 function clearSessionStorage() {
     sessionStorage.clear();
@@ -185,6 +203,33 @@ module.exports = {
                            .expect.element('#region-selector').to.have.value.that.equals('France');
                 });
             }
+        });
+    },
+
+    "Metrics load successfully on regionless dashboards if a region was previously selected elsewhere": browser => {
+        regionedDashboards.forEach(regionedDashboardKey => {
+            const regionedDashboardURL = `${browser.launchUrl}/dashboard/${regionedDashboardKey}`;
+
+            function testRegionlessDashboards() {
+                regionlessDashboards.forEach(regionlessDashboardKey => {
+                    browser.url(`${browser.launchUrl}/dashboard/${regionlessDashboardKey}`);
+                    browser.expect.element('.metric').to.be.present;
+                });
+            }
+
+            browser.url(regionedDashboardURL)
+                   .waitForElementVisible('#region-selector')
+                   .click('#region-selector option[value=India]');
+
+            testRegionlessDashboards();
+
+            browser.url(regionedDashboardURL)
+                   .waitForElementVisible('#region-selector')
+                   .click('#region-selector option[value=India]')
+                   .click('#region-selector option[value=Russia]')
+                   .click('#region-selector option[value=France]');
+
+            testRegionlessDashboards();
         });
     },
 };

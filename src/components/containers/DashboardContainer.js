@@ -41,10 +41,16 @@ class DashboardContainer extends React.Component {
                 />
             );
         } else if (dataFetch.fulfilled) {
-            const activeRegion = sessionStorage.getItem('preferredRegion') ||
-                                 this.state.activeRegion ||
-                                 dataFetch.value.defaultCategory ||
-                                 dataFetch.value.categories[0];
+            let activeRegion;
+            if (dataFetch.value.categories.length > 1) {
+                activeRegion = sessionStorage.getItem('preferredRegion') ||
+                               this.state.activeRegion ||
+                               dataFetch.value.defaultCategory ||
+                               dataFetch.value.categories[0];
+            } else {
+                activeRegion = dataFetch.value.categories[0];
+            }
+
             return (
                 <Dashboard
                     title={dataFetch.value.title}
