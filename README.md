@@ -8,7 +8,9 @@ server that adds metadata to the raw data hosted by Mozilla data engineers.
 
 Ensemble is written in React with the help of the wonderful
 [create-react-app](https://github.com/facebook/create-react-app) tool from
-Facebook.
+Facebook. See the [create-react-app documentation](https://facebook.github.io/create-react-app/docs/getting-started)
+for more information. Some highlights and some additional information are
+provided here.
 
 ## Run
 
