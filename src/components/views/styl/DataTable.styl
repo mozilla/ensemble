@@ -1,3 +1,5 @@
+$table-vertical-padding = 15px;
+
 .data-table-wrapper {
     width: 100%;
 }
@@ -5,71 +7,57 @@
 .data-table {
     border-collapse: collapse;
     width: 100%;
-}
 
-.data-table thead tr th {
-    border-bottom: 1px solid #cfcfcf;
-}
+    thead {
+        tr th {
+            border-bottom: 1px solid #cfcfcf;
+        }
+        th {
+            padding-bottom: $table-vertical-padding;
+        }
+    }
+    td {
+        padding: 8px 0;
 
-.data-table thead th {
-    padding-bottom: 15px; /* Matches the value of rule with this keyword: header-space */
-}
+        &:first-child {
+            padding-left: 10px;
+        }
+    }
+    tr:first-child td {
+        padding-top: $table-vertical-padding;
+    }
+    th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) {
+        text-align: left;
+    }
+    th:last-child, td:last-child {
+        text-align: right;
+        padding-right: 10px;
+    }
+    /* Give the columns fixed widths, otherwise their widths might change when
+       values change.
 
-.data-table td {
-    padding: 8px 0;
-}
+       These should all add up to the total width of the table. They need to be
+       fixed widhts because otherwise truncation (see below) wouldn't work. */
+    .rank {
+        width: 50px;
+    }
+    .value {
+        width: 220px;
+    }
 
-.data-table tr:first-child td {
-    padding-top: 15px; /* Matches the value of rule with this keyword: header-space */
-}
+    /* Truncate long add-on names. These properties can't be set on a selector that
+       targets a <col>, so we need to select the <td> directly.
 
-.data-table th:first-child, .data-table td:first-child {
-    text-align: left;
-}
+       https://css-tricks.com/snippets/css/truncate-string-with-ellipsis/ */
+    td:nth-child(2) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
 
-.data-table td:first-child {
-    padding-left: 10px;
-}
-
-.data-table th:nth-child(2), .data-table td:nth-child(2) {
-    text-align: left;
-}
-
-.data-table th:last-child, .data-table td:last-child {
-    text-align: right;
-    padding-right: 10px;
-}
-
-/* Give the columns fixed widths, otherwise their widths might change when
-   values change.
-
-   These should all add up to the total width of the table. They need to be
-   fixed widhts because otherwise truncation (see below) wouldn't work. */
-.data-table .rank {
-    width: 50px;
-}
-
-.data-table .name {
-    /* Width set below */
-}
-
-.data-table .value {
-    width: 220px;
-}
-
-/* Truncate long add-on names. These properties can't be set on a selector that
-   targets a <col>, so we need to select the <td> directly.
-
-   https://css-tricks.com/snippets/css/truncate-string-with-ellipsis/ */
-.data-table td:nth-child(2) {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    /* Needs to be max-width or else truncation won't work */
-    max-width: 145px;
-}
-
-.data-table tr:nth-child(even) td {
-    background-color: #efefef;
+        // Needs to be max-width or else truncation won't work
+        max-width: 145px;
+    }
+    tr:nth-child(even) td {
+        background-color: #efefef;
+    }
 }

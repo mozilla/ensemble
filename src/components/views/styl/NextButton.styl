@@ -1,33 +1,34 @@
+$btn-color = #f5e14a;
+
 .next-button {
     display: flex;
     justify-content: center;
     margin: 50px 0;
-}
 
-.next-button a {
-    background-color: #f5e14a;
-    border: 0;
-    color: #000;
-    display: inline-block;
-    height: 48px;
-    line-height: 28px;
-    padding: 10px 15px;
-    position: relative;
-}
+    a {
+        background-color: $btn-color;
+        border: 0;
+        color: #000;
+        display: inline-block;
+        height: 48px;
+        line-height: 28px;
+        padding: 10px 15px;
+        position: relative;
 
-.next-button a:hover {
-    border-bottom: 0;
-}
-
-.next-button a::after {
-    background-color: #f5e14a;
-    border: 24px solid #fff;
-    border-left: 24px solid #f5e14a;
-    content: "";
-    height: 0;
-    top: 0;
-    left: 100%;
-    position: absolute;
-    width: 0;
-    z-index: -1;
+        &:hover {
+            border-bottom: 0;
+        }
+        &::after {
+            background-color: $btn-color;
+            border: 24px solid #fff;
+            border-left: 24px solid $btn-color;
+            content: '';
+            height: 0;
+            top: 0;
+            left: 100%;
+            position: absolute;
+            width: 0;
+            z-index: -1;
+        }
+    }
 }

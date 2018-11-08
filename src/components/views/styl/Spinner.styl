@@ -1,4 +1,6 @@
-main > .spinner {
+// Stylint wants to complain here since we're doing spinner specific overrides
+// on targets started in previous files. This is the intended approach.
+main > .spinner { // @stylint ignore
     display: flex;
     align-items: center;
     justify-content: center;
@@ -7,12 +9,12 @@ main > .spinner {
     /* Give this element a static height so that the next button doesn't get
      * pushed down when the spinner appears. */
     height: 200px;
+
+    + .next-button {
+        margin-top: 0;
+    }
 }
 
-main > .spinner + .next-button {
-    margin-top: 0;
-}
-
-.metric-overview .spinner {
+.metric-overview .spinner { // @stylint ignore
     margin: 50px 0;
 }
