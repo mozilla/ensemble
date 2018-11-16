@@ -62,7 +62,7 @@
         "react-helmet": "5.2.0",
         "react-loadable": "5.5.0",
         "react-metrics-graphics": "1.0.6",
-        "react-refetch": "2.0.0",
+        "react-refetch": "2.0.1",
         "react-router-dom": "4.3.1",
         "react-scripts": "2.1.1",
         "react-spinners": "0.4.7",
