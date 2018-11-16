@@ -76,7 +76,7 @@
         "eslint-plugin-json": "1.2.1",
         "eslint-plugin-jsx-a11y": "6.1.2",
         "eslint-plugin-react": "7.11.1",
-        "geckodriver": "1.12.2",
+        "geckodriver": "1.14.1",
         "nightwatch": "0.9.21",
         "react-test-renderer": "16.6.0",
         "request": "2.88.0",
