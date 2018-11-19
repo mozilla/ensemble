@@ -80,7 +80,7 @@
         "nightwatch": "0.9.21",
         "react-test-renderer": "16.6.3",
         "request": "2.88.0",
-        "selenium-server-standalone-jar": "3.14.0",
+        "selenium-server-standalone-jar": "3.141.5",
         "source-map-explorer": "1.6.0",
         "stylint": "1.5.9"
     },
