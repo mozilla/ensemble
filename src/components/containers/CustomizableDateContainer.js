@@ -14,11 +14,7 @@ export default class extends React.Component {
     }
 
     render() {
-        const dates = this.props.dates.sort((a, b) => {
-            return new Date(b) - new Date(a);
-        });
-
-        const mostRecentDate = dates[0];
+        const mostRecentDate = this.props.dates[0];
         const activeDate = this.state.activeDate || mostRecentDate;
 
         // Don't pass children as a prop to CustomizableDate. It's already being
@@ -35,7 +31,7 @@ export default class extends React.Component {
         }
 
         return (
-            <CustomizableDate {...cdmProps} dates={dates} activeDate={activeDate} onDateChange={this._onDateChange}>
+            <CustomizableDate {...cdmProps} dates={this.props.dates} activeDate={activeDate} onDateChange={this._onDateChange}>
                 {childrenWithProps}
             </CustomizableDate>
         );

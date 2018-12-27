@@ -77,7 +77,7 @@ class MetricOverview extends React.Component {
             // We're omitting titleComponent here since the title is set in a previous sibling.
             MetricContainer = (
                 <this.CustomizableDateContainer
-                    dates={Object.keys(props.data.dates)}
+                    dates={Object.keys(props.data.dates).sort().reverse()}
                     metric={true}>
                     <this.DataTableContainer
                         data={props.data}
