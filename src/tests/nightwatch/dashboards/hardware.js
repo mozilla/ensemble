@@ -39,9 +39,9 @@ module.exports = {
         metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(2) #processor-metric-overview-2 h5', 'CPU Cores');
         metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(2) #processor-metric-overview-3 h5', 'CPU Speeds');
         metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(2) #processor-metric-overview-4 h5', 'Memory');
-        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(3) #operatingsystem-metric-overview-1 h5', 'Operating System');
-        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(3) #operatingsystem-metric-overview-2 h5', 'Browsers by Architecture');
-        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(3) #operatingsystem-metric-overview-3 h5', 'Operating Systems by Architecture');
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(3) #operating-system-metric-overview-1 h5', 'Operating System');
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(3) #operating-system-metric-overview-2 h5', 'Browsers by Architecture');
+        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(3) #operating-system-metric-overview-3 h5', 'Operating Systems by Architecture');
         metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(4) #plugins-metric-overview-1 h5', 'Has Flash');
         metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(4) #plugins-metric-overview-2 h5', 'Has Unity');
 
@@ -70,14 +70,14 @@ module.exports = {
         browser.expect.element('#processor-metric-overview-4 svg').to.be.visible;
         browser.expect.element('#processor-metric-overview-4 path.mg-line1').to.be.visible;
 
-        browser.expect.element('#operatingsystem-metric-overview-1 svg').to.be.visible;
-        browser.expect.element('#operatingsystem-metric-overview-1 path.mg-line1').to.be.visible;
+        browser.expect.element('#operating-system-metric-overview-1 svg').to.be.visible;
+        browser.expect.element('#operating-system-metric-overview-1 path.mg-line1').to.be.visible;
 
-        browser.expect.element('#operatingsystem-metric-overview-2 svg').to.be.visible;
-        browser.expect.element('#operatingsystem-metric-overview-2 path.mg-line1').to.be.visible;
+        browser.expect.element('#operating-system-metric-overview-2 svg').to.be.visible;
+        browser.expect.element('#operating-system-metric-overview-2 path.mg-line1').to.be.visible;
 
-        browser.expect.element('#operatingsystem-metric-overview-3 svg').to.be.visible;
-        browser.expect.element('#operatingsystem-metric-overview-3 path.mg-line1').to.be.visible;
+        browser.expect.element('#operating-system-metric-overview-3 svg').to.be.visible;
+        browser.expect.element('#operating-system-metric-overview-3 path.mg-line1').to.be.visible;
 
         browser.expect.element('#plugins-metric-overview-1 svg').to.be.visible;
         browser.expect.element('#plugins-metric-overview-1 path.mg-line1').to.be.visible;
