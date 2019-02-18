@@ -81,7 +81,7 @@
         "react-test-renderer": "16.8.1",
         "request": "2.88.0",
         "selenium-server-standalone-jar": "3.141.5",
-        "source-map-explorer": "1.6.0",
+        "source-map-explorer": "1.7.0",
         "stylint": "1.5.9"
     },
     "browserslist": [
