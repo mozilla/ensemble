@@ -1,6 +1,4 @@
 module.exports = {
-    '@tags': ['js-disabled'],
-
     before: browser => {
         browser.url(browser.launchUrl);
     },

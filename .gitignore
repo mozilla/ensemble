@@ -8,14 +8,15 @@
 /node_modules
 
 # testing
-/coverage
+coverage/
+tests_output/
 selenium-debug.log
 selenium-server.log
-tests_output
 browserstack.log
 browserstack.err
 local.log
 local.err
+*driver.log
 
 # generated files
 /src/**/css/*
