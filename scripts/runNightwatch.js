@@ -58,7 +58,7 @@ function getEnabledNightwatchEnvironmentNames(useBrowserStack) {
  * is made only when a command completes and when there are more commands to
  * run.
  */
-function runTests(siteDetails, nightwatchEnvironmentNames, useBrowserStack) {
+function runTests(siteDetails, nightwatchEnvironmentNames, useBrowserStack, passingEnvironments = []) {
     const thisNightwatchEnvironmentName = nightwatchEnvironmentNames.shift();
 
     // Add these environment variables, but let anything in process.env take
@@ -97,15 +97,38 @@ function runTests(siteDetails, nightwatchEnvironmentNames, useBrowserStack) {
     proc.stderr.pipe(process.stderr);
 
    proc.on('close', code => {
+       const where = useBrowserStack ? 'on BrowserStack' : 'locally';
+
+       function printPassingEnvironments(passingEnvironments) {
+           if (passingEnvironments.length === 0) return;
+
+           // eslint-disable-next-line no-console
+           console.log(`The following environments passed ${where}: ${
+               passingEnvironments.map(e => `"${e}"`).join(',')
+           }`);
+       }
+
        if (code === 0) {
-           if (nightwatchEnvironmentNames.length !== 0) {
-               runTests(siteDetails, nightwatchEnvironmentNames);
+           passingEnvironments.push(thisNightwatchEnvironmentName);
+
+           if (nightwatchEnvironmentNames.length === 0) {
+               // eslint-disable-next-line no-console
+               console.log();
+
+               printPassingEnvironments(passingEnvironments);
+           } else {
+               runTests(siteDetails, nightwatchEnvironmentNames, useBrowserStack, passingEnvironments);
            }
        } else {
            // eslint-disable-next-line no-console
-           console.error(`Nightwatch tests failed for environment "${
+           console.log();
+
+           printPassingEnvironments(passingEnvironments);
+
+           // eslint-disable-next-line no-console
+           console.error(`The following environment failed ${where}: "${
                thisNightwatchEnvironmentName
-           }" when run ${useBrowserStack ? 'on BrowserStack' : 'locally'}.`);
+           }"`);
        }
     });
 }
