@@ -89,15 +89,7 @@ const config = {
             },
         },
 
-        // For some unkown reason, many tests fail when run against Safari using
-        // BrowserStack Automate. These same tests pass when run against Safari
-        // locally. The website also functions correctly in Safari on
-        // BrowserStack Live.
-        //
-        // A support issue with BrowserStack was not able to resolve the issue.
-        // It's possible that the tests will stop failing once BrowserStack
-        // provides and we use a newer version of Selenium. We currently use
-        // Selenium 3.10.0. See the common_capabilities section above.
+        // Tests fail in this environment when they seemingly should not.
         //
         // 'BrowserStack:safari': {
         //     desiredCapabilities: {
