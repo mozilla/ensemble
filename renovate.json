@@ -3,5 +3,8 @@
         "config:base",
         "group:all",
         "schedule:weekly"
+    ],
+    "ignoreDeps": [
+        "geckodriver"
     ]
 }

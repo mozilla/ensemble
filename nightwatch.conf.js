@@ -21,7 +21,9 @@ const config = {
             },
         },
 
-        // Tests fail in this environment when they seemingly should not.
+        // Tests fail in this environment when they seemingly should not. Also,
+        // versions of geckodriver greater than 1.12.2 don't run at all for some
+        // reason.
         //
         // firefox: {
         //     webdriver: {
@@ -53,7 +55,9 @@ const config = {
         //     },
         // },
 
-        // Tests fail in this environment when they seemingly should not.
+        // Tests fail in this environment when they seemingly should not. Also,
+        // versions of geckodriver greater than 1.12.2 don't run at all for some
+        // reason.
         //
         // jsDisabled: {
         //     filter: 'jsDisabled.js',
