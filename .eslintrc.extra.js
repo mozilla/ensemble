@@ -47,8 +47,8 @@ module.exports = {
         // Errors
         'eqeqeq': 'error',
         'no-global-assign': 'error',
-        'no-redeclare': ['error', {builtinGlobals: true}],
-        'no-shadow': ['error', {builtinGlobals: true}],
+        'no-redeclare': ['error', { builtinGlobals: true }],
+        'no-shadow': ['error', { builtinGlobals: true }],
         'no-var': 'error',
         'prefer-const': 'error',
         'no-console': 'error',
