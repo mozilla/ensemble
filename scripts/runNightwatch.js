@@ -2,6 +2,7 @@
 
 const path = require('path');
 const { spawn } = require('child_process');
+
 const nightwatchConfig = require('../nightwatch.conf.js');
 
 
@@ -32,7 +33,7 @@ function getSiteDetails(serverName) {
 
 function getEnabledNightwatchEnvironmentNames(useBrowserStack) {
     const allNightwatchEnvironmentNames = Object.keys(nightwatchConfig.test_settings);
-    const browserStackPrefix = 'BrowserStack';
+    const browserStackPrefix = 'BrowserStack:';
 
     let enabledNightwatchEnvironmentNames;
     if (useBrowserStack) {
@@ -49,24 +50,16 @@ function getEnabledNightwatchEnvironmentNames(useBrowserStack) {
 }
 
 /**
- * This function runs all Nightwatch environments sequentially. geckodriver
- * refuses to be run in parallel (like --env chrome,firefox) and although we
+ * This function runs Nightwatch environments sequentially. geckodriver cannot
+ * currently be run in parallel (like --env chrome,firefox) and although we
  * might be able to spawn multiple single-env Nightwatch commands at one time
  * without geckodriver complaining, the output would be unreadable.
  *
- * As a result, this is written as a recursive function where the recursive call
- * is made only when a command completes and when there are more commands to
- * run.
+ * To run these environments sequentially, this is written as a recursive
+ * function where the recursive call is made only when an environment completes.
  */
 function runTests(siteDetails, nightwatchEnvironmentNames, useBrowserStack, passingEnvironments = []) {
     const thisNightwatchEnvironmentName = nightwatchEnvironmentNames.shift();
-
-    // Add these environment variables, but let anything in process.env take
-    // precedence
-    const shellEnvironment = Object.assign({}, {
-        NIGHTWATCH_LAUNCH_URL: siteDetails.NIGHTWATCH_LAUNCH_URL,
-        NIGHTWATCH_SITE_TITLE: siteDetails.NIGHTWATCH_SITE_TITLE,
-    }, process.env);
 
     let command, args;
     if (useBrowserStack) {
@@ -84,19 +77,22 @@ function runTests(siteDetails, nightwatchEnvironmentNames, useBrowserStack, pass
         ];
     }
 
+    // Add these environment variables, but let anything in process.env take
+    // precedence
+    const shellEnvironment = Object.assign({}, {
+        NIGHTWATCH_LAUNCH_URL: siteDetails.NIGHTWATCH_LAUNCH_URL,
+        NIGHTWATCH_SITE_TITLE: siteDetails.NIGHTWATCH_SITE_TITLE,
+    }, process.env);
+
     const proc = spawn(command, args, {
-        // const proc = spawn(command, ['--env', thisNightwatchEnvironmentName], {
         cwd: path.join(__dirname, '..'),
         env: shellEnvironment,
     });
 
-    // eslint-disable-next-line no-console
     proc.stdout.pipe(process.stdout);
-
-    // eslint-disable-next-line no-console
     proc.stderr.pipe(process.stderr);
 
-   proc.on('close', code => {
+    proc.on('close', code => {
        const where = useBrowserStack ? 'on BrowserStack' : 'locally';
 
        function printPassingEnvironments(passingEnvironments) {
@@ -111,10 +107,10 @@ function runTests(siteDetails, nightwatchEnvironmentNames, useBrowserStack, pass
        if (code === 0) {
            passingEnvironments.push(thisNightwatchEnvironmentName);
 
+           // Remember, the shift() above removed the first item *in place*
            if (nightwatchEnvironmentNames.length === 0) {
                // eslint-disable-next-line no-console
                console.log();
-
                printPassingEnvironments(passingEnvironments);
            } else {
                runTests(siteDetails, nightwatchEnvironmentNames, useBrowserStack, passingEnvironments);
@@ -122,7 +118,6 @@ function runTests(siteDetails, nightwatchEnvironmentNames, useBrowserStack, pass
        } else {
            // eslint-disable-next-line no-console
            console.log();
-
            printPassingEnvironments(passingEnvironments);
 
            // eslint-disable-next-line no-console
