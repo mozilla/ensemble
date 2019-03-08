@@ -1,25 +1,14 @@
-// See https://www.browserstack.com/automate/nightwatch-integration
-require('browserstack-automate').Nightwatch();
+const packageJSON = require('./package.json');
 
 const launchURL = process.env.NIGHTWATCH_LAUNCH_URL;
 const siteTitle = process.env.NIGHTWATCH_SITE_TITLE;
-const timeout = process.env.NIGHTWATCH_TIMEOUT || 10000;
+const timeout = Number(process.env.NIGHTWATCH_TIMEOUT) || 10000;
 
-module.exports = {
+const config = {
     src_folders: ['./src/tests/nightwatch'],
 
-    webdriver: {
-        start_process: true,
-    },
-
     test_settings: {
-        default: {
-            launch_url: launchURL,
-            exclude: ['runners', 'utils.js', 'jsDisabled.js'],
-            globals: {
-                waitForConditionTimeout: timeout,
-                siteTitle,
-            },
+        chrome: {
             webdriver: {
                 server_path: 'node_modules/.bin/chromedriver',
                 port: 9515,
@@ -82,26 +71,23 @@ module.exports = {
         //     },
         // },
 
-        // BrowserStack tests are disabled due to this issue:
-        // https://github.com/browserstack/browserstack-integration-nodejs/issues/11
+        'BrowserStack:ie': {
+            desiredCapabilities: {
+                os: 'Windows',
+                os_version: '7',
+                browserName: 'IE',
+                browser_version: '11.0',
+            },
+        },
 
-        // 'BrowserStack:ie': {
-        //     desiredCapabilities: {
-        //         os: 'Windows',
-        //         os_version: '7',
-        //         browserName: 'IE',
-        //         browser_version: '11.0',
-        //     },
-        // },
-
-        // 'BrowserStack:edge': {
-        //     desiredCapabilities: {
-        //         os: 'Windows',
-        //         os_version: '10',
-        //         browserName: 'Edge',
-        //         browser_version: '15.0',
-        //     },
-        // },
+        'BrowserStack:edge': {
+            desiredCapabilities: {
+                os: 'Windows',
+                os_version: '10',
+                browserName: 'Edge',
+                browser_version: '15.0',
+            },
+        },
 
         // For some unkown reason, many tests fail when run against Safari using
         // BrowserStack Automate. These same tests pass when run against Safari
@@ -122,40 +108,120 @@ module.exports = {
         //     },
         // },
 
-        // 'BrowserStack:firefoxWin7': {
-        //     desiredCapabilities: {
-        //         os: 'Windows',
-        //         os_version: '7',
-        //         browserName: 'Firefox',
-        //         browser_version: '58.0',
-        //     },
-        // },
+        'BrowserStack:firefoxWin7': {
+            desiredCapabilities: {
+                os: 'Windows',
+                os_version: '7',
+                browserName: 'Firefox',
+                browser_version: '58.0',
+            },
+        },
 
-        // 'BrowserStack:firefoxSierra': {
-        //     desiredCapabilities: {
-        //         os: 'OS X',
-        //         os_version: 'Sierra',
-        //         browserName: 'Firefox',
-        //         browser_version: '58.0',
-        //     },
-        // },
+        'BrowserStack:firefoxSierra': {
+            desiredCapabilities: {
+                os: 'OS X',
+                os_version: 'Sierra',
+                browserName: 'Firefox',
+                browser_version: '58.0',
+            },
+        },
 
-        // 'BrowserStack:chromeWin7': {
-        //     desiredCapabilities: {
-        //         os: 'Windows',
-        //         os_version: '7',
-        //         browserName: 'Chrome',
-        //         browser_version: '63.0',
-        //     },
-        // },
+        'BrowserStack:chromeWin7': {
+            desiredCapabilities: {
+                os: 'Windows',
+                os_version: '7',
+                browserName: 'Chrome',
+                browser_version: '63.0',
+            },
+        },
 
-        // 'BrowserStack:chromeSierra': {
-        //     desiredCapabilities: {
-        //         os: 'OS X',
-        //         os_version: 'Sierra',
-        //         browserName: 'Chrome',
-        //         browser_version: '63.0',
-        //     },
-        // },
+        'BrowserStack:chromeSierra': {
+            desiredCapabilities: {
+                os: 'OS X',
+                os_version: 'Sierra',
+                browserName: 'Chrome',
+                browser_version: '63.0',
+            },
+        },
     },
 };
+
+/**
+ * Inject the "selenium" or the "webdriver" configuration depending on whether
+ * BrowserStack is being used. We only want one configuration object to be
+ * present at a time because BrowserStack will get confused if the "webdriver"
+ * configuration is present.
+ */
+function injectDriverConfiguration() {
+    if (process.env.BS === 'true') {
+        config.selenium = {
+            start_process: false,
+        };
+    } else {
+        config.webdriver = {
+            start_process: true,
+        };
+    }
+}
+
+/**
+ * Inject common configuration options into all environments. We could have a
+ * "default" environment with these values, but that environment would also need
+ * to have a desiredCapabilities.webdriver configuration object, which would
+ * then be applied to all BrowserStack environments, once again confusing
+ * BrowserStack.
+ */
+function injectCommonConfigurations() {
+    for (const environmentName of Object.keys(config.test_settings)) {
+        const environment = config.test_settings[environmentName];
+
+        environment.launch_url = launchURL;
+        environment.exclude = ['runners', 'utils.js', 'jsDisabled.js'];
+        environment.globals = {
+            waitForConditionTimeout: timeout,
+            siteTitle,
+        };
+    }
+}
+
+/**
+ * Inject needed configurations into all BrowserStack environments. This is
+ * easier than manually adding these same configurations to all BrowserStack
+ * environments.
+ *
+ * We could create a separate nightwatch.browserstack.conf.js file with all of
+ * these values in the "default" environment, but BrowserStack ignores the
+ * "default" environment when running tests in parallel for some reason. To run
+ * tests in parallel, all of these values need to be directly in each
+ * BrowserStack environment configuration object.
+ *
+ * This is based on the following documentation:
+ * https://www.browserstack.com/automate/nightwatch
+ */
+function injectBrowserStackConfigurations() {
+    const browserStackEnvironmentNames = Object.keys(
+        config.test_settings
+    ).filter(e => e.startsWith('BrowserStack'));
+
+    for (const environmentName of browserStackEnvironmentNames) {
+        const environment = config.test_settings[environmentName];
+
+        // Selenium settings
+        environment['selenium_host'] = 'hub-cloud.browserstack.com';
+        environment['selenium_port'] = 80;
+
+        // BrowserStack settings
+        environment.desiredCapabilities['browserstack.user'] = process.env.BSUSER;
+        environment.desiredCapabilities['browserstack.key'] = process.env.BSKEY;
+        environment.desiredCapabilities['browserstack.local'] = true;
+        environment.desiredCapabilities['browserstack.selenium_version'] = '3.14.0';
+        environment.desiredCapabilities.project = packageJSON.name;
+        environment.desiredCapabilities.build = packageJSON.version;
+    }
+}
+
+injectDriverConfiguration();
+injectCommonConfigurations();
+injectBrowserStackConfigurations();
+
+module.exports = config;

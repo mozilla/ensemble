@@ -5,21 +5,13 @@ const { spawn } = require('child_process');
 const nightwatchConfig = require('../nightwatch.conf.js');
 
 
-const serverName = getServerName(); // dev, stage, or prod
-const useBrowserStack = getUseBrowserStack(); // boolean
+const serverName = process.argv[2]; // dev, stage, or prod
+const useBrowserStack = process.env.BS === 'true'; // cast to boolean
 
 const siteDetails = getSiteDetails(serverName);
 const enabledNightwatchEnvironmentNames = getEnabledNightwatchEnvironmentNames(useBrowserStack);
 
-runTests(siteDetails, enabledNightwatchEnvironmentNames);
-
-function getServerName() {
-    return process.argv[2];
-}
-
-function getUseBrowserStack() {
-    return process.argv[3] === 'true'; // cast to boolean
-}
+runTests(siteDetails, enabledNightwatchEnvironmentNames, useBrowserStack);
 
 function getSiteDetails(serverName) {
     return {
@@ -57,11 +49,16 @@ function getEnabledNightwatchEnvironmentNames(useBrowserStack) {
 }
 
 /**
- * To ensure that only one test is run at a time, this is a recursive function
- * where the recursive call is made only when a command completes and there are
- * more commands that need to be run.
+ * This function runs all Nightwatch environments sequentially. geckodriver
+ * refuses to be run in parallel (like --env chrome,firefox) and although we
+ * might be able to spawn multiple single-env Nightwatch commands at one time
+ * without geckodriver complaining, the output would be unreadable.
+ *
+ * As a result, this is written as a recursive function where the recursive call
+ * is made only when a command completes and when there are more commands to
+ * run.
  */
-function runTests(siteDetails, nightwatchEnvironmentNames) {
+function runTests(siteDetails, nightwatchEnvironmentNames, useBrowserStack) {
     const thisNightwatchEnvironmentName = nightwatchEnvironmentNames.shift();
 
     // Add these environment variables, but let anything in process.env take
@@ -71,7 +68,24 @@ function runTests(siteDetails, nightwatchEnvironmentNames) {
         NIGHTWATCH_SITE_TITLE: siteDetails.NIGHTWATCH_SITE_TITLE,
     }, process.env);
 
-    const proc = spawn('nightwatch', ['--env', thisNightwatchEnvironmentName], {
+    let command, args;
+    if (useBrowserStack) {
+        command = 'node';
+        args = [
+            'src/tests/nightwatch/runners/browserStackRunner.js',
+            '--env',
+            thisNightwatchEnvironmentName,
+        ];
+    } else {
+        command = 'nightwatch';
+        args = [
+            '--env',
+            thisNightwatchEnvironmentName,
+        ];
+    }
+
+    const proc = spawn(command, args, {
+        // const proc = spawn(command, ['--env', thisNightwatchEnvironmentName], {
         cwd: path.join(__dirname, '..'),
         env: shellEnvironment,
     });
