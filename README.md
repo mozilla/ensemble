@@ -57,7 +57,7 @@ operating systems using BrowserStack.
       testing, but you may actually have better luck using the GUI app, which is
       linked from the *Live* section.
 3. [Start Ensemble](#run)
-4. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack:local`
+4. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack:dev`
 
 Alternatively, the tests can be run against staging or production. Just change
 *local* to *stage* or *prod* in the command above.
