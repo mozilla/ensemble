@@ -40,17 +40,15 @@ class MetricOverviewContainer extends React.Component {
 
             return null;
         } else if (dataFetch.rejected) {
-            const extraErrorComponentProps = {};
-
             if (dataFetch.reason && dataFetch.reason.message) {
-                extraErrorComponentProps.message = dataFetch.reason.message;
+                // eslint-disable-next-line no-console
+                console.error(dataFetch.reason.message);
             }
 
             return (
                 <ErrorComponent
                     id="metric-overview-fetch-error"
                     title="Error fetching metric"
-                    {...extraErrorComponentProps}
                 />
             );
         } else if (dataFetch.fulfilled) {

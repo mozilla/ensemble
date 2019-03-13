@@ -90,17 +90,15 @@ class SummaryMetricContainer extends React.Component {
             // when metric data is loading. See MetricOverviewContainer.js.
             return null;
         } else if (dataFetch.rejected) {
-            const extraErrorComponentProps = {};
-
             if (dataFetch.reason && dataFetch.reason.message) {
-                extraErrorComponentProps.message = dataFetch.reason.message;
+                // eslint-disable-next-line no-console
+                console.error(dataFetch.reason.message);
             }
 
             return (
                 <ErrorComponent
                     id="summary-metric-fetch-error"
                     title="Error fetching summary metric"
-                    {...extraErrorComponentProps}
                 />
             );
         } else if (dataFetch.fulfilled) {
