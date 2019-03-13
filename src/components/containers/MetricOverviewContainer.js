@@ -39,6 +39,10 @@ class MetricOverviewContainer extends React.Component {
             // normal.
 
             return null;
+
+        // Due to the way ensemble is currently hosted, this code is never run.
+        // The dataFetch is never rejected, even when there is a problem
+        // fetching the data.
         } else if (dataFetch.rejected) {
             if (dataFetch.reason && dataFetch.reason.message) {
                 // eslint-disable-next-line no-console
