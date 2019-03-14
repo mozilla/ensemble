@@ -60,13 +60,7 @@ operating systems using BrowserStack.
 4. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack:dev`
 
 Alternatively, the tests can be run against staging or production. Just change
-*local* to *stage* or *prod* in the command above.
-
-This command will print a ton of output. If any tests fail, the errors will be
-printed and subsequent browsers will be skipped. If the command finishes
-printing output and the last thing that was printed was not an error, you can
-rest assured that all tests passed in all configured browsers. We'd like to find
-a better way of presenting this information in the future.
+*dev* to *stage* or *prod* in the command above.
 
 If you get an error about local testing through BrowserStack not being
 connected, wait about 30 seconds and try again. If it keeps happening, try

@@ -1,8 +1,10 @@
 const packageJSON = require('./package.json');
 
+const runOnBrowserStack = process.env.BS === 'true'; // cast to boolean
+
 const launchURL = process.env.NIGHTWATCH_LAUNCH_URL;
 const siteTitle = process.env.NIGHTWATCH_SITE_TITLE;
-const timeout = Number(process.env.NIGHTWATCH_TIMEOUT) || 10000;
+const timeout = runOnBrowserStack ? 25000 : 10000;
 
 const config = {
     src_folders: ['./src/tests/nightwatch'],
@@ -148,8 +150,8 @@ const config = {
  * present at a time because BrowserStack will get confused if the "webdriver"
  * configuration is present.
  */
-function injectDriverConfiguration() {
-    if (process.env.BS === 'true') {
+function addDriver() {
+    if (runOnBrowserStack) {
         config.selenium = {
             start_process: false,
         };
@@ -167,7 +169,7 @@ function injectDriverConfiguration() {
  * then be applied to all BrowserStack environments, once again confusing
  * BrowserStack.
  */
-function injectCommonConfigurations() {
+function addDefaultEnvironmentSettings() {
     for (const environmentName of Object.keys(config.test_settings)) {
         const environment = config.test_settings[environmentName];
 
@@ -194,10 +196,12 @@ function injectCommonConfigurations() {
  * This is based on the following documentation:
  * https://www.browserstack.com/automate/nightwatch
  */
-function injectBrowserStackConfigurations() {
+function addBrowserStackSettings() {
+    const browserStackPrefix = 'BrowserStack:';
+
     const browserStackEnvironmentNames = Object.keys(
         config.test_settings
-    ).filter(e => e.startsWith('BrowserStack'));
+    ).filter(e => e.startsWith(browserStackPrefix));
 
     for (const environmentName of browserStackEnvironmentNames) {
         const environment = config.test_settings[environmentName];
@@ -216,8 +220,8 @@ function injectBrowserStackConfigurations() {
     }
 }
 
-injectDriverConfiguration();
-injectCommonConfigurations();
-injectBrowserStackConfigurations();
+addDriver();
+addDefaultEnvironmentSettings();
+addBrowserStackSettings();
 
 module.exports = config;

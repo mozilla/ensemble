@@ -22,9 +22,9 @@
         "test:nightwatch:dev": "node scripts/runNightwatch dev",
         "test:nightwatch:stage": "node scripts/runNightwatch stage",
         "test:nightwatch:prod": "node scripts/runNightwatch prod",
-        "test:nightwatch:browserstack:dev": "BS=true NIGHTWATCH_TIMEOUT=25000 node scripts/runNightwatch dev",
-        "test:nightwatch:browserstack:stage": "BS=true NIGHTWATCH_TIMEOUT=25000 node scripts/runNightwatch stage",
-        "test:nightwatch:browserstack:prod": "BS=true NIGHTWATCH_TIMEOUT=25000 node scripts/runNightwatch prod",
+        "test:nightwatch:browserstack:dev": "BS=true node scripts/runNightwatch dev",
+        "test:nightwatch:browserstack:stage": "BS=true node scripts/runNightwatch stage",
+        "test:nightwatch:browserstack:prod": "BS=true node scripts/runNightwatch prod",
         "posttest": "npm audit || true",
         "size": "source-map-explorer build/static/js/main.*"
     },
