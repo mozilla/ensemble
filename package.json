@@ -50,7 +50,7 @@
         "react-metrics-graphics": "1.0.6",
         "react-refetch": "2.0.3",
         "react-router-dom": "5.0.0",
-        "react-scripts": "2.1.8",
+        "react-scripts": "3.0.0",
         "react-spinners": "0.5.4",
         "stylus": "0.54.5"
     },
