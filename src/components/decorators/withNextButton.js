@@ -1,7 +1,7 @@
 import React from 'react';
 
 import NextButton from '../views/NextButton';
-import nextButtonsConfig from '../../config/nextButtons.json';
+import { nextButtons as nextButtonsConfig } from '../../config.json';
 
 
 export default WrappedComponent => {

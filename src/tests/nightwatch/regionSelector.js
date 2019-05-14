@@ -1,31 +1,10 @@
-const dashboards = require('../../../config/dashboards.json');
+const { dashboards } = require('../../config.json');
 
 
 const defaultRegion = 'Worldwide';
 
-const regionedDashboards = dashboards.sections.reduce((acc, section) => {
-    if (!section.members) return acc;
-
-    section.members.forEach(member => {
-        if (member.supportsRegions === true) {
-            acc.push(member.key);
-        }
-    });
-
-    return acc;
-}, []);
-
-const regionlessDashboards = dashboards.sections.reduce((acc, section) => {
-    if (!section.members) return acc;
-
-    section.members.forEach(member => {
-        if (!member.supportsRegions || member.supportsRegions !== true) {
-            acc.push(member.key);
-        }
-    });
-
-    return acc;
-}, []);
+const regionedDashboards = dashboards.filter(d => d.supportsRegions).map(d => d.key);
+const regionlessDashboards = dashboards.filter(d => !d.supportsRegions).map(d => d.key);
 
 function clearSessionStorage() {
     sessionStorage.clear();

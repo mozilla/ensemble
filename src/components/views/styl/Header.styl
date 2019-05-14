@@ -1,12 +1,9 @@
-$subnav-spacing = 15px;
-$navgroup-h-spacing = 20px;
-$navgroup-v-spacing = 8px;
-
 #main-header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
+    padding: 15px 0;
 
     border-bottom: 1px solid #676767;
 }
@@ -30,96 +27,25 @@ h1 {
 }
 
 #main-navigation {
-    span {
-        margin: 0;
-    }
     ul {
+        display: flex;
+        flex-wrap: wrap;
         list-style: none;
         padding: 0;
     }
-    > ul {
-        display: flex;
-        flex-wrap: wrap;
 
-        > li {
-            margin: 10px 20px;
-            position: relative;
-
-            &:last-child {
-                margin-right: 0;
-            }
-            > a {
-                border-bottom: none;
-                color: #000;
-            }
-        }
-    }
-}
-
-#main-navigation > ul > li > a,
-.subnav-title {
-    font-size: 1.1rem;
-    font-weight: 200;
-}
-
-/* This rule vertically aligns menu items with themselves and also aligns
-   section titles with their corresponding arrows. */
-#main-navigation > ul > li:not(.has-subnav),
-.subnav-title {
-    display: flex;
-    align-items: center;
-}
-
-.subnav-title {
-    /* In addition to making the cursor a pointer, this makes the "hover" effect
-       a "tap" effect on some mobile browsers. That is, in our case, tapping on
-       a section title will cause the subnav to appear when this rule is
-       present. */
-    cursor: pointer;
-
-    // Add a down arrow to the right of the navigation section title.
-    &::after {
-        content: '\25BC';
-        font-size: .7em;
-        padding-left: 8px;
-    }
-}
-
-.subnav {
-    /* By default, don't show any subnavs */
-    display: none;
-
-    /* Draw over everything else */
-    z-index: 20;
-
-    background: #fff;
-    box-shadow: 3px 3px 3px #666;
-    white-space: nowrap;
-
-    position: absolute;
-}
-
-.navigation-coming-soon:hover .subnav {
-    display: block;
-    padding: $subnav-spacing;
-    left: -($subnav-spacing);
-}
-
-.navigation-group:hover {
-    .subnav {
-        display: flex;
-        flex-direction: column;
-
-        left: -($navgroup-h-spacing);
-    }
     li {
-        padding: $navgroup-v-spacing $navgroup-h-spacing;
+        margin: 0 15px;
 
-        &:first-child {
-            padding-top: 2 * ($navgroup-v-spacing);
-        }
         &:last-child {
-            padding-bottom: 2 * ($navgroup-v-spacing);
+            margin-right: 0;
+        }
+
+        a {
+            border-bottom: none;
+            color: #000;
+            font-size: 1.1rem;
+            font-weight: 200;
         }
     }
 }
