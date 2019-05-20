@@ -5,7 +5,7 @@ import withTracker from '../decorators/withTracker';
 import withNextButton from '../decorators/withNextButton';
 import lazyLoad from '../../lib/lazyLoad';
 
-import dashboards from '../../config/dashboards.json';
+import { dashboards } from '../../config.json';
 
 
 export default () => {
@@ -19,27 +19,23 @@ export default () => {
             <Switch>
                 <Route exact path="/" component={withTracker(withNextButton(Home))} />
                 <Route exact path="/contact" component={withTracker(Contact)} />
-                {dashboards.sections.map(dashboardSection => {
-                    if (dashboardSection.comingSoon) return null;
+                {dashboards.map(dashboard => (
+                    <Route
+                        key={dashboard.key}
+                        exact path={`/dashboard/${dashboard.key}`}
+                        render={props => {
+                            const ThisDashboardContainer = () => (
+                                <DashboardContainer
+                                    {...props}
+                                    source={dashboard.source}
+                                />
+                            );
+                            const Component = withTracker(withNextButton(ThisDashboardContainer));
 
-                    return dashboardSection.members.map(dashboard => (
-                        <Route
-                            key={dashboardSection.key + dashboard.key}
-                            exact path={`/dashboard/${dashboard.key}`}
-                            render={props => {
-                                const ThisDashboardContainer = () => (
-                                    <DashboardContainer
-                                        {...props}
-                                        source={dashboard.source}
-                                    />
-                                );
-                                const Component = withTracker(withNextButton(ThisDashboardContainer));
-
-                                return <Component {...props} />;
-                            }}
-                        />
-                    ));
-                })}
+                            return <Component {...props} />;
+                        }}
+                    />
+                ))}
                 <Route component={withTracker(withNextButton(NotFound))} />
             </Switch>
         </main>

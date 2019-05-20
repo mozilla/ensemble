@@ -24,7 +24,7 @@ export default () => {
                 <p className="highlighted">
                     {description}
                 </p>
-                <section>
+                <section id="purpose">
                     <h2 className="contrasted">Purpose</h2>
                     <span>The purpose of this report is twofold:</span>
                     <dl className="explanations split">
@@ -46,13 +46,9 @@ export default () => {
                         </div>
                     </dl>
                 </section>
-                <section>
+                <section id="content">
                     <h2 className="contrasted">Content</h2>
-                    <span>
-                        The report is split into Desktop and Mobile sections, with
-                        subsections for each.
-                    </span>
-                    <h3>Desktop</h3>
+                    <span>The report is split into three sections:</span>
                     <dl className="explanations alt">
                         <div>
                             <dt><Link to="/dashboard/user-activity">User Activity</Link></dt>
@@ -67,13 +63,10 @@ export default () => {
                             <dd>The specs and configurations for the machines running Firefox Desktop.</dd>
                         </div>
                     </dl>
-                    <h3>Mobile</h3>
-                    <p>Coming soon</p>
                 </section>
-                <section>
+                <section id="methodology">
                     <h2 className="contrasted">Methodology</h2>
                     <p>
-
                         All data is from a representative 10% sample from our
                         Release, Beta, ESR, and Other channels for Firefox and the
                         report runs once per week. Each datapoint covers a week's
