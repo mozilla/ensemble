@@ -25,7 +25,7 @@ Any of the environment variables in *.env* can be overridden. For example:
 ### In production
 
 See the [create-react-app documentation on
-deployment](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#deployment).
+deployment](https://facebook.github.io/create-react-app/docs/deployment).
 
 Any of the environment variables in *.env* can be overridden.
 
