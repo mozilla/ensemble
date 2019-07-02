@@ -70,5 +70,5 @@ class DashboardContainer extends React.Component {
 }
 
 export default connect(props => ({
-    dataFetch: { url: props.source },
+    dataFetch: { url: `${props.source}/index.json` },
 }))(DashboardContainer);
