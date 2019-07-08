@@ -51,7 +51,7 @@
         "react-refetch": "2.0.3",
         "react-router-dom": "5.0.1",
         "react-scripts": "3.0.1",
-        "react-spinners": "0.5.4",
+        "react-spinners": "0.5.8",
         "stylus": "0.54.5"
     },
     "devDependencies": {
@@ -59,7 +59,7 @@
         "chromedriver": "75.0.1",
         "enzyme": "3.10.0",
         "enzyme-adapter-react-16": "1.14.0",
-        "eslint-plugin-jest": "22.7.1",
+        "eslint-plugin-jest": "22.7.2",
         "eslint-plugin-json": "1.4.0",
         "eslint-plugin-jsx-a11y": "6.2.3",
         "eslint-plugin-react": "7.14.2",
