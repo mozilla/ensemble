@@ -30,7 +30,7 @@
     },
     "dependencies": {
         "babel-polyfill": "6.26.0",
-        "d3-scale": "3.0.0",
+        "d3-scale": "3.0.1",
         "d3-selection": "1.4.0",
         "d3-shape": "1.3.5",
         "d3-transition": "1.2.0",
@@ -51,15 +51,15 @@
         "react-refetch": "2.0.3",
         "react-router-dom": "5.0.1",
         "react-scripts": "3.0.1",
-        "react-spinners": "0.5.12",
+        "react-spinners": "0.5.13",
         "stylus": "0.54.5"
     },
     "devDependencies": {
         "browserstack-automate": "1.0.2",
-        "chromedriver": "75.1.0",
+        "chromedriver": "76.0.0",
         "enzyme": "3.10.0",
         "enzyme-adapter-react-16": "1.14.0",
-        "eslint-plugin-jest": "22.13.6",
+        "eslint-plugin-jest": "22.14.1",
         "eslint-plugin-json": "1.4.0",
         "eslint-plugin-jsx-a11y": "6.2.3",
         "eslint-plugin-react": "7.14.3",
