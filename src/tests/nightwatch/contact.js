@@ -12,7 +12,7 @@ module.exports = {
 
     'Page <title> is correct': browser => {
         browser.waitForElementVisible('#contact');
-        browser.getTitle(title => browser.assert.equal(title, `Contact | ${browser.globals.siteTitle}`));
+        browser.getTitle(title => browser.assert.equal(title, `Contact | ${browser.globals.baseTitle}`));
     },
 
     'All links work': browser => {

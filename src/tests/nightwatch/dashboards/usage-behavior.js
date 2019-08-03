@@ -12,7 +12,7 @@ module.exports = {
 
     'Page <title> is correct': browser => {
         browser.waitForElementVisible('#dashboard');
-        browser.getTitle(title => browser.assert.equal(title, `Usage Behavior | ${browser.globals.siteTitle}`));
+        browser.getTitle(title => browser.assert.equal(title, `Usage Behavior | ${browser.globals.baseTitle}`));
     },
 
     'Dashboard title is correct': browser => {

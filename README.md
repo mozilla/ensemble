@@ -42,30 +42,6 @@ Nightwatch tests can optionally be run against the staging and production sites.
 Run `npm run test:nightwatch:stage` or `npm run test:nightwatch:prod`
 respectively.
 
-#### BrowserStack
-
-Follow these steps to run Nightwatch tests against even more browsers and
-operating systems using BrowserStack.
-
-1. Sign up for a BrowserStack account which supports automated testing (for
-   example, an Automate Pro account). Note that automated testing is not
-   available with free accounts.
-2. Follow the instructions in the *Live (using other browsers); Automate; App
-   Automate* section of [this page](https://www.browserstack.com/local-testing)
-   to download, install, and run the BrowserStackLocal executable.
-    * BrowserStack tells users to use the command-line executable for automated
-      testing, but you may actually have better luck using the GUI app, which is
-      linked from the *Live* section.
-3. [Start Ensemble](#run)
-4. Run `BSUSER=username BSKEY=key npm run test:nightwatch:browserstack:dev`
-
-Alternatively, the tests can be run against staging or production. Just change
-*dev* to *stage* or *prod* in the command above.
-
-If you get an error about local testing through BrowserStack not being
-connected, wait about 30 seconds and try again. If it keeps happening, try
-stopping and re-starting the BrowserStackLocal process.
-
 ### Analyzing
 
 To analyze the size of the JavaScript bundle that will be served, run `npm run

@@ -14,7 +14,7 @@ module.exports = {
         // Home.js wrongly changed the <title> to something else.
         browser.waitForElementVisible('#introduction');
 
-        browser.getTitle(title => browser.assert.equal(title, browser.globals.siteTitle));
+        browser.getTitle(title => browser.assert.equal(title, browser.globals.baseTitle));
     },
 
     'All introduction links work': browser => {
