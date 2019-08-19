@@ -41,7 +41,10 @@ export default props => {
         );
     }
 
-    let maybeDescription, maybeMetaDescription, maybeGraphDescription = null;
+    let maybeDescription = null;
+    let maybeMetaDescription = null;
+    let maybeGraphDescription = null;
+
     if (props.description) {
         maybeDescription = (
             <p id="dashboard-description">{props.description}</p>
@@ -50,14 +53,14 @@ export default props => {
         maybeMetaDescription = (
             <meta
                 name="description"
-                content={props.description}
+                content={props.metaDescription || props.description}
             />
         );
 
         maybeGraphDescription = (
             <meta
                 property="og:description"
-                content={props.description}
+                content={props.metaDescription || props.description}
             />
         );
     }

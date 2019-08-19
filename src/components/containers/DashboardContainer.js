@@ -55,6 +55,7 @@ class DashboardContainer extends React.Component {
                 <Dashboard
                     title={dataFetch.value.title}
                     description={dataFetch.value.description}
+                    metaDescription={dataFetch.value.metaDescription}
                     sections={dataFetch.value.sections}
                     dates={dataFetch.value.dates}
                     metrics={dataFetch.value.metrics}
