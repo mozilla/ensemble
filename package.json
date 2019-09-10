@@ -1,6 +1,6 @@
 {
     "name": "ensemble",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "private": true,
     "engines": {
         "node": ">=8"
@@ -9,7 +9,7 @@
         "start": "npm-run-all --parallel watch:css watch:app",
         "watch:css": "stylus --watch --sourcemap src/components/views/styl/* --out ./src/components/views/css/",
         "watch:app": "react-scripts start",
-        "build": "npm-run-all build:css build:app",
+        "build": "npm-run-all build:*",
         "build:css": "stylus --sourcemap ./src/components/views/styl/* --out ./src/components/views/css/",
         "build:app": "react-scripts build",
         "build:version.json": "node scripts/generateVersionJSON",

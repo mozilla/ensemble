@@ -5,7 +5,7 @@ const fs = require('fs');
 const packageJSON = require(path.join(__dirname, '..', 'package.json'));
 
 
-const outFilename = path.join(__dirname, '..', 'version.json');
+const outFilename = path.join(__dirname, '..', 'build', 'version.json');
 
 const versionJSON = {
     source: 'https://github.com/mozilla/ensemble',
