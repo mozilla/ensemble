@@ -43,9 +43,8 @@ module.exports = {
         metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(3) #operating-system-metric-overview-2 h5', 'Browsers by Architecture');
         metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(3) #operating-system-metric-overview-3 h5', 'Operating Systems by Architecture');
         metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(4) #plugins-metric-overview-1 h5', 'Has Flash');
-        metricTitleIsCorrect(browser, '#dashboard-sections .dashboard-section:nth-child(4) #plugins-metric-overview-2 h5', 'Has Unity');
 
-        flagForUpdate(browser, '.metric', 'metrics in the hardware dashboard', 12);
+        flagForUpdate(browser, '.metric', 'metrics in the hardware dashboard', 11);
     },
 
     'Charts render': browser => {
@@ -82,9 +81,6 @@ module.exports = {
         browser.expect.element('#plugins-metric-overview-1 svg').to.be.visible;
         browser.expect.element('#plugins-metric-overview-1 path.mg-line1').to.be.visible;
 
-        browser.expect.element('#plugins-metric-overview-2 svg').to.be.visible;
-        browser.expect.element('#plugins-metric-overview-2 path.mg-line1').to.be.visible;
-
-        flagForUpdate(browser, '.chart', 'charts in the hardware dashboard', 12);
+        flagForUpdate(browser, '.chart', 'charts in the hardware dashboard', 11);
     },
 };
