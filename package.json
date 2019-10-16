@@ -53,8 +53,8 @@
     "devDependencies": {
         "chromedriver": "77.0.0",
         "enzyme": "3.10.0",
-        "enzyme-adapter-react-16": "1.14.0",
-        "eslint-plugin-jest": "22.17.0",
+        "enzyme-adapter-react-16": "1.15.1",
+        "eslint-plugin-jest": "22.19.0",
         "eslint-plugin-json": "1.4.0",
         "eslint-plugin-jsx-a11y": "6.2.3",
         "eslint-plugin-react": "7.16.0",
