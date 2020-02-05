@@ -33,10 +33,7 @@ Any of the environment variables in *.env* can be overridden.
 
 ### Testing
 
-To run Jest, Nightwatch, and ESLint tests locally, run the following:
-
-1. `safaridriver --enable`
-2. `npm test`
+Run `npm test` to run Jest, Nightwatch, and ESLint tests locally.
 
 Nightwatch tests can optionally be run against the staging and production sites.
 Run `npm run test:nightwatch:stage` or `npm run test:nightwatch:prod`
