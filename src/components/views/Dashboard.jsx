@@ -1,5 +1,6 @@
 import React from 'react';
 import Helmet from 'react-helmet';
+import markdownIt from 'markdown-it';
 
 import DashboardSection from './DashboardSection';
 import MetricOverviewCollection from './MetricOverviewCollection';
@@ -46,21 +47,40 @@ export default props => {
     let maybeGraphDescription = null;
 
     if (props.description) {
-        maybeDescription = (
-            <p id="dashboard-description">{props.description}</p>
-        );
+        const multipleParagraphs = Array.isArray(props.description);
+        const markdownParser = markdownIt('zero').enable(['emphasis']);
 
+        if (multipleParagraphs) {
+            maybeDescription = (
+                <div id="dashboard-description">
+                    {props.description.map((paragraph, index) => (
+                        <p key={index} dangerouslySetInnerHTML={
+                            {__html: markdownParser.renderInline(paragraph)}
+                        } />
+                    ))}
+                </div>
+            );
+        } else {
+            maybeDescription = (
+                <p id="dashboard-description" dangerouslySetInnerHTML={
+                    {__html: markdownParser.renderInline(props.description)}
+                } />
+            );
+        }
+    }
+
+    if (props.metaDescription) {
         maybeMetaDescription = (
             <meta
                 name="description"
-                content={props.metaDescription || props.description}
+                content={props.metaDescription}
             />
         );
 
         maybeGraphDescription = (
             <meta
                 property="og:description"
-                content={props.metaDescription || props.description}
+                content={props.metaDescription}
             />
         );
     }
