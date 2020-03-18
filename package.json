@@ -18,9 +18,9 @@
         "lint:js-extra": "npx eslint --config .eslintrc.extra.js --ext .js --ext .json .",
         "lint:styl": "stylint src/components/views/styl",
         "test:jest": "CI=true react-scripts test",
-        "test:nightwatch:dev": "NIGHTWATCH_TARGET=dev nightwatch --env jsDisabled,chrome",
-        "test:nightwatch:stage": "NIGHTWATCH_TARGET=stage nightwatch --env jsDisabled,chrome",
-        "test:nightwatch:prod": "NIGHTWATCH_TARGET=prod nightwatch --env jsDisabled,chrome",
+        "test:nightwatch:dev": "NIGHTWATCH_TARGET=dev nightwatch --env jsDisabled,default",
+        "test:nightwatch:stage": "NIGHTWATCH_TARGET=stage nightwatch --env jsDisabled,default",
+        "test:nightwatch:prod": "NIGHTWATCH_TARGET=prod nightwatch --env jsDisabled,default",
         "posttest": "npm audit || true",
         "size": "source-map-explorer build/static/js/main.*"
     },

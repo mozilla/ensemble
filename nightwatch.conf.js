@@ -21,35 +21,7 @@ module.exports = {
     },
 
     test_settings: {
-        jsDisabled: {
-            launch_url: settings.baseURL,
-            globals: {
-                baseTitle: settings.baseTitle,
-                waitForConditionTimeout: 10000,
-            },
-            webdriver: {
-                server_path: 'node_modules/.bin/chromedriver',
-                port: 9515,
-            },
-            filter: './src/tests/nightwatch/jsDisabled.js',
-            desiredCapabilities: {
-                browserName: 'chrome',
-
-                // For some reason, JavaScript isn't disabled when Chrome is
-                // headless.
-                chromeOptions: {
-                    prefs: {
-                        'profile.managed_default_content_settings.javascript': 2,
-                    },
-                },
-            },
-        },
-
-        // This environment could be named "default" and the "jsDisabled"
-        // environment could simply be a set of overrides to those defaults, but
-        // for some reason, when I do that, I can't turn off headless mode. And
-        // due to another apparent bug, JS isn't disabled in headless mode.
-        chrome: {
+        default: {
             launch_url: settings.baseURL,
             exclude: [
                 'utils.js',
@@ -67,6 +39,21 @@ module.exports = {
                 browserName: 'chrome',
                 chromeOptions: {
                     args: ['headless'],
+                },
+            },
+        },
+
+        jsDisabled: {
+            exclude: null,
+            filter: './src/tests/nightwatch/jsDisabled.js',
+            desiredCapabilities: {
+                chromeOptions: {
+                    // JavaScript cannot be disabled in headless mode.
+                    // https://stackoverflow.com/a/47538023/4297741
+                    args: ['disable-headless-mode'],
+                    prefs: {
+                        'profile.managed_default_content_settings.javascript': 2,
+                    },
                 },
             },
         },
