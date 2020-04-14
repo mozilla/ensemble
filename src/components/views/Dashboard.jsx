@@ -1,6 +1,6 @@
 import React from 'react';
-import Helmet from 'react-helmet';
 import markdownIt from 'markdown-it';
+import { Helmet } from 'react-helmet';
 
 import DashboardSection from './DashboardSection';
 import MetricOverviewCollection from './MetricOverviewCollection';
