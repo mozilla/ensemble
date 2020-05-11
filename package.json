@@ -45,7 +45,7 @@
         "react-loadable": "5.5.0",
         "react-metrics-graphics": "1.1.2",
         "react-refetch": "3.0.1",
-        "react-router-dom": "5.1.2",
+        "react-router-dom": "5.2.0",
         "react-scripts": "3.4.1",
         "react-spinners": "0.8.3",
         "stylus": "0.54.7"
@@ -54,7 +54,7 @@
         "chromedriver": "81.0.0",
         "enzyme": "3.11.0",
         "enzyme-adapter-react-16": "1.15.2",
-        "eslint-plugin-jest": "23.9.0",
+        "eslint-plugin-jest": "23.10.0",
         "eslint-plugin-json": "2.1.1",
         "eslint-plugin-jsx-a11y": "6.2.3",
         "eslint-plugin-react": "7.19.0",
