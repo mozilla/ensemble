@@ -8,15 +8,7 @@
         "license": "MPL2"
     },
     "participate": {
-        "docs": "https://github.com/mozilla/ensemble/blob/master/README.md",
-        "irc": "irc://irc.mozilla.org/#datareport",
-        "irc-contacts": [
-            "openjck",
-            "megan",
-            "su",
-            "frank",
-            "RaFromBRC"
-        ]
+        "docs": "https://github.com/mozilla/ensemble/blob/master/README.md"
     },
     "keywords": [
         "create-react-app",
