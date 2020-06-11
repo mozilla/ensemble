@@ -9,7 +9,7 @@ import './css/SummaryMetric.css';
 
 /**
  * Based on Ali Almosawi's work for the original Firefox Hardware Report:
- * https://github.com/mozilla/firefox-hardware-report/blob/master/js/main.js
+ * https://github.com/mozilla/firefox-hardware-report/blob/archive/static/js/main.js
  */
 export default class extends React.Component {
     constructor(props) {

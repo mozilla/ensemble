@@ -8,7 +8,7 @@
         "license": "MPL2"
     },
     "participate": {
-        "docs": "https://github.com/mozilla/ensemble/blob/master/README.md",
+        "docs": "https://github.com/mozilla/ensemble/blob/main/README.md",
         "chat": {
             "url": "https://chat.mozilla.org/#/room/#public-data:mozilla.org"
         }
