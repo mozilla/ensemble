@@ -54,7 +54,7 @@
         "chromedriver": "83.0.0",
         "enzyme": "3.11.0",
         "enzyme-adapter-react-16": "1.15.2",
-        "eslint-plugin-jest": "23.18.0",
+        "eslint-plugin-jest": "23.18.2",
         "eslint-plugin-json": "2.1.1",
         "eslint-plugin-jsx-a11y": "6.3.1",
         "eslint-plugin-react": "7.20.3",
