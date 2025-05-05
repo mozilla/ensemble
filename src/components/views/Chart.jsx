@@ -30,8 +30,10 @@ export default props => {
     if (appendableUnits.includes(props.yUnit)) {
         extraOptions.yax_units = props.yUnit;
         extraOptions.yax_units_append = true;
+        extraOptions.utc_time = true;
     } else {
         extraOptions.y_label = props.yUnit;
+        extraOptions.utc_time = true;
 
         // Work around this bug:
         // https://github.com/metricsgraphics/metrics-graphics/issues/838
@@ -146,7 +148,7 @@ export default props => {
                 height={props.height}
                 width={props.width}
 
-                x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
+                x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy', true) + ': '}
                 y_mouseover={dp => prettifyNumber(dp.y) + yUnitString}
 
                 min_y={minYToShow}
