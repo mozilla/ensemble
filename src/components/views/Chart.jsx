@@ -14,6 +14,9 @@ import './css/Metric.css';
 export default props => {
     const extraOptions = {};
 
+    // ensure that times are formatted using UTC
+    extraOptions.utc_time = true;
+
     // metrics-graphics will give each population up to this number a unique
     // color. (The 11th unique color is black.) If a chart has more populations
     // than this, all remaining populations will also be colored black.
@@ -30,10 +33,8 @@ export default props => {
     if (appendableUnits.includes(props.yUnit)) {
         extraOptions.yax_units = props.yUnit;
         extraOptions.yax_units_append = true;
-        extraOptions.utc_time = true;
     } else {
         extraOptions.y_label = props.yUnit;
-        extraOptions.utc_time = true;
 
         // Work around this bug:
         // https://github.com/metricsgraphics/metrics-graphics/issues/838
