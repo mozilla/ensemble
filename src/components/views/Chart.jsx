@@ -14,6 +14,9 @@ import './css/Metric.css';
 export default props => {
     const extraOptions = {};
 
+    // ensure that times are formatted using UTC
+    extraOptions.utc_time = true;
+
     // metrics-graphics will give each population up to this number a unique
     // color. (The 11th unique color is black.) If a chart has more populations
     // than this, all remaining populations will also be colored black.
@@ -146,7 +149,7 @@ export default props => {
                 height={props.height}
                 width={props.width}
 
-                x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy') + ': '}
+                x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy', true) + ': '}
                 y_mouseover={dp => prettifyNumber(dp.y) + yUnitString}
 
                 min_y={minYToShow}
