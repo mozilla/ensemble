@@ -155,6 +155,14 @@ Code is read far more often than it is written, and in this repo the next reader
 - If the issue ID is not obvious from the request, **ask for it**, along with a short summary for the branch name. Then fetch <https://github.com/mozilla/ensemble/issues/ISSUE_ID> and read the description before writing code — many of these issues are 5+ years old and the discussion carries context the title does not.
 - When the work looks complete, **offer to run the tests**. Say which suites are actually runnable in the current environment rather than claiming a green run you could not produce.
 
+### ExecPlans
+
+Work that spans more than one session — the ESLint unification, replacing the blocked Nightwatch suite, #409's redraw path — gets an **ExecPlan**: a self-contained Markdown design document, written before the code, committed with it, and kept current as the work moves. The specification is `.claude/skills/execplans/references/PLANS.md`; the `execplans` skill loads it on demand, so read it there rather than guessing at the shape.
+
+Plans live in `docs/execplans/`, named `YYYY-MM-DD-kebab-case-summary.md` (`2026-09-14-eslint-unification.md`), and ship on the branch with the change so a reviewer reads the plan and the diff together. Update the plan in the same commit as the work it describes — a plan that lags the tree is worse than no plan.
+
+A single-file fix does not need one. Neither does anything you could put in a commit title.
+
 ## Commit & Pull Request Guidelines
 
 Keep commit titles short and imperative, and reference the issue when there is one (`Display times using UTC timezone`, `Fix hardware resize thrash (#409)`).
