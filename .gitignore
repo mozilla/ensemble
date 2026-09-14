@@ -14,3 +14,5 @@
 # Miscellaneous
 .DS_Store
 .vscode
+.claude/*
+!.claude/skills/
