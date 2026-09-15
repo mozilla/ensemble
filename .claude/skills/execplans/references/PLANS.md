@@ -228,9 +228,14 @@ Commit frequently, as upstream says, on the branch `AGENTS.md` describes
   work it describes. A plan brought up to date in a trailing "update plan" commit has stopped being
   a record of how the work went.
 
-Upstream also says not to prompt the user for next steps. That holds between milestones. It does not
-override `AGENTS.md`: still ask for the issue number when it is not obvious, and still offer to run
-the tests when the work looks complete rather than claiming a green run you could not produce.
+Upstream also says not to prompt the user for next steps. That holds **between** milestones, once
+execution is under way — do not stop after each one to ask whether to continue. It does not hold
+for the transition from planning to executing: after drafting the plan and identifying its
+milestones, present the milestone breakdown to the user and get explicit confirmation before
+starting work on the first one. Treat that confirmation as a one-time gate, not something to repeat
+before every later milestone. It also does not override `AGENTS.md`: still ask for the issue number
+when it is not obvious, and still offer to run the tests when the work looks complete rather than
+claiming a green run you could not produce.
 
 ## Never cite the plan from the code
 
