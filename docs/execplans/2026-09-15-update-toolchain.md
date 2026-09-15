@@ -100,7 +100,14 @@ that passes the acceptance criteria in "Validation and Acceptance."
       `/dashboard/user-activity`) renders against the production build (`vite build`) with zero
       console errors and real chart data (15, 2, and 5 `<svg>` elements respectively, fetched live
       from the transposer service).
-- [ ] Milestone 2: Vitest migration (unit test runner).
+- [x] (2026-09-15) Milestone 2 complete: `vitest` 5.0.1 and `jsdom` 30.0.1 added; `vite.config.mjs`
+      extended with a `test` block (switching its `defineConfig` import from `vite` to
+      `vitest/config`, which re-exports the same function with the added `test` key recognized);
+      `package.json`'s `test:jest` script changed to `vitest run`. No surprises this time — both
+      existing test files (`Dashboard.test.jsx`, `MetricOverview.test.jsx`) passed unmodified on the
+      first attempt, including their CSS side-effect imports, which Vitest's `jsdom` environment
+      handled with no extra configuration as this plan expected. `npx vite build` re-verified working
+      after the config change.
 - [ ] Milestone 3: ESLint unification (single flat config covering `.js` and `.jsx`).
 - [ ] Milestone 4: Playwright migration (end-to-end test runner).
 - [ ] Milestone 5: dependency currency pass within the React-16 ceiling.
