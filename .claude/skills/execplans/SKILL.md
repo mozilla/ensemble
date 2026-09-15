@@ -39,9 +39,12 @@ Skip it for a single-file fix, a copy change, or anything a commit title already
    see the addendum.
 4. Fill in real repository context before writing any code: actual paths, actual commands, and
    acceptance a human can observe by running something.
-5. Commit the plan on its own, before the first implementation commit. Then implement, updating
+5. Present the milestone breakdown to the user and get explicit confirmation before executing any
+   of them. This is a one-time gate at the plan/execution boundary, not a per-milestone check-in —
+   see the addendum's "Committing" section for the exact scope.
+6. Commit the plan on its own, before the first implementation commit. Then implement, updating
    `Progress`, `Surprises & Discoveries`, and `Decision Log` in the same commits as the work.
-6. Write `Outcomes & Retrospective` when the work lands, and commit that too.
+7. Write `Outcomes & Retrospective` when the work lands, and commit that too.
 
 ## Resuming
 
