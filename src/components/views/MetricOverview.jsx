@@ -57,7 +57,7 @@ class MetricOverview extends React.Component {
         let maybeMetricDescription;
         if (props.description) {
             maybeMetricDescription = this.memoizeMetricDescription(
-                props.description,
+                props.description
             );
         }
 

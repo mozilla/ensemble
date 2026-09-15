@@ -80,7 +80,7 @@ class SummaryMetricContainer extends React.Component {
         });
 
         return formattedData;
-    }
+    };
 
     render() {
         const dataFetch = this.props.dataFetch;

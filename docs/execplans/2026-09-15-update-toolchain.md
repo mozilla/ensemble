@@ -108,7 +108,28 @@ that passes the acceptance criteria in "Validation and Acceptance."
       first attempt, including their CSS side-effect imports, which Vitest's `jsdom` environment
       handled with no extra configuration as this plan expected. `npx vite build` re-verified working
       after the config change.
-- [ ] Milestone 3: ESLint unification (single flat config covering `.js` and `.jsx`).
+- [x] (2026-09-15) Milestone 3 complete, with one correction to this plan's original version choice
+      (see Surprises & Discoveries): ESLint pinned to 9.39.5, not 10.10.0, because
+      `eslint-plugin-react`'s and `eslint-plugin-jsx-a11y`'s latest published versions both cap their
+      own `eslint` peer dependency at `^9`, not yet supporting ESLint 10. `eslint-plugin-json` was
+      dropped entirely rather than added, since this plan's own Milestone 3 text already reasoned
+      that `package.json` linting is unnecessary (a malformed `package.json` breaks every npm command
+      immediately) — it had been listed as a devDependency to add in this plan's original draft by
+      inertia from the old config, which was an internal inconsistency in the draft, not a deliberate
+      choice; this correction resolves it by not installing it at all. `@eslint/js` was added
+      explicitly (imported directly by the new config) even though it resolves transitively today.
+      `eslint.config.js` created at the repository root (CommonJS, matching this repository's default
+      module type — there is no `"type": "module"` in `package.json`); `.eslintrc.extra.js` and
+      `.eslintignore` deleted. `npx eslint .` surfaced 16 new errors (all `no-undef` on Vitest's
+      ambient `it`/`expect`/`beforeAll` globals in the two test files — fixed by adding
+      `globals.vitest` to that file glob's `languageOptions.globals`, alongside the existing `React`/
+      `shallow` globals `src/setupTests.js` already provides) and 9 new stylistic warnings in
+      previously-`.jsx`-unlinted files (missing semicolons, disallowed trailing commas) — all 9 were
+      auto-fixed with `eslint . --fix` and produced no behavior change. Confirmed JSX coverage is
+      real, not assumed: temporarily introduced `if (1 == 1) {}` into `Spinner.jsx`, confirmed
+      `eqeqeq`/`no-constant-condition`/`no-empty` all fired, then reverted with zero resulting diff.
+      `npm run lint` (now `lint:js` + `lint:styl` only) exits 0; `npx vite build` and `npx vitest
+      run` re-verified passing after every change in this milestone.
 - [ ] Milestone 4: Playwright migration (end-to-end test runner).
 - [ ] Milestone 5: dependency currency pass within the React-16 ceiling.
 - [ ] Milestone 6: documentation updates and full clean-room validation on Node 24.
@@ -200,6 +221,16 @@ addendum, no milestone below is executed until that confirmation is given.
   the subsequent production-build check across `/`, `/contact`, `/dashboard/hardware`,
   `/dashboard/usage-behavior`, and `/dashboard/user-activity` showed zero errors on the first load of
   every route.
+- Observation: ESLint 10.10.0 (this plan's original choice) cannot actually be used yet.
+  `eslint-plugin-react`'s and `eslint-plugin-jsx-a11y`'s latest published versions (7.37.5 and
+  6.10.2, the exact versions this plan already names) both declare `peerDependencies: { eslint: "^3
+  || ^4 || ^5 || ^6 || ^7 || ^8 || ^9" }` — no `^10` yet, since ESLint 10 is very new. Installing
+  ESLint 10 alongside either plugin fails with an `ERESOLVE` error. ESLint 9.39.5 (the latest 9.x
+  release) satisfies both plugins' peer ranges and is otherwise identical in capability for this
+  repository's purposes (flat config was already fully supported in ESLint 9).
+  Evidence: `npm view eslint-plugin-jsx-a11y@latest peerDependencies` and
+  `npm view eslint-plugin-react@latest peerDependencies` both print `^9` as the upper bound; the
+  `ERESOLVE` error names exactly this conflict.
 
 ## Decision Log
 
@@ -248,14 +279,17 @@ addendum, no milestone below is executed until that confirmation is given.
   footgun that Nightwatch's `jsDisabled` environment needs a non-headless browser (Playwright's
   `javaScriptEnabled: false` context option works in headless mode).
   Date/Author: 2026-09-15, decided during this plan's drafting.
-- Decision: adopt ESLint 10.10.0 (current major) with a single flat-config file
+- Decision: adopt ESLint 9.39.5 (the latest 9.x release — not 10.10.0, this plan's original choice;
+  see Milestone 3's Surprises & Discoveries for why) with a single flat-config file
   (`eslint.config.js`), rather than trying to keep `.eslintrc.extra.js`'s legacy eslintrc format
   alive.
   Rationale: removing `react-scripts` removes its invisible, bundled `eslint-config-react-app`,
   which is currently the only thing linting `.jsx` files at all — without a replacement, this
   migration would silently delete all JSX linting, which is worse than doing nothing. Modern ESLint
   only supports the flat-config format, so unifying onto one config is not optional once a current
-  ESLint version is adopted.
+  ESLint version is adopted. 9.39.5 rather than 10.x because `eslint-plugin-react` and
+  `eslint-plugin-jsx-a11y` (both required for this repository's existing rule set) do not support
+  ESLint 10 yet.
   Date/Author: 2026-09-15, decided during this plan's drafting.
 - Decision: install `@playwright/test` as a normal root `devDependency`, with specs and config
   under `tests/playwright/`, rather than nesting a second, independent npm project (its own
@@ -506,24 +540,28 @@ pre-emptively work around.
 js`, covering both `.js` and `.jsx`, replacing both the current `.eslintrc.extra.js`/`.eslintignore`
 pair and `react-scripts`' now-removed invisible `.jsx` linting.
 
-Add as `devDependencies`: `eslint` (10.10.0, not currently a direct dependency at all — see
-"Known rot" in `CONTRIBUTING.md` — this also fixes that separately-documented rot),
+Add as `devDependencies`: `eslint` (9.39.5, the latest 9.x release — not currently a direct
+dependency at all, see "Known rot" in `CONTRIBUTING.md`, this also fixes that separately-documented
+rot; not 10.x, since `eslint-plugin-react` and `eslint-plugin-jsx-a11y` do not support ESLint 10 yet
+— see Decision Log), `@eslint/js` (9.39.5, matching the `eslint` version — supplies
+`js.configs.recommended`, imported directly by the new config rather than relied on transitively),
 `eslint-plugin-react` (bump from 7.20.5 to 7.37.5), `eslint-plugin-jsx-a11y` (bump from 6.3.1 to
-6.10.2), `eslint-plugin-json` (bump from 2.1.2 to 5.0.0 — a 3-major jump; check its changelog for
-this repository's actual usage, which is just linting `package.json` for syntax errors, before
-assuming any other behavior changed), `@vitest/eslint-plugin` (1.6.27, the official Vitest-authored
-plugin, replacing `eslint-plugin-jest` since Milestone 2 already removed Jest itself), and `globals`
-(17.12.0, supplies the `browser`/`node`/`es2021` global-variable sets flat config needs explicitly
-— the old `.eslintrc.extra.js`'s `env: { browser: true, node: true, es6: true }` shorthand has no
-flat-config equivalent other than importing this package). Remove `babel-eslint` and
-`eslint-plugin-jest` as `devDependencies`. Delete `.eslintrc.extra.js` and `.eslintignore`.
+6.10.2, imported via its `flatConfigs.recommended` export specifically — its plain `configs.
+recommended` export is still the legacy eslintrc shape), `@vitest/eslint-plugin` (1.6.27, the
+official Vitest-authored plugin, replacing `eslint-plugin-jest` since Milestone 2 already removed
+Jest itself), and `globals` (17.12.0, supplies the `browser`/`node`/`vitest` global-variable sets
+flat config needs explicitly — the old `.eslintrc.extra.js`'s `env: { browser: true, node: true,
+es6: true }` shorthand has no flat-config equivalent other than importing this package). Remove
+`babel-eslint` and `eslint-plugin-jest` as `devDependencies`. Do not add `eslint-plugin-json` at
+all — see the next paragraph for why. Delete `.eslintrc.extra.js` and `.eslintignore`.
 
 In the new `eslint.config.js`: an `ignores` entry for `build` (flat config's replacement for
 `.eslintignore`'s `build` line; `package-lock.json`'s old ignore entry is no longer needed since the
 new config's file glob, `**/*.{js,jsx}`, never matches a `.json` file in the first place — dropping
-`eslint-plugin-json`'s coverage of `package.json` is an acceptable, disclosed side effect, since a
-malformed `package.json` fails every npm command immediately in a way no linter needs to catch
-first). Apply `eslint-plugin-react`'s and `eslint-plugin-jsx-a11y`'s flat-config presets to
+JSON linting of `package.json` entirely, rather than adding `eslint-plugin-json` to replace the old
+config's coverage of it, is an acceptable, disclosed side effect, since a malformed `package.json`
+fails every npm command immediately in a way no linter needs to catch first). Apply
+`eslint-plugin-react`'s and `eslint-plugin-jsx-a11y`'s flat-config presets to
 `files: ['**/*.{js,jsx}']`, with `settings.react.version: 'detect'` (deliberately not hardcoding a
 version the way the old config's stale `"16.4.2"` did — `detect` reads the actually-installed React
 version from `node_modules` automatically). Apply `@vitest/eslint-plugin`'s recommended config
@@ -813,9 +851,10 @@ repository's convention is exact pins, no `^`/`~`):
 `vite` 8.3.0 (`engines.node`: `^20.19.0 || >=22.12.0`); `@vitejs/plugin-react` 6.1.1 (same engines
 floor); `vitest` 5.0.1 (`engines.node`: `^22.12.0 || ^24.0.0 || >=26.0.0` — the binding constraint
 on this repository's own new `engines.node` field, see Decision Log); `jsdom` 30.0.1; `eslint`
-10.10.0 (`engines.node`: `^20.19.0 || ^22.13.0 || >=24`); `eslint-plugin-react` 7.37.5;
-`eslint-plugin-jsx-a11y` 6.10.2; `eslint-plugin-json` 5.0.0; `@vitest/eslint-plugin` 1.6.27;
-`globals` 17.12.0; `@playwright/test` 1.63.0 (`engines.node`: `>=20`); `npm-run-all2` 9.0.3.
+9.39.5 (the latest 9.x release, not 10.x — see Decision Log for why; `engines.node`: `^18.18.0 ||
+^20.9.0 || >=21.1.0`); `@eslint/js` 9.39.5 (matching version); `eslint-plugin-react` 7.37.5;
+`eslint-plugin-jsx-a11y` 6.10.2; `@vitest/eslint-plugin` 1.6.27; `globals` 17.12.0;
+`@playwright/test` 1.63.0 (`engines.node`: `>=20`); `npm-run-all2` 9.0.3.
 
 Removed `devDependencies`: `react-scripts`, `chromedriver`, `nightwatch`, `request`, `babel-eslint`,
 `eslint-plugin-jest`, `npm-run-all` (replaced by `npm-run-all2`, see above).
