@@ -20,7 +20,7 @@ Run `npm start`
 
 Any of the environment variables in *.env* can be overridden. For example:
 
-`REACT_APP_SITE_TITLE='Firefox Public Lore Report' npm start`
+`VITE_SITE_TITLE='Firefox Public Lore Report' npm start`
 
 ### In production
 
