@@ -180,7 +180,31 @@ that passes the acceptance criteria in "Validation and Acceptance."
       moderate, 82 high, 21 critical). All 21 critical findings are gone; per Milestone 1's
       research, those traced almost entirely to `react-scripts`, `nightwatch`, `chromedriver`, and
       `request`, all four of which are now removed.
-- [ ] Milestone 6: documentation updates and full clean-room validation on Node 24.
+- [x] (2026-09-15) Milestone 6 complete. `CONTRIBUTING.md` rewritten throughout: build/test
+      commands (no more `NODE_OPTIONS`/`--ignore-scripts`/Nightwatch), the `.env` section (`VITE_*`/
+      `import.meta.env`), the ESLint section (single flat config), the Testing Guidelines section
+      (Vitest + Playwright, including the `.first()`/`mg-line1` and dev-server-cold-start footguns
+      discovered in Milestones 1 and 4), and the Footguns table (removed the resolved arm64/
+      chromedriver and two-linters rows, added the two new ones just named). `docs/architecture/
+      frontend.md` updated: the CRA→Vite framing, the security-posture numbers (17 vulnerabilities/
+      0 critical, down from 251/21), the file-layout tree (`lib/LazyBoundary.jsx` added,
+      `tests/playwright/` added at the repository root, `src/tests/nightwatch/` removed). `README.md`
+      updated: create-react-app → Vite, removed the "required flag on current Node versions" line,
+      removed the "not everything in `npm test` can run today" caveat (now true only for the two
+      disclosed external issues, not for whole test *categories* the way it used to be).
+      `docs/architecture/frontend.md`'s dependency-ceiling section needed no change — verified its
+      claims still match what Milestones 1 and 5 confirmed independently.
+
+      Final clean-room validation, from `rm -rf node_modules && npm install` with no flags, on Node
+      v24.19.0: `npm run build:css` — clean. `npm run build:app` — "✓ built", no `NODE_OPTIONS`.
+      `npm run build:version.json` — wrote `build/version.json`. `npm run size` — "Unable to map
+      6774/340873 bytes (1.99%)", exit 0. `npm run lint` — exits 0. `npm run test:jest` — "Test
+      Files 2 passed (2)", "Tests 4 passed (4)". `npm start` — dev server up with no flags,
+      confirmed by `curl`. `npx playwright test` — 47 passed outright, 2 more passed after Playwright's
+      configured retry (the documented dev-server cold-start characteristic), 2 failed (the two
+      disclosed pre-existing external issues) — identical to every prior run in this plan, confirming
+      stability. `npm audit` — 17 vulnerabilities (3 moderate, 14 high, 0 critical), down from the
+      pre-migration baseline of 251 (12 low, 136 moderate, 82 high, 21 critical).
 
 The user has not yet confirmed this six-milestone breakdown. Per this repository's ExecPlan
 addendum, no milestone below is executed until that confirmation is given.
@@ -484,8 +508,43 @@ addendum, no milestone below is executed until that confirmation is given.
 
 ## Outcomes & Retrospective
 
-Not yet started. This section will be filled in once all six milestones have landed, comparing the
-actual result against the acceptance criteria in "Validation and Acceptance."
+All six milestones are complete as of 2026-09-15. Measured against the Purpose section's own
+acceptance bar: a developer can clone this repository on Node 24, run `npm install` with no special
+flag, run `npm start` with no environment variable workaround, run `npm run build:app` with no
+environment variable workaround, run the unit tests, and run the full end-to-end test suite. Every
+one of those was demonstrated directly in this session, not assumed — see Milestone 6's Progress
+entry for the literal commands and their output. `create-react-app` is gone, replaced by Vite;
+Jest is gone, replaced by Vitest; Nightwatch, `chromedriver`, and `request` are gone, replaced by
+Playwright; the two incomplete ESLint configurations are gone, replaced by one flat-config file that
+demonstrably covers `.jsx` (verified with a deliberately-introduced violation, not just assumed).
+
+What this plan did not achieve, stated plainly rather than smoothed over: two of the ported
+end-to-end tests fail, and are expected to keep failing until someone with the right context acts on
+them — `Contact.jsx` links to a Discourse category that returns a genuine `404` today, and
+`Footer.jsx` links to `donate.mozilla.org`, whose redirect target blocks the kind of non-browser HTTP
+request this suite's link-checker (faithfully, deliberately) makes. Both are real, pre-existing
+problems this migration did not create and is not the right piece of work to fix — but both are also
+new information: this is the first time in years anything has actually checked these two links,
+because the end-to-end suite could not run at all before this plan. `npm audit` still reports 17
+non-critical vulnerabilities; none block anything in "Validation and Acceptance," and Milestone 5's
+Decision Log states why each remaining outdated package is deliberately left alone.
+
+The single largest deviation from the original draft was Milestone 1's `react-loadable` finding: the
+plan had already anticipated the risk and written a documented fallback before implementation began,
+and that fallback (switching to `React.lazy`/`Suspense` plus a small hand-written `LazyBoundary`
+error-boundary component) is exactly what shipped, with no further improvisation needed once the
+first hands-on browser check confirmed the direct port was actually broken, not just theoretically
+risky. The second-largest was Milestone 4's WebKit finding: added as a plausible-seeming
+"modernize while we're at it" scope expansion, then dropped once it produced a reproducible,
+WebKit-only navigation stall with no equivalent value, once it was noticed that Nightwatch had never
+tested WebKit either — a reminder that a toolchain port's job is to preserve existing coverage
+faithfully, not to opportunistically grow it, and that a plan's own draft can carry an unexamined
+scope creep into its "Plan of Work" section that only surfaces once implementation is underway.
+
+For whoever picks this up next: the `docs/execplans/` convention this plan followed produced a
+living record of every non-obvious decision as it was made, which made the two scope corrections
+above straightforward to reason about and to record — neither required guessing at the original
+intent, because the intent was already written down one section up.
 
 ## Context and Orientation
 
