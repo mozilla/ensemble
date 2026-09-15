@@ -1,0 +1,69 @@
+const { expect } = require('@playwright/test');
+
+
+const acceptedHTTPStatusCodes = [200, 301, 302, 304];
+
+// Loading a URL the React app manages itself doesn't return a 404 - it
+// displays a "Not Found" message instead. External URLs are checked with a
+// real request instead of a full navigation, retrying with backoff since
+// external hosts occasionally hiccup.
+async function loadsSuccessfully(page, url) {
+    if (url.startsWith('mailto:')) return;
+
+    if (new URL(url).origin === new URL(page.url()).origin) {
+        await page.goto(url);
+        await expect(page.locator('#not-found'), `Loaded successfully: ${url}`).not.toBeVisible();
+        await page.goBack();
+        return;
+    }
+
+    const maxAttempts = 3;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        const response = await page.request.get(url).catch(() => null);
+        if (response && acceptedHTTPStatusCodes.includes(response.status())) return;
+
+        if (attempt === maxAttempts) {
+            throw new Error(`${url} did not load successfully after ${attempt} attempts`);
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 5000 * attempt));
+    }
+}
+
+async function linkWorks(page, selector) {
+    const href = await page.locator(selector).evaluate(el => el.href);
+    await loadsSuccessfully(page, href);
+}
+
+async function linksWork(page, selector) {
+    const hrefs = await page.locator(selector).evaluateAll(els => els.map(el => el.href));
+
+    for (const href of hrefs) {
+        await loadsSuccessfully(page, href);
+    }
+}
+
+// If a test assumes that a certain number of elements exist, but a different
+// number of elements exist, fail the test and explain why.
+async function flagForUpdate(page, selector, collectiveName, numExpectedElements) {
+    const numActualElements = await page.locator(selector).count();
+
+    if (numActualElements !== numExpectedElements) {
+        const isAreExpected = numExpectedElements === 1 ? 'is' : 'are';
+        const isAreActual = numActualElements === 1 ? 'is' : 'are';
+
+        throw new Error(`This test needs to be updated. It assumes that there ${isAreExpected} ${numExpectedElements} ${collectiveName}, but there ${isAreActual} actually ${numActualElements}.`);
+    }
+}
+
+async function metricTitleIsCorrect(page, selector, title) {
+    await expect(page.locator(selector)).toBeVisible();
+    await expect(page.locator(selector)).toHaveText(title);
+}
+
+module.exports = {
+    linkWorks,
+    linksWork,
+    flagForUpdate,
+    metricTitleIsCorrect,
+};
