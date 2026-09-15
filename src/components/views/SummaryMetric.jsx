@@ -67,7 +67,7 @@ export default class extends React.Component {
     _handleResize = () => {
         this._setChartWidth();
         this._drawChart(this.props.data);
-    }
+    };
 
     _setChartWidth() {
         if (!this.parentNode) {
@@ -157,7 +157,7 @@ export default class extends React.Component {
 
             // Show the currently hovered or clicked bar's arrow and label.
             .on('mouseenter click', showBarItem);
-    }
+    };
 
     render() {
         return (
