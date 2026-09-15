@@ -40,13 +40,13 @@ export function isFloat(n) {
  * prettifyNumber(5000) => 5,000
  * prettifyNumber(5000000) => 5,000,000
  * prettifyNumber(3.2) => 3.200
- *     - Assuming process.env.REACT_APP_VALUE_DECIMAL_PLACES === 3
+ *     - Assuming import.meta.env.VITE_VALUE_DECIMAL_PLACES === 3
  */
 export function prettifyNumber(n) {
     if (isFloat(n)) {
         return n.toLocaleString('en-US', {
-            minimumFractionDigits: process.env.REACT_APP_VALUE_DECIMAL_PLACES,
-            maximumFractionDigits: process.env.REACT_APP_VALUE_DECIMAL_PLACES,
+            minimumFractionDigits: import.meta.env.VITE_VALUE_DECIMAL_PLACES,
+            maximumFractionDigits: import.meta.env.VITE_VALUE_DECIMAL_PLACES,
         });
     } else {
         return n.toLocaleString('en-US');
@@ -61,9 +61,9 @@ export function getPageTitle(subtitle) {
     let pageTitle;
 
     if (subtitle) {
-        pageTitle = `${subtitle} | ${process.env.REACT_APP_SITE_TITLE}`;
+        pageTitle = `${subtitle} | ${import.meta.env.VITE_SITE_TITLE}`;
     } else {
-        pageTitle = process.env.REACT_APP_SITE_TITLE;
+        pageTitle = import.meta.env.VITE_SITE_TITLE;
     }
 
     return pageTitle;

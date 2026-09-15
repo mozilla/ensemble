@@ -82,7 +82,24 @@ that passes the acceptance criteria in "Validation and Acceptance."
       5.0.1's own `engines.node` field is `^22.12.0 || ^24.0.0 || >=26.0.0` — narrower than Vite's,
       ESLint's, or Playwright's own requirements — which is why this plan pins `package.json`'s
       `engines.node` to `^24.0.0` rather than a broader range (see Decision Log).
-- [ ] Milestone 1: Vite migration (build tool and dev server).
+- [x] (2026-09-15) Milestone 1 complete: `react-scripts`, `react-app-polyfill`, and `babel-polyfill`
+      removed; `vite` 8.3.0 and `@vitejs/plugin-react` 6.1.1 added; `stylus` bumped from 0.54.7 to
+      0.64.0 ahead of the Milestone 5 schedule (a hard prerequisite discovered during this
+      milestone, see Surprises & Discoveries); `index.html` moved to the repository root and
+      adapted; `src/index.jsx` and `src/components/views/Application.jsx` no longer reference IE11
+      scaffolding; every `REACT_APP_*` reference renamed to `VITE_*` **and** switched from
+      `process.env.X` to `import.meta.env.X` (a correction to this plan's original wording, which
+      only mentioned the rename — see Surprises & Discoveries); `package.json` updated (`engines`,
+      scripts, `size`, `browserslist` removed); `.nvmrc` added; `react-loadable` replaced with
+      `React.lazy`/`Suspense` plus a new `src/lib/LazyBoundary.jsx` error-boundary component, after
+      hands-on browser verification showed the direct port genuinely does break (see Surprises &
+      Discoveries) — this was anticipated as a documented contingency in this plan's original Plan
+      of Work, not a new decision. Verified with a real headless-browser session (Playwright,
+      installed ad hoc, not yet a project dependency — that happens in Milestone 4): every route
+      (`/`, `/contact`, `/dashboard/hardware`, `/dashboard/usage-behavior`,
+      `/dashboard/user-activity`) renders against the production build (`vite build`) with zero
+      console errors and real chart data (15, 2, and 5 `<svg>` elements respectively, fetched live
+      from the transposer service).
 - [ ] Milestone 2: Vitest migration (unit test runner).
 - [ ] Milestone 3: ESLint unification (single flat config covering `.js` and `.jsx`).
 - [ ] Milestone 4: Playwright migration (end-to-end test runner).
@@ -117,6 +134,65 @@ addendum, no milestone below is executed until that confirmation is given.
   21, 23, and 25 even though those satisfy Vite's, ESLint's, and Playwright's own floors. This is
   the binding constraint on this repository's new `engines.node` field.
   Evidence: `npm view vitest@5.0.1 engines` prints exactly that string.
+- Observation: adding `vite`/`@vitejs/plugin-react` while `react-scripts` (and its own transitive
+  Babel 7 tree) was still installed produced an unresolvable npm peer-dependency conflict
+  (`@vitejs/plugin-react`'s optional peer `@rolldown/plugin-babel` wants `@babel/core@^7.29.0 ||
+  ^8.0.0-rc.1`, which collided with the version already resolved from `react-scripts`'s tree).
+  Removing `react-scripts` first, then adding Vite, avoided the conflict entirely with no `--force`
+  or `--legacy-peer-deps` needed. This changes this plan's own Milestone 1 sequencing (remove the
+  old toolchain, then add the new one) but not its content.
+  Evidence: the exact `npm error ERESOLVE` transcript is not reproduced here; the fix (uninstall
+  `react-scripts`/`react-app-polyfill`/`babel-polyfill` before installing `vite`) is what matters
+  for a future reader re-running this milestone.
+- Observation: Vite 8.3.0 has its own optional peer dependency, `stylus@">=0.54.8"` (Vite bundles
+  Stylus-preprocessing support for `.styl` imports, a feature this repository does not use since its
+  own separate `stylus` CLI pipeline is independent of Vite's build). This repository's `stylus` was
+  pinned at 0.54.7 — one patch version below that floor — which blocked installing Vite at all until
+  `stylus` was bumped. This forced Milestone 5's planned `stylus` 0.64.0 bump to happen inside
+  Milestone 1 instead, ahead of schedule; `npm run build:css` was re-verified working immediately
+  after the bump, before touching anything else.
+  Evidence: `npm error ... peerOptional stylus@">=0.54.8" from vite@8.3.0`, `Found: stylus@0.54.7`.
+- Observation: this plan's original "Plan of Work" for Milestone 1 said to rename `REACT_APP_*` to
+  `VITE_*` but did not mention that the access pattern must also change, from `process.env.X` to
+  `import.meta.env.X`. Vite does not populate `process.env` in browser code the way `react-scripts`/
+  webpack's `DefinePlugin` did for `REACT_APP_*` variables specifically — `process` is not defined
+  in a Vite-built browser bundle at all outside of the one special-cased `process.env.NODE_ENV`
+  expression Vite replaces for library-compatibility reasons. This was caught and fixed while
+  editing `src/components/decorators/withTracker.jsx` and `src/lib/utils.js`, before any build was
+  attempted, by recognizing the gap while applying Vite's own environment-variable convention — not
+  by a failed build. Recorded here so this plan's own gap doesn't reappear in a future read-through.
+  Evidence: the three corrected call sites are named in the Progress entry above.
+- Observation: `react-loadable`'s `Loadable()` factory does not work under Vite/Rollup — confirmed
+  hands-on, not just inferred. A real headless-browser session against `npm start` showed the home
+  page rendering completely blank, with a caught React error: "Element type is invalid: expected a
+  string ... or a class/function ... but got: object. Check the render method of
+  `LoadableComponent`." `react-loadable` was built assuming webpack's specific interop shape for a
+  dynamic `import()`'s resolved value; Vite/Rollup's native ES module dynamic import instead resolves
+  to a plain module-namespace object (`{ default: Component }`), which `react-loadable` does not
+  unwrap correctly. This is exactly the contingency this plan's Milestone 1 section already
+  anticipated and described a fallback for (switching to `React.lazy`/`Suspense`) — applying that
+  fallback fixed it completely, confirmed by the same kind of hands-on browser check afterward.
+  Evidence: the full browser console transcript showing the `LoadableComponent`/"Element type is
+  invalid" error is not reproduced here for length; the fix and its own verification are recorded in
+  the Progress entry above.
+- Observation: on a cold Vite dev server (`npm start`, not a production build), navigating directly
+  to a deep route (`/dashboard/hardware`) as the very first request can trigger one "504 (Outdated
+  Optimize Dep)" response and one "Failed to fetch dynamically imported module" error, because
+  Vite's dependency pre-bundler discovers `metrics-graphics`'s large bundled dependency tree only
+  once that route's lazy-loaded chunk is requested, invalidating its already-served pre-bundle
+  mid-request. A single page reload immediately after resolves it with zero further errors, and a
+  normal user session — which starts at `/` and clicks through the app's own navigation, rather than
+  deep-linking cold — is not expected to hit this at all. This is a known, general Vite dev-server
+  characteristic (not specific to this repository's dependencies or to the `react-loadable`
+  replacement), and it does not exist in the production build at all (`vite build` has no
+  "optimize deps" step) — confirmed by testing all five main routes against a `vite preview` of the
+  actual production build with zero errors on every one. Recorded here so a future contributor who
+  hits this once during local development does not mistake it for a real regression.
+  Evidence: the second cold-navigation attempt in this milestone's verification showed exactly one
+  504 and one dynamic-import failure, followed by a clean reload (15 `<svg>` elements, zero errors);
+  the subsequent production-build check across `/`, `/contact`, `/dashboard/hardware`,
+  `/dashboard/usage-behavior`, and `/dashboard/user-activity` showed zero errors on the first load of
+  every route.
 
 ## Decision Log
 
@@ -200,6 +276,18 @@ addendum, no milestone below is executed until that confirmation is given.
   confirmed works. Playwright's design (a single `PLAYWRIGHT_BASE_URL` environment variable) makes
   adding a stage target later, once the URL is confirmed, a one-line change — not a redesign.
   Date/Author: 2026-09-15, decided during this plan's drafting.
+- Decision: replace `react-loadable` with `React.lazy`/`React.Suspense` plus a new hand-written
+  error-boundary component, `src/lib/LazyBoundary.jsx`, rather than any other lazy-loading approach.
+  Rationale: confirmed hands-on during Milestone 1 that `react-loadable` genuinely breaks under
+  Vite/Rollup's native ES module dynamic `import()` (see that milestone's Surprises & Discoveries) —
+  this was not a hypothetical risk, it produced a fully blank home page. `React.lazy` is the
+  standard-library replacement for exactly this use case and expects precisely the module-namespace
+  shape (`{ default: Component }`) Vite's dynamic import already produces natively, needing no
+  interop shim. `React.lazy`/`Suspense` alone only covers the loading state, not `react-loadable`'s
+  error-rendering behavior, so `LazyBoundary` (a small class component combining an error boundary
+  with a `Suspense` wrapper) was added to preserve that behavior, rendering the same `Error`
+  component with the same "Error"/"Load error" text `lazyLoad.jsx` already used.
+  Date/Author: 2026-09-15, decided during Milestone 1's implementation.
 
 ## Outcomes & Retrospective
 
@@ -553,9 +641,10 @@ description that includes a Markdown link and confirm it still renders as a link
 repository's two `dangerouslySetInnerHTML` call sites, in `Dashboard.jsx` and
 `MetricOverview.jsx`, depend on `markdown-it`'s sanitization; re-verify this explicitly since it is
 a security-relevant behavior, not just a visual one). `memoize-one` (5.1.1 → 6.0.0), `react-ga`
-(3.1.1 → 3.3.1), `react-spinners` (0.9.0 → 0.17.1), and `stylus` (0.54.7 → 0.64.0, verify with `npm
-run build:css` specifically, comparing that every `.styl` file still produces a `.css` file with no
-new stylint findings). For each package in this paragraph: if the bump passes the full verification
+(3.1.1 → 3.3.1), and `react-spinners` (0.9.0 → 0.17.1). (`stylus`'s planned 0.54.7 → 0.64.0 bump
+already happened in Milestone 1, ahead of schedule — it turned out to be a hard prerequisite for
+installing Vite at all, not just a nice-to-have; see that milestone's Surprises & Discoveries. It
+does not need to be redone here.) For each package in this paragraph: if the bump passes the full verification
 command with no changes needed elsewhere, keep it; if it does not, record why in Surprises &
 Discoveries and either find the smallest version that does pass or leave that one package at its
 current version with the reason stated in this plan.
@@ -724,17 +813,21 @@ on this repository's own new `engines.node` field, see Decision Log); `jsdom` 30
 Removed `devDependencies`: `react-scripts`, `chromedriver`, `nightwatch`, `request`, `babel-eslint`,
 `eslint-plugin-jest`, `npm-run-all` (replaced by `npm-run-all2`, see above).
 
-Removed `dependencies`: `react-app-polyfill`, `babel-polyfill`, `d3-transition` (see Milestone 5).
+Removed `dependencies`: `react-app-polyfill`, `babel-polyfill` (both removed in Milestone 1),
+`react-loadable` (removed in Milestone 1, replaced by `React.lazy`/`Suspense` — see that milestone's
+Surprises & Discoveries), `d3-transition` (see Milestone 5).
 
 Version bumps within `dependencies` (same major version unless noted): `react-router-dom` 5.2.0 →
 5.3.4; `d3-scale` 3.2.1 → 4.0.2; `d3-selection` 1.4.2 → 3.0.0; `d3-shape` 1.3.7 → 3.2.0;
 `markdown-it` 11.0.0 → 15.0.2; `markdown-it-sup` 1.0.0 → 2.0.0; `memoize-one` 5.1.1 → 6.0.0;
-`react-ga` 3.1.1 → 3.3.1; `react-spinners` 0.9.0 → 0.17.1; `stylus` 0.54.7 → 0.64.0 (this last one
-is also a `devDependency` of the build pipeline in the sense that `build:css` depends on it, but it
-is listed today under `dependencies` in `package.json` — leave it there, this plan does not
-reorganize that classification).
+`react-ga` 3.1.1 → 3.3.1; `react-spinners` 0.9.0 → 0.17.1. (`stylus` 0.54.7 → 0.64.0 already
+happened in Milestone 1, ahead of schedule — a hard prerequisite for installing Vite at all, not
+optional; this last one is also a `devDependency` of the build pipeline in the sense that
+`build:css` depends on it, but it is listed today under `dependencies` in `package.json` — leave it
+there, this plan does not reorganize that classification.)
 
-New files this plan creates: `vite.config.mjs` (repository root), `eslint.config.js` (repository
+New files this plan creates: `src/lib/LazyBoundary.jsx` (Milestone 1, the `react-loadable`
+replacement's error boundary), `vite.config.mjs` (repository root), `eslint.config.js` (repository
 root), `.nvmrc` (repository root, content: `24`), `index.html` (repository root, moved from
 `public/index.html`), `playwright.config.js` (repository root), `tests/playwright/specs/*.spec.js`
 (13 files, one per existing Nightwatch spec, preserving the `dashboards/` subdirectory), `tests/

@@ -4,6 +4,7 @@ import markdownItSup from 'markdown-it-sup';
 import memoizeOne from 'memoize-one';
 
 import lazyLoad from '../../lib/lazyLoad';
+import LazyBoundary from '../../lib/LazyBoundary';
 import StripedHeader from './StripedHeader';
 
 import './css/MetricOverview.css';
@@ -92,7 +93,9 @@ class MetricOverview extends React.Component {
                 <StripedHeader tag={props.inSection ? 'h5' : 'h4'} label={props.title} />
                 {maybeMetricDescription}
                 <div className="metric-and-legend">
-                    {MetricContainer}
+                    <LazyBoundary>
+                        {MetricContainer}
+                    </LazyBoundary>
                     <div className="legend" />
                 </div>
             </div>
