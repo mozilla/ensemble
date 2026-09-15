@@ -3,8 +3,8 @@
 /node_modules
 
 # Tests
-/*driver.log
-/tests_output
+/test-results
+/playwright-report
 
 # Generated files
 /src/**/css/*
