@@ -11,7 +11,7 @@ export default class extends React.Component {
 
     _onDateChange = e => {
         this.setState({ activeDate: e.target.value });
-    }
+    };
 
     render() {
         const mostRecentDate = this.props.dates[0];
