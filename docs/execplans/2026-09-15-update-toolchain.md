@@ -148,7 +148,38 @@ that passes the acceptance criteria in "Validation and Acceptance."
       rather than expanding it. Final state, run against the dev server: 49 of 51 tests pass
       reliably; the 2 remaining failures are genuine, disclosed, pre-existing issues external to
       this migration (see Surprises & Discoveries), not defects in the port.
-- [ ] Milestone 5: dependency currency pass within the React-16 ceiling.
+- [x] (2026-09-15) Milestone 5 complete. Bumped, each verified individually with a full
+      `build:css` + `vite build` + `vitest run` + `lint` pass (and, for the d3 packages and
+      `markdown-it`, a live-browser or existing-unit-test check too): `react-router-dom` 5.2.0 →
+      5.3.4; `npm-run-all` 4.1.5 → `npm-run-all2` 9.0.3 (confirmed the `npm-run-all` binary name
+      still resolves — `npm run build`, which chains through it, works unchanged); `d3-scale` 3.2.1
+      → 4.0.2, `d3-selection` 1.4.2 → 3.0.0, `d3-shape` 1.3.7 → 3.2.0 (verified `Chart.jsx`'s charts
+      render correctly live; `SummaryMetric.jsx`'s usage of `d3-scale`/`d3-selection` is not
+      currently exercised by any of the three live dashboards, so only build success — not visual
+      output — verifies it, see Surprises & Discoveries); `markdown-it` 11.0.0 → 15.0.2,
+      `markdown-it-sup` 1.0.0 → 2.0.0 (the existing `MetricOverview.test.jsx` already directly
+      exercises the security-relevant `<script>`-escaping behavior and passed unmodified);
+      `memoize-one` 5.1.1 → 6.0.0, `react-ga` 3.1.1 → 3.3.1, `react-spinners` 0.9.0 → 0.17.1
+      (verified together via a full Playwright run: same 49-of-51 pass rate as before this
+      milestone, confirming no regression); `source-map-explorer` 2.4.2 → 2.5.3 (not in this plan's
+      original list — added during this milestone since it was a same-major, clearly safe bump
+      `npm outdated` surfaced). Removed `d3-transition` entirely (confirmed unused, see Milestone
+      1's Surprises & Discoveries). Fixed an unrelated, pre-existing latent bug this milestone's
+      testing surfaced: `npm run size` fails outright since Milestone 1's Vite migration (not caused
+      by this milestone's bumps — confirmed by reproducing with both the old and new
+      `source-map-explorer` version) — see Surprises & Discoveries. Left unchanged, each with the
+      reason repeated here for a reader who reaches Milestone 5 without the earlier context: `react`/
+      `react-dom`/`react-test-renderer`/`enzyme-adapter-react-16` (hard-capped at 16 by
+      `react-metrics-graphics`/`react-refetch`), `eslint`/`@eslint/js` (hard-capped at 9.x by
+      `eslint-plugin-react`/`eslint-plugin-jsx-a11y`, see Milestone 3), `metrics-graphics`/
+      `react-metrics-graphics` (the charting stack this ceiling is named for), `dateformat` (a
+      3-major jump changing its module export shape, needing call-site changes — application-code
+      work, out of scope), `distinct-colors` (no newer major exists). Final state, verified with a
+      fresh `rm -rf node_modules && npm install`: `npm audit` reports 17 vulnerabilities (3
+      moderate, 14 high, 0 critical) — down from the pre-Milestone-1 baseline of 251 (12 low, 136
+      moderate, 82 high, 21 critical). All 21 critical findings are gone; per Milestone 1's
+      research, those traced almost entirely to `react-scripts`, `nightwatch`, `chromedriver`, and
+      `request`, all four of which are now removed.
 - [ ] Milestone 6: documentation updates and full clean-room validation on Node 24.
 
 The user has not yet confirmed this six-milestone breakdown. Per this repository's ExecPlan
@@ -315,6 +346,19 @@ addendum, no milestone below is executed until that confirmation is given.
   (`regionSelector.spec.js`'s second `page.goto(regionedDashboardURL)` inside the loop) and reproduces
   identically across 3 repeats with 1 worker; `nightwatch.conf.js`'s `desiredCapabilities:
   { browserName: 'chrome' }` confirms the original scope.
+- Observation: `npm run size` has failed outright since Milestone 1, not because of anything in
+  Milestone 5 — confirmed by reproducing the identical failure with both `source-map-explorer`
+  2.4.2 (the version already installed) and 2.5.3 (this milestone's bump target) before changing
+  anything else. Vite's entry chunk (`build/assets/index-*.js`) produces a source map that
+  `source-map-explorer` flags as invalid ("Your source map refers to generated column Infinity on
+  line 2, but the source only contains 10730 column(s) on that line"), which the tool treats as a
+  hard failure (exit 1) for this one chunk specifically, even though the same class of warning on
+  other chunks (for example `ChartContainer-*.js`) is only a warning (exit 0). This went unnoticed
+  during Milestone 1 because that milestone's own validation never ran `npm run size`.
+  Evidence: `source-map-explorer`'s own `--help` names `--no-border-checks` ("Disable invalid
+  mapping column/line checks"); adding it to the `size` script's command changes the result to
+  "Unable to map 6774/340873 bytes (1.99%)" and exit 0 — a small, expected fraction of unmapped
+  bytes, not a sign of a broken bundle.
 
 ## Decision Log
 
@@ -598,8 +642,12 @@ neither ever depended on CRA. Fix `"size": "source-map-explorer build/static/js/
 output does not use that path shape at all; its production JavaScript lands at
 `build/assets/index-<hash>.js` (a content hash, different on every build). Change the script to
 `"size": "source-map-explorer build/assets/index-*.js"`, which matches Vite's naming convention
-regardless of the exact hash. Add `"engines": {"node": "^24.0.0"}` to `package.json` (see Decision
-Log for why this exact range) and create `.nvmrc` at the repository root containing exactly `24`.
+regardless of the exact hash. (This alone is not sufficient to make the script actually pass — it
+additionally needs a `--no-border-checks` flag, discovered only in Milestone 5 once this script was
+actually run; see that milestone's Surprises & Discoveries. A reader implementing this milestone
+fresh should add the flag now rather than reproducing the same gap.) Add `"engines": {"node":
+"^24.0.0"}` to `package.json` (see Decision Log for why this exact range) and create `.nvmrc` at the
+repository root containing exactly `24`.
 
 Finally, verify `react-loadable` (used via `src/lib/lazyLoad.jsx`, at the 7 call sites listed in
 Progress) still behaves correctly once Rollup (Vite's production bundler) replaces webpack. Its
