@@ -87,10 +87,19 @@ is not what issue #79 asks for.
       pushing to the shared `mozilla/ensemble` remote is a separate, explicit-confirmation step (see
       Concrete Steps), and the real GitHub Actions run this milestone's acceptance depends on has not
       happened yet.
+- [x] (2026-09-18) Asked explicitly before pushing Milestone 1's commit, per this plan's own
+      Concrete Steps; the user chose to hold off on pushing for now and continue implementing
+      locally instead. No push has happened yet, and none will until asked for again.
 - [ ] Milestone 1, remaining: push the branch, observe a real, passing "CI / Lint and test" check run
       via `gh run watch`, and record the result here.
-- [ ] Milestone 2 (add the `e2e` job; update the now-stale "CI doesn't exist" doc lines): not yet
-      started.
+- [x] (2026-09-18) Milestone 2, first half: added the `e2e` job to `.github/workflows/ci.yml`
+      exactly as specified in "Plan of Work" (checkout, setup-node, `npm ci`, install the Chromium
+      browser, `npm run test:playwright`). Re-validated the complete two-job file with `uvx zizmor
+      --pedantic .github/workflows/ci.yml`, which again reported "No findings to report. Good job!"
+- [ ] Milestone 2, remaining: push, observe both jobs pass on a real run, then make the three-spot
+      doc correction in `AGENTS.md`/`CONTRIBUTING.md` described in "Plan of Work" — deliberately not
+      done yet, since it would be inaccurate to say CI demonstrably works before a real run has shown
+      it.
 
 ## Surprises & Discoveries
 
