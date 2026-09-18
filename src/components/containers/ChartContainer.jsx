@@ -90,7 +90,7 @@ class ChartContainer extends React.Component {
             chartWidth: width,
             chartHeight: height,
         });
-    }
+    };
 
     componentWillUnmount() {
         window.removeEventListener('resize', this.setChartSize);
@@ -99,7 +99,7 @@ class ChartContainer extends React.Component {
     memoizeFormattedData = memoizeOne(
         data => {
             return this.formatData(
-                data.populations,
+                data.populations
             );
         }
     );
@@ -107,7 +107,7 @@ class ChartContainer extends React.Component {
     memoizeShowLegend = memoizeOne(
         data => {
             return Object.keys(
-                data.populations,
+                data.populations
             ).length > 1;
         }
     );

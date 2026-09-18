@@ -6,21 +6,17 @@ Ensemble fetches data from
 [ensemble-transposer](https://github.com/mozilla/ensemble-transposer), a JSON
 server that adds metadata to the raw data hosted by Mozilla data engineers.
 
-Ensemble is written in React with the help of the wonderful
-[create-react-app](https://github.com/facebook/create-react-app) tool from
-Facebook. See the [create-react-app documentation](https://facebook.github.io/create-react-app/docs/getting-started)
-for more information. Some highlights and some additional information are
-provided here.
+Ensemble is written in React, built with [Vite](https://vite.dev/).
 
 ## Run
 
 ### For development
 
-Run `npm start`
+Run `npm start`. See `CONTRIBUTING.md` for the full command reference.
 
 Any of the environment variables in *.env* can be overridden. For example:
 
-`REACT_APP_SITE_TITLE='Firefox Public Lore Report' npm start`
+`VITE_SITE_TITLE='Firefox Public Lore Report' npm start`
 
 ### In production
 
@@ -31,7 +27,8 @@ Any of the environment variables in *.env* can be overridden.
 
 ## Development
 
-### Testing
+See `CONTRIBUTING.md` for build, lint, and test commands, coding conventions,
+and the current status of this repository's test suites.
 
 Run `npm test` to run Jest, Nightwatch, and ESLint tests locally.
 
