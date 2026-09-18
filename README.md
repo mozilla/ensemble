@@ -5,6 +5,9 @@ behavior, and hardware configuration of Firefox Desktop users.
 Ensemble fetches data from
 [ensemble-transposer](https://github.com/mozilla/ensemble-transposer), a JSON
 server that adds metadata to the raw data hosted by Mozilla data engineers.
+See [`docs/architecture/data-pipeline.md`](docs/architecture/data-pipeline.md)
+for how that data is generated upstream, where it lives, and which
+repositories are involved.
 
 Ensemble is written in React with the help of the wonderful
 [create-react-app](https://github.com/facebook/create-react-app) tool from
