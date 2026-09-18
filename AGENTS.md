@@ -53,7 +53,7 @@ There is no `pages/`, `store/`, `hooks/`, `api/`, `locales/`, or `data/`. `publi
 
 MozMEAO is taking this repo over. 810 commits — 515 in 2018, 92 in 2020, **nothing in 2021–2024**, three in 2025. Last commit `f655559`, 2025-05-07. Assume nothing has been exercised recently.
 
-- **No CI/CD of any kind exists.** No `.github/`, `.circleci/`, `Dockerfile`, `docker-compose`, `Jenkinsfile`. This is not a quirk of your clone — it was all deliberately removed: CircleCI disabled 2018-02-22 (`433a465`), Docker/Dockerflow removed 2018-08-23 (`d3bb561`), `.github/dependabot.yml` deleted 2020-07-29 (`7c7006f`, "Disable non-security updates from Dependabot"). Issue #79 ("enable CI") is still open.
+- **CI runs on GitHub Actions; there is no CD.** `.github/workflows/ci.yml` runs lint, the Vitest unit tests, and the Playwright end-to-end tests on every push to `main` and every pull request (issue #79). There is no `.circleci/`, `Dockerfile`, `docker-compose`, or `Jenkinsfile` — earlier automation was deliberately removed: CircleCI disabled 2018-02-22 (`433a465`), Docker/Dockerflow removed 2018-08-23 (`d3bb561`), `.github/dependabot.yml` deleted 2020-07-29 (`7c7006f`, "Disable non-security updates from Dependabot").
 - **The deploy is a static build on Google Cloud Storage** (confirmed by `x-goog-*` headers on the live site). `https://data.firefox.com/version.json` reports `1.2.1` / commit `f655559`, so **the deployed site matches current `main`**. The mechanism that pushes `build/` to GCS is **not in this repo and is currently unknown** — finding and documenting it is takeover work, not something to guess at.
 - **`npm install` fails outright on an Apple Silicon (arm64) Mac.** Confirmed: `chromedriver@84.0.1`'s postinstall exits with `Only Mac 64 bits supported` and takes the whole install down with it. Use `npm install --ignore-scripts` to get a working `node_modules` (you lose the chromedriver binary, which you can't use anyway — see the Nightwatch bullet below). This is a harder failure than "chromedriver's download URL changed"; it doesn't even try to download on this architecture.
 - **Confirmed on Node v24.19.0:** `npm run build:app` (and therefore `npm run build`) fails with `ERR_OSSL_EVP_UNSUPPORTED` — webpack 4's chunk hashing uses MD4, which OpenSSL 3 (Node ≥17) rejects — and succeeds once prefixed with `NODE_OPTIONS=--openssl-legacy-provider`. `npm start` compiles through the same webpack pipeline, so expect to need the same prefix. **`npm run lint` and `npm run test:jest` both pass clean with no flag at all** — Jest never invokes webpack, so it never hits the MD4 path. The repo's only Node signal is `engines: node >=8`; there is **no `.nvmrc`**, and historical CI pinned Node 8.
@@ -206,7 +206,7 @@ Replacement, as it should read:
 **Testing.** What a reviewer does by hand to check this. The one section worth expanding.
 
 - Open with prerequisites where there are any: "Run `npm run build:css` first" or "Needs `tests/playwright/` installed separately — see its README."
-- Include setup commands a reviewer must run to see the change at all. Leave out test and lint commands — `npm test`, `npm run lint`, `npx playwright test` — those only re-check what CI (once it exists) already checks.
+- Include setup commands a reviewer must run to see the change at all. Leave out test and lint commands — `npm test`, `npm run lint`, `npx playwright test` — those only re-check what CI already checks.
 - Give the URL to load — `http://localhost:3000/dashboard/hardware`, not just "the hardware dashboard" — and the expected result once there.
 - One step per thing to verify, phrased as a check — "Check the dashboard doesn't hang on resize", not "resize the window → dashboard redraws instantly". `- [ ]` checkboxes where the reviewer is working through a list.
 - Ask plainly for a close look when you want one: "Look closely at the region-selector change, please — it touches sessionStorage across every dashboard."
@@ -243,7 +243,7 @@ Here's the shape to aim for — a description for the real ESLint-unification wo
 - Keep secrets out of version control.
 - Configuration follows the 12-Factor App pattern via `.env` — but note that **this repo's `.env` is deliberately checked in**, because it holds only public build-time values and a placeholder GA ID. A real credential does not go in that file.
 - This is a fully client-side bundle: anything in a `REACT_APP_*` variable ships to the browser in plain text.
-- If a changeset adds a GitHub Action or Workflow (there are none today), check it with [Zizmor](https://zizmor.sh/) before considering the work complete.
+- If a changeset adds a GitHub Action or Workflow, check it with [Zizmor](https://zizmor.sh/) before considering the work complete.
 
 ## LLM assistance
 
