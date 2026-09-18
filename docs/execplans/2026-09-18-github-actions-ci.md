@@ -79,12 +79,18 @@ is not what issue #79 asks for.
       runs the tool in one command), iterating twice until a `--pedantic` run reported "No findings to
       report. Good job!" `CONTRIBUTING.md`'s Security & Configuration Tips section requires this
       check for any new workflow, and it has now actually been run, not assumed.
-- [ ] Milestone 1 (add `.github/workflows/ci.yml` with the `lint-and-test` job): not yet started.
+- [x] (2026-09-18) User confirmed the two-milestone breakdown and asked to proceed with
+      implementation.
+- [x] (2026-09-18) Milestone 1: created `.github/workflows/ci.yml` with the `lint-and-test` job
+      exactly as specified in "Plan of Work," and validated it with `uvx zizmor --pedantic
+      .github/workflows/ci.yml`, which reported "No findings to report. Good job!" Not yet pushed —
+      pushing to the shared `mozilla/ensemble` remote is a separate, explicit-confirmation step (see
+      Concrete Steps), and the real GitHub Actions run this milestone's acceptance depends on has not
+      happened yet.
+- [ ] Milestone 1, remaining: push the branch, observe a real, passing "CI / Lint and test" check run
+      via `gh run watch`, and record the result here.
 - [ ] Milestone 2 (add the `e2e` job; update the now-stale "CI doesn't exist" doc lines): not yet
       started.
-
-The user has not yet confirmed the two-milestone breakdown below. Per this repository's ExecPlan
-addendum, no milestone is executed until that confirmation is given.
 
 ## Surprises & Discoveries
 
