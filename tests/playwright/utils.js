@@ -61,9 +61,29 @@ async function metricTitleIsCorrect(page, selector, title) {
     await expect(page.locator(selector)).toHaveText(title);
 }
 
+// Selecting a region triggers a refetch of every visible metric for the new
+// region, but MetricOverviewContainer withholds its re-render until each
+// fetch resolves (see its shouldComponentUpdate) - there's no DOM signal to
+// wait on, only the underlying network requests.
+async function changeRegionAndWaitForMetrics(page, index, numMetrics) {
+    const region = await page.locator('#region-selector option').nth(index).getAttribute('value');
+
+    let matched = 0;
+    const metricsLoaded = page.waitForResponse(response => {
+        if (response.ok() && response.url().includes(`/${region}/`)) {
+            matched += 1;
+        }
+        return matched >= numMetrics;
+    });
+
+    await page.selectOption('#region-selector', { index });
+    await metricsLoaded;
+}
+
 module.exports = {
     linkWorks,
     linksWork,
     flagForUpdate,
     metricTitleIsCorrect,
+    changeRegionAndWaitForMetrics,
 };

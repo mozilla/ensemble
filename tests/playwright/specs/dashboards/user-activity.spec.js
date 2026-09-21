@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { linkWorks, flagForUpdate, metricTitleIsCorrect } = require('../../utils');
+const { linkWorks, flagForUpdate, metricTitleIsCorrect, changeRegionAndWaitForMetrics } = require('../../utils');
 
 
 test.beforeEach(async ({ page }) => {
@@ -63,19 +63,14 @@ test('The "proceed button" works', async ({ page }) => {
 });
 
 test('Page does not crash when region selector is used', async ({ page }) => {
-    const effectWait = 10000;
-
     await expect(page.locator('#region-selector')).toBeVisible();
 
-    await page.selectOption('#region-selector', { index: 0 });
-    await page.waitForTimeout(effectWait);
+    await changeRegionAndWaitForMetrics(page, 0, 5);
     await expect(page.locator('#dashboard')).toBeVisible();
 
-    await page.selectOption('#region-selector', { index: 1 });
-    await page.waitForTimeout(effectWait);
+    await changeRegionAndWaitForMetrics(page, 1, 5);
     await expect(page.locator('#dashboard')).toBeVisible();
 
-    await page.selectOption('#region-selector', { index: 2 });
-    await page.waitForTimeout(effectWait);
+    await changeRegionAndWaitForMetrics(page, 2, 5);
     await expect(page.locator('#dashboard')).toBeVisible();
 });
