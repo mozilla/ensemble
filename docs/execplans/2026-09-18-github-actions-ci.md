@@ -127,12 +127,27 @@ is not what issue #79 asks for.
       passed in one run); `contact.spec.js` still fails on the one already-known, pre-existing,
       out-of-scope link (`discourse.mozilla.org`'s real 404 — see Decision Log for why this plan does
       not touch it).
-- [ ] Milestone 2, remaining: reconcile local branch history with the already-pushed PR #447 (a
-      decision for the user — see Surprises & Discoveries), push the `donate.mozilla.org` fix,
-      observe both jobs pass on a real run, then make the three-spot doc correction in
-      `AGENTS.md`/`CONTRIBUTING.md` described in "Plan of Work" — deliberately not done yet, since it
-      would be inaccurate to say CI demonstrably works before a real run has shown it. Not pushed —
-      the user has explicitly said not to push this commit for now.
+- [x] (2026-09-21) Reconciled local branch history with the already-pushed, already-rebased remote:
+      by this point the user had, outside this session, rebased the entire stack (`agents` →
+      `441--update-toolchain` → `79--github-actions-ci`) onto the current tip of `mozilla/main` —
+      which now includes `db91842 Update Contact.jsx`, removing the dead `discourse.mozilla.org`
+      forum link — and force-pushed all three branches. Verified the rebase was clean before touching
+      local state: `git merge-base --is-ancestor` confirmed an unbroken `main` → `agents` →
+      `441--update-toolchain` → `79--github-actions-ci` chain, and diffing each branch's old and new
+      tip showed the only content difference was that Contact.jsx fix flowing down — nothing else
+      changed in transit. Local branches were then reset to match the remote tips.
+- [x] (2026-09-21) Observed a real PR #447 GitHub Actions run (`gh pr checks 447`) on the
+      already-rebased HEAD: "Lint and test" passes; "End-to-end tests" still fails, but no longer on
+      `donate.mozilla.org` or `discourse.mozilla.org` — both of those are now fixed. The remaining
+      failure is `footer.spec.js`'s `https://www.facebook.com/mozilla` check, and two more tests
+      (`user-activity.spec.js`'s and `usage-behavior.spec.js`'s metric-count assertions) reported
+      "flaky" (passed on retry) due to further live production data drift, unrelated to this plan.
+      See Surprises & Discoveries for why this changes this plan's earlier theory about the
+      `facebook.com` failure, and Decision Log for what was decided about it.
+- [ ] Milestone 2, remaining: make the three-spot doc correction in `AGENTS.md`/`CONTRIBUTING.md`
+      described in "Plan of Work" — deliberately not done yet, since "End-to-end tests" is still red
+      (see above) and it would be inaccurate to say CI demonstrably works before both jobs pass on a
+      real run.
 
 ## Surprises & Discoveries
 
@@ -254,6 +269,19 @@ is not what issue #79 asks for.
   Evidence: the isolated debug spec's three identical `status=400` results for both option sets; the
   standalone script's `status=200` for both; direct `curl` (with and without a browser-like
   `User-Agent`) returning `200` throughout this investigation.
+- Observation: the theory above — that Facebook's bot detection was reacting to this session's own
+  repeated local runs of `footer.spec.js` — does not hold up. `gh pr checks 447` against a real,
+  single GitHub Actions run of the already-rebased stack shows `https://www.facebook.com/mozilla`
+  still returning a non-200 status and failing `footer.spec.js`, on a fresh runner that has made
+  exactly one pass through this spec, not dozens. A more likely explanation: Facebook's bot detection
+  blocks GitHub Actions' shared, data-center-range runner IPs more aggressively than it blocks a
+  residential or office IP, independent of request volume from any one machine — the same class of
+  problem `donate.mozilla.org` had, but triggered by the requester's network origin rather than a
+  redirect. This is still not proven with certainty, but the specific claim it replaces (volume from
+  local testing) is now directly contradicted by evidence, not just superseded.
+  Evidence: `gh pr checks 447` and `gh run view <run-id> --log-failed` on 2026-09-21, showing
+  `footer.spec.js`'s "All footer links work" failing on `https://www.facebook.com/mozilla` after
+  three attempts, on a run that exercised the spec once.
 
 ## Decision Log
 
@@ -374,6 +402,17 @@ is not what issue #79 asks for.
   actually known to need it, and requiring a real `200` everywhere else, keeps that coverage intact
   while still fixing the reported problem. Verified this revision directly (see Progress).
   Date/Author: 2026-09-21, decided in response to the user's explicit follow-up correction.
+- Decision: leave `footer.spec.js`'s `https://www.facebook.com/mozilla` check failing and documented,
+  rather than adding it to `linksCheckedByRedirectOnly`-style exception handling or removing/skipping
+  the assertion.
+  Rationale: the user's explicit choice, given the option to exempt the link or investigate further
+  instead. Matches this plan's own precedent for `donate.mozilla.org` and PR #444's precedent for
+  `discourse.mozilla.org`: a real, external, non-repository cause gets left red and recorded, not
+  papered over the first time it is seen. Unlike `donate.mozilla.org`, this one is not yet a status
+  code this repository's existing exception mechanism was built to express (a redirect it should
+  accept) — it is an outright block of the requesting network, which no `maxRedirects` or accepted
+  status list changes.
+  Date/Author: 2026-09-21, decided in response to the user's explicit choice in conversation.
 
 ## Outcomes & Retrospective
 
