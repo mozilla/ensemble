@@ -82,7 +82,6 @@ export default () => {
                         You can learn more about this report by reading
                         {' '}<a href="https://blog.mozilla.org/blog/2018/08/28/lets-be-transparent/">our announcement on the Mozilla blog</a>
                         {' '}and by exploring the projects that power it:
-                        {' '}<a href="https://github.com/mozilla/Fx_Usage_Report">FX_Usage_Report</a> (data processing and documentation),
                         {' '}<a href="https://github.com/mozilla/ensemble-transposer">ensemble-transposer</a> (formatting and metadata), and
                         {' '}<a href="https://github.com/mozilla/ensemble">ensemble</a> (data visualization).
                     </p>
