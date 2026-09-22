@@ -29,7 +29,7 @@ module.exports = [
         ...jsxA11y.flatConfigs.recommended,
     },
     {
-        files: ['**/*.{js,jsx}'],
+        files: ['**/*.{js,jsx,mjs,cjs}'],
         rules: {
             // Errors
             'eqeqeq': 'error',
@@ -50,8 +50,13 @@ module.exports = [
                 'functions': 'never',
             }],
             'prefer-arrow-callback': 'warn',
-
-            // Plugins
+        },
+    },
+    {
+        // React/JSX-a11y rules only make sense where the plugins above are
+        // registered - .mjs/.cjs config files never contain JSX.
+        files: ['**/*.{js,jsx}'],
+        rules: {
             'jsx-a11y/no-onchange': 'off',
             'react/display-name': 'off',
             'react/prop-types': 'off',

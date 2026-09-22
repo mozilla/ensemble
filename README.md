@@ -30,12 +30,6 @@ Any of the environment variables in *.env* can be overridden.
 See `CONTRIBUTING.md` for build, lint, and test commands, coding conventions,
 and the current status of this repository's test suites.
 
-Run `npm test` to run Jest, Nightwatch, and ESLint tests locally.
-
-Nightwatch tests can optionally be run against the staging and production sites.
-Run `npm run test:nightwatch:stage` or `npm run test:nightwatch:prod`
-respectively.
-
 ### Analyzing
 
 To analyze the size of the JavaScript bundle that will be served, run `npm run

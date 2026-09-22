@@ -4,14 +4,18 @@ const { expect } = require('@playwright/test');
 const acceptedHTTPStatusCodes = [200, 301, 302, 304];
 
 // Loading a URL the React app manages itself doesn't return a 404 - it
-// displays a "Not Found" message instead. External URLs are checked with a
-// real request instead of a full navigation, retrying with backoff since
-// external hosts occasionally hiccup.
+// displays a "Not Found" message instead, so a booted app is confirmed via
+// #application before checking #not-found is absent (otherwise a page that
+// never booted at all would also lack #not-found and look like a pass).
+// External URLs are checked by navigating a throwaway page rather than
+// page.request.get(), since some hosts block non-browser HTTP clients;
+// retrying with backoff since external hosts occasionally hiccup.
 async function loadsSuccessfully(page, url) {
     if (url.startsWith('mailto:')) return;
 
     if (new URL(url).origin === new URL(page.url()).origin) {
         await page.goto(url);
+        await expect(page.locator('#application'), `App booted for: ${url}`).toBeVisible();
         await expect(page.locator('#not-found'), `Loaded successfully: ${url}`).not.toBeVisible();
         await page.goBack();
         return;
@@ -19,8 +23,13 @@ async function loadsSuccessfully(page, url) {
 
     const maxAttempts = 3;
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        const response = await page.request.get(url).catch(() => null);
-        if (response && acceptedHTTPStatusCodes.includes(response.status())) return;
+        const externalPage = await page.context().newPage();
+        try {
+            const response = await externalPage.goto(url).catch(() => null);
+            if (response && acceptedHTTPStatusCodes.includes(response.status())) return;
+        } finally {
+            await externalPage.close();
+        }
 
         if (attempt === maxAttempts) {
             throw new Error(`${url} did not load successfully after ${attempt} attempts`);
