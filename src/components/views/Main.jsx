@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, withRouter } from 'react-router-dom';
 
 import withTracker from '../decorators/withTracker';
 import withNextButton from '../decorators/withNextButton';
@@ -9,7 +9,7 @@ import LazyBoundary from '../../lib/LazyBoundary';
 import { dashboards } from '../../config.json';
 
 
-export default () => {
+const Main = mainProps => {
     const Home = lazyLoad(import('./Home'));
     const Contact = lazyLoad(import('./Contact'));
     const DashboardContainer = lazyLoad(import('../containers/DashboardContainer'));
@@ -17,7 +17,11 @@ export default () => {
 
     return (
         <main>
-            <LazyBoundary>
+            {/* Keyed on the route so a failed chunk load doesn't brick every
+                later navigation - the key change fully remounts the
+                boundary, resetting its error state, instead of leaving
+                "Load error" in place until a full page reload. */}
+            <LazyBoundary key={mainProps.location.pathname}>
                 <Switch>
                     <Route exact path="/" component={withTracker(withNextButton(Home))} />
                     <Route exact path="/contact" component={withTracker(Contact)} />
@@ -44,3 +48,5 @@ export default () => {
         </main>
     );
 };
+
+export default withRouter(Main);

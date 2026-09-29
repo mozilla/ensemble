@@ -7,6 +7,7 @@ how to work in the code, not what the code is.
 ## Build, test, and development commands
 
     npm install                          # confirmed clean on Node 24; no special flag needed
+    npx playwright install chromium      # one-time browser download; needed before test:playwright
 
     npm start                            # npm-run-all --parallel watch:css watch:app -> Vite dev
                                           # server on :3000

@@ -58,6 +58,9 @@ module.exports = [
         files: ['**/*.{js,jsx}'],
         rules: {
             'jsx-a11y/no-onchange': 'off',
+            // Requires the htmlFor/id association specifically, not just a
+            // nested label - matches every <label> already in this codebase.
+            'jsx-a11y/label-has-associated-control': ['error', { assert: 'htmlFor' }],
             'react/display-name': 'off',
             'react/prop-types': 'off',
             'react/no-unescaped-entities': ['error', { forbid: ['>', '}'] }],

@@ -25,7 +25,10 @@ module.exports = defineConfig({
         baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
         trace: 'on-first-retry',
     },
-    webServer: {
+    // Only start a local dev server when targeting it - PLAYWRIGHT_BASE_URL
+    // points at a remote site (e.g. stage/prod), which needs no local
+    // toolchain or port 3000 at all.
+    webServer: process.env.PLAYWRIGHT_BASE_URL ? undefined : {
         // npm start, not watch:app alone - a fresh checkout has no compiled
         // CSS yet (src/components/views/css/ is gitignored), and watch:app on
         // its own never runs the Stylus build that produces it.

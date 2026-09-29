@@ -145,9 +145,10 @@ that passes the acceptance criteria in "Validation and Acceptance."
       entries replaced with Playwright's own `/test-results` and `/playwright-report`.
       **Scope correction:** dropped from three browser projects to two (`chromium`,
       `chromium-no-js`) — see Decision Log; this matches `nightwatch.conf.js`'s own scope exactly
-      rather than expanding it. Final state, run against the dev server: 49 of 51 tests pass
-      reliably; the 2 remaining failures are genuine, disclosed, pre-existing issues external to
-      this migration (see Surprises & Discoveries), not defects in the port.
+      rather than expanding it. Final state, run against the dev server, as corrected 2026-09-28
+      (see the Decision Log entry dated 2026-09-28): 51 of 51 tests pass reliably.
+      Two links were flagged as failing when this milestone was first written; one claim was
+      already stale at the time, and the other has since been fixed — see the correction entry.
 - [x] (2026-09-15) Milestone 5 complete. Bumped, each verified individually with a full
       `build:css` + `vite build` + `vitest run` + `lint` pass (and, for the d3 packages and
       `markdown-it`, a live-browser or existing-unit-test check too): `react-router-dom` 5.2.0 →
@@ -205,9 +206,6 @@ that passes the acceptance criteria in "Validation and Acceptance."
       disclosed pre-existing external issues) — identical to every prior run in this plan, confirming
       stability. `npm audit` — 17 vulnerabilities (3 moderate, 14 high, 0 critical), down from the
       pre-migration baseline of 251 (12 low, 136 moderate, 82 high, 21 critical).
-
-The user has not yet confirmed this six-milestone breakdown. Per this repository's ExecPlan
-addendum, no milestone below is executed until that confirmation is given.
 
 ## Surprises & Discoveries
 
@@ -352,6 +350,17 @@ addendum, no milestone below is executed until that confirmation is given.
   Evidence: `curl -A "Mozilla/5.0 ..." https://discourse.mozilla.org/c/fx-public-data` returns `404`
   directly; the same for `https://donate.mozilla.org/` with `-L` (follow redirects) shows the final
   hop, `https://www.mozillafoundation.org/donate/`, returning `403`.
+- Correction (2026-09-28) to the observation directly above: the `discourse.mozilla.org` half of it
+  was already stale on the day it was written. `Contact.jsx` had its Discourse link removed in
+  commit `db91842` ("Update Contact.jsx", 2025-11-09) — over ten months before this plan's first
+  draft — so `contact.spec.js`'s "All links work" was never actually broken by this migration; the
+  `curl` command quoted above was run against the URL directly, not against what `Contact.jsx`
+  currently renders, which is why the mismatch wasn't caught. The `donate.mozilla.org` half was real
+  and has since been fixed: `tests/playwright/utils.js` now checks that URL's redirect status
+  directly (`{ maxRedirects: 0 }`, expecting `301`/`302`) instead of following it into the
+  bot-blocked final hop. See the Decision Log entry dated 2026-09-28 for the full correction.
+  Evidence: `git log --oneline -- src/components/views/Contact.jsx` shows `db91842` predating this
+  plan; `npx playwright test contact.spec.js footer.spec.js` passes both specs after the fix.
 - Observation: a WebKit project was added to `playwright.config.js` during this milestone (a
   reasonable-seeming default for "modern e2e coverage"), then dropped. A specific
   `regionSelector.spec.js` test — one that selects a region, navigates away, and navigates back —
@@ -505,6 +514,22 @@ addendum, no milestone below is executed until that confirmation is given.
   question is worth a human decision (report to Mozilla Foundation's web team, or accept it as an
   external site's bot-detection behavior) rather than a decision this plan should make.
   Date/Author: 2026-09-15, decided during Milestone 4's implementation.
+- Decision: correct this plan's "two known failures" record rather than leave it standing, and fix
+  the one that was actually still real.
+  Rationale: the Discourse-link half of the decision above rested on a stale observation — the link
+  was already gone from `Contact.jsx` (removed in `db91842`, 2025-11-09, well before this plan
+  existed), so there was never a live problem for this migration to leave alone. The
+  donate.mozilla.org half was real, and left failing longer than it needed to be: the general fix is
+  small (check the redirect's own status instead of following it) and does not weaken the assertion
+  or touch application content, so the original rationale for leaving it failing (avoid scope
+  creep into `Footer.jsx`) no longer applies once the fix lives in the test helper instead. Made the
+  change in `tests/playwright/utils.js` (`linksCheckedByRedirectOnly`, checking `donate.mozilla.org`
+  with `{ maxRedirects: 0 }` against `301`/`302` instead of following the redirect into the
+  bot-blocked final hop). Verified `npx playwright test` passes 51 of 51 with this change, so the
+  Progress, Surprises & Discoveries, and Outcomes & Retrospective sections above and below are
+  updated to no longer describe either test as failing.
+  Date/Author: 2026-09-28, correction made after a second round of PR review on #444 questioned
+  whether the "known failures" were still accurate.
 
 ## Outcomes & Retrospective
 
@@ -518,16 +543,15 @@ Jest is gone, replaced by Vitest; Nightwatch, `chromedriver`, and `request` are 
 Playwright; the two incomplete ESLint configurations are gone, replaced by one flat-config file that
 demonstrably covers `.jsx` (verified with a deliberately-introduced violation, not just assumed).
 
-What this plan did not achieve, stated plainly rather than smoothed over: two of the ported
-end-to-end tests fail, and are expected to keep failing until someone with the right context acts on
-them — `Contact.jsx` links to a Discourse category that returns a genuine `404` today, and
-`Footer.jsx` links to `donate.mozilla.org`, whose redirect target blocks the kind of non-browser HTTP
-request this suite's link-checker (faithfully, deliberately) makes. Both are real, pre-existing
-problems this migration did not create and is not the right piece of work to fix — but both are also
-new information: this is the first time in years anything has actually checked these two links,
-because the end-to-end suite could not run at all before this plan. `npm audit` still reports 17
-non-critical vulnerabilities; none block anything in "Validation and Acceptance," and Milestone 5's
-Decision Log states why each remaining outdated package is deliberately left alone.
+This section originally reported two of the ported end-to-end tests failing for reasons external to
+this migration. As corrected in the Decision Log entry dated 2026-09-28: one of those two (the
+Discourse link) was never actually broken by this migration — the link had already been removed
+from `Contact.jsx` in commit `db91842`, predating this plan — and the other (donate.mozilla.org) has
+since been fixed with a targeted redirect-status check in `tests/playwright/utils.js`. As of that
+fix, `npx playwright test` passes 51 of 51, and running the full end-to-end suite is no longer just
+possible but clean. `npm audit` still reports 17 non-critical vulnerabilities; none block anything in
+"Validation and Acceptance," and Milestone 5's Decision Log states why each remaining outdated
+package is deliberately left alone.
 
 The single largest deviation from the original draft was Milestone 1's `react-loadable` finding: the
 plan had already anticipated the risk and written a documented fallback before implementation began,
@@ -1020,11 +1044,11 @@ passed (2)" and "Tests 4 passed (4)".
 
 `npx playwright test` (via `npm run test:playwright`, with the dev server auto-started by
 Playwright's own `webServer` config) runs all 12 ported spec files across the `chromium` and
-`chromium-no-js` projects. As of Milestone 4's completion, 49 of 51 tests pass reliably; the
-remaining 2 (`contact.spec.js`'s "All links work", `footer.spec.js`'s "All footer links work") fail
-due to genuine, pre-existing external issues unrelated to this migration (a dead forum link, a
-redirect target that blocks non-browser HTTP clients — see Milestone 4's Surprises & Discoveries and
-Decision Log). A future run should reproduce exactly this split unless that external content
+`chromium-no-js` projects. As of the 2026-09-28 correction (see the Decision Log entry dated that
+day), all 51 tests pass reliably, including `contact.spec.js`'s "All links work"
+and `footer.spec.js`'s "All footer links work" — Milestone 4's original note that these two failed
+for pre-existing external reasons was half stale and half since fixed; see that correction entry for
+the detail. A future run should reproduce a clean 51 of 51 unless live external link content
 changes.
 
 `npm audit` reports a critical-severity count lower than today's baseline of 21 (the exact new
