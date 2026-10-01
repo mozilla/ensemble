@@ -1,30 +1,8 @@
 import React from 'react';
-import Loadable from 'react-loadable';
-
-import Spinner from '../components/views/Spinner';
-import ErrorComponent from '../components/views/Error';
 
 
 /**
- * Return a lazy-loaded component which shows a spinner while loading and which
- * does some error handling.
+ * Return a lazily-loaded component. Pair with LazyBoundary to show a spinner
+ * while loading and to handle load errors.
  */
-export default loader => {
-    return Loadable({
-        loader: () => loader,
-        loading: props => {
-            if (props.error) {
-                return (
-                    <ErrorComponent
-                        title="Error"
-                        message="Load error"
-                    />
-                );
-            } else if (props.pastDelay) {
-                return <Spinner />;
-            }
-
-            return null;
-        },
-    });
-};
+export default loader => React.lazy(() => loader);

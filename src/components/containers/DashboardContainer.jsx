@@ -21,7 +21,7 @@ class DashboardContainer extends React.Component {
         // For browsers that don't support sessionStorage. Changing state also
         // triggers a re-render which we need.
         this.setState({ activeRegion: region });
-    }
+    };
 
     render() {
         const dataFetch = this.props.dataFetch;
