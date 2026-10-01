@@ -21,6 +21,7 @@ NON-NEGOTIABLE REQUIREMENTS:
 * Every ExecPlan must be fully self-contained. Self-contained means that in its current form it contains all knowledge and instructions needed for a novice to succeed.
 * Every ExecPlan is a living document. Contributors are required to revise it as progress is made, as discoveries occur, and as design decisions are finalized. Each revision must remain fully self-contained.
 * Every ExecPlan must enable a complete novice to implement the feature end-to-end without prior knowledge of this repo.
+* Every milestone must assess whether its own changes leave any documentation or code comment stale, and update it as part of that milestone — never deferred to a separate final step. See "Milestones" below.
 * Every ExecPlan must produce a demonstrably working behavior, not merely code changes to "meet a definition".
 * Every ExecPlan must define every term of art in plain language or do not use it.
 
@@ -54,7 +55,7 @@ Capture evidence. When your steps produce terminal output, short diffs, or logs,
 
 ## Milestones
 
-Milestones are narrative, not bureaucracy. If you break the work into milestones, introduce each with a brief paragraph that describes the scope, what will exist at the end of the milestone that did not exist before, the commands to run, and the acceptance you expect to observe. Keep it readable as a story: goal, work, result, proof. Progress and milestones are distinct: milestones tell the story, progress tracks granular work. Both must exist. Never abbreviate a milestone merely for the sake of brevity, do not leave out details that could be crucial to a future implementation.
+Milestones are narrative, not bureaucracy. If you break the work into milestones, introduce each with a brief paragraph that describes the scope, what will exist at the end of the milestone that did not exist before, the commands to run, the acceptance you expect to observe, and whether that milestone's own changes leave any documentation or code comment stale — update it within the same milestone, or state plainly that nothing needed updating. Keep it readable as a story: goal, work, result, proof. Progress and milestones are distinct: milestones tell the story, progress tracks granular work. Both must exist. Never abbreviate a milestone merely for the sake of brevity, do not leave out details that could be crucial to a future implementation.
 
 Each milestone must be independently verifiable and incrementally implement the overall goal of the execution plan.
 
@@ -119,7 +120,7 @@ Prefer additive code changes followed by subtractions that keep tests passing. P
 
     ## Plan of Work
 
-    Describe, in prose, the sequence of edits and additions. For each edit, name the file and location (function, module) and what to insert or change. Keep it concrete and minimal.
+    Describe, in prose, the sequence of edits and additions. For each edit, name the file and location (function, module) and what to insert or change. Keep it concrete and minimal. If the work is broken into milestones, each milestone's description must say whether it leaves documentation or code comments stale and what was done about it (see "Milestones" above).
 
     ## Concrete Steps
 
