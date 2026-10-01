@@ -146,7 +146,9 @@ that passes the acceptance criteria in "Validation and Acceptance."
       **Scope correction:** dropped from three browser projects to two (`chromium`,
       `chromium-no-js`) — see Decision Log; this matches `nightwatch.conf.js`'s own scope exactly
       rather than expanding it. Final state, run against the dev server, as corrected 2026-09-28
-      (see the Decision Log entry dated 2026-09-28): 51 of 51 tests pass reliably.
+      (see the Decision Log entry dated 2026-09-28): 51 of 51 tests passed. A later run on
+      2026-10-01 instead observed 50 of 51 — see "Validation and Acceptance" for that result and
+      why it's believed to be an environment-specific exception, not a reversal of this one.
       Two links were flagged as failing when this milestone was first written; one claim was
       already stale at the time, and the other has since been fixed — see the correction entry.
 - [x] (2026-09-15) Milestone 5 complete. Bumped, each verified individually with a full
@@ -203,9 +205,11 @@ that passes the acceptance criteria in "Validation and Acceptance."
       Files 2 passed (2)", "Tests 4 passed (4)". `npm start` — dev server up with no flags,
       confirmed by `curl`. `npx playwright test` — 47 passed outright, 2 more passed after Playwright's
       configured retry (the documented dev-server cold-start characteristic), 2 failed (the two
-      disclosed pre-existing external issues) — identical to every prior run in this plan, confirming
-      stability. `npm audit` — 17 vulnerabilities (3 moderate, 14 high, 0 critical), down from the
-      pre-migration baseline of 251 (12 low, 136 moderate, 82 high, 21 critical).
+      disclosed pre-existing external issues, superseded by the 2026-09-28 correction in the Decision
+      Log — one was already stale when this transcript was captured, the other has since been fixed)
+      — identical to every prior run in this plan, confirming stability at the time. `npm audit` — 17
+      vulnerabilities (3 moderate, 14 high, 0 critical), down from the pre-migration baseline of 251
+      (12 low, 136 moderate, 82 high, 21 critical).
 
 ## Surprises & Discoveries
 
@@ -392,6 +396,26 @@ that passes the acceptance criteria in "Validation and Acceptance."
   mapping column/line checks"); adding it to the `size` script's command changes the result to
   "Unable to map 6774/340873 bytes (1.99%)" and exit 0 — a small, expected fraction of unmapped
   bytes, not a sign of a broken bundle.
+- Observation (2026-10-01): Milestone 1's instruction to leave `.env`'s `NODE_ENV=development` line
+  alone was itself a bug, caught by an external review (Codex) of this plan rather than by anything
+  this plan's own validation checked. Under `create-react-app`, `react-scripts build` hardcodes
+  `process.env.NODE_ENV = 'production'` internally before invoking webpack, so a `.env` file setting
+  `NODE_ENV=development` had no effect on a production build — CRA always shipped production React
+  regardless of that line. Vite has no such override: `vite build` loads `.env` and, when `.env`
+  itself sets `NODE_ENV`, uses that value for the `process.env.NODE_ENV` replacement baked into the
+  client bundle, rather than deriving it from the build command. The result was a `build/` directory
+  that shipped React's development bundle — including its `printWarning` helper and every
+  `process.env.NODE_ENV !== 'production'`-gated check — to every visitor of the production site, had
+  this branch been merged and deployed as-is.
+  Evidence: with `NODE_ENV=development` in `.env`, `grep -c "Warning:" build/assets/*.js` found
+  matches in multiple chunks (React's internal `printWarning`/`checkPropTypes` helpers, which only
+  exist in `react.development.js`); forcing `NODE_ENV=production` in the shell for the same build
+  (`NODE_ENV=production npx vite build`) produced zero matches across every chunk, and also shrank
+  the entry chunk from 341 KB to 190 KB (unminified) — proof the development branches were being
+  compiled in, not just a cosmetic log-string difference. Removing the line from `.env` entirely
+  reproduces the clean, zero-`Warning:`, smaller-bundle result without a shell override, and leaves
+  the dev server unaffected (`vite`'s own `serve` command still defaults to development mode on its
+  own, independent of `.env`). See the matching Decision Log entry.
 
 ## Decision Log
 
@@ -520,9 +544,13 @@ that passes the acceptance criteria in "Validation and Acceptance."
   was already gone from `Contact.jsx` (removed in `db91842`, 2025-11-09, well before this plan
   existed), so there was never a live problem for this migration to leave alone. The
   donate.mozilla.org half was real, and left failing longer than it needed to be: the general fix is
-  small (check the redirect's own status instead of following it) and does not weaken the assertion
-  or touch application content, so the original rationale for leaving it failing (avoid scope
-  creep into `Footer.jsx`) no longer applies once the fix lives in the test helper instead. Made the
+  small (check the redirect's own status instead of following it) and does not touch application
+  content, so the original rationale for leaving it failing (avoid scope creep into `Footer.jsx`) no
+  longer applies once the fix lives in the test helper instead. This does trade a small amount of
+  coverage for that one link: checking for a `301`/`302` confirms the redirect is configured, not
+  that its destination (`https://www.mozillafoundation.org/donate/`) is itself healthy — a
+  deliberate, narrow exception, not a weakening of the general rule that every other link must
+  resolve to a real `200`. Made the
   change in `tests/playwright/utils.js` (`linksCheckedByRedirectOnly`, checking `donate.mozilla.org`
   with `{ maxRedirects: 0 }` against `301`/`302` instead of following the redirect into the
   bot-blocked final hop). Verified `npx playwright test` passes 51 of 51 with this change, so the
@@ -530,6 +558,30 @@ that passes the acceptance criteria in "Validation and Acceptance."
   updated to no longer describe either test as failing.
   Date/Author: 2026-09-28, correction made after a second round of PR review on #444 questioned
   whether the "known failures" were still accurate.
+- Decision: remove `NODE_ENV=development` from `.env` entirely, rather than leaving it as Milestone
+  1 originally instructed.
+  Rationale: see the matching Surprises & Discoveries entry — leaving it in place was safe under CRA
+  but ships React's development bundle in every production build under Vite. There is no code in
+  this repository that needs `.env` to carry `NODE_ENV` at all: `vite`'s dev server and `vite build`
+  both already pick the correct mode from the command itself, and the one place application code
+  reads `process.env.NODE_ENV` (`src/registerServiceWorker.js`'s `register()`) is dead code — only
+  `unregister()` is ever called, from `src/index.jsx`. Verified after removal: `npm run build:app`
+  produces zero `Warning:` strings in `build/assets/*.js`; `npm start`'s dev server still boots
+  correctly (confirmed via `curl` against `localhost:3000`, serving the expected Vite/React-refresh
+  dev HTML); `npx playwright test` still passes 50 of 51 (the one failure is this environment's own
+  `twitter.com` network block, unrelated — see the prior correction entry above).
+  Date/Author: 2026-10-01, found via a Codex review of this plan requested through `/codex-review`.
+- Decision: tighten `engines.node` from `^24.0.0` to `^24.15.0`.
+  Rationale: a dependency added later than this plan's Milestone 5 research (`npm-run-all2` 9.0.3)
+  declares its own `engines.node` as `^22.22.2 || ^24.15.0 || >=26.0.0`, which is narrower than this
+  plan's original `^24.0.0` within the Node 24 line — an install on an earlier Node 24.x minor (e.g.
+  24.1) would succeed but violate that dependency's own stated requirement. This was caught and fixed
+  in a later PR review round, not during this plan's original Milestone 5 work; the historical
+  Surprises & Discoveries and Decision Log entries above describing `^24.0.0` as correct were
+  accurate for what was known at the time and are left as-is, but every forward-looking instruction
+  in this plan (Concrete Steps, Validation and Acceptance, Interfaces and Dependencies) is updated to
+  state the current, correct floor rather than repeat the superseded one.
+  Date/Author: 2026-10-01, correction made after a Codex review of this plan.
 
 ## Outcomes & Retrospective
 
@@ -548,10 +600,20 @@ this migration. As corrected in the Decision Log entry dated 2026-09-28: one of 
 Discourse link) was never actually broken by this migration — the link had already been removed
 from `Contact.jsx` in commit `db91842`, predating this plan — and the other (donate.mozilla.org) has
 since been fixed with a targeted redirect-status check in `tests/playwright/utils.js`. As of that
-fix, `npx playwright test` passes 51 of 51, and running the full end-to-end suite is no longer just
-possible but clean. `npm audit` still reports 17 non-critical vulnerabilities; none block anything in
+fix, `npx playwright test` passed 51 of 51, and running the full end-to-end suite is no longer just
+possible but clean — see "Validation and Acceptance" for a later, environment-specific exception
+(`twitter.com`) observed on one machine, not a regression in this repository. `npm audit` still
+reports 17 non-critical vulnerabilities; none block anything in
 "Validation and Acceptance," and Milestone 5's Decision Log states why each remaining outdated
 package is deliberately left alone.
+
+A more serious gap surfaced later, via an external review of this plan rather than this plan's own
+validation: Milestone 1's instruction to leave `.env`'s `NODE_ENV=development` line in place was
+wrong under Vite in a way it was never wrong under CRA, and would have shipped React's development
+bundle to every visitor of the production site had this branch been merged as originally written.
+Fixed by deleting that line entirely — see the dated Surprises & Discoveries and Decision Log entries
+for the full evidence and verification. This plan's own "Validation and Acceptance" section did not
+previously check for this, and now does.
 
 The single largest deviation from the original draft was Milestone 1's `react-loadable` finding: the
 plan had already anticipated the risk and written a documented fallback before implementation began,
@@ -710,8 +772,14 @@ reason CRA required its own `REACT_APP_` prefix). This touches `.env` (three key
 `REACT_APP_VALUE_DECIMAL_PLACES` → `VITE_VALUE_DECIMAL_PLACES`), `src/components/decorators/
 withTracker.jsx` (one reference, `process.env.REACT_APP_GA_TRACKING_ID`), `src/lib/utils.js` (three
 references to `REACT_APP_SITE_TITLE`/`REACT_APP_VALUE_DECIMAL_PLACES`), and `README.md`'s one
-example (`REACT_APP_SITE_TITLE='…' npm start` becomes `VITE_SITE_TITLE='…' npm start`). Leave
-`.env`'s `NODE_ENV=development` line alone — that is a standard Node variable, not CRA-specific.
+example (`REACT_APP_SITE_TITLE='…' npm start` becomes `VITE_SITE_TITLE='…' npm start`). Also delete
+`.env`'s `NODE_ENV=development` line entirely — do not carry it forward. Under CRA this line was
+inert for production builds (`react-scripts build` hardcodes `NODE_ENV=production` internally,
+ignoring `.env`), but Vite has no such override and will ship React's development bundle to
+production if this line is left in place; see the dated Surprises & Discoveries and Decision Log
+entries later in this plan for the full evidence. Nothing in this repository reads `NODE_ENV` except
+dead code (`src/registerServiceWorker.js`'s unused `register()` export), so deleting the line has no
+other effect.
 Note for whoever runs Milestone 1: `.env` also currently sets `BROWSER=firefox`, a
 webpack-dev-server convention CRA read to auto-open Firefox on `npm start`; Vite has no equivalent
 environment-variable-driven browser selection, so this specific convenience is dropped (a developer
@@ -729,7 +797,10 @@ regardless of the exact hash. (This alone is not sufficient to make the script a
 additionally needs a `--no-border-checks` flag, discovered only in Milestone 5 once this script was
 actually run; see that milestone's Surprises & Discoveries. A reader implementing this milestone
 fresh should add the flag now rather than reproducing the same gap.) Add `"engines": {"node":
-"^24.0.0"}` to `package.json` (see Decision Log for why this exact range) and create `.nvmrc` at the
+"^24.15.0"}` to `package.json` — originally `^24.0.0` when this milestone was first written (see
+Decision Log for that original rationale), tightened after a later review found a dependency
+requiring the narrower floor (see the dated Decision Log entry); a reader implementing this milestone
+fresh should use `^24.15.0` now rather than reproducing the superseded range. Create `.nvmrc` at the
 repository root containing exactly `24`.
 
 Finally, verify `react-loadable` (used via `src/lib/lazyLoad.jsx`, at the 7 call sites listed in
@@ -848,7 +919,11 @@ dev/stage/prod lookup table — see Decision Log for why stage is not ported), a
 !process.env.CI`) so Playwright starts the dev server itself for local runs instead of requiring a
 developer to remember to run `npm start` in a separate shell first (a direct improvement over
 Nightwatch's documented requirement that `npm start` already be running; note it must be `npm start`
-and not `npm run watch:app` alone, since a fresh checkout has no compiled CSS yet), `retries`/
+and not `npm run watch:app` alone, since a fresh checkout has no compiled CSS yet). A later review
+(2026-09-22, see the dated Decision Log entry) found this `webServer` block unconditional even when
+`PLAYWRIGHT_BASE_URL` points at a remote site — a reader implementing this milestone fresh should
+make it conditional from the start: `webServer: process.env.PLAYWRIGHT_BASE_URL ? undefined : { ... }`,
+so pointing at a remote site needs no local toolchain or free port 3000 at all. `retries`/
 `workers` gated on `process.env.CI` (matching common Playwright practice for flake tolerance), and
 two `projects`: `chromium` running the default spec set, plus a `chromium-no-js` project (`use: {
 javaScriptEnabled: false }`, matching only `jsDisabled.spec.js`) — replacing Nightwatch's separate
@@ -887,6 +962,21 @@ external-URL branch to Playwright's own request context, `await page.request.get
 `requestWithRetry` backoff of 5 seconds, then 25 seconds), removing the `request` import and
 dependency entirely.
 
+This was the design as this milestone was first implemented on 2026-09-15. Three later review
+rounds (2026-09-22 through 2026-10-01, see the Decision Log entries dated on or after 2026-09-22)
+replaced it with the current, correct behavior — a reader implementing this milestone fresh should
+build the current version directly rather than this original description:
+the internal-URL branch also asserts `#application` is visible before checking `#not-found`, so a
+page that fails to boot at all isn't mistaken for a successful load; the external-URL branch
+navigates a real, throwaway browser tab (`await page.context().newPage()`, closed in a `finally`)
+instead of `page.request.get()`, since some hosts (confirmed: `twitter.com`) block non-browser HTTP
+clients more readily than a real browser; the accepted-status list narrowed to `[200]` for that
+general path (following every redirect to a real page), with one named exception,
+`linksCheckedByRedirectOnly = ['https://donate.mozilla.org/']`, checked via a plain
+`page.request.get(url, { maxRedirects: 0 })` against `[301, 302]` instead, because that one link's
+redirect destination itself blocks non-browser clients even via real navigation. The retry/backoff
+shape (3 attempts, 5-second linear backoff) is unchanged.
+
 Update `package.json`: `"test:playwright": "playwright test"`, `"test": "npm-run-all lint test:jest
 test:playwright"` (replacing `test:nightwatch:dev`), remove `test:nightwatch:stage` and
 `test:nightwatch:prod` (stage/prod runs now happen by setting `PLAYWRIGHT_BASE_URL` directly, for
@@ -899,6 +989,22 @@ Before running the ported suite for the first time, run `npx playwright install 
 --with-deps` once (downloads only the Chromium binary Playwright manages itself, matching the single
 browser this config actually uses — this is the one-time setup step that replaces `chromedriver`,
 and it is expected to succeed on Apple Silicon where `chromedriver@84.0.1`'s postinstall could not).
+
+Three further refinements landed after this milestone's original implementation, each narrow enough
+that they don't change the shape of what's described above but do change the final committed code —
+a reader implementing this milestone fresh should include all three rather than stopping at the
+description above: `tests/playwright/utils.js` gained a `changeRegionAndWaitForMetrics(page, index,
+numMetrics)` helper (region-selector specs were using a fixed `waitForTimeout` sleep to wait out a
+metrics refetch; replaced with `page.waitForResponse` watching for exactly `numMetrics` matching
+network responses, since `MetricOverviewContainer` gives no DOM signal that a refetch has finished);
+`src/components/views/Main.jsx` wraps its export in react-router's `withRouter` and keys the
+Milestone 1 `LazyBoundary` on `props.location.pathname`, so a failed lazy-chunk load on one route
+doesn't permanently brick navigation to every other route (`LazyBoundary`'s `hasError` is never
+otherwise reset — keying forces a full remount on every route change instead); and `eslint.config.js`
+extends its plain-rules block to `.mjs`/`.cjs` files (catching `vite.config.mjs`, previously
+unlinted) and adds `'jsx-a11y/label-has-associated-control': ['error', { assert: 'htmlFor' }]` to
+restore an accessibility guarantee the pre-migration config had under its old rule name. See the
+Decision Log entries dated 2026-09-22 through 2026-10-01 for the full rationale behind each.
 
 **Milestone 5 — dependency currency pass within the React-16 ceiling.** This milestone updates
 dependencies that can move without touching application code or crossing the React-16 boundary
@@ -979,8 +1085,9 @@ order, on Node 24, recording the actual output of each next to its expected outp
 
 All commands below run from the repository root, on branch
 `441--update-toolchain`, on Node v24.19.0 (confirm with `node --version` first; if a reader is on a
-different Node 24.x patch version, that is expected to work identically — this plan's `engines`
-field only requires the major version).
+different Node 24.x version, that is expected to work identically as long as it is 24.15.0 or later
+— this plan's `engines.node` field is `^24.15.0`, tightened from an earlier `^24.0.0` after a later
+review found `npm-run-all2` requires that floor; see the dated Decision Log entry).
 
 Baseline verification already performed during this plan's research (reproduce to confirm before
 starting Milestone 1):
@@ -1023,8 +1130,8 @@ Notes" below, and check its box in "Progress."
 ## Validation and Acceptance
 
 The overall plan is accepted when, starting from a clean checkout of branch
-`441--update-toolchain` on Node 24 (any 24.x patch version), all of the following are true and
-observable by running the named command:
+`441--update-toolchain` on Node 24.15.0 or later within the Node 24 line, all of the following are
+true and observable by running the named command:
 
 `rm -rf node_modules && npm install` completes with no `--ignore-scripts` flag and no chromedriver
 install failure.
@@ -1035,6 +1142,9 @@ that URL in a browser shows the Firefox Public Data Report home page, with at le
 
 `npm run build:app` completes with no `NODE_OPTIONS` flag and prints "✓ built" (Vite's success
 message) along with a gzip size table; `build/index.html` and `build/assets/` exist afterward.
+`grep -c "Warning:" build/assets/*.js` reports `0` for every file — proof the build shipped React's
+production bundle, not its development bundle (see the dated Decision Log entry for why this check
+exists and what it catches).
 
 `npx vitest run` (via `npm run test:jest`) reports both existing test files passing: "Test Files 2
 passed (2)" and "Tests 4 passed (4)".
@@ -1045,11 +1155,16 @@ passed (2)" and "Tests 4 passed (4)".
 `npx playwright test` (via `npm run test:playwright`, with the dev server auto-started by
 Playwright's own `webServer` config) runs all 12 ported spec files across the `chromium` and
 `chromium-no-js` projects. As of the 2026-09-28 correction (see the Decision Log entry dated that
-day), all 51 tests pass reliably, including `contact.spec.js`'s "All links work"
-and `footer.spec.js`'s "All footer links work" — Milestone 4's original note that these two failed
-for pre-existing external reasons was half stale and half since fixed; see that correction entry for
-the detail. A future run should reproduce a clean 51 of 51 unless live external link content
-changes.
+day), all 51 tests passed, including `contact.spec.js`'s "All links work" and `footer.spec.js`'s
+"All footer links work" — Milestone 4's original note that these two failed for pre-existing external
+reasons was half stale and half since fixed; see that correction entry for the detail. A later
+verification (2026-10-01, see the matching Decision Log entry) instead observed 50 of 51, with
+`footer.spec.js` failing specifically on `https://twitter.com/mozilla` — a block on that one
+environment's own outbound network, unrelated to this repository's code, and not something either
+prior run observed. Expect 51 of 51 on a normal network. For the October 1 run, independent
+verification attributed this failure to the environment's outbound block. Future failures require
+confirming that cause before classifying them as environment-related — the same symptom could
+instead mean the destination changed or the link-checker itself regressed.
 
 `npm audit` reports a critical-severity count lower than today's baseline of 21 (the exact new
 number is recorded in Milestone 6's execution, not asserted here in advance).
@@ -1086,9 +1201,10 @@ milestone on one hard dependency.
 Baseline transcripts captured during this plan's research, reproduced in condensed form in
 "Concrete Steps" above: the `npm install --ignore-scripts` package/vulnerability counts, the full
 `ERR_OSSL_EVP_UNSUPPORTED` failure, both `peerDependencies` checks, the `lazyLoad` call-site count,
-and the critical `npm audit` findings by `fixAvailable` path. Each milestone's own execution should
-append its actual command output here as it lands — this section is empty of milestone-specific
-transcripts as of this plan's initial draft, since no milestone has been executed yet.
+and the critical `npm audit` findings by `fixAvailable` path. All six milestones have since been
+executed and verified — see the dated entries in "Progress," "Surprises & Discoveries," and
+"Decision Log" above, which is where each milestone's actual command transcripts and evidence were
+recorded as the work happened, rather than being duplicated here.
 
 ## Interfaces and Dependencies
 
@@ -1097,12 +1213,14 @@ New `devDependencies`, with the exact version confirmed current as of 2026-09-15
 repository's convention is exact pins, no `^`/`~`):
 
 `vite` 8.3.0 (`engines.node`: `^20.19.0 || >=22.12.0`); `@vitejs/plugin-react` 6.1.1 (same engines
-floor); `vitest` 5.0.1 (`engines.node`: `^22.12.0 || ^24.0.0 || >=26.0.0` — the binding constraint
-on this repository's own new `engines.node` field, see Decision Log); `jsdom` 30.0.1; `eslint`
+floor); `vitest` 5.0.1 (`engines.node`: `^22.12.0 || ^24.0.0 || >=26.0.0`); `jsdom` 30.0.1; `eslint`
 9.39.5 (the latest 9.x release, not 10.x — see Decision Log for why; `engines.node`: `^18.18.0 ||
 ^20.9.0 || >=21.1.0`); `@eslint/js` 9.39.5 (matching version); `eslint-plugin-react` 7.37.5;
 `eslint-plugin-jsx-a11y` 6.10.2; `@vitest/eslint-plugin` 1.6.27; `globals` 17.12.0;
-`@playwright/test` 1.63.0 (`engines.node`: `>=20`); `npm-run-all2` 9.0.3.
+`@playwright/test` 1.63.0 (`engines.node`: `>=20`); `npm-run-all2` 9.0.3 (`engines.node`:
+`^22.22.2 || ^24.15.0 || >=26.0.0` — the actual binding constraint on this repository's own
+`engines.node` field, `^24.15.0`; tighter than vitest's own floor above, see the dated Decision Log
+entry for why this field changed after this list was first written).
 
 Removed `devDependencies`: `react-scripts`, `chromedriver`, `nightwatch`, `request`, `babel-eslint`,
 `eslint-plugin-jest`, `npm-run-all` (replaced by `npm-run-all2`, see above).
@@ -1124,7 +1242,7 @@ New files this plan creates: `src/lib/LazyBoundary.jsx` (Milestone 1, the `react
 replacement's error boundary), `vite.config.mjs` (repository root), `eslint.config.js` (repository
 root), `.nvmrc` (repository root, content: `24`), `index.html` (repository root, moved from
 `public/index.html`), `playwright.config.js` (repository root), `tests/playwright/specs/*.spec.js`
-(13 files, one per existing Nightwatch spec, preserving the `dashboards/` subdirectory), `tests/
+(12 files, one per existing Nightwatch spec file, preserving the `dashboards/` subdirectory), `tests/
 playwright/utils.js` (ported helper functions).
 
 Deleted files: `public/index.html` (moved, not just deleted), `.eslintrc.extra.js`, `.eslintignore`,
