@@ -152,7 +152,8 @@ repository root. Specs are `camelCase.spec.js` or `kebab-case.spec.js` (matching
 page under test), CommonJS, using `@playwright/test`'s own `test`/`expect` — for example
 `test('Page loads', async ({ page }) => { await expect(page.locator('#contact')).toBeVisible(); })`.
 Shared helpers (`linkWorks`, `linksWork`, `flagForUpdate`, `metricTitleIsCorrect`) live in
-`tests/playwright/utils.js`. `flagForUpdate` deliberately fails when an element count changes, to
+`tests/playwright/utils.js`. `linkWorks` and `linksWork` only check links within the app itself and
+skip external URLs, which failed too often for reasons outside this repository. `flagForUpdate` deliberately fails when an element count changes, to
 force a human to look. The `dashboards/*.spec.js` specs assert exact metric titles and section
 ordering against live production data, so upstream data changes break them by design — this is not
 a bug in the tests, and updating their expectations to match reality is normal, expected
@@ -214,8 +215,8 @@ This project maintains a hand-managed version number in `package.json` that is n
 first digit for major changes, the second for medium, the third for small — historically bumped at
 deploy time. Do not bump it casually; ask.
 
-If a changeset adds a GitHub Action or workflow (there are none today), check it with
-[Zizmor](https://zizmor.sh/) before considering the work complete.
+If a changeset adds a GitHub Action or workflow, check it with [Zizmor](https://zizmor.sh/) before
+considering the work complete.
 
 ### Writing PR descriptions
 
@@ -285,8 +286,7 @@ WebKit-specific slowness noted while porting the end-to-end suite."
 
 - Open with prerequisites where there are any: "Run `npm run build:css` first."
 - Include setup commands a reviewer must run to see the change at all. Leave out test and lint
-  commands (`npm test`, `npm run lint`) — those only re-check what CI, once it exists, already
-  checks.
+  commands (`npm test`, `npm run lint`) — those only re-check what CI already checks.
 - Give the URL to load — `http://localhost:3000/dashboard/hardware`, not just "the hardware
   dashboard" — and the expected result once there.
 - One step per thing to verify, phrased as a check — "Check the dashboard doesn't hang on resize,"
