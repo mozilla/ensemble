@@ -84,7 +84,7 @@ export default () => {
                         {' '}and by exploring the projects that power it:
                         {' '}<a href="https://github.com/mozilla/Fx_Usage_Report">FX_Usage_Report</a> (data processing and documentation),
                         {' '}<a href="https://github.com/mozilla/ensemble-transposer">ensemble-transposer</a> (formatting and metadata), and
-                        {' '}<a href="https://github.com/mozilla/ensemble">ensemble</a> (data visualization).
+                        {' '}<a href="https://github.com/mozilla/ensemble">ensemble</a> (data visualization).                        
                     </p>
                 </section>
             </article>
