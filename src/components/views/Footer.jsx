@@ -49,17 +49,9 @@ export default class extends React.Component {
                         <h3>Firefox</h3>
                         <nav>
                             <ul>
-                                <li><a href="https://www.firefox.com/">Download Firefox Web browser</a></li>
-                                <li>
-                                    <a href="https://www.firefox.com/browsers/desktop/">
-                                        Desktop Browser for Mac, Window, Linux
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="https://www.firefox.com/download/android/">
-                                        Mobile Browser for Android
-                                    </a>
-                                </li>
+                                <li><a href="https://www.firefox.com/download/">Download Firefox Web browser</a></li>
+                                <li><a href="https://www.firefox.com/">Desktop Browser for Mac, Window, Linux</a></li>
+                                <li><a href="https://www.firefox.com/download/android/">Mobile Browser for Android</a></li>
                                 <li><a href="https://www.firefox.com/download/ios/">Mobile Browser for iOS</a></li>
                                 <li className="footer-social">
                                     <ul>
