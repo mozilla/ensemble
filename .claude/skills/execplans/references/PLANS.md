@@ -1,6 +1,6 @@
 # Codex Execution Plans (ExecPlans):
 
-This document describes the requirements for an execution plan ("ExecPlan"), a design document that a coding agent can follow to deliver a working feature or system change. Treat the reader as a complete beginner to this repository: they have only the current working tree and the single ExecPlan file you provide. There is no memory of prior plans and no external context.
+This document describes the requirements for an execution plan ("ExecPlan"), a design document that a coding agent can follow to deliver a working feature or system change. Treat the reader as a beginner to this repository, but a moderately experienced developer: they have only the current working tree and the single ExecPlan file you provide.
 
 ## How to use ExecPlans and PLANS.md
 
@@ -8,7 +8,7 @@ When authoring an executable specification (ExecPlan), follow PLANS.md _to the l
 
 After you have created the executable specification (ExecPlan) the first time and have clear milestones, prompt the user to review it.
 
-When implementing an executable specification (ExecPlan), do not prompt the user for "next steps"; simply proceed to the next milestone. Keep all sections up to date, add or split entries in the list at every stopping point to affirmatively state the progress made and next steps. Resolve ambiguities autonomously, and commit frequently.
+When implementing an executable specification (ExecPlan), do not prompt the user for "next steps"; simply proceed to the next milestone. Keep all sections up to date, add or split entries in the list at every stopping point to affirmatively state the progress made and next steps. Resolve technical ambiguities autonomously, and commit frequently. Scope and policy choices are not yours to resolve: reducing what a test covers, weakening an assertion, or anything visible outside the repository goes to the user, and the answer goes in the Decision Log.
 
 When discussing an executable specification (ExecPlan), record decisions in a log in the spec for posterity; it should be unambiguously clear why any change to the specification was made. ExecPlans are living documents, and it should always be possible to restart from _only_ the ExecPlan and no other work.
 
@@ -18,12 +18,12 @@ When researching a design with challenging requirements or significant unknowns,
 
 NON-NEGOTIABLE REQUIREMENTS:
 
-* Every ExecPlan must be fully self-contained. Self-contained means that in its current form it contains all knowledge and instructions needed for a novice to succeed.
+* Every ExecPlan must be fully self-contained. Self-contained means that in its current form it contains all knowledge and instructions needed for a developer to succeed.
 * Every ExecPlan is a living document. Contributors are required to revise it as progress is made, as discoveries occur, and as design decisions are finalized. Each revision must remain fully self-contained.
-* Every ExecPlan must enable a complete novice to implement the feature end-to-end without prior knowledge of this repo.
+* Every ExecPlan must enable a developer to implement the feature end-to-end without prior knowledge of this repo.
 * Every milestone must assess whether its own changes leave any documentation or code comment stale, and update it as part of that milestone — never deferred to a separate final step. See "Milestones" below.
 * Every ExecPlan must produce a demonstrably working behavior, not merely code changes to "meet a definition".
-* Every ExecPlan must define every term of art in plain language or do not use it.
+* Every ExecPlan must define every term specific to this repository, or specialist enough that a competent web developer might not know it, in plain language — or not use it.
 
 Purpose and intent come first. Begin by explaining, in a few sentences, why the work matters from a user's perspective: what someone can do after this change that they could not do before, and how to see it working. Then guide the reader through the exact steps to achieve that outcome, including what to edit, what to run, and what they should observe.
 
@@ -35,27 +35,27 @@ Format and envelope are simple and strict. Each ExecPlan must be one single fenc
 
 When writing an ExecPlan to a Markdown (.md) file where the content of the file *is only* the single ExecPlan, you should omit the triple backticks.
 
-Write in plain prose. Prefer sentences over lists. Avoid checklists, tables, and long enumerations unless brevity would obscure meaning. Checklists are permitted only in the `Progress` section, where they are mandatory. Narrative sections must remain prose-first.
+Write in plain prose. Prefer sentences over lists. Avoid checklists, tables, and long enumerations unless brevity would obscure meaning. Checklists are permitted only in the `Progress` section, where they are mandatory. Steps the reader must follow in order, in `Plan of Work` and `Concrete Steps`, are numbered lists. Purpose, Context, and the Decision Log remain prose-first.
 
 ## Guidelines
 
-Self-containment and plain language are paramount. If you introduce a phrase that is not ordinary English ("daemon", "middleware", "RPC gateway", "filter graph"), define it immediately and remind the reader how it manifests in this repository (for example, by naming the files or commands where it appears). Do not say "as defined previously" or "according to the architecture doc." Include the needed explanation here, even if you repeat yourself.
+Self-containment and plain language are paramount. Assume the reader knows web development generally — npm scripts, React, CI, git — and define what is particular to this repository ("the container/view split", "react-refetch's `connect()`", "`flagForUpdate`", "the gitignored compiled CSS") the first time it appears, naming the files or commands where it shows up. Define each term once, in `Context and Orientation`, then use it. Do not say "according to the architecture doc"; put the needed explanation in the plan.
 
 Avoid common failure modes. Do not rely on undefined jargon. Do not describe "the letter of a feature" so narrowly that the resulting code compiles but does nothing meaningful. Do not outsource key decisions to the reader. When ambiguity exists, resolve it in the plan itself and explain why you chose that path. Err on the side of over-explaining user-visible effects and under-specifying incidental implementation details.
 
 Anchor the plan with observable outcomes. State what the user can do after implementation, the commands to run, and the outputs they should see. Acceptance should be phrased as behavior a human can verify ("after starting the server, navigating to [http://localhost:8080/health](http://localhost:8080/health) returns HTTP 200 with body OK") rather than internal attributes ("added a HealthCheck struct"). If a change is internal, explain how its impact can still be demonstrated (for example, by running tests that fail before and pass after, and by showing a scenario that uses the new behavior).
 
-Specify repository context explicitly. Name files with full repository-relative paths, name functions and modules precisely, and describe where new files should be created. If touching multiple areas, include a short orientation paragraph that explains how those parts fit together so a novice can navigate confidently. When running commands, show the working directory and exact command line. When outcomes depend on environment, state the assumptions and provide alternatives when reasonable.
+Specify repository context explicitly. Name files with full repository-relative paths, name functions and modules precisely, and describe where new files should be created. If touching multiple areas, include a short orientation paragraph that explains how those parts fit together so a newcomer can navigate confidently. When running commands, show the working directory and exact command line. When outcomes depend on environment, state the assumptions and provide alternatives when reasonable.
 
 Be idempotent and safe. Write the steps so they can be run multiple times without causing damage or drift. If a step can fail halfway, include how to retry or adapt. If a migration or destructive operation is necessary, spell out backups or safe fallbacks. Prefer additive, testable changes that can be validated as you go.
 
-Validation is not optional. Include instructions to run tests, to start the system if applicable, and to observe it doing something useful. Describe comprehensive testing for any new features or capabilities. Include expected outputs and error messages so a novice can tell success from failure. Where possible, show how to prove that the change is effective beyond compilation (for example, through a small end-to-end scenario, a CLI invocation, or an HTTP request/response transcript). State the exact test commands appropriate to the project’s toolchain and how to interpret their results.
+Validation is not optional. Include instructions to run tests, to start the system if applicable, and to observe it doing something useful. Describe comprehensive testing for any new features or capabilities. Include expected outputs and error messages so the reader can tell success from failure. Where possible, show how to prove that the change is effective beyond compilation (for example, through a small end-to-end scenario, a CLI invocation, or an HTTP request/response transcript). State the exact test commands appropriate to the project’s toolchain and how to interpret their results.
 
 Capture evidence. When your steps produce terminal output, short diffs, or logs, include them inside the single fenced block as indented examples. Keep them concise and focused on what proves success. If you need to include a patch, prefer file-scoped diffs or small excerpts that a reader can recreate by following your instructions rather than pasting large blobs.
 
 ## Milestones
 
-Milestones are narrative, not bureaucracy. If you break the work into milestones, introduce each with a brief paragraph that describes the scope, what will exist at the end of the milestone that did not exist before, the commands to run, the acceptance you expect to observe, and whether that milestone's own changes leave any documentation or code comment stale — update it within the same milestone, or state plainly that nothing needed updating. Keep it readable as a story: goal, work, result, proof. Progress and milestones are distinct: milestones tell the story, progress tracks granular work. Both must exist. Never abbreviate a milestone merely for the sake of brevity, do not leave out details that could be crucial to a future implementation.
+Milestones are narrative, not bureaucracy. If you break the work into milestones, introduce each with a brief paragraph that describes the scope, what will exist at the end of the milestone that did not exist before, the commands to run, the acceptance you expect to observe, and whether that milestone's own changes leave any documentation or code comment stale — update it within the same milestone, or state plainly that nothing needed updating. Keep it readable as a story: goal, work, result, proof. Progress and milestones are distinct: milestones tell the story, progress tracks granular work. Both must exist. Include what someone needs to carry out and check the milestone; leave out what they could work out from the code or `git log`.
 
 Each milestone must be independently verifiable and incrementally implement the overall goal of the execution plan.
 
@@ -116,7 +116,7 @@ Prefer additive code changes followed by subtractions that keep tests passing. P
 
     ## Context and Orientation
 
-    Describe the current state relevant to this task as if the reader knows nothing. Name the key files and modules by full path. Define any non-obvious term you will use. Do not refer to prior plans.
+    Describe the current state relevant to this task for someone new to this repository. Name the key files and modules by full path. Define any repository-specific term you will use. If this work builds on a checked-in ExecPlan, cite it by path and summarize only what this plan relies on.
 
     ## Plan of Work
 
@@ -148,18 +148,21 @@ Prefer additive code changes followed by subtractions that keep tests passing. P
             fn plan(&self, observed: &Observed) -> Vec<Action>;
         }
 
-If you follow the guidance above, a single, stateless agent -- or a human novice -- can read your ExecPlan from top to bottom and produce a working, observable result. That is the bar: SELF-CONTAINED, SELF-SUFFICIENT, NOVICE-GUIDING, OUTCOME-FOCUSED.
+If you follow the guidance above, a single, stateless agent -- or a developer new to this repository -- can read your ExecPlan from top to bottom and produce a working, observable result. That is the bar: SELF-CONTAINED, SELF-SUFFICIENT, NEWCOMER-GUIDING, OUTCOME-FOCUSED.
 
-When you revise a plan, you must ensure your changes are comprehensively reflected across all sections, including the living document sections, and you must write a note at the bottom of the plan describing the change and the reason why. ExecPlans must describe not just the what but the why for almost everything.
+When you revise a plan, you must ensure your changes are comprehensively reflected across all sections, including the living document sections. When a revision changes the approach or scope, write a note at the bottom of the plan describing the change and the reason why; bookkeeping fixes don't need one. ExecPlans must describe not just the what but the why for almost everything.
 
 ---
 
 # Ensemble addendum
 
 Everything above is the upstream ExecPlan specification, published by OpenAI at
-<https://cookbook.openai.com/articles/codex_exec_plans/>, reproduced verbatim. This section is
-local to `mozilla/ensemble` and **overrides the text above wherever the two disagree.** The
-repository's own conventions are in `AGENTS.md` at the repository root; read that too.
+<https://cookbook.openai.com/articles/codex_exec_plans/>, adapted for this repository: the reader
+is pitched at a competent developer who is new to this repository rather than a complete novice,
+and a plan may cite a checked-in ExecPlan instead of restating it. This section is local to
+`mozilla/ensemble` and **overrides the text above wherever the two disagree.** The repository's own
+conventions are in `AGENTS.md` at the repository root; read that too. Plans follow its "Writing for
+people" section.
 
 ## Where plans live
 
@@ -193,32 +196,36 @@ Do not paste a plan into a chat message. Summarize it and name the file.
 `Concrete Steps` and `Validation and Acceptance` must name commands that run in this repository
 today. These do:
 
-    npm install --ignore-scripts                              # plain `npm install` fails on Apple Silicon
-    npm run build:css                                         # required on a fresh clone; the CSS imports are gitignored
-    npm run lint                                               # currently broken here — see below; still the command to run and report on
-    npm run test:jest
-    NODE_OPTIONS=--openssl-legacy-provider npm run build:app  # CRA lints .jsx here
+    npm ci
+    npm run build:css         # required before Vitest on a fresh clone; the compiled CSS is gitignored
+    npm run lint              # ESLint flat config (.js and .jsx) plus stylint
+    npm run test:jest         # Vitest
+    npm run test:playwright   # Playwright, against the Vite dev server and live data.firefox.com
+    npm run build             # Vite production build plus version.json
+    npm test                  # lint, then Vitest, then Playwright
 
-A plan that changes application code validates with **both** `npm run lint` and `build:app` where
-lint is runnable — the two linters cover disjoint file sets, so a green run of either proves nothing
-about the other.
+The Playwright dashboard specs assert against live production data, so a failure there can come
+from upstream data changing rather than from the commit. Re-run once before investigating, and say
+which it was.
 
-**`npm run lint` currently fails outright** in a fresh install: the installed ESLint is v9.39.5, not
-the v6 that `AGENTS.md` describes, and `lint:js-extra`'s eslintrc-format config
-(`.eslintrc.extra.js`) is not valid under ESLint's flat-config system (`A config object is using the
-"env" key, which is not supported in flat config system`). Do not treat `AGENTS.md`'s "confirmed
-clean, no flags" as still true. A plan should run the command, report the actual result, and not
-claim a pass it did not observe. Fixing this is its own piece of work, not something to fold
-silently into an unrelated plan.
+`AGENTS.md`'s toolchain description still predates the move to Vite; where it disagrees with the
+commands above, these win. Run each command and report the actual result; never claim a pass you
+did not observe. State the expected result, not just the command: "`npm run test:jest` — 2 files, 4
+tests passing" beats "run the tests".
 
-**Never write `npm test`, `test:nightwatch:dev`, or any other Nightwatch command into a plan.**
-`npm test` includes the Nightwatch leg, and the e2e suite cannot run at all — `chromedriver@84` does
-not install on current hardware. A plan whose acceptance depends on Nightwatch is not executable. If
-e2e coverage is the point of the work, say so in `Interfaces and Dependencies` and make unblocking
-it an explicit milestone with its own acceptance.
+## Record what matters, not what happened
 
-State the expected result, not just the command: "`npm run test:jest` — 2 suites, both passing"
-beats "run the tests".
+The living sections are for the next person to make the next decision, not a log of the session.
+
+* `Progress` records milestone-level state: what is done, what is partly done, what is next.
+* `Decision Log` records choices someone might otherwise undo, and why they were made.
+* `Surprises & Discoveries` records facts that cost time to find and would cost the next person the
+  same.
+
+Leave out routine operations: pushes, rebases, force-pushes, resetting local branches, changed
+commit SHAs, CI re-runs, and the steps of reading the issue or the docs. `git log` and the pull
+request already hold those. When a later finding shows an earlier Surprise was wrong, replace the
+earlier entry rather than adding a correction beneath it.
 
 ## Committing
 

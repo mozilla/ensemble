@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-`ensemble` (v1.2.1, `private: true`, MPL-2.0, `git@github.com:mozilla/ensemble.git`) is the React app behind <https://data.firefox.com/> — the **Firefox Public Data Report**. It is a **pure client-side create-react-app SPA and it contains no data of its own.** Every metric is fetched at runtime from **[ensemble-transposer](https://github.com/mozilla/ensemble-transposer)** (separate repo), which reformats Mozilla's public telemetry and serves JSON from the same `data.firefox.com` domain. If a number on the site looks wrong, the bug is usually not here.
+`ensemble` (v1.2.1, `private: true`, MPL-2.0, `git@github.com:mozilla/ensemble.git`) is the React app behind <https://data.firefox.com/> — the **Firefox Public Data Report**. It is a **pure client-side React 16 SPA, built with Vite, and it contains no data of its own.** Every metric is fetched at runtime from **[ensemble-transposer](https://github.com/mozilla/ensemble-transposer)** (separate repo), which reformats Mozilla's public telemetry and serves JSON from the same `data.firefox.com` domain. If a number on the site looks wrong, the bug is usually not here.
 
 **`src/config.json` is the spine.** Two arrays, and almost every structural change starts by editing one of them:
 
@@ -29,8 +29,8 @@ Metric `description` strings are rendered as inline Markdown through `markdown-i
 src/
 ├── index.jsx                    entry: ReactDOM.render + BrowserRouter
 ├── config.json                  the route/dashboard table + next-button flow
-├── registerServiceWorker.js     CRA helper; only unregister() is called (SW deliberately off)
-├── setupTests.js                enzyme adapter; puts React and shallow on global
+├── registerServiceWorker.js     create-react-app leftover; only unregister() is called (SW deliberately off)
+├── setupTests.js                Vitest setup: enzyme adapter; puts React and shallow on global
 ├── components/
 │   ├── containers/              6 stateful/data-fetching .jsx
 │   ├── decorators/              withTracker.jsx (react-ga), withNextButton.jsx
@@ -40,61 +40,62 @@ src/
 │       ├── fonts/FiraSans/      8 weights/styles of webfonts
 │       └── img/                 3 assets
 ├── lib/
-│   ├── lazyLoad.jsx             react-loadable wrapper (spinner + error fallback)
+│   ├── lazyLoad.jsx             React.lazy wrapper
+│   ├── LazyBoundary.jsx         error boundary + spinner for lazy-loaded components
 │   └── utils.js                 bumpSort, isFloat, prettifyNumber, getPageTitle
 └── tests/
-    ├── jest/                    2 unit tests
-    └── nightwatch/              13 e2e specs (.js, CommonJS), incl. dashboards/
+    └── jest/                    2 unit test files, run by Vitest (the directory name predates Vitest)
+tests/playwright/
+├── specs/                       e2e specs (.spec.js, CommonJS), incl. dashboards/
+└── utils.js                     shared helpers: linkWorks, linksWork, flagForUpdate, metricTitleIsCorrect
 ```
 
-There is no `pages/`, `store/`, `hooks/`, `api/`, `locales/`, or `data/`. `public/` is CRA's checked-in static template (`index.html` with `%PUBLIC_URL%` placeholders and a hardcoded `og:image`, `manifest.json`, `contribute.json`, a Search Console verification file, favicons). `build/` is gitignored output. Routes are exactly `/`, `/contact`, `/dashboard/<key>`, and a catch-all `NotFound`.
+There is no `pages/`, `store/`, `hooks/`, `api/`, `locales/`, or `data/`. `index.html` at the repository root is Vite's entry point (with a hardcoded `og:image` and the `<noscript>` message). `public/` holds static files copied as-is: `manifest.json`, `contribute.json`, a Search Console verification file, and `img/`. `build/` is gitignored output. `docs/architecture/` describes the frontend and the data pipeline. Routes are exactly `/`, `/contact`, `/dashboard/<key>`, and a catch-all `NotFound`.
 
 ## Current state: read this before estimating anything
 
-MozMEAO is taking this repo over. 810 commits — 515 in 2018, 92 in 2020, **nothing in 2021–2024**, three in 2025. Last commit `f655559`, 2025-05-07. Assume nothing has been exercised recently.
+MozMEAO is taking this repo over. Before that work started there were 810 commits — 515 in 2018, 92 in 2020, **nothing in 2021–2024**, three in 2025, the last `f655559` on 2025-05-07. The toolchain has since been replaced (#441): create-react-app, Jest and Nightwatch gave way to Vite, Vitest and Playwright, and two ESLint configs became one. Code outside the toolchain has barely been exercised since 2020.
 
-- **No CI/CD of any kind exists.** No `.github/`, `.circleci/`, `Dockerfile`, `docker-compose`, `Jenkinsfile`. This is not a quirk of your clone — it was all deliberately removed: CircleCI disabled 2018-02-22 (`433a465`), Docker/Dockerflow removed 2018-08-23 (`d3bb561`), `.github/dependabot.yml` deleted 2020-07-29 (`7c7006f`, "Disable non-security updates from Dependabot"). Issue #79 ("enable CI") is still open.
-- **The deploy is a static build on Google Cloud Storage** (confirmed by `x-goog-*` headers on the live site). `https://data.firefox.com/version.json` reports `1.2.1` / commit `f655559`, so **the deployed site matches current `main`**. The mechanism that pushes `build/` to GCS is **not in this repo and is currently unknown** — finding and documenting it is takeover work, not something to guess at.
-- **`npm install` fails outright on an Apple Silicon (arm64) Mac.** Confirmed: `chromedriver@84.0.1`'s postinstall exits with `Only Mac 64 bits supported` and takes the whole install down with it. Use `npm install --ignore-scripts` to get a working `node_modules` (you lose the chromedriver binary, which you can't use anyway — see the Nightwatch bullet below). This is a harder failure than "chromedriver's download URL changed"; it doesn't even try to download on this architecture.
-- **Confirmed on Node v24.19.0:** `npm run build:app` (and therefore `npm run build`) fails with `ERR_OSSL_EVP_UNSUPPORTED` — webpack 4's chunk hashing uses MD4, which OpenSSL 3 (Node ≥17) rejects — and succeeds once prefixed with `NODE_OPTIONS=--openssl-legacy-provider`. `npm start` compiles through the same webpack pipeline, so expect to need the same prefix. **`npm run lint` and `npm run test:jest` both pass clean with no flag at all** — Jest never invokes webpack, so it never hits the MD4 path. The repo's only Node signal is `engines: node >=8`; there is **no `.nvmrc`**, and historical CI pinned Node 8.
-- **`npm install` on npm ≥7 rewrites `package-lock.json` from lockfileVersion 1 to 3.** Confirmed: a ~22,000-line diff. Revert it after installing; don't let it ride along in an unrelated commit.
-- **Nightwatch cannot run at all right now.** Its `chromedriver@84.0.1` dependency doesn't install (see above), so there is no chromedriver binary in `node_modules/.bin` to point Nightwatch at. Even setting that aside, Chrome 84 is mid-2020 and chromedriver must major-version-match the installed Chrome. Treat the whole e2e suite as blocked until this is deliberately fixed.
-- **A fresh clone will not render styles until you compile Stylus.** `src/components/views/css/*` is gitignored and every component does a side-effect `import './css/Foo.css';` — run `npm run build:css` (confirmed working, no flags needed) or the app fails to resolve those imports.
+- **CI runs on GitHub Actions; there is no CD.** `.github/workflows/ci.yml` runs lint, the Vitest unit tests, and the Playwright end-to-end tests on every push to `main` and every pull request. There is no `.circleci/`, `Dockerfile`, `docker-compose`, or `Jenkinsfile` — earlier automation was deliberately removed: CircleCI disabled 2018-02-22 (`433a465`), Docker/Dockerflow removed 2018-08-23 (`d3bb561`), `.github/dependabot.yml` deleted 2020-07-29 (`7c7006f`, "Disable non-security updates from Dependabot").
+- **The deploy is a static build on Google Cloud Storage** (confirmed by `x-goog-*` headers on the live site). `https://data.firefox.com/version.json` reports `1.2.1` / commit `f655559`, so **the deployed site predates the Vite toolchain on `main`**; nothing built by Vite has shipped yet. The mechanism that pushes `build/` to GCS is **not in this repo and is currently unknown** — finding and documenting it is takeover work, not something to guess at.
+- **Node 24.** `.nvmrc` holds `24` and `engines` requires `^24.15.0`. A plain `npm install` works with no flags.
+- **A fresh clone will not render styles until you compile Stylus.** `src/components/views/css/*` is gitignored and every component does a side-effect `import './css/Foo.css';` — run `npm run build:css` or the app, and Vitest, fail to resolve those imports. `npm start` compiles it for you.
 - **Headline known bug: issue #409** — the hardware dashboard takes >10 s to re-render on resize/zoom and can trigger Firefox's slow-script dialog. Most user-visible defect; lives in the d3/metrics-graphics redraw path (`views/SummaryMetric.jsx`, `containers/ChartContainer.jsx`, `views/Chart.jsx`).
-- ~40 open issues, oldest from 2018. Other notables: #313 (`MetricOverviewContainer` does not reject when metric data 404s — cited in an inline comment there), #395 (replace `request`), #333 (replace `@babel/polyfill`), #245 (React code-splitting), #46 (localize content). The remote also carries ~35 stale `dependabot/npm_and_yarn/*` branches and three `%archive-*` branches.
-- Upstream data is **live and current** — transposer `dates` arrays are sorted newest-first and currently run to 2026-08-31. The app is unmaintained; the data is not.
+- About 30 open issues, oldest from 2018. Other notables: #313 (`MetricOverviewContainer` does not reject when metric data 404s — cited in an inline comment there), #245 (React code-splitting), #46 (localize content). #333 (replace `@babel/polyfill`) is still open, but the polyfill was removed in #441. The remote also carries about 30 stale `dependabot/npm_and_yarn/*` branches and three `%archive-*` branches.
+- Upstream data is **live and current** — transposer `dates` arrays are sorted newest-first and are updated weekly. The app is unmaintained; the data is not.
 
 ## Build, Test, and Development Commands
 
+`CONTRIBUTING.md` is the fuller reference for these.
+
 ```bash
-npm install --ignore-scripts         # plain `npm install` fails on Apple Silicon; see Current State
-                                      # expect package-lock.json to be rewritten v1 -> v3; revert it after
+npm install
+npx playwright install chromium      # one-time browser download; needed before test:playwright
 
-NODE_OPTIONS=--openssl-legacy-provider npm start
-                                      # npm-run-all --parallel watch:css watch:app -> CRA dev server :3000
-                                      # .env sets BROWSER=firefox, so this opens Firefox
-npm run build:css                    # one-shot Stylus compile; confirmed working, no flags needed
+npm start                            # npm-run-all --parallel watch:css watch:app -> Vite dev server :3000
+npm run build:css                    # one-shot Stylus compile
 
-npm run lint                         # lint:js-extra (standalone ESLint) + lint:styl (stylint); confirmed clean, no flags
-npm run test:jest                    # CI=true react-scripts test (Jest + enzyme, 2 files); confirmed passing, no flags
-npm test                             # lint -> test:jest -> test:nightwatch:dev; the Nightwatch leg cannot run today
+npm run lint                         # lint:js (flat-config ESLint, .js and .jsx) + lint:styl (stylint)
+npm run test:jest                    # vitest run (Enzyme, 2 files)
+npm run test:playwright              # playwright test; starts the dev server itself if :3000 is free
+npm test                             # lint -> test:jest -> test:playwright
 
-NODE_OPTIONS=--openssl-legacy-provider npm run build:app     # confirmed required on Node >=17; fails with ERR_OSSL_EVP_UNSUPPORTED otherwise
+npm run build:app                    # vite build
 npm run build:version.json           # writes build/version.json; must run after build:app, needs git on PATH
-npm run size                         # source-map-explorer on build/static/js/main.* (needs a prior build)
+npm run size                         # source-map-explorer on build/assets/index-*.js (needs a prior build)
 ```
 
-Run one Jest file by passing a path through: `CI=true npx react-scripts test src/tests/jest/Dashboard.test.jsx` (confirmed working).
+Run one Vitest file: `npx vitest run src/tests/jest/Dashboard.test.jsx`. Run one Playwright spec: `npx playwright test contact.spec.js`.
 
-**Environment:** `.env` **is checked into git** and holds only public build-time config — `BROWSER=firefox`, `NODE_ENV=development`, `REACT_APP_GA_TRACKING_ID='UA-00000000-0'` (placeholder), `REACT_APP_SITE_TITLE='Firefox Public Data Report'`, `REACT_APP_VALUE_DECIMAL_PLACES=3`. Consumed by `decorators/withTracker.jsx` and `lib/utils.js`. Override inline: `REACT_APP_SITE_TITLE='…' npm start`.
+**Environment:** `.env` **is checked into git** and holds only public build-time config — `VITE_GA_TRACKING_ID='UA-00000000-0'` (placeholder), `VITE_SITE_TITLE='Firefox Public Data Report'`, `VITE_VALUE_DECIMAL_PLACES=3`. Consumed through `import.meta.env` by `decorators/withTracker.jsx` and `lib/utils.js`. Override inline: `VITE_SITE_TITLE='…' npm start`.
 
 ## Coding Style & Naming Conventions
 
-- **`.jsx` for any file containing JSX** — including `src/index.jsx` and `*.test.jsx`. Plain `.js` only for non-JSX modules (`lib/utils.js`, `setupTests.js`, `registerServiceWorker.js`, all Nightwatch specs).
-- **PascalCase filenames matching the default-exported component.** Decorators are camelCase with a `with` prefix; `lib/lazyLoad.jsx` is camelCase.
+- **`.jsx` for any file containing JSX** — including `src/index.jsx` and `*.test.jsx`. Plain `.js` only for non-JSX modules (`lib/utils.js`, `setupTests.js`, `registerServiceWorker.js`, the Playwright specs and helpers, and the config files at the repository root).
+- **PascalCase filenames matching the default-exported component.** Decorators are camelCase with a `with` prefix; `lib/lazyLoad.jsx` is camelCase because it is a helper, not a component.
 - **One component per file, always `export default`.** There are no named component exports anywhere in the repo; the only named exports at all are the four helpers in `lib/utils.js`.
 - **The container/view split is the organizing principle.** `containers/X.jsx` holds state and fetching and renders `views/X.jsx` with formatted props (`ChartContainer`→`Chart`, `DataTableContainer`→`DataTable`). Keep new state out of `views/`.
-- Function components are the default (17 of 19 views), written as anonymous default-exported arrows — `export default props => (...)` — with no `displayName` (hence `react/display-name: off`). Use a class only where state, refs, or lifecycle are genuinely needed: all 6 containers plus `SummaryMetric.jsx` (d3 + `React.createRef`), `Spinner.jsx`, `MetricOverview.jsx`, `Footer.jsx`.
+- Function components are the default (17 of 19 views), written as anonymous default-exported arrows — `export default props => (...)` — with no `displayName` (hence `react/display-name: off`). Use a class only where state, refs, or lifecycle are genuinely needed: all 6 containers plus `SummaryMetric.jsx` (d3 + `React.createRef`), `Spinner.jsx`, `MetricOverview.jsx`, `Footer.jsx`, and `lib/LazyBoundary.jsx` (error boundaries must be classes).
 - Leading underscore for private class-property handlers (`_onRegionChange`, `_drawChart`, `_setChartWidth`) — applied inconsistently (`setChartSize` in `ChartContainer.jsx`); prefer the underscore in new code.
 - Locals named `maybeX` hold a JSX fragment **or `null`** (`maybeDescription`, `maybeSummaryMetrics`, `maybeRegion`, `maybeGraphURL`). Keep the idiom.
 - Styles attach via a global CSS side-effect import of the **generated** file at the top of the component: `import './css/Dashboard.css';`. Some components import several (`Chart.jsx` pulls `metrics-graphics/dist/metricsgraphics.css`, `./css/Chart.css`, `./css/Metric.css`). `Metric.css` and `LabelledSelector.css` are shared partials with no component of their own.
@@ -102,17 +103,17 @@ Run one Jest file by passing a path through: `CI=true npx react-scripts test src
 - `.editorconfig`: LF, final newline, trim trailing whitespace, 4-space indent for `py,yml,html,css,styl,js,json,md`. `.jsx` is missing from that list but 4-space is the de facto convention. No max line length is configured anywhere.
 - Every dependency is **exact-pinned** — no `^` or `~` in `package.json`. Keep it that way.
 
-**ESLint — there are two of them, and neither sees everything.** `.eslintrc.extra.js` is a standalone config run only by `npm run lint:js-extra`, and that script is `npx eslint --config .eslintrc.extra.js --ext .js --ext .json .` — **`.jsx` is not in the `--ext` list, so the bulk of the application code is never linted by it.** Separately, `react-scripts` 3.4.1 lints during `start`/`build` using its own bundled `eslint-config-react-app`, which appears nowhere in this repo and has no `eslintConfig` key in `package.json`. **Consequence: a change can pass `npm run lint` and still fail `npm run build`, and vice versa.** Run both.
+**ESLint is one flat config, `eslint.config.js`, covering `.js` and `.jsx`.** `npm run lint:js` runs `eslint .`; the build does not lint. Warnings don't fail the run.
 
-`.eslintrc.extra.js` errors: `eqeqeq`, `no-var`, `prefer-const`, `no-console`, `no-global-assign`, `no-redeclare` and `no-shadow` — the latter two with `builtinGlobals: true`, so **do not name a variable `name`, `status`, `history`, `event`, etc.** Warnings: `semi: always`, `prefer-arrow-callback`, `comma-dangle` (trailing commas **required** for multiline arrays/objects/imports/exports, **never** for function args/params). Off: `react/prop-types`, `react/display-name`, `jsx-a11y/no-onchange`. `react/no-unescaped-entities` forbids only `>` and `}`. `jsx-a11y/recommended` is on, so a11y violations are errors. **Quote style is not enforced** (there is no `quotes` rule) — single quotes by convention. `.eslintignore` covers `build` and `package-lock.json`.
+Errors: `eqeqeq`, `no-var`, `prefer-const`, `no-console`, `no-global-assign`, `no-redeclare` and `no-shadow` — the latter two with `builtinGlobals: true`, so **do not name a variable `name`, `status`, `history`, `event`, etc.** Warnings: `semi: always`, `prefer-arrow-callback`, `comma-dangle` (trailing commas **required** for multiline arrays/objects/imports/exports, **never** for function args/params). Off: `react/prop-types`, `react/display-name`, `jsx-a11y/no-onchange`. `react/no-unescaped-entities` forbids only `>` and `}`. `jsx-a11y/recommended` is on, so a11y violations are errors; `jsx-a11y/label-has-associated-control` requires `htmlFor`. `settings.react.version` is `'detect'`. `src/tests/jest/**/*.test.jsx` also gets `@vitest/eslint-plugin`'s recommended rules and the `React`/`shallow` globals. **Quote style is not enforced** (there is no `quotes` rule) — single quotes by convention. The config's own `ignores` excludes `build`.
 
-## Styling: Stylus, outside webpack
+## Styling: Stylus, outside Vite
 
-`src/components/views/styl/*.styl` → `src/components/views/css/*.css` via the `stylus` CLI (`build:css` / `watch:css`). Webpack never sees the Stylus. One `.styl` per component (PascalCase, mirroring the component), plus `Application.styl` (global reset, Fira Sans `@font-face`, body type, ~217 lines), `BrowserHacks.styl`, and shared partials `Metric.styl` and `LabelledSelector.styl`.
+`src/components/views/styl/*.styl` → `src/components/views/css/*.css` via the `stylus` CLI (`build:css` / `watch:css`). Vite never sees the Stylus. One `.styl` per component (PascalCase, mirroring the component), plus `Application.styl` (global reset, Fira Sans `@font-face`, body type, ~217 lines) and shared partials `Metric.styl` and `LabelledSelector.styl`.
 
 Shared variables live in `src/components/views/styl/includes/lib.styl` and it is nearly empty — `$base-tablet`, `$base-desktop`, `$link-color-normal = #0070ff`, and a `// TODO: padding/margin spacing.`. Import it per-file with `@import 'includes/lib'`; it is not globally injected. **No mixins file; most colors are hardcoded hex inline** (stylint's `colors` check is off).
 
-**Not BEM.** ID selectors carry the page landmarks — `#application`, `#main-header`, `#main-navigation`, `#dashboard`, `#dashboard-sections`, `#summary-metrics`, `#region`, `#introduction` — with flat lowercase-dash classes for repeated pieces (`.metric-overview`, `.dashboard-section`, `.data-table-wrapper`, `.labelled-selector`, `.next-button`, `.striped`, `.highlighted`, `.bar-label`). Descendant nesting with `&` for states; responsive via `@media $base-tablet` / `@media $base-desktop` blocks at the bottom of each file. **Those element IDs are also the Nightwatch selectors — renaming one breaks the e2e tests.**
+**Not BEM.** ID selectors carry the page landmarks — `#application`, `#main-header`, `#main-navigation`, `#dashboard`, `#dashboard-sections`, `#summary-metrics`, `#region`, `#introduction` — with flat lowercase-dash classes for repeated pieces (`.metric-overview`, `.dashboard-section`, `.data-table-wrapper`, `.labelled-selector`, `.next-button`, `.striped`, `.highlighted`, `.bar-label`). Descendant nesting with `&` for states; responsive via `@media $base-tablet` / `@media $base-desktop` blocks at the bottom of each file. **Those element IDs are also the Playwright selectors — renaming one breaks the e2e tests.**
 
 stylint (`.stylintrc`) runs with `maxErrors: 0` and `maxWarnings: 0`, so any finding fails the lint. It enforces the **CSS-like** Stylus dialect, not the terse indented syntax: 4-space indent, single quotes, `brackets: always`, `colons: always`, `semicolons: always`. Also `noImportant: true`, `leadingZero: false` (`.5`, not `0.5`), `zeroUnits: never` (`0`, not `0px`), `universal: never` (no `*`), `prefixVarsWithDollar: always`, `namingConvention: lowercase-dash` with `namingConventionStrict: true`, `zIndexNormalize: 10`. Escape hatches are `// @stylint off` / `on` / `ignore` comments — see the `@font-face` block in `Application.styl`.
 
@@ -125,11 +126,22 @@ Code is read far more often than it is written, and in this repo the next reader
 - **Comments must stand on their own.** Never reference a spec, a plan document, a requirement label, or a ticket ID *as* the explanation — the comment must make sense to someone who has only the file in front of them. A cross-reference alongside a self-contained explanation is fine; that is how the `metrics-graphics` workaround notes in `views/Chart.jsx` read.
 - Never describe code that no longer exists. After a refactor, delete the comments it falsified — this repo already has several. Prefer deleting an obsolete comment, branch, or test over leaving it beside its replacement.
 
+## Writing for people
+
+This applies to everything written for a person to read: ExecPlans, PR descriptions, commit messages, documentation, issue comments, and chat replies.
+
+- Put the point first. Lead with the conclusion or the action, then give the reason.
+- Keep sentences short, one idea each. If a sentence needs a semicolon or a second "which", split it.
+- Use active voice and say who does what: "Vitest fails without the compiled CSS", not "a failure was observed".
+- Use the plain word: "use", "start", "before", "if", "about" — not "utilise", "commence", "prior to", "in the event that", "approximately".
+- Cut hedges and filler: "it should be noted that", "in order to", "verified directly, not assumed".
+- Number steps the reader has to follow in order.
+
 ## Testing Guidelines
 
-**Jest + enzyme**, through CRA's built-in Jest, with no `jest` config block. Only two files, both in `src/tests/jest/`, named `PascalCase.test.jsx` — **not colocated, no `__tests__` directories.** `src/setupTests.js` puts `React` and `shallow` on `global`, so **test files import neither**: they `import Dashboard from '../../components/views/Dashboard';` and call bare `shallow(<Dashboard … />)`. Existing style is top-level `it(...)` with long descriptive sentences, a `beforeAll` that builds a `requiredProps` object, and assertions via `.find(selector).exists()` and `.html()).toContain(...)`. Shallow rendering only; no snapshots; `react-refetch` is never mocked; there are no container tests.
+**Vitest + enzyme**, configured in the `test` block of `vite.config.mjs` (`jsdom`, `globals: true`, `include: ['src/tests/jest/**/*.test.jsx']`). Only two files, both in `src/tests/jest/`, named `PascalCase.test.jsx` — **not colocated, no `__tests__` directories.** `src/setupTests.js` puts `React` and `shallow` on `global`, so **test files import neither**: they `import Dashboard from '../../components/views/Dashboard';` and call bare `shallow(<Dashboard … />)`. Existing style is top-level `it(...)` with long descriptive sentences, a `beforeAll` that builds a `requiredProps` object, and assertions via `.find(selector).exists()` and `.html()).toContain(...)`. Shallow rendering only; no snapshots; `react-refetch` is never mocked; there are no container tests.
 
-**Nightwatch** specs in `src/tests/nightwatch/` are **lowercase `.js`, CommonJS**: `module.exports = { before: browser => …, 'Test name as a sentence': browser => … }`. `nightwatch.conf.js` reads `NIGHTWATCH_TARGET` (`dev` = localhost:3000, `stage` = data-ensemble.stage.mozaws.net, `prod` = data.firefox.com) and **throws if it is unset** — it destructures `undefined`. The `default` env is headless Chrome and excludes `utils.js` and `jsDisabled.js`; the `jsDisabled` env runs only `jsDisabled.js` and must be **non-headless** (JS cannot be disabled in headless Chrome), asserting on the `id="enable-javascript"` `<noscript>` block in `public/index.html`. `src/tests/nightwatch/utils.js` exports `linkWorks`, `linksWork`, `metricTitleIsCorrect`, and `flagForUpdate` — which **deliberately fails when an element count changes**, to force a human to look. The `dashboards/*.js` specs assert exact metric titles and section ordering **against live production data**, so upstream data changes break them by design. `test:nightwatch:dev` does **not** start the dev server; `npm start` must already be running in another shell. None of this can run today — see Current State.
+**Playwright** specs in `tests/playwright/specs/` are **`camelCase.spec.js` or `kebab-case.spec.js`, CommonJS**, using `@playwright/test`'s `test`/`expect`. `playwright.config.js` has two Chromium projects: `chromium` runs everything except `jsDisabled.spec.js`, and `chromium-no-js` runs only that spec with `javaScriptEnabled: false`, asserting on the `id="enable-javascript"` `<noscript>` block in `index.html`. Playwright starts `npm start` itself unless a server is already on `:3000`. Set `PLAYWRIGHT_BASE_URL` to test another environment (`PLAYWRIGHT_BASE_URL=https://data.firefox.com npx playwright test`). `tests/playwright/utils.js` exports `linkWorks`, `linksWork`, `metricTitleIsCorrect`, and `flagForUpdate` — which **deliberately fails when an element count changes**, to force a human to look. The `dashboards/*.spec.js` specs assert exact metric titles and section ordering **against live production data**, so upstream data changes break them by design.
 
 **Tests describe the code as it is now.** Assert what the code does; never add a test whose purpose is to prove that removed behaviour is absent — a negative assertion about history passes forever while documenting nothing. Each test builds only the data it needs; no shared mega-fixture. Keep assertions at the point where the thing is rendered rather than behind a `_getElement(wrapper)`-style indirection layer, so a failure points straight at the markup it cares about.
 
@@ -137,17 +149,15 @@ Code is read far more often than it is written, and in this repo the next reader
 
 | Trap | What happens |
 |---|---|
-| `npm install` on Apple Silicon | Fails outright — chromedriver@84 postinstall: `Only Mac 64 bits supported`. Use `--ignore-scripts`. |
-| Two linters, disjoint coverage | `npm run lint` only covers `.js`/`.json`; CRA lints `.jsx` during `build`. Green lint ≠ green build. Run both. |
+| Switching branches without reinstalling | `node_modules` can still hold another branch's packages. Run `npm install` after a branch switch before trusting any result. |
 | Gitignored `src/components/views/css/` | Fresh clone cannot resolve the CSS imports until `npm run build:css` runs. Never hand-edit `css/` — edit `styl/`. |
-| Renaming a landmark ID | Breaks Nightwatch selectors silently until the e2e suite runs — and it can't run at all right now. |
-| `NIGHTWATCH_TARGET` unset | `nightwatch.conf.js` throws on load, before any test runs. |
+| Renaming a landmark ID | Breaks Playwright selectors silently. |
+| First visit to a route on the Vite dev server | Can 504 or fail a dynamic import ("Outdated Optimize Dep") while Vite pre-bundles a new dependency. A reload fixes it; production builds don't do this. |
+| `path.mg-line1` in a Playwright locator | metrics-graphics puts the class on many invisible hover paths too. Use `.first()` or the locator throws a strict-mode error. |
 | `build:version.json` | Needs `build/` to already exist and `git` on PATH; must follow `build:app`. |
-| `.eslintrc.extra.js` override glob | Declares the `React`/`shallow` globals for `src/tests/jest/*.js`, but the files are `.jsx` — **the override never matches**. |
 | `no-shadow` / `no-redeclare` with `builtinGlobals` | Naming a local `name`, `status`, `history`, `event` is a hard error. |
-| `npm install` on npm ≥7 | Rewrites `package-lock.json` v1 → v3. |
 
-**Known rot, for recognition only — this file is not a roadmap:** `.eslintrc.extra.js` sets `parser: './node_modules/babel-eslint'` (a hard relative path into a *transitive* dependency) and `settings.react.version: "16.4.2"` while React 16.13.1 is installed; `eslint` is not a direct dependency, so `lint:js-extra` goes through `npx` and relies on a hoisted transitive `eslint@6.8.0`; `babel-polyfill` + `react-app-polyfill` and a `browserslist` of `>0.2%, not dead, not ie <= 10, not op_mini all` are IE11-era targeting; `request@2.88.2` is deprecated (#395); `registerServiceWorker.js` exists but only `unregister()` is called.
+**Known rot, for recognition only — this file is not a roadmap:** `registerServiceWorker.js` exists but only `unregister()` is called, and its registration path still reads create-react-app's `process.env.PUBLIC_URL`; `dateformat@3.0.3` is several majors behind, because newer majors change its export shape (see `docs/architecture/frontend.md`).
 
 ## Workflow guidelines
 
@@ -157,7 +167,7 @@ Code is read far more often than it is written, and in this repo the next reader
 
 ### ExecPlans
 
-Work that spans more than one session — the ESLint unification, replacing the blocked Nightwatch suite, #409's redraw path — gets an **ExecPlan**: a self-contained Markdown design document, written before the code, committed with it, and kept current as the work moves. The specification is `.claude/skills/execplans/references/PLANS.md`; the `execplans` skill loads it on demand, so read it there rather than guessing at the shape.
+Work that spans more than one session — #409's redraw path, broadening test coverage — gets an **ExecPlan**: a self-contained Markdown design document, written before the code, committed with it, and kept current as the work moves. The specification is `.claude/skills/execplans/references/PLANS.md`; the `execplans` skill loads it on demand, so read it there rather than guessing at the shape.
 
 Plans live in `docs/execplans/`, named `YYYY-MM-DD-kebab-case-summary.md` (`2026-09-14-eslint-unification.md`), and ship on the branch with the change so a reviewer reads the plan and the diff together. Update the plan in the same commit as the work it describes — a plan that lags the tree is worse than no plan.
 
@@ -205,8 +215,8 @@ Replacement, as it should read:
 
 **Testing.** What a reviewer does by hand to check this. The one section worth expanding.
 
-- Open with prerequisites where there are any: "Run `npm run build:css` first" or "Needs `tests/playwright/` installed separately — see its README."
-- Include setup commands a reviewer must run to see the change at all. Leave out test and lint commands — `npm test`, `npm run lint`, `npx playwright test` — those only re-check what CI (once it exists) already checks.
+- Open with prerequisites where there are any: "Run `npm run build:css` first" or "Run `npx playwright install chromium` first."
+- Include setup commands a reviewer must run to see the change at all. Leave out test and lint commands — `npm test`, `npm run lint`, `npx playwright test` — those only re-check what CI already checks.
 - Give the URL to load — `http://localhost:3000/dashboard/hardware`, not just "the hardware dashboard" — and the expected result once there.
 - One step per thing to verify, phrased as a check — "Check the dashboard doesn't hang on resize", not "resize the window → dashboard redraws instantly". `- [ ]` checkboxes where the reviewer is working through a list.
 - Ask plainly for a close look when you want one: "Look closely at the region-selector change, please — it touches sessionStorage across every dashboard."
@@ -242,8 +252,8 @@ Here's the shape to aim for — a description for the real ESLint-unification wo
 
 - Keep secrets out of version control.
 - Configuration follows the 12-Factor App pattern via `.env` — but note that **this repo's `.env` is deliberately checked in**, because it holds only public build-time values and a placeholder GA ID. A real credential does not go in that file.
-- This is a fully client-side bundle: anything in a `REACT_APP_*` variable ships to the browser in plain text.
-- If a changeset adds a GitHub Action or Workflow (there are none today), check it with [Zizmor](https://zizmor.sh/) before considering the work complete.
+- This is a fully client-side bundle: anything in a `VITE_*` variable ships to the browser in plain text.
+- If a changeset adds a GitHub Action or Workflow, check it with [Zizmor](https://zizmor.sh/) before considering the work complete.
 
 ## LLM assistance
 
