@@ -56,7 +56,7 @@ There is no `pages/`, `store/`, `hooks/`, `api/`, `locales/`, or `data/`. `index
 
 MozMEAO is taking this repo over. Before that work started there were 810 commits — 515 in 2018, 92 in 2020, **nothing in 2021–2024**, three in 2025, the last `f655559` on 2025-05-07. The toolchain has since been replaced (#441): create-react-app, Jest and Nightwatch gave way to Vite, Vitest and Playwright, and two ESLint configs became one. Code outside the toolchain has barely been exercised since 2020.
 
-- **No CI/CD of any kind exists.** No `.github/`, `.circleci/`, `Dockerfile`, `docker-compose`, `Jenkinsfile`. This is not a quirk of your clone — it was all deliberately removed: CircleCI disabled 2018-02-22 (`433a465`), Docker/Dockerflow removed 2018-08-23 (`d3bb561`), `.github/dependabot.yml` deleted 2020-07-29 (`7c7006f`, "Disable non-security updates from Dependabot"). Issue #79 ("enable CI") is still open.
+- **CI runs on GitHub Actions; there is no CD.** `.github/workflows/ci.yml` runs lint, the Vitest unit tests, and the Playwright end-to-end tests on every push to `main` and every pull request. There is no `.circleci/`, `Dockerfile`, `docker-compose`, or `Jenkinsfile` — earlier automation was deliberately removed: CircleCI disabled 2018-02-22 (`433a465`), Docker/Dockerflow removed 2018-08-23 (`d3bb561`), `.github/dependabot.yml` deleted 2020-07-29 (`7c7006f`, "Disable non-security updates from Dependabot").
 - **The deploy is a static build on Google Cloud Storage** (confirmed by `x-goog-*` headers on the live site). `https://data.firefox.com/version.json` reports `1.2.1` / commit `f655559`, so **the deployed site predates the Vite toolchain on `main`**; nothing built by Vite has shipped yet. The mechanism that pushes `build/` to GCS is **not in this repo and is currently unknown** — finding and documenting it is takeover work, not something to guess at.
 - **Node 24.** `.nvmrc` holds `24` and `engines` requires `^24.15.0`. A plain `npm install` works with no flags.
 - **A fresh clone will not render styles until you compile Stylus.** `src/components/views/css/*` is gitignored and every component does a side-effect `import './css/Foo.css';` — run `npm run build:css` or the app, and Vitest, fail to resolve those imports. `npm start` compiles it for you.
@@ -216,7 +216,7 @@ Replacement, as it should read:
 **Testing.** What a reviewer does by hand to check this. The one section worth expanding.
 
 - Open with prerequisites where there are any: "Run `npm run build:css` first" or "Run `npx playwright install chromium` first."
-- Include setup commands a reviewer must run to see the change at all. Leave out test and lint commands — `npm test`, `npm run lint`, `npx playwright test` — those only re-check what CI (once it exists) already checks.
+- Include setup commands a reviewer must run to see the change at all. Leave out test and lint commands — `npm test`, `npm run lint`, `npx playwright test` — those only re-check what CI already checks.
 - Give the URL to load — `http://localhost:3000/dashboard/hardware`, not just "the hardware dashboard" — and the expected result once there.
 - One step per thing to verify, phrased as a check — "Check the dashboard doesn't hang on resize", not "resize the window → dashboard redraws instantly". `- [ ]` checkboxes where the reviewer is working through a list.
 - Ask plainly for a close look when you want one: "Look closely at the region-selector change, please — it touches sessionStorage across every dashboard."
