@@ -28,6 +28,8 @@ file), Dependabot (deliberately turned off in 2020), and automated deploy.
       suite, docs updated. Zizmor clean. Locally: Playwright 49 passed against a dev server on
       :3001 (see Surprises).
 - [x] (2026-10-08) Milestone 3: both jobs green on pull request #447.
+- [x] (2026-10-15) Review fix: deleted the home page's "All introduction links work" test, which
+      checked only external links and so could no longer fail.
 
 ## Surprises & Discoveries
 
@@ -123,8 +125,8 @@ The Playwright specs live in `tests/playwright/specs/`. Several of them call `li
 the same file. For a link inside the app, it navigates there and checks that `#application` renders
 and `#not-found` does not. For an external link, it opens the URL in a new browser page and expects
 HTTP 200, with three attempts and backoff, plus a redirect-only special case for
-`donate.mozilla.org`. `footer.spec.js` and the "All links work" test in `contact.spec.js` check only
-external and `mailto:` links. The `dashboards/*.spec.js` specs assert exact metric titles against
+`donate.mozilla.org`. `footer.spec.js`, the "All links work" test in `contact.spec.js`, and the "All
+introduction links work" test in `home.spec.js` check only external and `mailto:` links. The `dashboards/*.spec.js` specs assert exact metric titles against
 live production data on `data.firefox.com`, so a failure there can come from upstream data changing.
 
 Zizmor (<https://zizmor.sh/>) is a static checker for GitHub Actions workflows. It flags things like
@@ -171,8 +173,12 @@ and the Playwright suite no longer reaches outside the app.
    comment lines that described them. Replace them with one comment saying external links are not
    checked and why.
 2. Delete `tests/playwright/specs/footer.spec.js`. Delete the "All links work" test and the
-   `linksWork` import from `tests/playwright/specs/contact.spec.js`. Both checked only external and
-   `mailto:` links, so they would now pass while checking nothing.
+   `linksWork` import from `tests/playwright/specs/contact.spec.js`. Delete the "All introduction
+   links work" test and the `linksWork` import from `tests/playwright/specs/home.spec.js`; every
+   link in `#introduction` (`src/components/views/Home.jsx`) is external. All three checked only
+   external and `mailto:` links, so they would now pass while checking nothing. To find any others,
+   look at every `linkWorks` and `linksWork` call in `tests/playwright/specs/` and check where its
+   selector's links point.
 3. Add the `e2e` job to `ci.yml`: same checkout, setup-node, guard, and `npm ci` as Milestone 1,
    then `npx playwright install --with-deps chromium` and `npm run test:playwright`.
 4. Run Zizmor again.

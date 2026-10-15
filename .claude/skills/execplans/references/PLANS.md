@@ -208,8 +208,7 @@ The Playwright dashboard specs assert against live production data, so a failure
 from upstream data changing rather than from the commit. Re-run once before investigating, and say
 which it was.
 
-`AGENTS.md`'s toolchain description still predates the move to Vite; where it disagrees with the
-commands above, these win. Run each command and report the actual result; never claim a pass you
+Run each command and report the actual result; never claim a pass you
 did not observe. State the expected result, not just the command: "`npm run test:jest` — 2 files, 4
 tests passing" beats "run the tests".
 
