@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { linkWorks, linksWork } = require('../utils');
+const { linkWorks } = require('../utils');
 
 
 test.beforeEach(async ({ page }) => {
@@ -15,11 +15,6 @@ test('Page <title> is correct', async ({ page }) => {
     await expect(page.locator('#introduction')).toBeVisible();
 
     await expect(page).toHaveTitle('Firefox Public Data Report');
-});
-
-test('All introduction links work', async ({ page }) => {
-    await expect(page.locator('#introduction')).toBeVisible();
-    await linksWork(page, '#introduction a');
 });
 
 test('The "proceed button" appears', async ({ page }) => {

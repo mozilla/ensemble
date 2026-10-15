@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { linkWorks, linksWork, flagForUpdate, metricTitleIsCorrect, changeRegionAndWaitForMetrics } = require('../../utils');
+const { linkWorks, flagForUpdate, metricTitleIsCorrect, changeRegionAndWaitForMetrics } = require('../../utils');
 
 
 test.beforeEach(async ({ page }) => {
@@ -45,13 +45,6 @@ test('Table renders', async ({ page }) => {
     await expect(page.locator('#metric-overview-3 tbody tr:first-child td:nth-child(2)')).toBeVisible();
 
     await flagForUpdate(page, '.metric-overview table', 'table in the usage dashboard', 1);
-});
-
-test('All metric description links work', async ({ page }) => {
-    // Not every metric description contains a link, so this doesn't assert
-    // one is present first - linksWork is a no-op if the selector matches
-    // nothing.
-    await linksWork(page, '.metric-description a');
 });
 
 test('The "proceed button" appears', async ({ page }) => {

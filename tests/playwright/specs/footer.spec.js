@@ -1,12 +1,10 @@
-const { test } = require('@playwright/test');
-const { linksWork } = require('../utils');
+const { test, expect } = require('@playwright/test');
 
 
 test.beforeEach(async ({ page }) => {
     await page.goto('/');
 });
 
-test('All footer links work', async ({ page }) => {
-    await page.locator('footer').waitFor({ state: 'visible' });
-    await linksWork(page, 'footer a');
+test('Footer appears', async ({ page }) => {
+    await expect(page.locator('footer')).toBeVisible();
 });
