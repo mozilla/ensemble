@@ -30,6 +30,9 @@ file), Dependabot (deliberately turned off in 2020), and automated deploy.
 - [x] (2026-10-08) Milestone 3: both jobs green on pull request #447.
 - [x] (2026-10-15) Review fix: deleted the home page's "All introduction links work" test, which
       checked only external links and so could no longer fail.
+- [x] (2026-10-15) Second review: compiled the CSS before Playwright in the `e2e` job, added
+      `timeout-minutes` to both jobs, restored a footer visibility test, and deleted the
+      usage-behavior "All metric description links work" test.
 
 ## Surprises & Discoveries
 
@@ -38,9 +41,9 @@ is kept on the local branches `79--github-actions-ci` and `79--github-actions-ci
 restated here so this plan stands alone.
 
 - Observation: `npm run test:jest` fails outright without the compiled CSS.
-  Evidence: "Failed to resolve import './css/MetricOverview.css'". The unit-test job must run
-  `npm run build:css` first. The end-to-end job does not, because Playwright starts `npm start`,
-  which compiles the Stylus.
+  Evidence: "Failed to resolve import './css/MetricOverview.css'". Both jobs run
+  `npm run build:css` first. `npm start` also compiles the Stylus, but in parallel with Vite, so
+  the end-to-end job can't rely on it.
 - Observation: `playwright.config.js` already adapts to CI. GitHub Actions sets `CI=true`, and the
   config then uses the `github` reporter (inline annotations on the pull request), 2 retries, 2
   workers, and refuses to reuse an existing server. The workflow needs to configure none of this.
@@ -81,6 +84,19 @@ restated here so this plan stands alone.
   Internal links are the ones this repository can break. The accepted cost is that external link
   rot, the kind #448 fixed, is no longer caught automatically.
   Date/Author: 2026-10-01, the user's decision on the earlier attempt; reconfirmed 2026-10-08.
+- Decision: delete "All metric description links work" in `dashboards/usage-behavior.spec.js`.
+  Rationale: the user's decision. On 2026-10-15 none of the three live metric descriptions
+  (`locale`, `pct_addon`, `top10addons`) contained a link, and the test did not wait for
+  descriptions to render, so it checked nothing.
+  Date/Author: 2026-10-15, the user's decision.
+- Decision: keep `footer.spec.js` as a single "Footer appears" visibility test.
+  Rationale: its old link test was also the only check that the footer renders at all.
+  Date/Author: 2026-10-15.
+- Decision: run `npm run build:css` in the `e2e` job even though `npm start` compiles Stylus.
+  Rationale: `npm start` runs Stylus and Vite in parallel, and Playwright starts as soon as Vite
+  answers, which can be before the CSS exists. Set `timeout-minutes` (10 and 20) so a hung dev
+  server doesn't hold a runner for GitHub's 6-hour default.
+  Date/Author: 2026-10-15.
 
 - Decision: reuse pull request #447 for this work rather than open a new one. Force-push this
   branch to `mozilla/79--github-actions-ci` and track that remote branch from here.
@@ -172,15 +188,18 @@ and the Playwright suite no longer reaches outside the app.
    now-unused status-code constants, the `donate.mozilla.org` special case, the retry loop, and the
    comment lines that described them. Replace them with one comment saying external links are not
    checked and why.
-2. Delete `tests/playwright/specs/footer.spec.js`. Delete the "All links work" test and the
+2. Replace the link test in `tests/playwright/specs/footer.spec.js` with one that checks the
+   footer is visible. Delete the "All links work" test and the
    `linksWork` import from `tests/playwright/specs/contact.spec.js`. Delete the "All introduction
    links work" test and the `linksWork` import from `tests/playwright/specs/home.spec.js`; every
    link in `#introduction` (`src/components/views/Home.jsx`) is external. All three checked only
    external and `mailto:` links, so they would now pass while checking nothing. To find any others,
    look at every `linkWorks` and `linksWork` call in `tests/playwright/specs/` and check where its
-   selector's links point.
+   selector's links point. Also delete "All metric description links work" in
+   `tests/playwright/specs/dashboards/usage-behavior.spec.js` (see the Decision Log).
 3. Add the `e2e` job to `ci.yml`: same checkout, setup-node, guard, and `npm ci` as Milestone 1,
-   then `npx playwright install --with-deps chromium` and `npm run test:playwright`.
+   then `npx playwright install --with-deps chromium`, `npm run build:css`, and
+   `npm run test:playwright`. Give the jobs `timeout-minutes: 10` and `timeout-minutes: 20`.
 4. Run Zizmor again.
 5. Update the docs. In `AGENTS.md`, add the end-to-end tests to the CI bullet. In
    `CONTRIBUTING.md`, add the same, and say that `linkWorks` and `linksWork` check only links

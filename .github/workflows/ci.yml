@@ -17,6 +17,7 @@ jobs:
     lint-and-test:
         name: Lint and test
         runs-on: ubuntu-latest
+        timeout-minutes: 10
         if: github.repository == 'mozilla/ensemble'
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -38,6 +39,7 @@ jobs:
     e2e:
         name: End-to-end tests
         runs-on: ubuntu-latest
+        timeout-minutes: 20
         if: github.repository == 'mozilla/ensemble'
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -51,5 +53,7 @@ jobs:
               run: npm ci
             - name: Install Playwright browsers
               run: npx playwright install --with-deps chromium
+            - name: Compile Stylus
+              run: npm run build:css
             - name: Run end-to-end tests
               run: npm run test:playwright
