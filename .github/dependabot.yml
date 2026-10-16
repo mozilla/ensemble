@@ -1,0 +1,55 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+  - package-ecosystem: "npm"
+    directory: "/"
+    ignore:
+      # Enzyme only supports React 16 (enzyme-adapter-react-16), so React majors break the unit tests.
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-test-renderer"
+        update-types: ["version-update:semver-major"]
+      # 3.x is a rewrite that's incompatible with react-metrics-graphics (see update-deps/denied.md).
+      - dependency-name: "metrics-graphics"
+        update-types: ["version-update:semver-major"]
+    schedule:
+      interval: "monthly"
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+    open-pull-requests-limit: 10
+    groups:
+      frontend:
+        dependency-type: production
+        update-types:
+          - "minor"
+          - "patch"
+      dev-dependencies:
+        dependency-type: development
+        update-types:
+          - "minor"
+          - "patch"
+      # Security updates ignore the groups above (they default to version-updates).
+      npm-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    labels:
+      - dependencies
