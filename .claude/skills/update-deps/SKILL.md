@@ -17,7 +17,7 @@ allowed-tools:
   - Bash(git diff *)
   - Bash(gh pr list *)
   - Bash(gh pr diff *)
-  - Bash(gh api repos/mozilla/protocol/dependabot/alerts*)
+  - Bash(gh api repos/mozilla/ensemble/dependabot/alerts*)
   - Read
   - Edit
   - Grep
@@ -92,7 +92,7 @@ Run these for every outdated dependency, including patch bumps. An update to one
 
 ### Security status
 
-Fetch open alerts with `gh api "repos/mozilla/protocol/dependabot/alerts?state=open&per_page=100"`. An update is **security-related** if it moves the package out of an alert's vulnerable range. Record the highest severity it fixes.
+Fetch open alerts with `gh api "repos/mozilla/ensemble/dependabot/alerts?state=open&per_page=100"`. An update is **security-related** if it moves the package out of an alert's vulnerable range. Record the highest severity it fixes. If the request fails, stop and tell the user the security check is incomplete; don't treat a failure as "no alerts."
 
 ### 7-day cool-down
 
