@@ -44,7 +44,7 @@
         "stylus": "0.64.0"
     },
     "devDependencies": {
-        "@eslint/js": "9.39.5",
+        "@eslint/js": "10.0.1",
         "@playwright/test": "1.64.0",
         "@vitejs/plugin-react": "6.1.2",
         "@vitest/eslint-plugin": "1.6.27",
