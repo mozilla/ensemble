@@ -6,15 +6,15 @@ import MetricOverview from '../views/MetricOverview';
 
 
 class MetricOverviewContainer extends React.Component {
-    // If the data is changing, only re-render once the new data is received.
-    // Don't show a spinner while new data is being loaded, as that would cause
-    // the scrollbar to move.
+    // If the data is changing, only re-render once the request settles, with
+    // either the new data or an error. Don't show a spinner while new data is
+    // being loaded, as that would cause the scrollbar to move.
     //
     // We do want the spinner to be shown on the initial render, but we don't
     // need to do anything special here to handle that case because
     // shouldComponentUpdate is not run for the initial render.
     shouldComponentUpdate(nextProps) {
-        return nextProps.dataFetch.fulfilled;
+        return nextProps.dataFetch.fulfilled || nextProps.dataFetch.rejected;
     }
 
     render() {
