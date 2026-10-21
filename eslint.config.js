@@ -73,6 +73,9 @@ module.exports = [
         },
         rules: {
             ...vitest.configs.recommended.rules,
+            // React Testing Library's `screen` export shadows window.screen;
+            // importing it under that name is the library's documented idiom.
+            'no-shadow': ['error', { builtinGlobals: true, allow: ['screen'] }],
         },
         languageOptions: {
             globals: {
