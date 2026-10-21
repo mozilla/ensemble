@@ -185,6 +185,24 @@ existing one when there is one. Point the suite at a different environment with
 test` — there is no separate `test:playwright:stage`/`test:playwright:prod` script for this, unlike
 the old Nightwatch scripts, since the environment variable already covers it in one line.
 
+**Fixture specs** in `tests/playwright/specs/fixtures/` run against a recording instead of live
+data. They import `test`, `expect` and `readFixture` from `tests/playwright/fixtureData.js`. Its
+`test` answers every `https://data.firefox.com/datasets/desktop/**` request from
+`tests/playwright/fixtures/`, whose paths mirror the URLs, and answers other third-party requests
+(Google Analytics) with an empty response. It fails the test on any page error, any console error,
+or any dataset request with no recording. A spec that expects errors allows them with
+`test.use({ allowedErrors: /pattern/ })`. That takes a single RegExp because `test.use()` reads an
+array as a `[value, options]` pair. To change one response, register a later `page.route()`, which
+takes precedence, as `errors.spec.js` and `descriptions.spec.js` do. Specs read expected titles and
+values from the recording with `readFixture(...)` rather than hardcoding them.
+
+Refresh the recording with `node scripts/recordPlaywrightFixtures.js`. It replaces
+`tests/playwright/fixtures/` with each dashboard's `index.json`, plus every metric and summary
+metric for the default region and for `Germany` where the dashboard supports regions. Everything is
+trimmed to the 12 most recent dates, because the full hardware history runs to several megabytes.
+Re-record when the transposer's data shape changes. The live `dashboards/` specs are what notice
+that.
+
 Tests describe the code as it is now. Assert what the code does; never add a test whose purpose is
 to prove that removed behavior is absent — a negative assertion about history passes forever while
 documenting nothing. Each test builds only the data it needs; there is no shared mega-fixture. Keep
