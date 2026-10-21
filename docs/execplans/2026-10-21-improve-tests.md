@@ -66,7 +66,9 @@ Out of scope:
       passes 60 of 61. The one failure is the live hardware "Charts render", caused by upstream
       data (see Surprises). It failed on the first attempt and the retry, and fails the same way
       without this branch's changes.
-- [ ] Milestone 5: production build step in CI, green on the pull request.
+- [ ] Milestone 5: production build step in CI (completed: "Build" step added to `lint-and-test`,
+      Zizmor clean, `npm run build` passes locally; remaining: both CI jobs green on the pull
+      request).
 
 ## Surprises & Discoveries
 
