@@ -158,7 +158,10 @@ set inside a test is silently ignored and the container goes to the real network
 the imports, and `mockReset()` it in `beforeEach`; `SummaryMetricContainer.test.jsx` is the
 simplest example. Containers whose view needs real layout (`views/Chart` uses metrics-graphics,
 `views/SummaryMetric` draws with d3) are tested by replacing that view with `vi.mock` and asserting
-on the props it received. Plain-markup views such as `views/DataTable` render for real. ESLint
+on the props it received. Plain-markup views such as `views/DataTable` render for real.
+`Routes.test.jsx` renders `views/Application` inside `MemoryRouter` through a single `renderAt(path)`
+function, so a router upgrade changes one place, and mocks `react-ga`. Its route cases come from
+`config.json`. ESLint
 allows the name `screen` in test files despite `no-shadow`'s `builtinGlobals`, because importing
 React Testing Library's `screen` is that library's documented idiom.
 

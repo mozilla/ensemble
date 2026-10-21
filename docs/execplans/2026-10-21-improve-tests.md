@@ -53,7 +53,12 @@ Out of scope:
       files, 29 tests. Five deliberate breakages each failed exactly one test: `bumpSort`'s bump,
       ChartContainer's sort direction, SummaryMetricContainer's "Other" threshold,
       DataTableContainer's sort direction, and CustomizableDate's UTC flag.
-- [ ] Milestone 3: routing and fetch behavior tests in jsdom.
+- [x] (2026-10-21) Milestone 3: routing and fetch behavior tests in jsdom, plus the
+      `MetricOverviewContainer` fix. Vitest passes 12 files, 54 tests. Before the fix, the two
+      rejected-fetch cases in `MetricOverviewContainer.test.jsx` failed and the other three passed.
+      Deliberate breakages that each failed tests: removing the catch-all route (4 failed), dropping
+      `exact` from the dashboard routes (1), not saving `preferredRegion` (1), reverting the fix
+      (2), and never setting LazyBoundary's error state (3).
 - [ ] Milestone 4: Playwright specs on recorded fixtures.
 - [ ] Milestone 5: production build step in CI, green on the pull request.
 
@@ -88,6 +93,8 @@ Out of scope:
 - Observation: the CustomizableDate UTC mutation only fails where the local time zone is behind
   UTC. In CI (UTC) dropping the UTC flag changes nothing. The test still documents the intended
   output, and it failed locally in America/Vancouver.
+- Observation: the footer also renders a `<nav>`, so `getByRole('navigation')` finds two elements.
+  The header test selects `#main-navigation`, the same landmark the Playwright specs use.
 - Observation: adding `src/setupTests.js` to the ESLint block for test files breaks lint. That
   block declares `React` as a global, so the file's own `import React` trips `no-shadow` with
   `builtinGlobals`. The file gets its own block with only the Vitest globals.
