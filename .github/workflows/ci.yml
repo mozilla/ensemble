@@ -35,6 +35,8 @@ jobs:
               run: npm run lint
             - name: Run unit tests
               run: npm run test:jest
+            - name: Build
+              run: npm run build
 
     e2e:
         name: End-to-end tests
