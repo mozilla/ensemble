@@ -66,9 +66,14 @@ Out of scope:
       passes 60 of 61. The one failure is the live hardware "Charts render", caused by upstream
       data (see Surprises). It failed on the first attempt and the retry, and fails the same way
       without this branch's changes.
-- [ ] Milestone 5: production build step in CI (completed: "Build" step added to `lint-and-test`,
-      Zizmor clean, `npm run build` passes locally; remaining: both CI jobs green on the pull
-      request).
+- [x] (2026-10-21) Milestone 5: "Build" step in `lint-and-test`, Zizmor clean. On pull request
+      #460, "Lint and test" passed with `vite build` in its log.
+- [ ] Both CI checks green on #460 (remaining). "End-to-end tests" ran 59 passed, 1 flaky, 1
+      failed. The failure is the live hardware "Charts render", caused by the upstream `"NULL"`
+      CPU-speed data (see Surprises). The flaky test was the live usage-behavior "Metric titles and
+      order", which saw 1 of 3 metrics on its first attempt. Every fixture spec passed. Getting the
+      check green needs either the upstream data fixed, or a decision on how the live spec or
+      ChartContainer should handle single-point populations. That's a scope call for the user.
 
 ## Surprises & Discoveries
 
@@ -205,7 +210,47 @@ Out of scope:
 
 ## Outcomes & Retrospective
 
-Not started.
+(2026-10-21) Every milestone landed. The one thing left is a green end-to-end check, which is
+blocked by upstream data rather than by this branch.
+
+The CI suite now covers:
+
+- Vitest grew from 2 files / 4 tests to 12 files / 54 tests, all on React Testing Library. They
+  cover `lib/utils.js`, data shaping in ChartContainer, DataTableContainer and
+  SummaryMetricContainer, `withNextButton`, CustomizableDate, the fetch states of DashboardContainer
+  and MetricOverviewContainer (including region persistence), every route in `config.json`, the
+  Google Analytics page view, and LazyBoundary.
+- Thirteen Playwright specs run on 292 KB of recorded data. They don't use the network, and they
+  fail on any page or console error.
+- CI builds the production bundle.
+
+Each group of tests was checked by breaking the code it covers and watching a test fail. The tests
+reach the app only through the DOM, `fetch`, URLs and `sessionStorage`. Most should survive the
+React, router and react-refetch upgrades unchanged. The exceptions are known:
+
+- `Routes.test.jsx`'s `renderAt` and the `MemoryRouter` in `withNextButton.test.jsx` change with
+  the router.
+- The hoisted `window.fetch` stub works for anything that calls `fetch`, but it is only *needed*
+  because of react-refetch.
+- The `vi.mock` of `views/Chart` and `views/SummaryMetric` assumes the container/view split
+  survives.
+
+The work also fixed two real bugs:
+
+- A failed metric fetch now shows its error. Before, the metric stayed blank or showed stale data.
+- The dev server's dependency pre-bundling works. It had failed on every start, causing the
+  first-visit 504s.
+
+It also found an upstream data problem: a 48% `"NULL"` CPU-speed bucket that breaks the live
+hardware chart spec.
+
+Lessons:
+
+- A strict "no console errors" check finds things the old specs never would. The Vite scan failure
+  and the 504s were invisible to assertions that only looked for elements.
+- Recorded data and live data catch different failures. Keep both.
+- On this machine, port 3000 was taken by another site, and Playwright's `reuseExistingServer`
+  silently tested that site instead.
 
 ## Context and Orientation
 
