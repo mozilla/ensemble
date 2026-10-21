@@ -7,9 +7,9 @@ module.exports = defineConfig({
     // Several regionSelector specs navigate many times in a single test
     // (once per dashboard, sometimes nested); the 30s default is too tight.
     timeout: 60000,
-    // The dev server's first request for any given route recompiles and
-    // dependency-scans on demand (a documented Vite dev-server characteristic),
-    // which can outrun the 5s default under concurrent load.
+    // The dev server compiles each module on its first request (a documented
+    // Vite dev-server characteristic), which can outrun the 5s default under
+    // concurrent load.
     expect: {
         timeout: 10000,
     },
