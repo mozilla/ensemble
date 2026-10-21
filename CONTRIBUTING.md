@@ -152,6 +152,16 @@ unexpectedly, so React warnings show up as failures. A test that expects an erro
 with `vi.spyOn(console, 'error').mockImplementation(() => {})`. The existing style is top-level
 `it(...)` with long descriptive sentences. No snapshots.
 
+`react-refetch` captures `window.fetch` when `connect()` runs, which is at module import, so a stub
+set inside a test is silently ignored and the container goes to the real network. Install it with
+`vi.hoisted(() => { const mock = vi.fn(); window.fetch = mock; return mock; })` so it exists before
+the imports, and `mockReset()` it in `beforeEach`; `SummaryMetricContainer.test.jsx` is the
+simplest example. Containers whose view needs real layout (`views/Chart` uses metrics-graphics,
+`views/SummaryMetric` draws with d3) are tested by replacing that view with `vi.mock` and asserting
+on the props it received. Plain-markup views such as `views/DataTable` render for real. ESLint
+allows the name `screen` in test files despite `no-shadow`'s `builtinGlobals`, because importing
+React Testing Library's `screen` is that library's documented idiom.
+
 **Playwright** specs live in `tests/playwright/specs/`, configured by `playwright.config.js` at the
 repository root. Specs are `camelCase.spec.js` or `kebab-case.spec.js` (matching the component or
 page under test), CommonJS, using `@playwright/test`'s own `test`/`expect` — for example
