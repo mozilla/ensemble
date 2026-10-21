@@ -78,10 +78,19 @@ module.exports = [
             globals: {
                 ...globals.browser,
                 ...globals.vitest,
-                // In src/setupTests.js, these globals are defined in such a way
-                // that they are available to all Vitest tests.
+                // src/setupTests.js puts React on the global object for every
+                // Vitest test.
                 React: 'readonly',
-                shallow: 'readonly',
+            },
+        },
+    },
+    {
+        // Defines the React global the block above declares, so it gets the
+        // Vitest globals without that declaration.
+        files: ['src/setupTests.js'],
+        languageOptions: {
+            globals: {
+                ...globals.vitest,
             },
         },
     },
