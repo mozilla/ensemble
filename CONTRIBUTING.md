@@ -200,7 +200,6 @@ style indirection layer, so a failure points straight at the markup it cares abo
 | Renaming a landmark ID | Breaks Playwright selectors silently. |
 | `build:version.json` | Needs `build/` to already exist and `git` on PATH; must follow `build:app`. |
 | `no-shadow` / `no-redeclare` with `builtinGlobals` | Naming a local `name`, `status`, `history`, `event` is a hard error. |
-| A first-time route visit against the Vite dev server | Can occasionally 504 or fail a dynamic import ("Outdated Optimize Dep") while Vite's dependency pre-bundler catches up with a newly-discovered chunk. A reload resolves it. This does not happen against a production build (`vite build`/`vite preview`), which has no dependency pre-bundling step. |
 | `metrics-graphics` charts and `path.mg-line1` | Each chart renders many invisible `.mg-voronoi` hover paths that also carry the `mg-line1` class (confirmed: 292 matches for one chart). A Playwright locator for this selector needs `.first()`, or it throws a strict-mode "multiple elements matched" error. |
 
 Known rot, recorded for recognition only, not as a roadmap: `react-app-polyfill` and

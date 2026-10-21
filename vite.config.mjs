@@ -14,6 +14,19 @@ export default defineConfig({
     server: {
         port: 3000,
     },
+    optimizeDeps: {
+        // The React plugin sets the classic runtime for transforms but not for
+        // Vite's dependency scan, which then assumes the automatic runtime,
+        // fails to resolve react/jsx-dev-runtime (React 16 has none), and
+        // skips pre-bundling. The dev server then discovers dependencies one
+        // page at a time, answering "504 (Outdated Optimize Dep)" and
+        // reloading on first visits.
+        rolldownOptions: {
+            transform: {
+                jsx: { runtime: 'classic' },
+            },
+        },
+    },
     build: {
         outDir: 'build',
         // Needed for `npm run size` (source-map-explorer) to inspect the
