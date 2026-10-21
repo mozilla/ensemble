@@ -1,0 +1,550 @@
+{
+    "title": "Top Add-ons",
+    "description": [
+        "Top Add-ons shows the top 10 most popular Firefox Desktop add-ons for a week.",
+        "Overall, the most popular add-ons are ad-blockers, coming in first in almost all of the top 10 countries. Ad-blocking seems particularly popular in Germany and France, with 4 of the top 10 add-ons being ad-blockers in France."
+    ],
+    "type": "table",
+    "columns": [
+        {
+            "name": "Add-on"
+        },
+        {
+            "name": "Usage",
+            "unit": "%"
+        }
+    ],
+    "data": {
+        "dates": {
+            "2026-09-21": {
+                "rows": [
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 4.520131439794531
+                    },
+                    {
+                        "name": "uBlock Origin",
+                        "value": 2.9545626227526816
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 1.260575615651911
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 1.119882157425593
+                    },
+                    {
+                        "name": "Adblock Plus - kostenloser Adblocker",
+                        "value": 1.1142166490406404
+                    },
+                    {
+                        "name": "German Dictionary",
+                        "value": 0.8611572745127662
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 0.774286145943496
+                    },
+                    {
+                        "name": "German Dictionary, extended for Austria",
+                        "value": 0.6704184922193684
+                    },
+                    {
+                        "name": "German Dictionary (Switzerland)",
+                        "value": 0.6647529838344161
+                    },
+                    {
+                        "name": "Yahoo Search From PDF to DOC",
+                        "value": 0.4891222239008914
+                    }
+                ]
+            },
+            "2026-08-31": {
+                "rows": [
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 13.329622663237494
+                    },
+                    {
+                        "name": "uBlock Origin",
+                        "value": 12.891059844151856
+                    },
+                    {
+                        "name": "Adblock Plus - kostenloser Adblocker",
+                        "value": 4.667767072281294
+                    },
+                    {
+                        "name": "German Dictionary",
+                        "value": 2.871290929330928
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 2.7494146098038463
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 2.419292925415531
+                    },
+                    {
+                        "name": "German Dictionary, extended for Austria",
+                        "value": 2.2302406817396645
+                    },
+                    {
+                        "name": "German Dictionary (Switzerland)",
+                        "value": 2.2196844650877128
+                    },
+                    {
+                        "name": "G DATA WebProtection",
+                        "value": 2.0325515335303828
+                    },
+                    {
+                        "name": "AdBlocker Ultimate",
+                        "value": 1.9884073548040382
+                    }
+                ]
+            },
+            "2026-07-27": {
+                "rows": [
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 13.214317575805637
+                    },
+                    {
+                        "name": "uBlock Origin",
+                        "value": 13.02498934409167
+                    },
+                    {
+                        "name": "Adblock Plus - kostenloser Adblocker",
+                        "value": 4.910639057125581
+                    },
+                    {
+                        "name": "German Dictionary",
+                        "value": 2.814151046261511
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 2.665463953292428
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 2.3423173379062874
+                    },
+                    {
+                        "name": "German Dictionary, extended for Austria",
+                        "value": 2.1817352774996777
+                    },
+                    {
+                        "name": "German Dictionary (Switzerland)",
+                        "value": 2.1648840736298482
+                    },
+                    {
+                        "name": "AdBlocker Ultimate",
+                        "value": 2.090540527145307
+                    },
+                    {
+                        "name": "G DATA WebProtection",
+                        "value": 2.0538643775462666
+                    }
+                ]
+            },
+            "2026-08-17": {
+                "rows": [
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 13.337415073471323
+                    },
+                    {
+                        "name": "uBlock Origin",
+                        "value": 12.940432927792699
+                    },
+                    {
+                        "name": "Adblock Plus - kostenloser Adblocker",
+                        "value": 4.793411281403065
+                    },
+                    {
+                        "name": "German Dictionary",
+                        "value": 2.857876441775952
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 2.770974877547796
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 2.4697819560752095
+                    },
+                    {
+                        "name": "German Dictionary, extended for Austria",
+                        "value": 2.220927476694581
+                    },
+                    {
+                        "name": "German Dictionary (Switzerland)",
+                        "value": 2.2021646389635015
+                    },
+                    {
+                        "name": "AdBlocker Ultimate",
+                        "value": 2.0787249170485067
+                    },
+                    {
+                        "name": "G DATA WebProtection",
+                        "value": 2.0411992415863485
+                    }
+                ]
+            },
+            "2026-10-12": {
+                "rows": [
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 2.5447544663223782
+                    },
+                    {
+                        "name": "uBlock Origin",
+                        "value": 1.6542272669209293
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 0.8166207412544025
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 0.7354148798335736
+                    },
+                    {
+                        "name": "Adblock Plus - kostenloser Adblocker",
+                        "value": 0.6989178634646618
+                    },
+                    {
+                        "name": "German Dictionary",
+                        "value": 0.5155203562108798
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 0.4370517710177193
+                    },
+                    {
+                        "name": "German Dictionary, extended for Austria",
+                        "value": 0.397817478421139
+                    },
+                    {
+                        "name": "German Dictionary (Switzerland)",
+                        "value": 0.3932553513750251
+                    },
+                    {
+                        "name": "Yahoo Search From PDF to DOC",
+                        "value": 0.31296191536341905
+                    }
+                ]
+            },
+            "2026-09-14": {
+                "rows": [
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 8.27581667387584
+                    },
+                    {
+                        "name": "uBlock Origin",
+                        "value": 5.801816711488914
+                    },
+                    {
+                        "name": "Adblock Plus - kostenloser Adblocker",
+                        "value": 2.06119647189363
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 1.8449212946420175
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 1.6530946156884132
+                    },
+                    {
+                        "name": "German Dictionary",
+                        "value": 1.6295864442480206
+                    },
+                    {
+                        "name": "German Dictionary, extended for Austria",
+                        "value": 1.268500930923589
+                    },
+                    {
+                        "name": "German Dictionary (Switzerland)",
+                        "value": 1.2600379892050477
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 1.2026780508904895
+                    },
+                    {
+                        "name": "G DATA WebProtection",
+                        "value": 0.9873432004964926
+                    }
+                ]
+            },
+            "2026-09-28": {
+                "rows": [
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 3.6432045517114804
+                    },
+                    {
+                        "name": "uBlock Origin",
+                        "value": 2.277691107644306
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 1.0957144168119666
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 0.968156373313756
+                    },
+                    {
+                        "name": "Adblock Plus - kostenloser Adblocker",
+                        "value": 0.8589520051390291
+                    },
+                    {
+                        "name": "German Dictionary",
+                        "value": 0.7148756538496834
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 0.6478847389189685
+                    },
+                    {
+                        "name": "German Dictionary, extended for Austria",
+                        "value": 0.5570340460677251
+                    },
+                    {
+                        "name": "German Dictionary (Switzerland)",
+                        "value": 0.55152794347068
+                    },
+                    {
+                        "name": "Yahoo Search From PDF to DOC",
+                        "value": 0.40745159218133437
+                    }
+                ]
+            },
+            "2026-08-03": {
+                "rows": [
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 13.129865016305061
+                    },
+                    {
+                        "name": "uBlock Origin",
+                        "value": 13.096548173126433
+                    },
+                    {
+                        "name": "Adblock Plus - kostenloser Adblocker",
+                        "value": 4.869307110622016
+                    },
+                    {
+                        "name": "German Dictionary",
+                        "value": 2.8218356570990117
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 2.6825106765338367
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 2.396793506244384
+                    },
+                    {
+                        "name": "German Dictionary, extended for Austria",
+                        "value": 2.1666044079193125
+                    },
+                    {
+                        "name": "German Dictionary (Switzerland)",
+                        "value": 2.148431584367333
+                    },
+                    {
+                        "name": "Easy Print",
+                        "value": 2.076749891467859
+                    },
+                    {
+                        "name": "G DATA WebProtection",
+                        "value": 2.06160587184121
+                    }
+                ]
+            },
+            "2026-08-10": {
+                "rows": [
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 13.31861440438745
+                    },
+                    {
+                        "name": "uBlock Origin",
+                        "value": 13.075651262198566
+                    },
+                    {
+                        "name": "Adblock Plus - kostenloser Adblocker",
+                        "value": 4.830026615049601
+                    },
+                    {
+                        "name": "German Dictionary",
+                        "value": 2.8853133317203
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 2.790547624808452
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 2.4830631502540528
+                    },
+                    {
+                        "name": "German Dictionary, extended for Austria",
+                        "value": 2.2199370917009436
+                    },
+                    {
+                        "name": "German Dictionary (Switzerland)",
+                        "value": 2.201790466973143
+                    },
+                    {
+                        "name": "AdBlocker Ultimate",
+                        "value": 2.092910718606339
+                    },
+                    {
+                        "name": "Easy Print",
+                        "value": 2.035446406968304
+                    }
+                ]
+            },
+            "2026-09-07": {
+                "rows": [
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 13.408898727803061
+                    },
+                    {
+                        "name": "uBlock Origin",
+                        "value": 12.942394846604783
+                    },
+                    {
+                        "name": "Adblock Plus - kostenloser Adblocker",
+                        "value": 4.717294847554893
+                    },
+                    {
+                        "name": "German Dictionary",
+                        "value": 2.921587443349707
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 2.723014508175694
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 2.412328623956067
+                    },
+                    {
+                        "name": "German Dictionary, extended for Austria",
+                        "value": 2.261261175665789
+                    },
+                    {
+                        "name": "German Dictionary (Switzerland)",
+                        "value": 2.2489097490760184
+                    },
+                    {
+                        "name": "G DATA WebProtection",
+                        "value": 2.0759897768192226
+                    },
+                    {
+                        "name": "AdBlocker Ultimate",
+                        "value": 1.9990308880675718
+                    }
+                ]
+            },
+            "2026-08-24": {
+                "rows": [
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 13.300395839267647
+                    },
+                    {
+                        "name": "uBlock Origin",
+                        "value": 13.09805616399336
+                    },
+                    {
+                        "name": "Adblock Plus - kostenloser Adblocker",
+                        "value": 4.771680303313067
+                    },
+                    {
+                        "name": "German Dictionary",
+                        "value": 2.9290141343103264
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 2.7620347906373697
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 2.4398628804919014
+                    },
+                    {
+                        "name": "German Dictionary, extended for Austria",
+                        "value": 2.292528165486352
+                    },
+                    {
+                        "name": "German Dictionary (Switzerland)",
+                        "value": 2.278776925419167
+                    },
+                    {
+                        "name": "AdBlocker Ultimate",
+                        "value": 2.0715260929780275
+                    },
+                    {
+                        "name": "G DATA WebProtection",
+                        "value": 2.0204500584427705
+                    }
+                ]
+            },
+            "2026-10-05": {
+                "rows": [
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 3.014877906126627
+                    },
+                    {
+                        "name": "uBlock Origin",
+                        "value": 1.8195277087293464
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 0.903823658429595
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 0.813349904956865
+                    },
+                    {
+                        "name": "Adblock Plus - kostenloser Adblocker",
+                        "value": 0.775880976750987
+                    },
+                    {
+                        "name": "German Dictionary",
+                        "value": 0.6004167275917532
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 0.5346176341570406
+                    },
+                    {
+                        "name": "German Dictionary, extended for Austria",
+                        "value": 0.46059365404298874
+                    },
+                    {
+                        "name": "German Dictionary (Switzerland)",
+                        "value": 0.45602427255446704
+                    },
+                    {
+                        "name": "Yahoo Search From PDF to DOC",
+                        "value": 0.3408758590437198
+                    }
+                ]
+            }
+        }
+    },
+    "apiVersion": "2.0.0"
+}

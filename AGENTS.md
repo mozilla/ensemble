@@ -46,7 +46,9 @@ src/
 └── tests/
     └── jest/                    2 unit test files, run by Vitest (the directory name predates Vitest)
 tests/playwright/
-├── specs/                       e2e specs (.spec.js, CommonJS), incl. dashboards/
+├── specs/                       e2e specs (.spec.js, CommonJS); dashboards/ hits live data, fixtures/ uses the recording
+├── fixtures/                    recorded transposer JSON, written by scripts/recordPlaywrightFixtures.js
+├── fixtureData.js               `test` that serves fixtures/ and fails on page/console errors; readFixture
 └── utils.js                     shared helpers: linkWorks, linksWork, flagForUpdate, metricTitleIsCorrect
 ```
 
@@ -146,6 +148,10 @@ This applies to everything written for a person to read: ExecPlans, PR descripti
 - **Routing:** `Routes.test.jsx` renders `views/Application` inside `MemoryRouter` through one `renderAt(path)` function — the only place a router upgrade has to touch — and mocks `react-ga` so no analytics load. Its cases are generated from `config.json`, so adding a dashboard adds a route test.
 
 **Playwright** specs in `tests/playwright/specs/` are **`camelCase.spec.js` or `kebab-case.spec.js`, CommonJS**, using `@playwright/test`'s `test`/`expect`. `playwright.config.js` has two Chromium projects: `chromium` runs everything except `jsDisabled.spec.js`, and `chromium-no-js` runs only that spec with `javaScriptEnabled: false`, asserting on the `id="enable-javascript"` `<noscript>` block in `index.html`. Playwright starts `npm start` itself unless a server is already on `:3000`. Set `PLAYWRIGHT_BASE_URL` to test another environment (`PLAYWRIGHT_BASE_URL=https://data.firefox.com npx playwright test`). `tests/playwright/utils.js` exports `linkWorks`, `linksWork`, `metricTitleIsCorrect`, and `flagForUpdate` — which **deliberately fails when an element count changes**, to force a human to look. The `dashboards/*.spec.js` specs assert exact metric titles and section ordering **against live production data**, so upstream data changes break them by design.
+
+**Fixture specs** in `tests/playwright/specs/fixtures/` import `test`, `expect` and `readFixture` from `tests/playwright/fixtureData.js` instead of `@playwright/test`. That `test` answers every `https://data.firefox.com/datasets/desktop/**` request from `tests/playwright/fixtures/` (paths mirror the URL), answers other third-party requests (Google Analytics) with an empty 200, and **fails the test on any page error, console error, or dataset request with no recording**. A spec that expects errors sets `test.use({ allowedErrors: /pattern/ })` — a single RegExp, because `test.use()` reads an array as a `[value, options]` pair. Override one response with a later `page.route()`, which takes precedence (`errors.spec.js`, `descriptions.spec.js`). Specs read expected titles and values from the recording with `readFixture('hardware/index.json')` rather than hardcoding them, so re-recording rarely means editing specs. They never touch the network: with data.firefox.com unreachable they still pass.
+
+`node scripts/recordPlaywrightFixtures.js` replaces the recording: each dashboard's `index.json`, plus every metric and summary metric for its default region and for `Germany` where regions are supported, trimmed to the 12 most recent dates (the full history makes the hardware files several megabytes). Re-record when the transposer's data shape changes; the live `dashboards/` specs are what notice that.
 
 **Tests describe the code as it is now.** Assert what the code does; never add a test whose purpose is to prove that removed behaviour is absent — a negative assertion about history passes forever while documenting nothing. Each test builds only the data it needs; no shared mega-fixture. Keep assertions at the point where the thing is rendered rather than behind a `_getElement(wrapper)`-style indirection layer, so a failure points straight at the markup it cares about.
 

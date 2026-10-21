@@ -1,0 +1,63 @@
+{
+    "title": "New Profile Rate",
+    "description": [
+        "New Profile Rate measures how often new Firefox Desktop profiles are created. A profile is the folder Firefox uses to store your add-ons, settings, and other customizations; essentially, your browser's identity.",
+        "We measure profiles rather than “new users” because Firefox doesn't track individuals. Profiles let us understand how the browser is used without identifying who's using it. It makes our job harder, but we think your privacy is worth it."
+    ],
+    "type": "line",
+    "data": {
+        "populations": {
+            "default": [
+                {
+                    "x": "2026-09-21",
+                    "y": 3.181615166061771
+                },
+                {
+                    "x": "2026-08-31",
+                    "y": 3.1617714228019485
+                },
+                {
+                    "x": "2026-07-27",
+                    "y": 2.90655641985547
+                },
+                {
+                    "x": "2026-08-17",
+                    "y": 3.0440051495713627
+                },
+                {
+                    "x": "2026-10-12",
+                    "y": 3.033522126771632
+                },
+                {
+                    "x": "2026-09-14",
+                    "y": 3.348238998549465
+                },
+                {
+                    "x": "2026-09-28",
+                    "y": 3.1419443548775647
+                },
+                {
+                    "x": "2026-08-03",
+                    "y": 2.9863337443485407
+                },
+                {
+                    "x": "2026-08-10",
+                    "y": 2.9657128253836214
+                },
+                {
+                    "x": "2026-09-07",
+                    "y": 3.2310304766994724
+                },
+                {
+                    "x": "2026-08-24",
+                    "y": 3.0393110654704
+                },
+                {
+                    "x": "2026-10-05",
+                    "y": 3.1320163406351527
+                }
+            ]
+        }
+    },
+    "apiVersion": "2.0.0"
+}

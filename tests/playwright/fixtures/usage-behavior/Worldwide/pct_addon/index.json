@@ -1,0 +1,71 @@
+{
+    "title": "Has Add-on",
+    "description": [
+        "Has Add-on shows the percentage of Firefox Desktop clients with user-installed add-ons.",
+        "One of the best things about Firefox is the robust add-on community which gives users the option to customize and control their browsing experience. Our users agree, with over 40% of Firefox users having at least 1 installed add-on.",
+        "Add-on usage measured here reflects multiple facets of browser customization, including web extensions, language packs, and themes.",
+        "This metric varies globally. On one end is India, where 19% of users have add-ons, and on the other is Russia and Canada, where almost 60% of users have add-ons."
+    ],
+    "type": "line",
+    "axes": {
+        "y": {
+            "unit": "%"
+        }
+    },
+    "data": {
+        "populations": {
+            "default": [
+                {
+                    "x": "2026-09-21",
+                    "y": 14.51253016660599
+                },
+                {
+                    "x": "2026-08-31",
+                    "y": 45.8082320869653
+                },
+                {
+                    "x": "2026-07-27",
+                    "y": 46.106406715429685
+                },
+                {
+                    "x": "2026-08-17",
+                    "y": 46.25436064763721
+                },
+                {
+                    "x": "2026-10-12",
+                    "y": 9.152145831639611
+                },
+                {
+                    "x": "2026-09-14",
+                    "y": 24.85593171041101
+                },
+                {
+                    "x": "2026-09-28",
+                    "y": 11.789472123698655
+                },
+                {
+                    "x": "2026-08-03",
+                    "y": 46.08621043978627
+                },
+                {
+                    "x": "2026-08-10",
+                    "y": 46.267458378728485
+                },
+                {
+                    "x": "2026-09-07",
+                    "y": 45.661320309523944
+                },
+                {
+                    "x": "2026-08-24",
+                    "y": 46.302702010193094
+                },
+                {
+                    "x": "2026-10-05",
+                    "y": 10.220616955476824
+                }
+            ]
+        }
+    },
+    "annotations": [],
+    "apiVersion": "2.0.0"
+}

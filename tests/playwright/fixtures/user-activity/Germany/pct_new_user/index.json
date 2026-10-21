@@ -1,0 +1,63 @@
+{
+    "title": "New Profile Rate",
+    "description": [
+        "New Profile Rate measures how often new Firefox Desktop profiles are created. A profile is the folder Firefox uses to store your add-ons, settings, and other customizations; essentially, your browser's identity.",
+        "We measure profiles rather than “new users” because Firefox doesn't track individuals. Profiles let us understand how the browser is used without identifying who's using it. It makes our job harder, but we think your privacy is worth it."
+    ],
+    "type": "line",
+    "data": {
+        "populations": {
+            "default": [
+                {
+                    "x": "2026-09-21",
+                    "y": 1.962154403988518
+                },
+                {
+                    "x": "2026-08-31",
+                    "y": 1.9356262715442785
+                },
+                {
+                    "x": "2026-07-27",
+                    "y": 1.7436039768841134
+                },
+                {
+                    "x": "2026-08-17",
+                    "y": 1.8723337020066362
+                },
+                {
+                    "x": "2026-10-12",
+                    "y": 1.9334294421431049
+                },
+                {
+                    "x": "2026-09-14",
+                    "y": 2.11385477592011
+                },
+                {
+                    "x": "2026-09-28",
+                    "y": 2.074882995319813
+                },
+                {
+                    "x": "2026-08-03",
+                    "y": 1.7284374400549223
+                },
+                {
+                    "x": "2026-08-10",
+                    "y": 1.6997338495039922
+                },
+                {
+                    "x": "2026-09-07",
+                    "y": 1.9334733161680173
+                },
+                {
+                    "x": "2026-08-24",
+                    "y": 1.8632930291035175
+                },
+                {
+                    "x": "2026-10-05",
+                    "y": 2.0169249890334844
+                }
+            ]
+        }
+    },
+    "apiVersion": "2.0.0"
+}
