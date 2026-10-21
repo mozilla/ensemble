@@ -49,7 +49,10 @@ Out of scope:
       passes 2 files, 4 tests. Lint is clean, Zizmor reports no findings, and `npm ls enzyme
       react-test-renderer` prints `(empty)`. Breaking the sanitizer fails both MetricOverview
       tests.
-- [ ] Milestone 2: unit tests for pure logic and data shaping.
+- [x] (2026-10-21) Milestone 2: unit tests for pure logic and data shaping. Vitest passes 8
+      files, 29 tests. Five deliberate breakages each failed exactly one test: `bumpSort`'s bump,
+      ChartContainer's sort direction, SummaryMetricContainer's "Other" threshold,
+      DataTableContainer's sort direction, and CustomizableDate's UTC flag.
 - [ ] Milestone 3: routing and fetch behavior tests in jsdom.
 - [ ] Milestone 4: Playwright specs on recorded fixtures.
 - [ ] Milestone 5: production build step in CI, green on the pull request.
@@ -74,6 +77,17 @@ Out of scope:
   preset also disables the `html_inline` rule. A mutation check of the sanitizer has to add
   `'html_inline'` to the `.enable([...])` list as well. With only the option set, all 4 tests still
   passed. With both, the 2 MetricOverview tests failed.
+- Observation: react-refetch captures `window.fetch` when `connect()` runs, at module import. A
+  stub assigned inside a test is never called, and the container makes a real network request.
+  Evidence: a probe that set `window.fetch` inside the test recorded `lateStubCalls=0` and failed
+  with `Unexpected console.error: fetch failed`. Test files install the stub in `vi.hoisted(...)`,
+  which runs before imports.
+- Observation: the `no-shadow` rule with `builtinGlobals` rejects `import { screen } from
+  '@testing-library/react'`, because `screen` is a browser global. The test-file ESLint block
+  allows that one name.
+- Observation: the CustomizableDate UTC mutation only fails where the local time zone is behind
+  UTC. In CI (UTC) dropping the UTC flag changes nothing. The test still documents the intended
+  output, and it failed locally in America/Vancouver.
 - Observation: adding `src/setupTests.js` to the ESLint block for test files breaks lint. That
   block declares `React` as a global, so the file's own `import React` trips `no-shadow` with
   `builtinGlobals`. The file gets its own block with only the Vitest globals.
