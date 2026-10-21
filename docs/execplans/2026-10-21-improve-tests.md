@@ -36,10 +36,15 @@ Out of scope:
 - Coverage thresholds.
 - Browsers other than Chromium.
 - Changing the existing live-data Playwright specs.
+- Issue #313. For a metric path that doesn't exist, data.firefox.com answers HTTP 200 with the
+  app's HTML instead of a 404, so the fetch never reports a failure. That needs a hosting change,
+  not a client fix. This plan fixes only the case where the server does report a failure.
 
 ## Progress
 
 - [x] (2026-10-21) Drafted the plan. Baseline: `npm run test:jest` passes 2 files, 4 tests.
+- [x] (2026-10-21) Revised after review: Milestone 3 now fixes `MetricOverviewContainer` so a
+      failed metric fetch shows its error.
 - [ ] Milestone 1: unit harness moved from Enzyme to React Testing Library.
 - [ ] Milestone 2: unit tests for pure logic and data shaping.
 - [ ] Milestone 3: routing and fetch behavior tests in jsdom.
@@ -48,7 +53,12 @@ Out of scope:
 
 ## Surprises & Discoveries
 
-None yet.
+- Observation: a failed metric fetch never shows `#metric-overview-fetch-error`. The metric stays
+  blank on first load, and after a region change it keeps showing the previous region's data.
+  `MetricOverviewContainer.shouldComponentUpdate` returns `nextProps.dataFetch.fulfilled`, so React
+  skips the render for the rejected state. The rejected branch in `render()` is unreachable.
+  Evidence: an Enzyme `mount` probe with `fetch` stubbed to answer HTTP 500 printed
+  `PROBE rejected=true errorShown=false html=""`.
 
 ## Decision Log
 
@@ -81,6 +91,14 @@ None yet.
   error (for example a container's rejected-fetch path, which logs the reason) spies on
   `console.error` itself.
   Date/Author: 2026-10-21, Claude, under the approved plan.
+
+- Decision: Fix `MetricOverviewContainer` so a rejected fetch renders, instead of dropping the
+  error-path assertions.
+  Rationale: An adversarial review found that the planned rejected-fetch assertions in Milestones 3
+  and 4 could not pass against the current code (see Surprises). The bug is user-visible: a failed
+  metric is blank, or shows the wrong region's data. The fix is one condition and keeps the reason
+  the component skips renders, which is to avoid a spinner and scroll jump while new data loads.
+  Date/Author: 2026-10-21, Stephanie Hobson.
 
 ## Outcomes & Retrospective
 
@@ -141,6 +159,10 @@ as a `dataFetch` prop with `pending`, `rejected` (plus `reason`), or `fulfilled`
   - Pending: render nothing.
   - Rejected: render an Error with `id="metric-overview-fetch-error"` or
     `id="summary-metric-fetch-error"`.
+  - `MetricOverviewContainer` also defines `shouldComponentUpdate`, so that when its URL changes
+    (a region change) it keeps the old metric on screen until new data arrives instead of flashing
+    empty. It currently returns `nextProps.dataFetch.fulfilled`, which also blocks the rejected
+    render, so its error never appears. Milestone 3 fixes this.
 
 Because react-refetch calls `fetch`, stubbing `global.fetch` drives it in jsdom. The same stub
 keeps working if react-refetch is replaced by any other code that calls `fetch`.
@@ -277,8 +299,22 @@ Acceptance: `npm run test:jest` passes, and the plan records the new file and te
    - Changing `#region-selector` writes `preferredRegion` and requests the new region's metric URLs.
    - Single-category dashboards show no selector.
    - It mocks `views/Chart` so jsdom never runs metrics-graphics.
-2. `MetricOverviewContainer.test.jsx` checks the exact requested URL, that the title renders when
-   fulfilled, and that `#metric-overview-fetch-error` renders when rejected.
+2. Fix and test `MetricOverviewContainer`'s rejected state.
+   - Write `MetricOverviewContainer.test.jsx` first. It checks:
+     - The exact requested URL.
+     - The title renders when fulfilled.
+     - On first load, an HTTP 500 shows `#metric-overview-fetch-error`.
+     - After a successful load, changing `activeRegion` keeps the old title on screen while the new
+       request is pending.
+     - When that new request then fails with HTTP 500, `#metric-overview-fetch-error` replaces the
+       old content.
+   - Run it and confirm the two error cases fail against the current code.
+   - Change `shouldComponentUpdate` in `src/components/containers/MetricOverviewContainer.jsx` to
+     return `nextProps.dataFetch.fulfilled || nextProps.dataFetch.rejected`. Update its comment so
+     it says rejected states also render.
+   - Leave the separate `#313` comment in `render()` alone. It describes a hosting problem the fix
+     doesn't touch.
+   - Confirm all five cases pass.
 3. `Routes.test.jsx` renders `views/Application` inside `MemoryRouter` with `initialEntries`. It
    checks `/` (Home and the Proceed button), `/contact`, each `/dashboard/<key>` (the dashboard's
    `index.json` is requested from its `source`), an unknown path (`#not-found`), and
@@ -308,7 +344,8 @@ Acceptance: `npm run test:jest` passes. Breaking the catch-all route in `Main.js
    - The data table's rows are in order.
    - Summary metrics render.
    - A region change refetches and shows the new region.
-   - A metric request answered with HTTP 500 shows `#metric-overview-fetch-error`.
+   - A metric request answered with HTTP 500 shows `#metric-overview-fetch-error`. This depends
+     on the Milestone 3 fix.
    - Description links render as anchors.
    - The next-button flow walks Home → User Activity → Usage Behavior → Hardware.
 4. Update the Playwright parts of `AGENTS.md` and `CONTRIBUTING.md`, including how to re-record
@@ -363,6 +400,7 @@ fails, and reverting:
 - Make `bumpSort` stop bumping.
 - Delete the catch-all `<Route>` in `Main.jsx`.
 - Enable `html` in MetricOverview's markdown parser.
+- Revert `MetricOverviewContainer.shouldComponentUpdate` to return only `fulfilled`.
 
 ## Idempotence and Recovery
 
@@ -391,3 +429,10 @@ In `tests/playwright/utils.js`, add and export:
     function failOnPageErrors(page)       // returns nothing; registers a check that fails the test on page errors
 
 New script: `scripts/recordPlaywrightFixtures.js`, run with `node scripts/recordPlaywrightFixtures.js`.
+
+## Revision notes
+
+- 2026-10-21: An adversarial review found that `MetricOverviewContainer` never renders its
+  rejected state. The rejected-fetch assertions in Milestones 3 and 4 could not have passed. Added
+  the fix and its tests to Milestone 3, linked the Milestone 4 spec to it, and recorded the finding
+  in Surprises and the Decision Log. Also marked issue #313 out of scope.
