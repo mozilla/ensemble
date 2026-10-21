@@ -1,0 +1,550 @@
+{
+    "title": "Top Add-ons",
+    "description": [
+        "Top Add-ons shows the top 10 most popular Firefox Desktop add-ons for a week.",
+        "Overall, the most popular add-ons are ad-blockers, coming in first in almost all of the top 10 countries. Ad-blocking seems particularly popular in Germany and France, with 4 of the top 10 add-ons being ad-blockers in France."
+    ],
+    "type": "table",
+    "columns": [
+        {
+            "name": "Add-on"
+        },
+        {
+            "name": "Usage",
+            "unit": "%"
+        }
+    ],
+    "data": {
+        "dates": {
+            "2026-09-21": {
+                "rows": [
+                    {
+                        "name": "uBlock Origin",
+                        "value": 2.4794792014622593
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 1.691206551642602
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 1.3996742194214766
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 1.23762840746593
+                    },
+                    {
+                        "name": "Language: Français (French)",
+                        "value": 0.7159290939321491
+                    },
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 0.6628208544609044
+                    },
+                    {
+                        "name": "Language: Español (ES) (Spanish, Spain)",
+                        "value": 0.5604514388016679
+                    },
+                    {
+                        "name": "Privacy Badger",
+                        "value": 0.4137938799791321
+                    },
+                    {
+                        "name": "Language: Português (BR)",
+                        "value": 0.3989686117168411
+                    },
+                    {
+                        "name": "Adblock Plus - free ad blocker",
+                        "value": 0.3739157849698052
+                    }
+                ]
+            },
+            "2026-08-31": {
+                "rows": [
+                    {
+                        "name": "uBlock Origin",
+                        "value": 10.224865498987937
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 3.7889139433917816
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 3.5234216865152814
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 2.811371645888524
+                    },
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 1.8875816742070572
+                    },
+                    {
+                        "name": "Privacy Badger",
+                        "value": 1.8170978551956576
+                    },
+                    {
+                        "name": "Language: Français (French)",
+                        "value": 1.6456481290055818
+                    },
+                    {
+                        "name": "Adblock Plus - free ad blocker",
+                        "value": 1.4568899615848763
+                    },
+                    {
+                        "name": "DuckDuckGo Search & Tracker Protection",
+                        "value": 1.362462798871105
+                    },
+                    {
+                        "name": "Video Download Helper",
+                        "value": 1.322461068026982
+                    }
+                ]
+            },
+            "2026-07-27": {
+                "rows": [
+                    {
+                        "name": "uBlock Origin",
+                        "value": 10.30731332706838
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 3.8729884745998424
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 3.4106840285624593
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 2.7563407084577887
+                    },
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 1.9009598875989722
+                    },
+                    {
+                        "name": "Privacy Badger",
+                        "value": 1.8555577256789109
+                    },
+                    {
+                        "name": "Language: Français (French)",
+                        "value": 1.53774259223848
+                    },
+                    {
+                        "name": "Adblock Plus - free ad blocker",
+                        "value": 1.528232679944413
+                    },
+                    {
+                        "name": "DuckDuckGo Search & Tracker Protection",
+                        "value": 1.4144205037799344
+                    },
+                    {
+                        "name": "AdBlocker Ultimate",
+                        "value": 1.385788509776292
+                    }
+                ]
+            },
+            "2026-08-17": {
+                "rows": [
+                    {
+                        "name": "uBlock Origin",
+                        "value": 10.439214333041688
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 3.871571078684103
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 3.554163914409305
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 2.8532954091836746
+                    },
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 1.9418090268596497
+                    },
+                    {
+                        "name": "Privacy Badger",
+                        "value": 1.8811657796485755
+                    },
+                    {
+                        "name": "Language: Français (French)",
+                        "value": 1.5434421066279802
+                    },
+                    {
+                        "name": "Adblock Plus - free ad blocker",
+                        "value": 1.5090367626715289
+                    },
+                    {
+                        "name": "DuckDuckGo Search & Tracker Protection",
+                        "value": 1.421338868135649
+                    },
+                    {
+                        "name": "AdBlocker Ultimate",
+                        "value": 1.3741718980825912
+                    }
+                ]
+            },
+            "2026-10-12": {
+                "rows": [
+                    {
+                        "name": "uBlock Origin",
+                        "value": 1.426429274726069
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 1.003224844855153
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 0.8800122851232578
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 0.8224709357469988
+                    },
+                    {
+                        "name": "Language: Français (French)",
+                        "value": 0.4266370378399863
+                    },
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 0.3954725707523735
+                    },
+                    {
+                        "name": "Language: Español (ES) (Spanish, Spain)",
+                        "value": 0.35455227048950794
+                    },
+                    {
+                        "name": "Language: Português (BR)",
+                        "value": 0.24362483401533835
+                    },
+                    {
+                        "name": "Language: Español (MX) (Spanish, Mexico)",
+                        "value": 0.22483582197411092
+                    },
+                    {
+                        "name": "Adblock Plus - free ad blocker",
+                        "value": 0.2238421722988537
+                    }
+                ]
+            },
+            "2026-09-14": {
+                "rows": [
+                    {
+                        "name": "uBlock Origin",
+                        "value": 4.62116279200686
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 2.648961263409938
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 2.398167034773422
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 1.9201286528418655
+                    },
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 1.1772222920697233
+                    },
+                    {
+                        "name": "Language: Français (French)",
+                        "value": 1.1152039661704576
+                    },
+                    {
+                        "name": "Language: Español (ES) (Spanish, Spain)",
+                        "value": 0.835980762121721
+                    },
+                    {
+                        "name": "Privacy Badger",
+                        "value": 0.8313833370550585
+                    },
+                    {
+                        "name": "Adblock Plus - free ad blocker",
+                        "value": 0.6614662595912608
+                    },
+                    {
+                        "name": "Language: Português (BR)",
+                        "value": 0.6528343594660981
+                    }
+                ]
+            },
+            "2026-09-28": {
+                "rows": [
+                    {
+                        "name": "uBlock Origin",
+                        "value": 1.907959839446736
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 1.3578647750141761
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 1.145313304943721
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 1.0470059336513267
+                    },
+                    {
+                        "name": "Language: Français (French)",
+                        "value": 0.5764091958623808
+                    },
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 0.5441651193216144
+                    },
+                    {
+                        "name": "Language: Español (ES) (Spanish, Spain)",
+                        "value": 0.4636475833620565
+                    },
+                    {
+                        "name": "Language: Português (BR)",
+                        "value": 0.33439331102191483
+                    },
+                    {
+                        "name": "Privacy Badger",
+                        "value": 0.30594810556784785
+                    },
+                    {
+                        "name": "Language: Español (MX) (Spanish, Mexico)",
+                        "value": 0.30150064673463867
+                    }
+                ]
+            },
+            "2026-08-03": {
+                "rows": [
+                    {
+                        "name": "uBlock Origin",
+                        "value": 10.344019728729963
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 3.8856350184956847
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 3.46167283189478
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 2.7884299219071105
+                    },
+                    {
+                        "name": "Privacy Badger",
+                        "value": 1.8922112618166873
+                    },
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 1.8819358816276202
+                    },
+                    {
+                        "name": "Adblock Plus - free ad blocker",
+                        "value": 1.5291820797369504
+                    },
+                    {
+                        "name": "Language: Français (French)",
+                        "value": 1.5141800246609125
+                    },
+                    {
+                        "name": "DuckDuckGo Search & Tracker Protection",
+                        "value": 1.4082408549116319
+                    },
+                    {
+                        "name": "AdBlocker Ultimate",
+                        "value": 1.3657007809288944
+                    }
+                ]
+            },
+            "2026-08-10": {
+                "rows": [
+                    {
+                        "name": "uBlock Origin",
+                        "value": 10.460904302373585
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 3.886341932286477
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 3.559289942297724
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 2.847763040952372
+                    },
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 1.9333418174406345
+                    },
+                    {
+                        "name": "Privacy Badger",
+                        "value": 1.892266322336068
+                    },
+                    {
+                        "name": "Adblock Plus - free ad blocker",
+                        "value": 1.5474183999594417
+                    },
+                    {
+                        "name": "Language: Français (French)",
+                        "value": 1.5198967835921502
+                    },
+                    {
+                        "name": "DuckDuckGo Search & Tracker Protection",
+                        "value": 1.429261686081822
+                    },
+                    {
+                        "name": "AdBlocker Ultimate",
+                        "value": 1.3783570422746512
+                    }
+                ]
+            },
+            "2026-09-07": {
+                "rows": [
+                    {
+                        "name": "uBlock Origin",
+                        "value": 10.20725899224674
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 3.8085924544536236
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 3.551129633525317
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 2.818256075535062
+                    },
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 1.8904612725505021
+                    },
+                    {
+                        "name": "Privacy Badger",
+                        "value": 1.7957960689776726
+                    },
+                    {
+                        "name": "Language: Français (French)",
+                        "value": 1.6440853673559506
+                    },
+                    {
+                        "name": "Adblock Plus - free ad blocker",
+                        "value": 1.439119566226791
+                    },
+                    {
+                        "name": "DuckDuckGo Search & Tracker Protection",
+                        "value": 1.3596159568197799
+                    },
+                    {
+                        "name": "Video Download Helper",
+                        "value": 1.3314722476494791
+                    }
+                ]
+            },
+            "2026-08-24": {
+                "rows": [
+                    {
+                        "name": "uBlock Origin",
+                        "value": 10.468137578720219
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 3.8268135176577505
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 3.5514679093751624
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 2.829724113909607
+                    },
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 1.9223147047166074
+                    },
+                    {
+                        "name": "Privacy Badger",
+                        "value": 1.8579572979097354
+                    },
+                    {
+                        "name": "Language: Français (French)",
+                        "value": 1.6282524011418185
+                    },
+                    {
+                        "name": "Adblock Plus - free ad blocker",
+                        "value": 1.4975358019353262
+                    },
+                    {
+                        "name": "DuckDuckGo Search & Tracker Protection",
+                        "value": 1.4084563430580077
+                    },
+                    {
+                        "name": "AdBlocker Ultimate",
+                        "value": 1.3725242916681681
+                    }
+                ]
+            },
+            "2026-10-05": {
+                "rows": [
+                    {
+                        "name": "uBlock Origin",
+                        "value": 1.6005183418574838
+                    },
+                    {
+                        "name": "Language: English (US)",
+                        "value": 1.1698534581397593
+                    },
+                    {
+                        "name": "Language: English (CA)",
+                        "value": 0.9970728389785725
+                    },
+                    {
+                        "name": "Language: English (GB)",
+                        "value": 0.9286039234067192
+                    },
+                    {
+                        "name": "Language: Français (French)",
+                        "value": 0.4889323903922947
+                    },
+                    {
+                        "name": "Language: Deutsch (German)",
+                        "value": 0.46182053791753397
+                    },
+                    {
+                        "name": "Language: Español (ES) (Spanish, Spain)",
+                        "value": 0.40392064958160434
+                    },
+                    {
+                        "name": "Language: Português (BR)",
+                        "value": 0.2917970562961533
+                    },
+                    {
+                        "name": "Language: Español (MX) (Spanish, Mexico)",
+                        "value": 0.26716662760721815
+                    },
+                    {
+                        "name": "Adblock Plus - free ad blocker",
+                        "value": 0.2528295124002261
+                    }
+                ]
+            }
+        }
+    },
+    "apiVersion": "2.0.0"
+}

@@ -59,7 +59,13 @@ Out of scope:
       Deliberate breakages that each failed tests: removing the catch-all route (4 failed), dropping
       `exact` from the dashboard routes (1), not saving `preferredRegion` (1), reverting the fix
       (2), and never setting LazyBoundary's error state (3).
-- [ ] Milestone 4: Playwright specs on recorded fixtures.
+- [x] (2026-10-21) Milestone 4: Playwright specs on recorded fixtures. Thirteen specs across six
+      files pass, 65/65 over `--repeat-each=5` and 13/13 on three cold servers, all with retries
+      off. With data.firefox.com mapped to a dead address the fixture specs still pass and the live
+      hardware spec fails, which shows the fixture specs don't use the network. The full suite
+      passes 60 of 61. The one failure is the live hardware "Charts render", caused by upstream
+      data (see Surprises). It failed on the first attempt and the retry, and fails the same way
+      without this branch's changes.
 - [ ] Milestone 5: production build step in CI, green on the pull request.
 
 ## Surprises & Discoveries
@@ -104,6 +110,23 @@ Out of scope:
   `optimizeDeps.rolldownOptions.transform.jsx.runtime: 'classic'` in `vite.config.mjs` removed the
   error. Three cold starts (`vite --force`) then ran the fixture specs 13/13 with retries off and no
   504s in the log.
+- Observation: as of the week of 2026-10-12, the live hardware data has a `"NULL"` CPU-speed
+  population with a single point at about 48%. ChartContainer sorts populations by maximum y, so
+  that single point becomes `path.mg-line1`, which has no visible length. The live
+  `dashboards/hardware.spec.js` "Charts render" test then fails on
+  `#processor-metric-overview-3 path.mg-line1`. Those specs are designed to break when upstream data
+  changes. The same test also fails with the branch's Vite change reverted. A 48% "NULL" bucket
+  looks like an ETL problem worth raising with the data owners. The recording includes it.
+  Evidence: `[["NULL",48.13],["2.3 GHz to 2.69 GHz",24.51],...]` from the live
+  `hardware/default/cpuSpeed/index.json`.
+- Observation: `test.use({ option: [a, b] })` reads the array as a `[value, options]` pair, so an
+  array-valued option arrived as just its first element (`allowedErrors.some is not a function`).
+  `allowedErrors` is a single RegExp instead.
+- Observation: no recorded metric description contains a Markdown link. `descriptions.spec.js`
+  substitutes a description with one, plus raw HTML, in a single response.
+- Observation: port 3000 on this machine was serving an unrelated site (Mozilla Protocol). Locally
+  `reuseExistingServer` reused it and every spec failed. Local runs used
+  `npx vite --port 3001 --strictPort` and `PLAYWRIGHT_BASE_URL=http://localhost:3001`.
 - Observation: the footer also renders a `<nav>`, so `getByRole('navigation')` finds two elements.
   The header test selects `#main-navigation`, the same landmark the Playwright specs use.
 - Observation: adding `src/setupTests.js` to the ESLint block for test files breaks lint. That
@@ -163,6 +186,19 @@ Out of scope:
   504s, and only the retries hid that. A one-setting change removes the cause, so the fixture specs
   can keep failing on any console error rather than allow-listing Vite's errors. `npm run build`
   is unaffected.
+  Date/Author: 2026-10-21, Claude, under the approved plan.
+
+- Decision: Implement the fixture behavior as a Playwright `test.extend` in
+  `tests/playwright/fixtureData.js`, rather than the `useFixtureData`/`failOnPageErrors` helpers in
+  `utils.js` that the plan named.
+  Rationale: An extended `test` applies the routing and the error check to every fixture spec
+  automatically, and runs the check after the test body, so a spec can't forget either part.
+  Date/Author: 2026-10-21, Claude, under the approved plan.
+
+- Decision: The recorder keeps only the 12 most recent dates, and drops populations left with no
+  points.
+  Rationale: Unbounded, the hardware files are 200–330 KB each. Trimmed, all 30 files total
+  292 KB. The specs only look at recent data.
   Date/Author: 2026-10-21, Claude, under the approved plan.
 
 ## Outcomes & Retrospective
@@ -493,10 +529,13 @@ New dev dependencies, all exact-pinned:
 
 Removed: `enzyme`, `enzyme-adapter-react-16`, `react-test-renderer`, and the `cheerio` override.
 
-In `tests/playwright/utils.js`, add and export:
+Playwright fixture support (see the Decision Log for why this isn't in `utils.js`):
 
-    async function useFixtureData(page)   // route data.firefox.com dataset requests to tests/playwright/fixtures
-    function failOnPageErrors(page)       // returns nothing; registers a check that fails the test on page errors
+    tests/playwright/fixtureData.js exports:
+        test          // @playwright/test's test, extended: serves fixtures/, fails on errors and unrecorded requests
+                      // option: allowedErrors (RegExp or null)
+        expect        // @playwright/test's expect
+        readFixture(relativePath)   // parsed JSON from tests/playwright/fixtures/<relativePath>
 
 New script: `scripts/recordPlaywrightFixtures.js`, run with `node scripts/recordPlaywrightFixtures.js`.
 
