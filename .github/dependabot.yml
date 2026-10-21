@@ -16,12 +16,15 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     ignore:
-      # Enzyme only supports React 16 (enzyme-adapter-react-16), so React majors break the unit tests.
+      # React majors need coordinated changes (react-refetch, the router, the test libraries below), so they're done by hand.
       - dependency-name: "react"
         update-types: ["version-update:semver-major"]
       - dependency-name: "react-dom"
         update-types: ["version-update:semver-major"]
-      - dependency-name: "react-test-renderer"
+      # @testing-library/react 13+ requires React 18, and @testing-library/dom is pinned to the 8.x that 12.x uses.
+      - dependency-name: "@testing-library/react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@testing-library/dom"
         update-types: ["version-update:semver-major"]
       # 3.x is a rewrite that's incompatible with react-metrics-graphics (see update-deps/denied.md).
       - dependency-name: "metrics-graphics"

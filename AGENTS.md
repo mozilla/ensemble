@@ -30,7 +30,7 @@ src/
 ├── index.jsx                    entry: ReactDOM.render + BrowserRouter
 ├── config.json                  the route/dashboard table + next-button flow
 ├── registerServiceWorker.js     create-react-app leftover; only unregister() is called (SW deliberately off)
-├── setupTests.js                Vitest setup: enzyme adapter; puts React and shallow on global
+├── setupTests.js                Vitest setup: puts React on global, jest-dom matchers, fails on console.error
 ├── components/
 │   ├── containers/              6 stateful/data-fetching .jsx
 │   ├── decorators/              withTracker.jsx (react-ga), withNextButton.jsx
@@ -76,7 +76,7 @@ npm start                            # npm-run-all --parallel watch:css watch:ap
 npm run build:css                    # one-shot Stylus compile
 
 npm run lint                         # lint:js (flat-config ESLint, .js and .jsx) + lint:styl (stylint)
-npm run test:jest                    # vitest run (Enzyme, 2 files)
+npm run test:jest                    # vitest run (React Testing Library)
 npm run test:playwright              # playwright test; starts the dev server itself if :3000 is free
 npm test                             # lint -> test:jest -> test:playwright
 
@@ -105,7 +105,7 @@ Run one Vitest file: `npx vitest run src/tests/jest/Dashboard.test.jsx`. Run one
 
 **ESLint is one flat config, `eslint.config.js`, covering `.js` and `.jsx`.** `npm run lint:js` runs `eslint .`; the build does not lint. Warnings don't fail the run.
 
-Errors: `eqeqeq`, `no-var`, `prefer-const`, `no-console`, `no-global-assign`, `no-redeclare` and `no-shadow` — the latter two with `builtinGlobals: true`, so **do not name a variable `name`, `status`, `history`, `event`, etc.** Warnings: `semi: always`, `prefer-arrow-callback`, `comma-dangle` (trailing commas **required** for multiline arrays/objects/imports/exports, **never** for function args/params). Off: `react/prop-types`, `react/display-name`, `jsx-a11y/no-onchange`. `react/no-unescaped-entities` forbids only `>` and `}`. `jsx-a11y/recommended` is on, so a11y violations are errors; `jsx-a11y/label-has-associated-control` requires `htmlFor`. `settings.react.version` is `'detect'`. `src/tests/jest/**/*.test.jsx` also gets `@vitest/eslint-plugin`'s recommended rules and the `React`/`shallow` globals. **Quote style is not enforced** (there is no `quotes` rule) — single quotes by convention. The config's own `ignores` excludes `build`.
+Errors: `eqeqeq`, `no-var`, `prefer-const`, `no-console`, `no-global-assign`, `no-redeclare` and `no-shadow` — the latter two with `builtinGlobals: true`, so **do not name a variable `name`, `status`, `history`, `event`, etc.** Warnings: `semi: always`, `prefer-arrow-callback`, `comma-dangle` (trailing commas **required** for multiline arrays/objects/imports/exports, **never** for function args/params). Off: `react/prop-types`, `react/display-name`, `jsx-a11y/no-onchange`. `react/no-unescaped-entities` forbids only `>` and `}`. `jsx-a11y/recommended` is on, so a11y violations are errors; `jsx-a11y/label-has-associated-control` requires `htmlFor`. `settings.react.version` is `'detect'`. `src/tests/jest/**/*.test.jsx` also gets `@vitest/eslint-plugin`'s recommended rules and the `React` global. **Quote style is not enforced** (there is no `quotes` rule) — single quotes by convention. The config's own `ignores` excludes `build`.
 
 ## Styling: Stylus, outside Vite
 
@@ -139,7 +139,7 @@ This applies to everything written for a person to read: ExecPlans, PR descripti
 
 ## Testing Guidelines
 
-**Vitest + enzyme**, configured in the `test` block of `vite.config.mjs` (`jsdom`, `globals: true`, `include: ['src/tests/jest/**/*.test.jsx']`). Only two files, both in `src/tests/jest/`, named `PascalCase.test.jsx` — **not colocated, no `__tests__` directories.** `src/setupTests.js` puts `React` and `shallow` on `global`, so **test files import neither**: they `import Dashboard from '../../components/views/Dashboard';` and call bare `shallow(<Dashboard … />)`. Existing style is top-level `it(...)` with long descriptive sentences, a `beforeAll` that builds a `requiredProps` object, and assertions via `.find(selector).exists()` and `.html()).toContain(...)`. Shallow rendering only; no snapshots; `react-refetch` is never mocked; there are no container tests.
+**Vitest + React Testing Library**, configured in the `test` block of `vite.config.mjs` (`jsdom`, `globals: true`, `include: ['src/tests/jest/**/*.test.jsx']`). Files live in `src/tests/jest/`, named `PascalCase.test.jsx` — **not colocated, no `__tests__` directories.** `@testing-library/react` is pinned to 12.x, the last line that supports React 16; `@testing-library/dom` is pinned to the 8.x it uses so `@testing-library/user-event` shares the same copy. `src/setupTests.js` puts `React` on `global` (the classic JSX runtime needs it in scope), so **test files don't import React**; they import `render` and `screen` from `@testing-library/react`. It also registers the jest-dom matchers (`toHaveTextContent`, `toBeInTheDocument`), and **fails any test that calls `console.error` unexpectedly**, so React warnings surface as failures — a test that expects an error replaces `console.error` with `vi.spyOn(console, 'error').mockImplementation(() => {})`. Tests render the real component tree into jsdom and assert on the DOM (`container.querySelector('#dashboard-description')`, or `innerHTML` where the markup itself is the point, as in the sanitization test). Existing style is top-level `it(...)` with long descriptive sentences. No snapshots.
 
 **Playwright** specs in `tests/playwright/specs/` are **`camelCase.spec.js` or `kebab-case.spec.js`, CommonJS**, using `@playwright/test`'s `test`/`expect`. `playwright.config.js` has two Chromium projects: `chromium` runs everything except `jsDisabled.spec.js`, and `chromium-no-js` runs only that spec with `javaScriptEnabled: false`, asserting on the `id="enable-javascript"` `<noscript>` block in `index.html`. Playwright starts `npm start` itself unless a server is already on `:3000`. Set `PLAYWRIGHT_BASE_URL` to test another environment (`PLAYWRIGHT_BASE_URL=https://data.firefox.com npx playwright test`). `tests/playwright/utils.js` exports `linkWorks`, `linksWork`, `metricTitleIsCorrect`, and `flagForUpdate` — which **deliberately fails when an element count changes**, to force a human to look. The `dashboards/*.spec.js` specs assert exact metric titles and section ordering **against live production data**, so upstream data changes break them by design.
 
