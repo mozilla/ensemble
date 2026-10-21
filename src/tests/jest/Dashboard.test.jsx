@@ -1,3 +1,5 @@
+import { render } from '@testing-library/react';
+
 import Dashboard from '../../components/views/Dashboard';
 
 
@@ -11,46 +13,26 @@ beforeAll(() => {
 });
 
 it('When a description prop is present, p#dashboard-description is rendered', () => {
-    const d = shallow(
+    const { container } = render(
         <Dashboard
             {...requiredProps}
             description="Example description"
         />
     );
 
-    expect(d.find('#dashboard-description').exists()).toEqual(true);
+    expect(container.querySelector('#dashboard-description')).toHaveTextContent('Example description');
 });
 
 it('When a description prop is not present, an empty string, undefined, or null, p#dashboard-description is not rendered', () => {
-    const d1 = shallow(
-        <Dashboard
-            {...requiredProps}
-        />
-    );
+    [{}, { description: '' }, { description: undefined }, { description: null }].forEach(descriptionProps => {
+        const { container, unmount } = render(
+            <Dashboard
+                {...requiredProps}
+                {...descriptionProps}
+            />
+        );
 
-    const d2 = shallow(
-        <Dashboard
-            {...requiredProps}
-            description={''}
-        />
-    );
-
-    const d3 = shallow(
-        <Dashboard
-            {...requiredProps}
-            description={undefined}
-        />
-    );
-
-    const d4 = shallow(
-        <Dashboard
-            {...requiredProps}
-            description={null}
-        />
-    );
-
-    expect(d1.find('#dashboard-description').exists()).toEqual(false);
-    expect(d2.find('#dashboard-description').exists()).toEqual(false);
-    expect(d3.find('#dashboard-description').exists()).toEqual(false);
-    expect(d4.find('#dashboard-description').exists()).toEqual(false);
+        expect(container.querySelector('#dashboard-description')).toBeNull();
+        unmount();
+    });
 });

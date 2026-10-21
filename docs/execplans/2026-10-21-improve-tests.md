@@ -45,7 +45,10 @@ Out of scope:
 - [x] (2026-10-21) Drafted the plan. Baseline: `npm run test:jest` passes 2 files, 4 tests.
 - [x] (2026-10-21) Revised after review: Milestone 3 now fixes `MetricOverviewContainer` so a
       failed metric fetch shows its error.
-- [ ] Milestone 1: unit harness moved from Enzyme to React Testing Library.
+- [x] (2026-10-21) Milestone 1: unit harness moved from Enzyme to React Testing Library. Vitest
+      passes 2 files, 4 tests. Lint is clean, Zizmor reports no findings, and `npm ls enzyme
+      react-test-renderer` prints `(empty)`. Breaking the sanitizer fails both MetricOverview
+      tests.
 - [ ] Milestone 2: unit tests for pure logic and data shaping.
 - [ ] Milestone 3: routing and fetch behavior tests in jsdom.
 - [ ] Milestone 4: Playwright specs on recorded fixtures.
@@ -59,6 +62,21 @@ Out of scope:
   skips the render for the rejected state. The rejected branch in `render()` is unreachable.
   Evidence: an Enzyme `mount` probe with `fetch` stubbed to answer HTTP 500 printed
   `PROBE rejected=true errorShown=false html=""`.
+- Observation: the newest `@testing-library/jest-dom` and `@testing-library/dom` releases don't
+  work with RTL 12, and npm quietly installs a second copy of `@testing-library/dom`.
+  - `@testing-library/jest-dom` 6.10 and 7.x declare a peer dependency on
+    `@testing-library/dom >=10 <11`. RTL 12 depends on `^8`. 6.9.1 has no peer dependency.
+  - `@testing-library/user-event` declares `@testing-library/dom` as a peer, and npm auto-installed
+    10.x at the top level while RTL kept 8.x nested.
+  Evidence: `npm ls @testing-library/dom` showed `8.20.1` under RTL and `10.4.2` under user-event.
+  Pinning `@testing-library/dom@8.20.1` as a direct dev dependency makes both share it (`deduped`).
+- Observation: `markdownIt('zero', { html: true })` alone doesn't let raw HTML through. The `zero`
+  preset also disables the `html_inline` rule. A mutation check of the sanitizer has to add
+  `'html_inline'` to the `.enable([...])` list as well. With only the option set, all 4 tests still
+  passed. With both, the 2 MetricOverview tests failed.
+- Observation: adding `src/setupTests.js` to the ESLint block for test files breaks lint. That
+  block declares `React` as a global, so the file's own `import React` trips `no-shadow` with
+  `builtinGlobals`. The file gets its own block with only the Vitest globals.
 
 ## Decision Log
 
@@ -99,6 +117,14 @@ Out of scope:
   metric is blank, or shows the wrong region's data. The fix is one condition and keeps the reason
   the component skips renders, which is to avoid a spinner and scroll jump while new data loads.
   Date/Author: 2026-10-21, Stephanie Hobson.
+
+- Decision: Pin `@testing-library/dom` 8.20.1 and `@testing-library/jest-dom` 6.9.1, and have
+  Dependabot ignore major updates to `@testing-library/react` and `@testing-library/dom`. Drop the
+  Dependabot entry for `react-test-renderer`, which has been removed.
+  Rationale: RTL 13+ requires React 18, and newer versions of the other two require
+  `@testing-library/dom` 10 (see Surprises). Those majors belong to the React upgrade. The
+  Dependabot comment that tied the React ignores to Enzyme now names the actual reasons.
+  Date/Author: 2026-10-21, Claude, under the approved plan.
 
 ## Outcomes & Retrospective
 
@@ -242,8 +268,9 @@ At the end of this milestone, the two existing unit tests run on RTL with the sa
 Enzyme is gone from the dependency tree.
 
 1. Install exact-pinned dev dependencies: `@testing-library/react@12.1.5`,
-   `@testing-library/jest-dom` (current 6.x), and `@testing-library/user-event` (current 14.x).
-   Check that `package.json` has no `^` or `~`.
+   `@testing-library/dom@8.20.1`, `@testing-library/jest-dom@6.9.1`, and
+   `@testing-library/user-event@14.6.8`. Check that `package.json` has no `^` or `~`, and that
+   `npm ls @testing-library/dom` shows a single 8.x copy.
 2. Remove `enzyme`, `enzyme-adapter-react-16`, and the `overrides.enzyme` block. Remove
    `react-test-renderer` too, since only the Enzyme adapter used it.
 3. Rewrite `src/setupTests.js`:
@@ -256,7 +283,8 @@ Enzyme is gone from the dependency tree.
    / `screen` queries. MetricOverview's `.html()` assertions become assertions on
    `.metric-description`'s `innerHTML`, with the same expected strings. MetricOverview without a
    `type` lazy-loads nothing, so it renders synchronously.
-5. In `eslint.config.js`, drop the `shallow` global.
+5. In `eslint.config.js`, drop the `shallow` global. Give `src/setupTests.js` its own block with
+   the Vitest globals.
 6. Update the documents listed under "Documents to keep in sync".
 
 Acceptance: `npm run test:jest` passes 2 files, 4 tests. `npm run lint` is clean.
@@ -399,7 +427,8 @@ fails, and reverting:
 
 - Make `bumpSort` stop bumping.
 - Delete the catch-all `<Route>` in `Main.jsx`.
-- Enable `html` in MetricOverview's markdown parser.
+- Turn on raw HTML in MetricOverview's markdown parser. That means passing `{ html: true }` to
+  `markdownIt('zero', …)` and adding `'html_inline'` to the `.enable([...])` list.
 - Revert `MetricOverviewContainer.shouldComponentUpdate` to return only `fulfilled`.
 
 ## Idempotence and Recovery
@@ -418,8 +447,10 @@ None yet.
 New dev dependencies, all exact-pinned:
 
 - `@testing-library/react` 12.1.5: the last line that supports React 16.
-- `@testing-library/jest-dom`: DOM matchers, registered for Vitest.
-- `@testing-library/user-event`: realistic select changes and clicks.
+- `@testing-library/dom` 8.20.1: the version RTL 12 uses, pinned so user-event shares it.
+- `@testing-library/jest-dom` 6.9.1: DOM matchers, registered for Vitest. It is the newest release
+  without a `@testing-library/dom` 10 peer dependency.
+- `@testing-library/user-event` 14.6.8: realistic select changes and clicks.
 
 Removed: `enzyme`, `enzyme-adapter-react-16`, `react-test-renderer`, and the `cheerio` override.
 
