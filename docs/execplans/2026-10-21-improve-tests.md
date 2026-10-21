@@ -93,6 +93,17 @@ Out of scope:
 - Observation: the CustomizableDate UTC mutation only fails where the local time zone is behind
   UTC. In CI (UTC) dropping the UTC flag changes nothing. The test still documents the intended
   output, and it failed locally in America/Vancouver.
+- Observation: Vite's dependency scan has been failing on every dev-server start. The React plugin
+  sets the classic JSX runtime for transforms but not for the scan. The scan then assumes the
+  automatic runtime, can't resolve `react/jsx-dev-runtime` (React 16 has none), and skips
+  pre-bundling. Dependencies are then discovered one page at a time, answering `504 (Outdated
+  Optimize Dep)` and reloading. That was the "first visit can 504" footgun in `AGENTS.md`, and the
+  fixture specs' console-error check made it fail them on a cold server.
+  Evidence: `(!) Failed to run dependency scan. Skipping dependency pre-bundling. ...
+  react/jsx-dev-runtime (imported by .../views/Chart.jsx)`. Setting
+  `optimizeDeps.rolldownOptions.transform.jsx.runtime: 'classic'` in `vite.config.mjs` removed the
+  error. Three cold starts (`vite --force`) then ran the fixture specs 13/13 with retries off and no
+  504s in the log.
 - Observation: the footer also renders a `<nav>`, so `getByRole('navigation')` finds two elements.
   The header test selects `#main-navigation`, the same landmark the Playwright specs use.
 - Observation: adding `src/setupTests.js` to the ESLint block for test files breaks lint. That
@@ -145,6 +156,13 @@ Out of scope:
   Rationale: RTL 13+ requires React 18, and newer versions of the other two require
   `@testing-library/dom` 10 (see Surprises). Those majors belong to the React upgrade. The
   Dependabot comment that tied the React ignores to Enzyme now names the actual reasons.
+  Date/Author: 2026-10-21, Claude, under the approved plan.
+
+- Decision: Fix the Vite dependency scan in `vite.config.mjs`, outside the plan's original scope.
+  Rationale: CI starts a cold dev server on every run. Without the fix, the first visits fail with
+  504s, and only the retries hid that. A one-setting change removes the cause, so the fixture specs
+  can keep failing on any console error rather than allow-listing Vite's errors. `npm run build`
+  is unaffected.
   Date/Author: 2026-10-21, Claude, under the approved plan.
 
 ## Outcomes & Retrospective

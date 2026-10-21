@@ -156,7 +156,6 @@ This applies to everything written for a person to read: ExecPlans, PR descripti
 | Switching branches without reinstalling | `node_modules` can still hold another branch's packages. Run `npm install` after a branch switch before trusting any result. |
 | Gitignored `src/components/views/css/` | Fresh clone cannot resolve the CSS imports until `npm run build:css` runs. Never hand-edit `css/` — edit `styl/`. |
 | Renaming a landmark ID | Breaks Playwright selectors silently. |
-| First visit to a route on the Vite dev server | Can 504 or fail a dynamic import ("Outdated Optimize Dep") while Vite pre-bundles a new dependency. A reload fixes it; production builds don't do this. |
 | `path.mg-line1` in a Playwright locator | metrics-graphics puts the class on many invisible hover paths too. Use `.first()` or the locator throws a strict-mode error. |
 | `build:version.json` | Needs `build/` to already exist and `git` on PATH; must follow `build:app`. |
 | `no-shadow` / `no-redeclare` with `builtinGlobals` | Naming a local `name`, `status`, `history`, `event` is a hard error. |
