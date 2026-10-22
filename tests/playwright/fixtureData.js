@@ -12,6 +12,23 @@ function fixturePath(url) {
     return path.join(fixturesDirectory, decodeURIComponent(new URL(url).pathname.slice(new URL(datasetsPrefix).pathname.length)));
 }
 
+// Only a few regions are recorded. A metric request for any other region gets
+// the dashboard's default-region recording of the same metric, so specs can
+// choose any region the selector offers. A missing metric or dashboard is
+// still reported as unrecorded.
+function regionFallbackPath(filename) {
+    const [dashboardKey, , slug, basename] = path.relative(fixturesDirectory, filename).split(path.sep);
+    if (!basename) return null;
+
+    const indexFilename = path.join(fixturesDirectory, dashboardKey, 'index.json');
+    if (!fs.existsSync(indexFilename)) return null;
+
+    const index = JSON.parse(fs.readFileSync(indexFilename, 'utf8'));
+    const defaultRegion = index.defaultCategory || index.categories[0];
+    const fallback = path.join(fixturesDirectory, dashboardKey, defaultRegion, slug, basename);
+    return fs.existsSync(fallback) ? fallback : null;
+}
+
 // Read a recorded file by its path under fixtures/, for example
 // readFixture('hardware/index.json').
 function readFixture(relativePath) {
@@ -24,10 +41,19 @@ function readFixture(relativePath) {
 // request with no recording. A spec that expects errors matches them with
 // test.use({ allowedErrors: /pattern/ }). It is a single RegExp because
 // test.use() reads an array as a [value, options] pair.
+//
+// With the liveData option (the live-data project in playwright.config.js),
+// the page is left alone and requests go to the real data.firefox.com.
 const test = base.test.extend({
     allowedErrors: [null, { option: true }],
+    liveData: [false, { option: true }],
 
-    page: async ({ page, baseURL, allowedErrors }, use) => {
+    page: async ({ page, baseURL, allowedErrors, liveData }, use) => {
+        if (liveData) {
+            await use(page);
+            return;
+        }
+
         const errors = [];
         const unrecordedURLs = [];
 
@@ -41,8 +67,9 @@ const test = base.test.extend({
 
             if (url.startsWith(datasetsPrefix)) {
                 const filename = fixturePath(url);
-                if (fs.existsSync(filename)) {
-                    await route.fulfill({ path: filename, contentType: 'application/json' });
+                const recordedFilename = fs.existsSync(filename) ? filename : regionFallbackPath(filename);
+                if (recordedFilename) {
+                    await route.fulfill({ path: recordedFilename, contentType: 'application/json' });
                 } else {
                     unrecordedURLs.push(url);
                     await route.fulfill({ status: 404, json: { error: 'Not recorded' } });

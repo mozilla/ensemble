@@ -20,8 +20,11 @@ how to work in the code, not what the code is.
     npm run build:app                    # vite build; confirmed working, no flags needed
     npm run build:version.json           # writes build/version.json; must run after build:app, needs git on PATH
     npm run size                         # source-map-explorer on build/assets/index-*.js (needs a prior build)
-    npm run test:playwright              # playwright test; starts the dev server itself if one
-                                          # isn't already running on :3000
+    npm run test:playwright              # every Playwright project; starts the dev server itself if
+                                          # one isn't already running on :3000
+    npm run test:playwright:recorded     # specs on the recording (CI's required check)
+    npm run test:playwright:live         # the same specs on live data (CI's non-required check)
+    npm run record:fixtures              # re-record tests/playwright/fixtures/
 
 Run one Vitest file directly: `npx vitest run src/tests/jest/Dashboard.test.jsx` (confirmed
 working). Run one Playwright spec directly: `npx playwright test contact.spec.js`.
@@ -167,41 +170,74 @@ React Testing Library's `screen` is that library's documented idiom.
 
 **Playwright** specs live in `tests/playwright/specs/`, configured by `playwright.config.js` at the
 repository root. Specs are `camelCase.spec.js` or `kebab-case.spec.js` (matching the component or
-page under test), CommonJS, using `@playwright/test`'s own `test`/`expect` — for example
-`test('Page loads', async ({ page }) => { await expect(page.locator('#contact')).toBeVisible(); })`.
-Shared helpers (`linkWorks`, `linksWork`, `flagForUpdate`, `metricTitleIsCorrect`) live in
+page under test), CommonJS. Every spec except `jsDisabled.spec.js` imports `test`, `expect` and,
+where needed, `readFixture` from `tests/playwright/fixtureData.js` rather than from
+`@playwright/test` — for example `test('Page loads', async ({ page }) => { await
+expect(page.locator('#contact')).toBeVisible(); })`. Shared helpers (`linkWorks`, `linksWork`,
+`flagForUpdate`, `metricTitleIsCorrect`, `changeRegionAndWaitForMetrics`) live in
 `tests/playwright/utils.js`. `linkWorks` and `linksWork` check only links within the app and skip
 external URLs, which failed too often for reasons outside this repository. `flagForUpdate`
-deliberately fails when an element count changes, to force a human to look. The `dashboards/*.spec.js` specs assert exact metric titles and section
-ordering against live production data, so upstream data changes break them by design — this is not
-a bug in the tests, and updating their expectations to match reality is normal, expected
-maintenance. Two browser projects: `chromium` (everything except `jsDisabled.spec.js`) and
-`chromium-no-js` (`jsDisabled.spec.js` only, run with `javaScriptEnabled: false` — this is
-Chromium-only because `nightwatch.conf.js`, the file this suite replaced, only ever tested Chrome
-too; it is not a gap introduced by this migration). Playwright starts the dev server itself
-(`webServer: { command: 'npm start', ... }`) if one isn't already running on `:3000`, reusing an
-existing one when there is one. Point the suite at a different environment with
-`PLAYWRIGHT_BASE_URL`, for example `PLAYWRIGHT_BASE_URL=https://data.firefox.com npx playwright
-test` — there is no separate `test:playwright:stage`/`test:playwright:prod` script for this, unlike
-the old Nightwatch scripts, since the environment variable already covers it in one line.
+deliberately fails when an element count changes, to force a human to look. Playwright starts the
+dev server itself (`webServer: { command: 'npm start', ... }`) if one isn't already running on
+`:3000`, reusing an existing one when there is one — so if something unrelated is on `:3000`, the
+suite silently tests that instead.
 
-**Fixture specs** in `tests/playwright/specs/fixtures/` run against a recording instead of live
-data. They import `test`, `expect` and `readFixture` from `tests/playwright/fixtureData.js`. Its
-`test` answers every `https://data.firefox.com/datasets/desktop/**` request from
-`tests/playwright/fixtures/`, whose paths mirror the URLs, and answers other third-party requests
-(Google Analytics) with an empty response. It fails the test on any page error, any console error,
-or any dataset request with no recording. A spec that expects errors allows them with
-`test.use({ allowedErrors: /pattern/ })`. That takes a single RegExp because `test.use()` reads an
-array as a `[value, options]` pair. To change one response, register a later `page.route()`, which
-takes precedence, as `errors.spec.js` and `descriptions.spec.js` do. Specs read expected titles and
-values from the recording with `readFixture(...)` rather than hardcoding them.
+The same specs run in two modes, chosen by Playwright project:
 
-Refresh the recording with `node scripts/recordPlaywrightFixtures.js`. It replaces
-`tests/playwright/fixtures/` with each dashboard's `index.json`, plus every metric and summary
-metric for the default region and for `Germany` where the dashboard supports regions. Everything is
-trimmed to the 12 most recent dates, because the full hardware history runs to several megabytes.
-Re-record when the transposer's data shape changes. The live `dashboards/` specs are what notice
-that.
+- **Recorded**, the `chromium` project (every spec but `jsDisabled.spec.js`) plus `chromium-no-js`
+  (`jsDisabled.spec.js` only, with `javaScriptEnabled: false`; Chromium-only because the Nightwatch
+  suite it replaced only tested Chrome). `npm run test:playwright:recorded` runs these, and so does
+  CI's "End-to-end tests" check, which the `main` ruleset requires before merging.
+  `fixtureData.js`'s `test` answers every `https://data.firefox.com/datasets/desktop/**` request
+  from `tests/playwright/fixtures/`, whose paths mirror the URLs, and answers other third-party
+  requests (Google Analytics) with an empty response. It fails the test on any page error, any
+  console error, or any dataset request with no recording. Only the default region and `Germany`
+  are recorded; a metric request for another region is served the default region's file for the
+  same metric, so specs can pick any region, while a missing metric or dashboard still fails.
+- **Live**, the `live-data` project: the same specs, minus `fixtures/` (which read their expected
+  values from the recording) and `jsDisabled.spec.js`, against the real data.firefox.com with no
+  interception. `npm run test:playwright:live` runs these, and so does CI's "Live data tests"
+  check, which is **not** required. `npm run test:playwright` runs every project.
+
+A spec that expects errors allows them with `test.use({ allowedErrors: /pattern/ })`. That takes a
+single RegExp because `test.use()` reads an array as a `[value, options]` pair. To change one
+response, register a later `page.route()`, which takes precedence, as `errors.spec.js` and
+`descriptions.spec.js` do. The `fixtures/` specs read expected values with `readFixture(...)`; the
+`dashboards/*.spec.js` specs hardcode exact metric titles and section ordering. Those hardcoded
+values match the recording, and the live check compares them with reality — so upstream data
+changes break the live check by design. That is not a bug in the tests: a red "Live data tests"
+means the recording is stale, and the fix is to update it in a separate pull request.
+
+### Running the tests against live data
+
+1. Run `npx playwright install chromium` once.
+2. Run `npm run test:playwright:live`. It starts the local dev server and runs the specs against
+   data.firefox.com.
+3. To test a deployed site instead, run
+   `PLAYWRIGHT_BASE_URL=https://data.firefox.com npm run test:playwright:live`. Any other
+   environment works the same way; with `PLAYWRIGHT_BASE_URL` set, no local server is started.
+4. If port 3000 is already in use by something else, start `npx vite --port 3001 --strictPort` in
+   another terminal and run with `PLAYWRIGHT_BASE_URL=http://localhost:3001`.
+5. Expect failures when upstream data has changed. Read them as "the recording is stale", not "the
+   code is broken". The hardware dashboard renders slowly on the full live data (#409), so its
+   "Charts render" test can need the retry.
+
+### Updating the recorded data
+
+1. Run `npm run record:fixtures`. It replaces `tests/playwright/fixtures/` with each dashboard's
+   `index.json`, plus every metric and summary metric for the default region and for `Germany`
+   where the dashboard supports regions, trimmed to the 12 most recent dates (the full hardware
+   history runs to several megabytes).
+2. Run `git diff --stat tests/playwright/fixtures` and skim it for unexpected changes: new or
+   removed metrics, regions, titles, or odd populations such as a `"NULL"` bucket.
+3. Run `npm run test:playwright:recorded`.
+   - Failures in the `fixtures/` specs mean the data's shape changed, because those specs read
+     their expected values from the recording.
+   - Failures in the hardcoded-title specs (`dashboards/`) mean titles or ordering changed. Update
+     the hardcoded expectations to match.
+4. Run `npm run test:playwright:live`. It should now agree with the recorded run.
+5. Commit the recording and any spec updates together, in one commit titled like "Re-record
+   Playwright fixtures".
 
 Tests describe the code as it is now. Assert what the code does; never add a test whose purpose is
 to prove that removed behavior is absent — a negative assertion about history passes forever while
@@ -218,7 +254,7 @@ style indirection layer, so a failure points straight at the markup it cares abo
 | Renaming a landmark ID | Breaks Playwright selectors silently. |
 | `build:version.json` | Needs `build/` to already exist and `git` on PATH; must follow `build:app`. |
 | `no-shadow` / `no-redeclare` with `builtinGlobals` | Naming a local `name`, `status`, `history`, `event` is a hard error. |
-| `metrics-graphics` charts and `path.mg-line1` | Each chart renders many invisible `.mg-voronoi` hover paths that also carry the `mg-line1` class (confirmed: 292 matches for one chart). A Playwright locator for this selector needs `.first()`, or it throws a strict-mode "multiple elements matched" error. |
+| `metrics-graphics` charts and `path.mg-line1` | Each chart renders many invisible `.mg-voronoi` hover paths that also carry the `mg-line1` class (confirmed: 292 matches for one chart), and a population with a single data point draws a zero-size line path, shown as a dot instead. To check that a chart drew a line, use `path.mg-main-line` with `.filter({ visible: true }).first()`. |
 
 Known rot, recorded for recognition only, not as a roadmap: `react-app-polyfill` and
 `babel-polyfill`, plus a `browserslist` of `>0.2%, not dead, not ie <= 10, not op_mini all`, were

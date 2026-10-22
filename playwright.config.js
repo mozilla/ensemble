@@ -51,5 +51,15 @@ module.exports = defineConfig({
             use: { ...devices['Desktop Chrome'], javaScriptEnabled: false },
             testMatch: '**/jsDisabled.spec.js',
         },
+        // The same specs as `chromium`, against the real data.firefox.com
+        // instead of tests/playwright/fixtures/ (see fixtureData.js). CI runs
+        // it as a separate, non-required check: upstream data changes weekly
+        // and shouldn't block a merge. The fixtures/ specs are left out because
+        // they read their expected values from the recording.
+        {
+            name: 'live-data',
+            use: { ...devices['Desktop Chrome'], liveData: true },
+            testIgnore: ['**/fixtures/**', '**/jsDisabled.spec.js'],
+        },
     ],
 });
