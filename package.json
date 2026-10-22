@@ -39,7 +39,7 @@
         "react-helmet": "6.1.0",
         "react-metrics-graphics": "1.1.2",
         "react-refetch": "3.0.1",
-        "react-router-dom": "5.3.4",
+        "react-router-dom": "7.18.4",
         "react-spinners": "0.17.1",
         "stylus": "0.64.0"
     },
