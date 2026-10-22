@@ -128,7 +128,7 @@ export default class extends React.Component {
                     .attr('cy', this.size.barYPosition + this.size.barHeight - 3)
                     .style('fill', () => this.colors[i])
                     .style('opacity', () => {
-                        if (d.value < this.ignoreThreshold) return 0;
+                        if (d.value < this.arrowIgnoreThreshold) return 0;
                     });
 
                 // append text labels
@@ -156,7 +156,8 @@ export default class extends React.Component {
             })
 
             // Show the currently hovered or clicked bar's arrow and label.
-            .on('mouseenter click', showBarItem);
+            // d3-selection passes the event first and the bar's datum second.
+            .on('mouseenter click', (mouseEvent, item) => showBarItem(item));
     };
 
     render() {
