@@ -110,7 +110,7 @@ export default props => {
         minYToShow = props.suggestedYMin;
     }
     if (props.suggestedYMax > maxVisibleY) {
-        maxYToShow = props.suggestedMax;
+        maxYToShow = props.suggestedYMax;
     }
 
     if (props.showLegend) {
