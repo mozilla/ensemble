@@ -35,7 +35,9 @@ Out of scope:
 - A smoke test against `vite preview`. The preview server doesn't work yet.
 - Coverage thresholds.
 - Browsers other than Chromium.
-- Changing the existing live-data Playwright specs.
+- Rewriting the existing live-data Playwright specs. Milestone 6 runs them unchanged on the
+  recording, apart from one assertion.
+- Drawing single-point populations visibly in ChartContainer (see Surprises).
 - Issue #313. For a metric path that doesn't exist, data.firefox.com answers HTTP 200 with the
   app's HTML instead of a 404, so the fetch never reports a failure. That needs a hosting change,
   not a client fix. This plan fixes only the case where the server does report a failure.
@@ -68,12 +70,16 @@ Out of scope:
       without this branch's changes.
 - [x] (2026-10-21) Milestone 5: "Build" step in `lint-and-test`, Zizmor clean. On pull request
       #460, "Lint and test" passed with `vite build` in its log.
-- [ ] Both CI checks green on #460 (remaining). "End-to-end tests" ran 59 passed, 1 flaky, 1
-      failed. The failure is the live hardware "Charts render", caused by the upstream `"NULL"`
-      CPU-speed data (see Surprises). The flaky test was the live usage-behavior "Metric titles and
-      order", which saw 1 of 3 metrics on its first attempt. Every fixture spec passed. Getting the
-      check green needs either the upstream data fixed, or a decision on how the live spec or
-      ChartContainer should handle single-point populations. That's a scope call for the user.
+- [x] (2026-10-21) First CI run on #460: "End-to-end tests" ran 59 passed, 1 flaky, 1 failed.
+      The failure was the live hardware "Charts render", caused by the upstream `"NULL"` CPU-speed
+      data (see Surprises). The flaky test was the live usage-behavior "Metric titles and order",
+      which saw 1 of 3 metrics on its first attempt. Every fixture spec passed. The user decided
+      live data must not block merge, which led to Milestone 6.
+- [x] (2026-10-22) Planned Milestone 6: every spec runs on the recording in the required check, and
+      the same specs run on live data in a non-required check.
+- [ ] Milestone 6: two Playwright modes, CI split, npm scripts, and the re-recording and
+      live-data how-tos.
+- [ ] The two required checks ("Lint and test", "End-to-end tests") green on #460.
 
 ## Surprises & Discoveries
 
@@ -118,14 +124,23 @@ Out of scope:
   error. Three cold starts (`vite --force`) then ran the fixture specs 13/13 with retries off and no
   504s in the log.
 - Observation: as of the week of 2026-10-12, the live hardware data has a `"NULL"` CPU-speed
-  population with a single point at about 48%. ChartContainer sorts populations by maximum y, so
-  that single point becomes `path.mg-line1`, which has no visible length. The live
-  `dashboards/hardware.spec.js` "Charts render" test then fails on
-  `#processor-metric-overview-3 path.mg-line1`. Those specs are designed to break when upstream data
-  changes. The same test also fails with the branch's Vite change reverted. A 48% "NULL" bucket
-  looks like an ETL problem worth raising with the data owners. The recording includes it.
-  Evidence: `[["NULL",48.13],["2.3 GHz to 2.69 GHz",24.51],...]` from the live
-  `hardware/default/cpuSpeed/index.json`.
+  population with a single point at about 48%. The CPU Speeds chart still renders: axes, legend,
+  and the other 11 lines. But the live `dashboards/hardware.spec.js` "Charts render" test fails on
+  `#processor-metric-overview-3 path.mg-line1` with `.first()`.
+  - In DOM order that locator matches population 1's main line. ChartContainer sorts populations
+    by maximum y, so "NULL" is population 1.
+  - metrics-graphics draws a one-point line as a move-to plus close-path with no segment. Its
+    bounding box is 0×0, and Playwright's `toBeVisible()` treats a 0×0 element as hidden.
+  - Single-point populations elsewhere don't trip this, because they aren't population 1, so
+    `.first()` lands on a real line.
+  - Side effect: the 48% "NULL" value is drawn as nothing at all. It appears only in the legend and
+    on hover. Drawing single points visibly is a follow-up, out of scope.
+  - A 48% "NULL" bucket looks like an ETL problem worth raising with the data owners.
+  - The recording includes it, so the old assertion fails on recorded data too.
+  Evidence: on the live page, the first `path.mg-line1` in `#processor-metric-overview-3` was
+  `<path class="mg-main-line mg-line1" d="M1152,90.63636363636363Z">` with a 0×0 bounding box. The
+  next one, a hover path, was 206×147. The live data gives
+  `[["NULL",48.13],["2.3 GHz to 2.69 GHz",24.51],...]` for population maxima.
 - Observation: `test.use({ option: [a, b] })` reads the array as a `[value, options]` pair, so an
   array-valued option arrived as just its first element (`allowedErrors.some is not a function`).
   `allowedErrors` is a single RegExp instead.
@@ -207,6 +222,35 @@ Out of scope:
   Rationale: Unbounded, the hardware files are 200–330 KB each. Trimmed, all 30 files total
   292 KB. The specs only look at recent data.
   Date/Author: 2026-10-21, Claude, under the approved plan.
+
+- Decision: Run every Playwright spec on the recording in the required "End-to-end tests" check.
+  Run the same spec files again on live data in a new, non-required "Live data tests" check.
+  Rationale: The user didn't want upstream data changes to block merge. Splitting the live specs
+  into a separate job would have taken all the dashboard rendering, title and region tests out of
+  the required check, so the same specs run in both modes instead. The `main` ruleset requires
+  checks by job name ("Lint and test", "End-to-end tests"), so a job with a new name reports
+  without blocking. There's no `continue-on-error`, which would show real failures as passing.
+  Date/Author: 2026-10-22, Stephanie Hobson.
+
+- Decision: In recorded mode, a request for an unrecorded region is served the dashboard's
+  default-region file for the same metric. An unrecorded metric or dashboard still fails.
+  Rationale: The region specs pick India, Russia, France and the first three regions
+  alphabetically. Recording every one of the ~160 regions isn't worth the size. Region-specific
+  values are still tested against the real Germany recording.
+  Date/Author: 2026-10-22, Claude, under the approved plan.
+
+- Decision: "Charts render" asserts that each chart draws at least one visible line
+  (`path.mg-main-line` filtered to visible), not that population 1's line is visible.
+  Rationale: The old form fails whenever the largest population has a single point, even though
+  the chart rendered (see Surprises). This changes what the assertion covers, so it was the user's
+  call. They approved it with the Milestone 6 plan.
+  Date/Author: 2026-10-22, Stephanie Hobson.
+
+- Decision: Add the npm scripts `record:fixtures`, `test:playwright:recorded` and
+  `test:playwright:live`. CI calls the latter two.
+  Rationale: The user asked for a documented method for updating the recording and for running the
+  tests against live data. One command each, and the same commands CI uses.
+  Date/Author: 2026-10-22, Stephanie Hobson.
 
 ## Outcomes & Retrospective
 
@@ -514,6 +558,78 @@ blocked, which proves the specs use the fixtures. `npm run test:playwright` pass
 
 Acceptance: both checks are green on the pull request, and the job log shows `vite build` output.
 
+### Milestone 6: every spec on the recording, the same specs on live data
+
+At the end of this milestone, the required "End-to-end tests" check runs every Playwright spec on
+the recording. That includes the dashboard rendering, title and region specs. A new "Live data
+tests" check runs the same specs against data.firefox.com, and its failures show on the pull
+request without blocking merge. There's one command each for re-recording, for running on the
+recording, and for running on live data, all documented.
+
+1. In `tests/playwright/fixtureData.js`:
+   - Add an option `liveData: [false, { option: true }]`. When it is true, the `page` fixture adds
+     no routes and no error checks, so it behaves like plain `@playwright/test`.
+   - In recorded mode, a request for `<dashboard>/<region>/<slug>/index.json` whose region has no
+     recording gets the dashboard's default-region file for the same slug. Read the default region
+     from the recorded `index.json`, the way the recorder does. A missing slug or dashboard still
+     counts as unrecorded.
+2. Switch every spec except `jsDisabled.spec.js` from `require('@playwright/test')` to
+   `require('../fixtureData')`, or `'../../fixtureData'` for files in subfolders. Leave the
+   assertions alone, apart from step 3. The hardcoded titles match the 2026-10-21 recording. If a
+   recorded-mode run surfaces a console error, investigate it. Don't allow-list it.
+3. In the three `dashboards/*.spec.js` files, change each "Charts render" line assertion from
+   `page.locator('#… path.mg-line1').first()` to
+   `page.locator('#… path.mg-main-line').filter({ visible: true }).first()`. Add a comment that a
+   one-point population draws a zero-size line.
+4. In `playwright.config.js`, add a `live-data` project: Desktop Chrome, `use: { liveData: true }`,
+   and `testIgnore` for `**/fixtures/**` (those specs read expected values from the recording) and
+   `**/jsDisabled.spec.js`. Leave `chromium` and `chromium-no-js` as they are.
+5. In `package.json`, add these scripts and leave `test:playwright` running everything:
+
+       "record:fixtures": "node scripts/recordPlaywrightFixtures.js",
+       "test:playwright:recorded": "playwright test --project=chromium --project=chromium-no-js",
+       "test:playwright:live": "playwright test --project=live-data",
+
+6. In `.github/workflows/ci.yml`:
+   - The `e2e` job keeps the name "End-to-end tests" and runs `npm run test:playwright:recorded`.
+   - Add a job `live-data`, named "Live data tests", with the same checkout, Node, `npm ci`,
+     browser install and `build:css` steps, running `npm run test:playwright:live`.
+   - Run Zizmor.
+7. Docs. In `CONTRIBUTING.md`, add two numbered how-tos, and put a condensed version in
+   `AGENTS.md`.
+   - "Running the tests against live data":
+     1. Run `npx playwright install chromium` once.
+     2. Run `npm run test:playwright:live`.
+     3. To test the deployed site, run
+        `PLAYWRIGHT_BASE_URL=https://data.firefox.com npm run test:playwright:live`.
+     4. If port 3000 is taken, start `npx vite --port 3001 --strictPort` and set
+        `PLAYWRIGHT_BASE_URL=http://localhost:3001`.
+     5. Failures after upstream changes mean the recording is stale, not that the code is broken.
+   - "Updating the recorded data":
+     1. Run `npm run record:fixtures`.
+     2. Run `git diff --stat tests/playwright/fixtures` and skim it for new or removed metrics,
+        regions or titles, or odd populations.
+     3. Run `npm run test:playwright:recorded`. `fixtures/` failures mean the data's shape changed.
+        `dashboards/` failures mean titles or ordering changed, so update the hardcoded
+        expectations.
+     4. Run `npm run test:playwright:live`. It should now agree.
+     5. Commit the recording and the spec updates together ("Re-record Playwright fixtures").
+   - Also update: all specs use `fixtureData.js`, which check runs which mode, that only "End-to-end
+     tests" is required, the region fallback, and that a red live check is fixed by re-recording in
+     a separate pull request.
+
+Acceptance:
+
+- `npx playwright test --list` shows `chromium` with every spec except `jsDisabled`, and `live-data`
+  without `fixtures/` or `jsDisabled`.
+- `npm run test:playwright:recorded` passes with retries off. It still passes with data.firefox.com
+  mapped to a dead address (`--host-resolver-rules`).
+- `npm run test:playwright:live` passes, including "Charts render".
+- Following "Updating the recorded data" exactly gives an empty diff, apart from upstream changes
+  since 2026-10-21, and both modes pass.
+- Breaking ChartContainer's sort fails a recorded-mode test.
+- On #460, the two required checks are green and "Live data tests" reports.
+
 ## Concrete Steps
 
 Run everything from the repository root, `/Users/shobson/Sites/ensemble`.
@@ -522,8 +638,9 @@ Run everything from the repository root, `/Users/shobson/Sites/ensemble`.
     npm run build:css
     npm run lint
     npm run test:jest
-    npx playwright test specs/fixtures
-    npm run test:playwright
+    npm run test:playwright:recorded
+    npm run test:playwright:live
+    npm run record:fixtures
     npm run build
 
 Baseline before any change:
@@ -583,6 +700,7 @@ Playwright fixture support (see the Decision Log for why this isn't in `utils.js
                       // option: allowedErrors (RegExp or null)
         expect        // @playwright/test's expect
         readFixture(relativePath)   // parsed JSON from tests/playwright/fixtures/<relativePath>
+    Options: allowedErrors (RegExp or null), liveData (boolean; true turns off routing and checks)
 
 New script: `scripts/recordPlaywrightFixtures.js`, run with `node scripts/recordPlaywrightFixtures.js`.
 
@@ -592,3 +710,9 @@ New script: `scripts/recordPlaywrightFixtures.js`, run with `node scripts/record
   rejected state. The rejected-fetch assertions in Milestones 3 and 4 could not have passed. Added
   the fix and its tests to Milestone 3, linked the Milestone 4 spec to it, and recorded the finding
   in Surprises and the Decision Log. Also marked issue #313 out of scope.
+- 2026-10-22: The first CI run failed on a live-data spec. The user decided upstream data must not
+  block merge, but wanted the rendering tests kept in the required check, plus documented ways to
+  update the recording and to run against live data. Added Milestone 6. It runs every spec on the
+  recording in the required check, and the same specs on live data in a new non-required check. It
+  also adds the region fallback, the "Charts render" assertion change, the npm scripts and the
+  how-tos. Replaced the "NULL" Surprises entry with the exact failure mechanism.
