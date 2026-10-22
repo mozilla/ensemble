@@ -37,7 +37,7 @@ Out of scope:
 - Browsers other than Chromium.
 - Rewriting the existing live-data Playwright specs. Milestone 6 runs them unchanged on the
   recording, apart from one assertion.
-- Drawing single-point populations visibly in ChartContainer (see Surprises).
+- Chart resizing. A reviewer explicitly left it for a later pass.
 - Issue #313. For a metric path that doesn't exist, data.firefox.com answers HTTP 200 with the
   app's HTML instead of a 404, so the fetch never reports a failure. That needs a hosting change,
   not a client fix. This plan fixes only the case where the server does report a failure.
@@ -79,6 +79,11 @@ Out of scope:
       the same specs run on live data in a non-required check.
 - [ ] Milestone 6: two Playwright modes, CI split, npm scripts, and the re-recording and
       live-data how-tos.
+- [x] (2026-10-22) Planned Milestone 7 from review feedback on #460: tests of what the charts
+      draw, plus fixes for the three bugs they expose.
+- [ ] Milestone 7: chart configuration, summary bars, region and date changes, series and legend,
+      boundary cases, and test titles. Fixes for `suggestedYMax`, the summary-bar handler, and the
+      arrow threshold.
 - [ ] The two required checks ("Lint and test", "End-to-end tests") green on #460.
 
 ## Surprises & Discoveries
@@ -133,14 +138,36 @@ Out of scope:
     bounding box is 0×0, and Playwright's `toBeVisible()` treats a 0×0 element as hidden.
   - Single-point populations elsewhere don't trip this, because they aren't population 1, so
     `.first()` lands on a real line.
-  - Side effect: the 48% "NULL" value is drawn as nothing at all. It appears only in the legend and
-    on hover. Drawing single points visibly is a follow-up, out of scope.
+  - The value is still visible. For a one-point series, metrics-graphics shows its rollover circle
+    as a dot at the point, in the line's color, and the dot stays after hovering. Only the line
+    `<path>` has zero size.
   - A 48% "NULL" bucket looks like an ETL problem worth raising with the data owners.
   - The recording includes it, so the old assertion fails on recorded data too.
   Evidence: on the live page, the first `path.mg-line1` in `#processor-metric-overview-3` was
   `<path class="mg-main-line mg-line1" d="M1152,90.63636363636363Z">` with a 0×0 bounding box. The
-  next one, a hover path, was 206×147. The live data gives
+  next one, a hover path, was 206×147. `circle.mg-line1.mg-line-rollover-circle` was at
+  `cx=1152.00 cy=90.64 r=2.5`, opacity 1, and unchanged after moving the mouse across the chart
+  and away. The live data gives
   `[["NULL",48.13],["2.3 GHz to 2.69 GHz",24.51],...]` for population maxima.
+- Observation: `views/Chart.jsx` never applies a suggested y maximum. It checks
+  `props.suggestedYMax > maxVisibleY` but then assigns `props.suggestedMax`, which isn't a prop.
+  So `max_y` becomes `undefined`, and metrics-graphics picks its own maximum.
+  Evidence: the source line `maxYToShow = props.suggestedMax;`. Milestone 7's Chart test records
+  the failing assertion.
+- Observation: on `main`, hovering or clicking a summary bar hides every label and shows none. The
+  handler is `.on('mouseenter click', showBarItem)`. d3-selection 3 calls handlers as
+  `(event, datum)`, so `showBarItem` receives the event and looks for `.bar-label_undefined`. The
+  deployed site, commit f655559, uses d3-selection 1.4.2, which passes `(datum, index)`, so it
+  works there. The bug arrived with the dependency update and would ship with the next deploy.
+  Evidence: Playwright on GPU Vendor. Local `main` production build, after hovering bar 2:
+  `Intel [hidden], AMD [hidden], NVIDIA [hidden], Apple [hidden], Other [hidden]`. data.firefox.com,
+  same hover: `Intel [hidden], AMD (14.229%) [VISIBLE], ...`.
+- Observation: summary-bar arrows on segments under 4% are never hidden. The constructor sets
+  `this.arrowIgnoreThreshold = 4` ("Don't show arrows (since they'll be bigger than the bar)"),
+  but the opacity check reads `this.ignoreThreshold`, which is undefined. On `main` the summary-bar
+  handler bug above hides this one, because hover and click don't work.
+  Evidence: on data.firefox.com, after clicking GPU Vendor's "Other (3.470%)", that segment's
+  arrow was `display=inline opacity=1`. The circle is 16px wide and the segment about 14px.
 - Observation: `test.use({ option: [a, b] })` reads the array as a `[value, options]` pair, so an
   array-valued option arrived as just its first element (`allowedErrors.some is not a function`).
   `allowedErrors` is a single RegExp instead.
@@ -244,6 +271,19 @@ Out of scope:
   Rationale: The old form fails whenever the largest population has a single point, even though
   the chart rendered (see Surprises). This changes what the assertion covers, so it was the user's
   call. They approved it with the Milestone 6 plan.
+  Date/Author: 2026-10-22, Stephanie Hobson.
+
+- Decision: Fix all three bugs Milestone 7's tests expose (`suggestedYMax`, the summary-bar
+  handler, the arrow threshold), each test first: the test fails before the fix and passes after.
+  Rationale: The handler bug is a regression that would ship with the next deploy. The other two
+  are long-standing typos with clear intent in the surrounding code. Fixing `suggestedYMax`
+  changes the y-axis maximum on charts whose data suggests one.
+  Date/Author: 2026-10-22, Stephanie Hobson.
+
+- Decision: For populations whose points are all null, or that have none, tests document today's
+  behavior and don't change it. One-point populations render as a dot, and a test pins that down.
+  Rationale: The reviewer asked for explicit expected behavior for datasets that can't produce a
+  line. The user chose to document rather than change it in this pass.
   Date/Author: 2026-10-22, Stephanie Hobson.
 
 - Decision: Add the npm scripts `record:fixtures`, `test:playwright:recorded` and
@@ -630,6 +670,113 @@ Acceptance:
 - Breaking ChartContainer's sort fails a recorded-mode test.
 - On #460, the two required checks are green and "Live data tests" reports.
 
+### Milestone 7: test what the charts draw
+
+A reviewer found that the tests covered data preparation and loading states but not the rendered
+charts. At the end of this milestone, the tests check:
+
+- metrics-graphics configuration.
+- Summary-bar proportions, labels and interaction.
+- That region and date changes change what is drawn.
+- That every population appears with the right legend name.
+- Explicit boundary behavior.
+
+Three bugs are fixed, each test first. The Playwright specs run in Milestone 6's recorded mode, so
+Milestone 6 lands first. Resizing is out of scope.
+
+Controlled data in Playwright: register a `page.route()` for one metric URL inside the spec, so it
+takes precedence over the recording, and fulfil it with a small JSON body built in the spec. Match
+on `decodeURIComponent(url.pathname).endsWith(...)`. `descriptions.spec.js` is the pattern.
+
+1. Chart configuration. Add `src/tests/jest/Chart.test.jsx`. It renders the real `views/Chart`,
+   with `vi.mock('react-metrics-graphics', () => ({ default: vi.fn(() => null) }))`, and asserts on
+   the props passed to that mock.
+   - Bounds: data y from 2 to 9 gives `min_y` 0 and `max_y` 9.9.
+   - Suggested bounds: a `suggestedYMin` below the data is used, and one that would crop data is
+     ignored. A `suggestedYMax` above the data is used, which fails until the fix. One that would
+     crop data is ignored.
+   - Units: `%` gives `yax_units: '%'` and `yax_units_append: true`, with no `y_label` and no
+     `left`. Any other unit gives `y_label` and `left: 80`.
+   - `utc_time: true`. `x_mouseover({ x: new Date('2026-01-04') })` returns
+     `'January 4, 2026: '`, which needs UTC formatting when the local time zone is behind UTC.
+   - `y_mouseover` puts no space before `%` and a space before other units.
+   - `legend` and `legend_target` are set only when `showLegend` is true. `markers` are forwarded.
+     12 colors are generated when `numPopulations` is over 11.
+   - Fix: in `views/Chart.jsx`, assign `props.suggestedYMax`.
+2. Summary-bar proportions and values. Use Vitest with the real `views/SummaryMetric`, rendered
+   inside `<div id="application"><main>`, with `HTMLElement.prototype.offsetWidth` spied to 490
+   so the bar is 450px wide. Use a small controlled dataset through `SummaryMetricContainer` and
+   its hoisted `fetch` stub.
+   - Assert the `rect.bar` count.
+   - Assert widths proportional to values, within rounding.
+   - Assert each `text.bar-label` reads `Name (value%)`, formatted by `prettifyNumber`.
+   - Assert "Other" is the final segment.
+   - Include a single-population True/False example.
+   - Arrows: a segment under 4% gets opacity 0, which fails until the fix.
+   - Fix: in `views/SummaryMetric.jsx`, use `this.arrowIgnoreThreshold`.
+3. Summary-bar hover and click. Add `tests/playwright/specs/fixtures/summary-bars.spec.js`. On
+   `/dashboard/hardware`, override one summary metric with controlled data.
+   - Hovering bar 2 makes its label (name and percentage) visible and hides bar 1's label.
+   - Clicking the last bar does the same for it.
+   - This fails until the fix.
+   - Fix: in `views/SummaryMetric.jsx`, change the handler to `(event, item) => showBarItem(item)`.
+4. Region changes change the plot. Add `fixtures/region-data.spec.js`.
+   - Override one `user-activity` metric with deliberately different Worldwide and Germany
+     responses: different population names and very different values.
+   - After switching to Germany, the legend shows Germany's names.
+   - Hovering the chart shows Germany's value in `.mg-active-datapoint`.
+5. Every population in a representative chart. Add `fixtures/chart-series.spec.js`, with a
+   controlled metric of 3 populations whose maximum y values differ.
+   - Exactly 3 `path.mg-main-line` elements are visible.
+   - The `.mg-line{N}-legend-color` spans read the 3 names in descending max-y order.
+   - Each span's color equals the stroke of `path.mg-main-line.mg-line{N}`.
+6. Date changes through the UI.
+   - In `CustomizableDate.test.jsx`, replace the dummy-child case with the real
+     `DataTableContainer`. Selecting the older date shows that date's rows.
+   - Add `fixtures/dates.spec.js`:
+     - On hardware, override a summary metric whose leader differs between two dates. Selecting
+       the older date changes the visible label and percentage.
+     - On usage-behavior, selecting the older date in the Top Add-ons table shows that date's full
+       ranking from the recording.
+7. Boundary cases, each with its expected behavior stated in the test title.
+   - Summary: exactly 5% gets its own segment, and 4.99% goes into "Other". A 0% population is
+     omitted, and no zero-sized "Other" segment appears.
+   - Chart:
+     - Zero-valued points are kept, and `min_y` is 0.
+     - A constant 5 gives `min_y` 5 and `max_y` 5.5.
+     - A constant 0 gives `[0, 0]`, pinned as today's degenerate range with a comment.
+   - Empty and all-null populations, documented only: ChartContainer keeps the legend entry and
+     passes an empty series. An all-empty chart's bounds are pinned as they are.
+   - In Playwright:
+     - A one-point population renders a visible dot (`circle.mg-line-rollover-circle`, `r` above
+       0).
+     - Record what an all-null chart shows. If metrics-graphics throws, allow that exact error
+       with `allowedErrors` and say why in a comment.
+8. Titles that match their assertions.
+   - `fixtures/usage-behavior.spec.js` checks the complete ranking: every row's rank, name and
+     formatted value, in order.
+   - `Routes.test.jsx` parameterizes the pageview test across `/`, `/contact`, each
+     `/dashboard/<key>`, and a Not Found path.
+9. Docs. Update `AGENTS.md` and `CONTRIBUTING.md` to cover:
+   - The controlled-response pattern.
+   - The `react-metrics-graphics` mock.
+   - The `offsetWidth` spy for SummaryMetric.
+   - What "Charts render" checks.
+
+Acceptance:
+
+- `npm run lint` is clean and `npm run test:jest` passes, with new counts recorded.
+- Each bug's test fails before its fix and passes after, with the failure output recorded here.
+- `npm run test:playwright:recorded` passes with retries off, on a warm and a cold server, and with
+  data.firefox.com unreachable. `npm run test:playwright:live` passes.
+- Each of these deliberate breakages fails a test, then is reverted:
+  - Make ChartContainer drop the last population.
+  - Swap two legend names.
+  - Stop MetricOverviewContainer refetching on a region change.
+  - Set SummaryMetric's "Other" threshold to 4.
+- On a dev server, hovering GPU Vendor's second segment shows its label. "Other (3.470%)" shows
+  its label without an arrow.
+
 ## Concrete Steps
 
 Run everything from the repository root, `/Users/shobson/Sites/ensemble`.
@@ -716,3 +863,7 @@ New script: `scripts/recordPlaywrightFixtures.js`, run with `node scripts/record
   recording in the required check, and the same specs on live data in a new non-required check. It
   also adds the region fallback, the "Charts render" assertion change, the npm scripts and the
   how-tos. Replaced the "NULL" Surprises entry with the exact failure mechanism.
+- 2026-10-22: Review feedback on #460 asked for tests of what the charts draw. Added Milestone 7
+  with 8 items. The tests expose three bugs, and the user chose to fix all of them test first.
+  Corrected the `"NULL"` Surprises entry: one-point populations render as a dot, not as nothing.
+  Removed the out-of-scope line about drawing single points, and made resizing out of scope.
