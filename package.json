@@ -19,8 +19,11 @@
         "lint:styl": "stylint src/components/views/styl",
         "test:jest": "vitest run",
         "test:playwright": "playwright test",
+        "test:playwright:recorded": "playwright test --project=chromium --project=chromium-no-js",
+        "test:playwright:live": "playwright test --project=live-data",
         "posttest": "npm audit || true",
-        "size": "source-map-explorer build/assets/index-*.js --no-border-checks"
+        "size": "source-map-explorer build/assets/index-*.js --no-border-checks",
+        "record:fixtures": "node scripts/recordPlaywrightFixtures.js"
     },
     "dependencies": {
         "d3-scale": "4.0.2",

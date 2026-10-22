@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../fixtureData');
 
 
 test('Not Found page loads for paths with superfluous suffixes', async ({ page }) => {

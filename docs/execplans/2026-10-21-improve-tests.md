@@ -77,8 +77,16 @@ Out of scope:
       live data must not block merge, which led to Milestone 6.
 - [x] (2026-10-22) Planned Milestone 6: every spec runs on the recording in the required check, and
       the same specs run on live data in a non-required check.
-- [ ] Milestone 6: two Playwright modes, CI split, npm scripts, and the re-recording and
-      live-data how-tos.
+- [x] (2026-10-22) Milestone 6: two Playwright modes, CI split, npm scripts, and the re-recording
+      and live-data how-tos. Results with retries off:
+      - `npm run test:playwright:recorded` passed 61 in about 10 s on a warm server, on three cold
+        servers in a row, and with data.firefox.com and Google Analytics mapped to a dead address.
+      - `npm run test:playwright:live` passed 45, plus 1 flaky (see Surprises).
+      - Following "Updating the recorded data" gave an empty fixture diff: nothing changed upstream
+        since 2026-10-21. Zizmor is clean.
+      - One acceptance item didn't hold. Breaking ChartContainer's sort didn't fail any Playwright
+        test, because no browser spec checks series order. Vitest's ChartContainer test does catch
+        it, and Milestone 7's chart-series spec adds the browser check.
 - [x] (2026-10-22) Planned Milestone 7 from review feedback on #460: tests of what the charts
       draw, plus fixes for the three bugs they expose.
 - [ ] Milestone 7: chart configuration, summary bars, region and date changes, series and legend,
@@ -176,6 +184,17 @@ Out of scope:
 - Observation: port 3000 on this machine was serving an unrelated site (Mozilla Protocol). Locally
   `reuseExistingServer` reused it and every spec failed. Local runs used
   `npx vite --port 3001 --strictPort` and `PLAYWRIGHT_BASE_URL=http://localhost:3001`.
+- Observation: the "Metric titles and order are correct" specs counted `.metric` right after
+  waiting for the titles. `.metric` is on the chart and table containers, which load lazily after
+  the title renders, so the count could still be 1. This failed once in CI's first run on live data
+  ("there is actually 1"), and once in five cold recorded runs. Counting `.metric-overview`, the
+  wrapper rendered with the title, fixed it: three cold runs, 61/61 each.
+- Observation: in live mode, hardware "Charts render" sometimes waits more than 10 s for the first
+  chart's `svg`. The GPU Model metric is about 330 KB with 36 populations, and the dashboard's slow
+  redraw is issue #409. It passed on retry. Recorded mode uses the trimmed data and doesn't hit
+  this.
+  Evidence: `--repeat-each=3` gave 17 passed, 1 failed, with `waiting for
+  locator('#graphics-metric-overview-1 svg')` and `Timeout: 10000ms`.
 - Observation: the footer also renders a `<nav>`, so `getByRole('navigation')` finds two elements.
   The header test selects `#main-navigation`, the same landmark the Playwright specs use.
 - Observation: adding `src/setupTests.js` to the ESLint block for test files breaks lint. That
