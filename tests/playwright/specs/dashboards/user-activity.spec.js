@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtureData');
 const { linkWorks, flagForUpdate, metricTitleIsCorrect, changeRegionAndWaitForMetrics } = require('../../utils');
 
 
@@ -27,24 +27,27 @@ test('Chart titles and order are correct', async ({ page }) => {
     await metricTitleIsCorrect(page, '#metric-overview-4 h4', 'New Profile Rate');
     await metricTitleIsCorrect(page, '#metric-overview-5 h4', 'Latest Version');
 
-    await flagForUpdate(page, '.metric', 'metrics in the activity dashboard', 5);
+    await flagForUpdate(page, '.metric-overview', 'metrics in the activity dashboard', 5);
 });
 
+// Any drawn line counts: a population with a single data point draws a
+// zero-size line path (metrics-graphics shows it as a dot instead), so the
+// first population's line alone isn't a reliable signal.
 test('Charts render', async ({ page }) => {
     await expect(page.locator('#metric-overview-1 svg')).toBeVisible();
-    await expect(page.locator('#metric-overview-1 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#metric-overview-1 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#metric-overview-2 svg')).toBeVisible();
-    await expect(page.locator('#metric-overview-2 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#metric-overview-2 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#metric-overview-3 svg')).toBeVisible();
-    await expect(page.locator('#metric-overview-3 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#metric-overview-3 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#metric-overview-4 svg')).toBeVisible();
-    await expect(page.locator('#metric-overview-4 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#metric-overview-4 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#metric-overview-5 svg')).toBeVisible();
-    await expect(page.locator('#metric-overview-5 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#metric-overview-5 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await flagForUpdate(page, '.metric', 'metrics in the activity dashboard', 5);
 });

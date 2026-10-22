@@ -57,5 +57,31 @@ jobs:
               run: npx playwright install --with-deps chromium
             - name: Compile Stylus
               run: npm run build:css
-            - name: Run end-to-end tests
-              run: npm run test:playwright
+            - name: Run end-to-end tests on recorded data
+              run: npm run test:playwright:recorded
+
+    # Not a required check. These are the same specs, run against the real
+    # data.firefox.com, which changes weekly; a failure usually means the
+    # recording in tests/playwright/fixtures/ needs updating, not that the
+    # change under review is broken.
+    live-data:
+        name: Live data tests
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        if: github.repository == 'mozilla/ensemble'
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+            - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: npm
+            - name: Install dependencies
+              run: npm ci
+            - name: Install Playwright browsers
+              run: npx playwright install --with-deps chromium
+            - name: Compile Stylus
+              run: npm run build:css
+            - name: Run end-to-end tests on live data
+              run: npm run test:playwright:live
