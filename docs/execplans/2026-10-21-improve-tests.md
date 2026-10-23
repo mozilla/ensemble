@@ -89,9 +89,22 @@ Out of scope:
         it, and Milestone 7's chart-series spec adds the browser check.
 - [x] (2026-10-22) Planned Milestone 7 from review feedback on #460: tests of what the charts
       draw, plus fixes for the three bugs they expose.
-- [ ] Milestone 7: chart configuration, summary bars, region and date changes, series and legend,
-      boundary cases, and test titles. Fixes for `suggestedYMax`, the summary-bar handler, and the
-      arrow threshold.
+- [x] (2026-10-22) Milestone 7: chart configuration, summary bars, region and date changes,
+      series and legend, boundary cases, and test titles, with the three fixes.
+      - Vitest: 14 files, 80 tests. Recorded Playwright: 70, with retries off, on cold, warm and
+        offline runs. Live Playwright: 45 plus 1 flaky (the hardware slowness under Milestone 6).
+      - Each bug's test failed before its fix:
+        - Chart: `expected undefined to be 100`.
+        - Arrows: `expected [ '', '', '' ] to deeply equal [ '', '', '0' ]`.
+        - Hover and click: `AMD (30%)` "Expected: visible, Received: hidden".
+      - Deliberate breakages that each failed tests, in Vitest and in Playwright:
+        - Dropping ChartContainer's last population: 5 and 25.
+        - Swapping two legend names: 2 and 3.
+        - Hardcoding the metric URL's region: 5 and 5.
+        - "Other" threshold 4: 1 Vitest test. The Playwright data had no population between 4%
+          and 5%.
+      - Manual check on the dev server with live data: hovering GPU Vendor's second segment shows
+        "AMD (14.229%)". Clicking "Other (3.470%)" shows its label with the arrow at opacity 0.
 - [ ] The two required checks ("Lint and test", "End-to-end tests") green on #460.
 
 ## Surprises & Discoveries
@@ -195,6 +208,14 @@ Out of scope:
   this.
   Evidence: `--repeat-each=3` gave 17 passed, 1 failed, with `waiting for
   locator('#graphics-metric-overview-1 svg')` and `Timeout: 10000ms`.
+- Observation: a metric whose populations are all null throws inside react-metrics-graphics
+  (`Cannot read properties of undefined (reading 'x')`). The error boundary around the chart,
+  `LazyBoundary` in `MetricOverview`, then shows its generic "Load error", which was written for
+  chunk-load failures. Other metrics on the page render normally. Per the Decision Log this is
+  documented, not changed. `fixtures/boundaries.spec.js` pins it down, allowing those two errors.
+- Observation: `fixtures/next-buttons.spec.js` failed once (`toHaveURL`) in an offline run. It
+  could click "Proceed" while the previous page's button was still in the DOM. It now waits for
+  each page's button text from `config.json` before clicking: 10 of 10 with `--repeat-each=10`.
 - Observation: the footer also renders a `<nav>`, so `getByRole('navigation')` finds two elements.
   The header test selects `#main-navigation`, the same landmark the Playwright specs use.
 - Observation: adding `src/setupTests.js` to the ESLint block for test files breaks lint. That

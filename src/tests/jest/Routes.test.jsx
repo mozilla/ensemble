@@ -65,10 +65,15 @@ it.each([
     await vi.waitFor(() => expect(container.querySelector('#not-found')).toBeInTheDocument());
 });
 
-it('Each page sends a pageview for its path', async () => {
-    renderAt('/contact');
+it.each([
+    '/',
+    '/contact',
+    ...dashboards.map(dashboard => `/dashboard/${dashboard.key}`),
+    '/not-a-page',
+])('%s sends a pageview for its path', async path => {
+    renderAt(path);
 
-    await vi.waitFor(() => expect(reactGA.pageview).toHaveBeenCalledWith('/contact'));
+    await vi.waitFor(() => expect(reactGA.pageview).toHaveBeenCalledWith(path));
 });
 
 it('The header links to every dashboard in config.json and the contact page', () => {
