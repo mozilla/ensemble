@@ -162,6 +162,11 @@ the imports, and `mockReset()` it in `beforeEach`; `SummaryMetricContainer.test.
 simplest example. Containers whose view needs real layout (`views/Chart` uses metrics-graphics,
 `views/SummaryMetric` draws with d3) are tested by replacing that view with `vi.mock` and asserting
 on the props it received. Plain-markup views such as `views/DataTable` render for real.
+`Chart.test.jsx` renders the real `views/Chart` with `react-metrics-graphics` replaced by
+`vi.mock('react-metrics-graphics', () => ({ default: vi.fn(() => null) }))`, and asserts on the
+options it computes. `SummaryMetric.test.jsx` renders the real d3 summary bar inside
+`<div id="application"><main>`, with `HTMLElement.prototype.offsetWidth` spied to 490: jsdom
+reports 0px, and at 490px the bar draws at its 450px maximum, so segment widths are predictable.
 `Routes.test.jsx` renders `views/Application` inside `MemoryRouter` through a single `renderAt(path)`
 function, so a router upgrade changes one place, and mocks `react-ga`. Its route cases come from
 `config.json`. ESLint
@@ -202,7 +207,9 @@ The same specs run in two modes, chosen by Playwright project:
 A spec that expects errors allows them with `test.use({ allowedErrors: /pattern/ })`. That takes a
 single RegExp because `test.use()` reads an array as a `[value, options]` pair. To change one
 response, register a later `page.route()`, which takes precedence, as `errors.spec.js` and
-`descriptions.spec.js` do. The `fixtures/` specs read expected values with `readFixture(...)`; the
+`descriptions.spec.js` do. The specs about what charts draw (`chart-series`, `region-data`,
+`summary-bars`, `dates`, `boundaries`) serve a small controlled JSON body for one metric this way,
+so their assertions don't depend on what was recorded. The `fixtures/` specs read expected values with `readFixture(...)`; the
 `dashboards/*.spec.js` specs hardcode exact metric titles and section ordering. Those hardcoded
 values match the recording, and the live check compares them with reality — so upstream data
 changes break the live check by design. That is not a bug in the tests: a red "Live data tests"

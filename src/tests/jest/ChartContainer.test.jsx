@@ -109,3 +109,27 @@ it('The chart fills a wide parent, and is square when the parent is 400px or nar
     offsetWidth.mockReturnValue(100);
     expect(renderChart({ data })).toMatchObject({ width: 264, height: 400 });
 });
+
+it('Points with a y value of 0 are kept', () => {
+    const chartProps = renderChart({
+        data: { populations: { Share: [{ x: '2026-01-01', y: 0 }, { x: '2026-01-08', y: 4 }] } },
+    });
+
+    expect(chartProps.data[0].map(point => point.y)).toEqual([0, 4]);
+});
+
+it('A population whose points are all null keeps its legend entry and passes an empty series', () => {
+    // Pinned as current behavior: nothing is drawn for it, but it still
+    // appears in the legend.
+    const chartProps = renderChart({
+        data: {
+            populations: {
+                Present: [{ x: '2026-01-01', y: 3 }],
+                Missing: [{ x: '2026-01-01', y: null }, { x: '2026-01-08', y: null }],
+            },
+        },
+    });
+
+    expect(chartProps.legend).toEqual(['Present', 'Missing']);
+    expect(chartProps.data).toEqual([[{ x: new Date('2026-01-01'), y: 3 }], []]);
+});
