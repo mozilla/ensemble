@@ -7,9 +7,9 @@ module.exports = defineConfig({
     // Several regionSelector specs navigate many times in a single test
     // (once per dashboard, sometimes nested); the 30s default is too tight.
     timeout: 60000,
-    // The dev server's first request for any given route recompiles and
-    // dependency-scans on demand (a documented Vite dev-server characteristic),
-    // which can outrun the 5s default under concurrent load.
+    // The dev server compiles each module on its first request (a documented
+    // Vite dev-server characteristic), which can outrun the 5s default under
+    // concurrent load.
     expect: {
         timeout: 10000,
     },
@@ -50,6 +50,16 @@ module.exports = defineConfig({
             name: 'chromium-no-js',
             use: { ...devices['Desktop Chrome'], javaScriptEnabled: false },
             testMatch: '**/jsDisabled.spec.js',
+        },
+        // The same specs as `chromium`, against the real data.firefox.com
+        // instead of tests/playwright/fixtures/ (see fixtureData.js). CI runs
+        // it as a separate, non-required check: upstream data changes weekly
+        // and shouldn't block a merge. The fixtures/ specs are left out because
+        // they read their expected values from the recording.
+        {
+            name: 'live-data',
+            use: { ...devices['Desktop Chrome'], liveData: true },
+            testIgnore: ['**/fixtures/**', '**/jsDisabled.spec.js'],
         },
     ],
 });

@@ -1,0 +1,89 @@
+{
+    "title": "Latest Version",
+    "description": [
+        "Latest Version shows the percentage of Firefox Desktop clients running the latest version of Firefox or greater (for that week). Firefox typically releases major updates roughly every 30 days and generally releases on Tuesdays."
+    ],
+    "type": "line",
+    "axes": {
+        "y": {
+            "unit": "%"
+        }
+    },
+    "data": {
+        "populations": {
+            "default": [
+                {
+                    "x": "2026-09-21",
+                    "y": 9.386271426265871
+                },
+                {
+                    "x": "2026-08-31",
+                    "y": 40.05807943612945
+                },
+                {
+                    "x": "2026-07-27",
+                    "y": 61.87016004262077
+                },
+                {
+                    "x": "2026-08-17",
+                    "y": 46.11081787730258
+                },
+                {
+                    "x": "2026-10-12",
+                    "y": 48.42425227861937
+                },
+                {
+                    "x": "2026-09-14",
+                    "y": 47.23216245986636
+                },
+                {
+                    "x": "2026-09-28",
+                    "y": 45.679479054322
+                },
+                {
+                    "x": "2026-08-03",
+                    "y": 69.32357172215372
+                },
+                {
+                    "x": "2026-08-10",
+                    "y": 7.0450164664106945
+                },
+                {
+                    "x": "2026-09-07",
+                    "y": 4.569799241541252
+                },
+                {
+                    "x": "2026-08-24",
+                    "y": 5.334158068997546
+                },
+                {
+                    "x": "2026-10-05",
+                    "y": 4.791261712090508
+                }
+            ]
+        }
+    },
+    "annotations": [
+        {
+            "date": "2026-10-12",
+            "label": "FF158"
+        },
+        {
+            "date": "2026-09-28",
+            "label": "FF157"
+        },
+        {
+            "date": "2026-09-14",
+            "label": "FF156"
+        },
+        {
+            "date": "2026-08-31",
+            "label": "FF155"
+        },
+        {
+            "date": "2026-08-17",
+            "label": "FF154"
+        }
+    ],
+    "apiVersion": "2.0.0"
+}

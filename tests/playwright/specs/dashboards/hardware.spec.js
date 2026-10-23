@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtureData');
 const { flagForUpdate, metricTitleIsCorrect } = require('../../utils');
 
 
@@ -44,42 +44,45 @@ test('Metric titles and order are correct', async ({ page }) => {
     await metricTitleIsCorrect(page, '#dashboard-sections .dashboard-section:nth-child(3) #operating-system-metric-overview-3 h5', 'Operating Systems by Architecture');
     await metricTitleIsCorrect(page, '#dashboard-sections .dashboard-section:nth-child(4) #plugins-metric-overview-1 h5', 'Has Flash');
 
-    await flagForUpdate(page, '.metric', 'metrics in the hardware dashboard', 11);
+    await flagForUpdate(page, '.metric-overview', 'metrics in the hardware dashboard', 11);
 });
 
+// Any drawn line counts: a population with a single data point draws a
+// zero-size line path (metrics-graphics shows it as a dot instead), so the
+// first population's line alone isn't a reliable signal.
 test('Charts render', async ({ page }) => {
     await expect(page.locator('#graphics-metric-overview-1 svg')).toBeVisible();
-    await expect(page.locator('#graphics-metric-overview-1 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#graphics-metric-overview-1 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#graphics-metric-overview-2 svg')).toBeVisible();
-    await expect(page.locator('#graphics-metric-overview-2 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#graphics-metric-overview-2 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#graphics-metric-overview-3 svg')).toBeVisible();
-    await expect(page.locator('#graphics-metric-overview-3 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#graphics-metric-overview-3 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#processor-metric-overview-1 svg')).toBeVisible();
-    await expect(page.locator('#processor-metric-overview-1 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#processor-metric-overview-1 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#processor-metric-overview-2 svg')).toBeVisible();
-    await expect(page.locator('#processor-metric-overview-2 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#processor-metric-overview-2 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#processor-metric-overview-3 svg')).toBeVisible();
-    await expect(page.locator('#processor-metric-overview-3 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#processor-metric-overview-3 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#processor-metric-overview-4 svg')).toBeVisible();
-    await expect(page.locator('#processor-metric-overview-4 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#processor-metric-overview-4 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#operating-system-metric-overview-1 svg')).toBeVisible();
-    await expect(page.locator('#operating-system-metric-overview-1 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#operating-system-metric-overview-1 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#operating-system-metric-overview-2 svg')).toBeVisible();
-    await expect(page.locator('#operating-system-metric-overview-2 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#operating-system-metric-overview-2 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#operating-system-metric-overview-3 svg')).toBeVisible();
-    await expect(page.locator('#operating-system-metric-overview-3 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#operating-system-metric-overview-3 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#plugins-metric-overview-1 svg')).toBeVisible();
-    await expect(page.locator('#plugins-metric-overview-1 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#plugins-metric-overview-1 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
 
     await flagForUpdate(page, '.chart', 'charts in the hardware dashboard', 11);
 });

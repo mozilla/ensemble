@@ -1,0 +1,79 @@
+{
+    "title": "Hardware Across the Web",
+    "description": "Hardware Across the Web is a public weekly report of the hardware used by a representative sample of the population from Firefox's release channel on desktop. This information can be used by developers to improve the Firefox experience for users.",
+    "metaDescription": "The hardware of Firefox users, including graphics, processors, operating systems, and plugins. Use our public data to improve your Firefox support!",
+    "categories": [
+        "default"
+    ],
+    "metrics": [
+        "resolution",
+        "gpuModel",
+        "gpuVendor",
+        "cpuSpeed",
+        "ram",
+        "cpuCores",
+        "cpuVendor",
+        "osName",
+        "browserArch",
+        "osArch",
+        "hasFlash"
+    ],
+    "summaryMetrics": [
+        "gpuVendor",
+        "cpuVendor",
+        "osName",
+        "hasFlash"
+    ],
+    "dates": [
+        "2026-10-12",
+        "2026-10-05",
+        "2026-09-28",
+        "2026-09-21",
+        "2026-09-14",
+        "2026-09-07",
+        "2026-08-31",
+        "2026-08-24",
+        "2026-08-17",
+        "2026-08-10",
+        "2026-08-03",
+        "2026-07-27"
+    ],
+    "sections": [
+        {
+            "key": "graphics",
+            "title": "Graphics",
+            "metrics": [
+                "gpuModel",
+                "gpuVendor",
+                "resolution"
+            ]
+        },
+        {
+            "key": "processor",
+            "title": "Processor",
+            "metrics": [
+                "cpuVendor",
+                "cpuCores",
+                "cpuSpeed",
+                "ram"
+            ]
+        },
+        {
+            "key": "operating-system",
+            "title": "Operating System",
+            "metrics": [
+                "osName",
+                "browserArch",
+                "osArch"
+            ]
+        },
+        {
+            "key": "plugins",
+            "title": "Plugins",
+            "metrics": [
+                "hasFlash"
+            ]
+        }
+    ],
+    "apiVersion": "2.0.0"
+}

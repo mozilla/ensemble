@@ -1,0 +1,67 @@
+{
+    "title": "Monthly Active Users",
+    "description": [
+        "Monthly Active Users (MAU) measures the number of Desktop and Mobile clients active in the past 28 days. MAU typically fluctuates over the year: dipping in the summer, around the New Year, and during major holidays."
+    ],
+    "type": "line",
+    "axes": {
+        "y": {
+            "unit": "clients"
+        }
+    },
+    "data": {
+        "populations": {
+            "default": [
+                {
+                    "x": "2026-09-21",
+                    "y": 208112827
+                },
+                {
+                    "x": "2026-08-31",
+                    "y": 198638945
+                },
+                {
+                    "x": "2026-07-27",
+                    "y": 197492367
+                },
+                {
+                    "x": "2026-08-17",
+                    "y": 196913811
+                },
+                {
+                    "x": "2026-10-12",
+                    "y": 212735695
+                },
+                {
+                    "x": "2026-09-14",
+                    "y": 205161810
+                },
+                {
+                    "x": "2026-09-28",
+                    "y": 210082701
+                },
+                {
+                    "x": "2026-08-03",
+                    "y": 196962457
+                },
+                {
+                    "x": "2026-08-10",
+                    "y": 197086013
+                },
+                {
+                    "x": "2026-09-07",
+                    "y": 201623188
+                },
+                {
+                    "x": "2026-08-24",
+                    "y": 197605408
+                },
+                {
+                    "x": "2026-10-05",
+                    "y": 211909144
+                }
+            ]
+        }
+    },
+    "apiVersion": "2.0.0"
+}

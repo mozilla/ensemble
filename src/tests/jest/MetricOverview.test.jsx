@@ -1,34 +1,36 @@
+import { render } from '@testing-library/react';
+
 import MetricOverview from '../../components/views/MetricOverview';
 
 
 it('Markdown links (and only Markdown links) are parsed in single-paragraph descriptions', () => {
-    const mo1 = shallow(
+    const { container: mo1 } = render(
         <MetricOverview
             description='This is a test of the Markdown parser.'
         />
     );
 
-    const mo2 = shallow(
+    const { container: mo2 } = render(
         <MetricOverview
             description='This is a [test](http://example.com) of the Markdown parser.'
         />
     );
 
-    const mo3 = shallow(
+    const { container: mo3 } = render(
         <MetricOverview
             description='This is a <script>alert(1)</script> [test](http://example.com) of **the** Markdown <strong>parser</strong>.'
         />
     );
 
-    // We only need to use .html() because the description is set using
-    // dangerouslySetInnerHTML.
-    expect(mo1.find('.metric-description').html()).toContain('This is a test of the Markdown parser.');
-    expect(mo2.find('.metric-description').html()).toContain('This is a <a href="http://example.com">test</a> of the Markdown parser.');
-    expect(mo3.find('.metric-description').html()).toContain('This is a &lt;script&gt;alert(1)&lt;/script&gt; <a href="http://example.com">test</a> of **the** Markdown &lt;strong&gt;parser&lt;/strong&gt;.');
+    // innerHTML, not text, because the description is set using
+    // dangerouslySetInnerHTML and the assertions are about the markup.
+    expect(mo1.querySelector('.metric-description').innerHTML).toContain('This is a test of the Markdown parser.');
+    expect(mo2.querySelector('.metric-description').innerHTML).toContain('This is a <a href="http://example.com">test</a> of the Markdown parser.');
+    expect(mo3.querySelector('.metric-description').innerHTML).toContain('This is a &lt;script&gt;alert(1)&lt;/script&gt; <a href="http://example.com">test</a> of **the** Markdown &lt;strong&gt;parser&lt;/strong&gt;.');
 });
 
 it('Markdown links (and only Markdown links) are parsed in multi-paragraph descriptions', () => {
-    const mo1 = shallow(
+    const { container: mo1 } = render(
         <MetricOverview
             description={[
                 'Line 1',
@@ -38,7 +40,7 @@ it('Markdown links (and only Markdown links) are parsed in multi-paragraph descr
         />
     );
 
-    const mo2 = shallow(
+    const { container: mo2 } = render(
         <MetricOverview
             description={[
                 'Line 1',
@@ -48,7 +50,7 @@ it('Markdown links (and only Markdown links) are parsed in multi-paragraph descr
         />
     );
 
-    const mo3 = shallow(
+    const { container: mo3 } = render(
         <MetricOverview
             description={[
                 'Line 1',
@@ -58,9 +60,9 @@ it('Markdown links (and only Markdown links) are parsed in multi-paragraph descr
         />
     );
 
-    // We only need to use .html() because the description is set using
-    // dangerouslySetInnerHTML.
-    expect(mo1.find('.metric-description').html()).toContain('This is a test of the Markdown parser.');
-    expect(mo2.find('.metric-description').html()).toContain('This is a <a href="http://example.com">test</a> of the Markdown parser.');
-    expect(mo3.find('.metric-description').html()).toContain('This is a &lt;script&gt;alert(1)&lt;/script&gt; <a href="http://example.com">test</a> of **the** Markdown &lt;strong&gt;parser&lt;/strong&gt;.');
+    // innerHTML, not text, because the description is set using
+    // dangerouslySetInnerHTML and the assertions are about the markup.
+    expect(mo1.querySelector('.metric-description').innerHTML).toContain('This is a test of the Markdown parser.');
+    expect(mo2.querySelector('.metric-description').innerHTML).toContain('This is a <a href="http://example.com">test</a> of the Markdown parser.');
+    expect(mo3.querySelector('.metric-description').innerHTML).toContain('This is a &lt;script&gt;alert(1)&lt;/script&gt; <a href="http://example.com">test</a> of **the** Markdown &lt;strong&gt;parser&lt;/strong&gt;.');
 });
