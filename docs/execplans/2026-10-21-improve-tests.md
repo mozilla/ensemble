@@ -105,7 +105,12 @@ Out of scope:
           and 5%.
       - Manual check on the dev server with live data: hovering GPU Vendor's second segment shows
         "AMD (14.229%)". Clicking "Other (3.470%)" shows its label with the arrow at opacity 0.
-- [ ] The two required checks ("Lint and test", "End-to-end tests") green on #460.
+- [x] (2026-10-22) All three checks green on #460 at e30f085:
+      - "Lint and test" took 19 s.
+      - "End-to-end tests" took 9m36s, with `70 passed (34.4s)` and nothing flaky.
+      - "Live data tests" took 10m0s.
+      - Most of each Playwright job's time is `npx playwright install --with-deps chromium`, about
+        9 minutes of system packages, not the tests.
 
 ## Surprises & Discoveries
 
@@ -375,6 +380,39 @@ Lessons:
 - Recorded data and live data catch different failures. Keep both.
 - On this machine, port 3000 was taken by another site, and Playwright's `reuseExistingServer`
   silently tested that site instead.
+
+(2026-10-22, Milestones 6 and 7) Upstream data no longer blocks merge, and the end-to-end suite now
+checks what the charts draw.
+
+- **CI.**
+  - Every Playwright spec runs on the recording in the required "End-to-end tests" check: 70 tests
+    in about 35 s in CI and about 10 s locally.
+  - The same specs, minus `fixtures/`, run on live data in "Live data tests", which isn't required.
+  - The npm scripts `record:fixtures`, `test:playwright:recorded` and `test:playwright:live`, plus
+    the how-tos in `CONTRIBUTING.md`, cover re-recording and running against live data.
+- **Unit tests.** Vitest grew to 14 files and 80 tests. The new ones cover metrics-graphics
+  configuration and summary-bar proportions, labels, arrows and boundaries.
+- **Browser tests.** They now check series count, legend names, colors and order; that region and
+  date changes change what is drawn; summary-bar hover and click; the one-point dot; and the
+  all-null chart.
+- **Fixes.**
+  - `suggestedYMax` is applied.
+  - Summary-bar hover and click work with d3-selection 3. This fixes a regression that would have
+    shipped with the next deploy.
+  - Segments under 4% get no arrow.
+- **Remaining.**
+  - Playwright browser installation dominates CI time. Caching it is a possible follow-up.
+  - An all-null metric shows a misleading "Load error". That's documented, not changed.
+  - The 48% `"NULL"` CPU-speed bucket in the live data is worth raising with the data owners.
+
+Lessons:
+
+- Review feedback that pointed at specific behavior found real bugs that coverage numbers wouldn't
+  have.
+- A mutation helper that restores files with `git checkout` silently reverted an uncommitted fix
+  once. Restore from a copy instead.
+- I described the one-point chart as drawing nothing before checking. The user's own observation
+  corrected it. Inspect the rendered DOM before describing what a chart shows.
 
 ## Context and Orientation
 
