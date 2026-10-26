@@ -35,7 +35,12 @@ measurement ID, and a consent banner.
       clean; build succeeds; `d3-transition` still nested under `d3@4`. Turning the stale-response
       guard off fails exactly the new "Ignores a response that arrives after a newer request has
       started" test.
-- [ ] Milestone 2: replace react-metrics-graphics with `src/components/views/MetricsGraphics.jsx`.
+- [x] (2026-10-26) Milestone 2: replaced react-metrics-graphics with
+      `src/components/views/MetricsGraphics.jsx`. Vitest 15 files, 84 tests; recorded Playwright
+      70 passed, and the dev server no longer logs the `componentWillReceiveProps` warning; lint
+      clean; build succeeds; `d3-transition` still nested. Live Playwright had 1 failure (a
+      `toBeVisible` timeout) on the first run and 46 passed on the immediate re-run, so it was not
+      this change.
 - [ ] Milestone 3: react-router-dom 5.3.4 to 6.30.x.
 - [ ] Milestone 4: React 18.3.1, React Testing Library 16, and the automatic JSX runtime.
 - [ ] Milestone 5: react-router-dom 6 to react-router 7.
