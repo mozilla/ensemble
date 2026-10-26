@@ -16,7 +16,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     ignore:
-      # React majors need coordinated changes (react-refetch, the router, the test libraries below), so they're done by hand.
+      # React majors need coordinated changes (react-metrics-graphics, the router, the test libraries below), so they're done by hand.
       - dependency-name: "react"
         update-types: ["version-update:semver-major"]
       - dependency-name: "react-dom"
