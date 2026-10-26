@@ -1,10 +1,10 @@
 import React from 'react';
-import MetricsGraphics from 'react-metrics-graphics';
 import dateformat from 'dateformat';
 import { curveCatmullRom } from 'd3-shape';
 import distinctColors from 'distinct-colors';
 
 import { prettifyNumber } from '../../lib/utils';
+import MetricsGraphics from './MetricsGraphics';
 
 import 'metrics-graphics/dist/metricsgraphics.css';
 import './css/Chart.css';
