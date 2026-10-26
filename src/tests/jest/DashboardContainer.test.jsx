@@ -4,13 +4,7 @@ import userEvent from '@testing-library/user-event';
 import DashboardContainer from '../../components/containers/DashboardContainer';
 
 
-// react-refetch reads window.fetch when connect() runs at import time, so the
-// stub has to exist before the container module loads.
-const fetchMock = vi.hoisted(() => {
-    const mock = vi.fn();
-    window.fetch = mock;
-    return mock;
-});
+let fetchMock;
 
 const source = 'https://data.example/user-activity';
 
@@ -43,7 +37,7 @@ const multiRegionDashboard = {
 };
 
 beforeEach(() => {
-    fetchMock.mockReset();
+    fetchMock = vi.spyOn(window, 'fetch');
 });
 
 it('Requests the dashboard index from its source and shows a spinner while waiting', async () => {

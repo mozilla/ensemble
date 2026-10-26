@@ -21,7 +21,7 @@
 | `containers/MetricOverviewContainer.jsx` | `${dashboardSource}/${activeRegion}/${slug}/index.json` | title, description, `type: 'line'｜'table'`, axes, columns, data, annotations |
 | `containers/SummaryMetricContainer.jsx` | same per-metric endpoint | buckets populations under 5% into "Other" |
 
-`react-refetch@3.0.1`'s `connect()` HOC **is the entire data layer** and is used in exactly those three files. Each one handles `dataFetch.pending` / `.rejected` / `.fulfilled` itself and renders `views/Spinner.jsx` or `views/Error.jsx`. All reshaping is client-side in each container's `formatData` (`ChartContainer` sorts populations by max y and drops nulls; `DataTableContainer` sorts rows by value descending).
+`src/lib/withFetch.jsx` **is the entire data layer** and is used in exactly those three files: `withFetch(props => url)(Container)` passes a `dataFetch` prop (`pending`, `rejected`, `fulfilled`, `value`, `reason`), refetches when the URL changes (back to pending first), rejects on non-2xx, and drops a response that arrives after a newer request started. Each one handles `dataFetch.pending` / `.rejected` / `.fulfilled` itself and renders `views/Spinner.jsx` or `views/Error.jsx`. All reshaping is client-side in each container's `formatData` (`ChartContainer` sorts populations by max y and drops nulls; `DataTableContainer` sorts rows by value descending).
 
 Metric `description` strings are rendered as inline Markdown through `markdown-it('zero')` with only `link`/`entity`/`emphasis`/`sup` enabled, via `dangerouslySetInnerHTML`. `src/tests/jest/MetricOverview.test.jsx` exists **specifically to guard that sanitization** — never widen the enabled-rules list without extending that test.
 
@@ -42,9 +42,10 @@ src/
 ├── lib/
 │   ├── lazyLoad.jsx             React.lazy wrapper
 │   ├── LazyBoundary.jsx         error boundary + spinner for lazy-loaded components
+│   ├── withFetch.jsx            the data layer: fetches JSON and passes `dataFetch` to containers
 │   └── utils.js                 bumpSort, isFloat, prettifyNumber, getPageTitle
 └── tests/
-    └── jest/                    2 unit test files, run by Vitest (the directory name predates Vitest)
+    └── jest/                    unit tests, run by Vitest (the directory name predates Vitest)
 tests/playwright/
 ├── specs/                       e2e specs (.spec.js, CommonJS), incl. dashboards/ and fixtures/; run on the recording and on live data
 ├── fixtures/                    recorded transposer JSON, written by `npm run record:fixtures`
@@ -97,7 +98,7 @@ Run one Vitest file: `npx vitest run src/tests/jest/Dashboard.test.jsx`. Run one
 ## Coding Style & Naming Conventions
 
 - **`.jsx` for any file containing JSX** — including `src/index.jsx` and `*.test.jsx`. Plain `.js` only for non-JSX modules (`lib/utils.js`, `setupTests.js`, `registerServiceWorker.js`, the Playwright specs and helpers, and the config files at the repository root).
-- **PascalCase filenames matching the default-exported component.** Decorators are camelCase with a `with` prefix; `lib/lazyLoad.jsx` is camelCase because it is a helper, not a component.
+- **PascalCase filenames matching the default-exported component.** Decorators are camelCase with a `with` prefix; `lib/lazyLoad.jsx` and `lib/withFetch.jsx` are camelCase because they are helpers, not components.
 - **One component per file, always `export default`.** There are no named component exports anywhere in the repo; the only named exports at all are the four helpers in `lib/utils.js`.
 - **The container/view split is the organizing principle.** `containers/X.jsx` holds state and fetching and renders `views/X.jsx` with formatted props (`ChartContainer`→`Chart`, `DataTableContainer`→`DataTable`). Keep new state out of `views/`.
 - Function components are the default (17 of 19 views), written as anonymous default-exported arrows — `export default props => (...)` — with no `displayName` (hence `react/display-name: off`). Use a class only where state, refs, or lifecycle are genuinely needed: all 6 containers plus `SummaryMetric.jsx` (d3 + `React.createRef`), `Spinner.jsx`, `MetricOverview.jsx`, `Footer.jsx`, and `lib/LazyBoundary.jsx` (error boundaries must be classes).
@@ -146,7 +147,7 @@ This applies to everything written for a person to read: ExecPlans, PR descripti
 
 **Vitest + React Testing Library**, configured in the `test` block of `vite.config.mjs` (`jsdom`, `globals: true`, `include: ['src/tests/jest/**/*.test.jsx']`). Files live in `src/tests/jest/`, named `PascalCase.test.jsx` — **not colocated, no `__tests__` directories.** `@testing-library/react` is pinned to 12.x, the last line that supports React 16; `@testing-library/dom` is pinned to the 8.x it uses so `@testing-library/user-event` shares the same copy. `src/setupTests.js` puts `React` on `global` (the classic JSX runtime needs it in scope), so **test files don't import React**; they import `render` and `screen` from `@testing-library/react`. It also registers the jest-dom matchers (`toHaveTextContent`, `toBeInTheDocument`), and **fails any test that calls `console.error` unexpectedly**, so React warnings surface as failures — a test that expects an error replaces `console.error` with `vi.spyOn(console, 'error').mockImplementation(() => {})`. Tests render the real component tree into jsdom and assert on the DOM (`container.querySelector('#dashboard-description')`, or `innerHTML` where the markup itself is the point, as in the sanitization test). Existing style is top-level `it(...)` with long descriptive sentences. No snapshots.
 
-- **Stubbing the network:** `react-refetch` captures `window.fetch` when `connect()` runs, which is at module import. Setting `window.fetch` inside a test or `beforeEach` is silently ignored and the container hits the real network. Install the stub with `vi.hoisted(() => { const mock = vi.fn(); window.fetch = mock; return mock; })` so it exists before the imports, then `mockReset()` it in `beforeEach`. The container tests (`SummaryMetricContainer.test.jsx` is the simplest) show the pattern.
+- **Stubbing the network:** `withFetch` calls `window.fetch(new Request(url, …))` each time it fetches. Stub it with `fetchMock = vi.spyOn(window, 'fetch')` in `beforeEach` (`setupTests.js`'s `vi.restoreAllMocks()` undoes it) and read URLs from `fetchMock.mock.calls[n][0].url`. The container tests (`SummaryMetricContainer.test.jsx` is the simplest) show the pattern.
 - **Testing data shaping:** containers that hand formatted props to a view that needs real layout (`views/Chart` → metrics-graphics, `views/SummaryMetric` → d3) are tested by replacing the view with `vi.mock('../../components/views/Chart', () => ({ default: vi.fn(() => null) }))` and asserting on the props it was last called with. Views that are plain markup (`views/DataTable`) render for real.
 - **Testing chart views:** `Chart.test.jsx` renders the real `views/Chart` with `vi.mock('react-metrics-graphics', () => ({ default: vi.fn(() => null) }))` and asserts on the options it computes (bounds, units, UTC formatting, legend, markers, colors). `SummaryMetric.test.jsx` renders the real d3 summary bar inside `<div id="application"><main>`, with `vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(490)` — jsdom reports 0px, and at 490px the bar draws at its 450px maximum, so segment widths are predictable.
 - **Routing:** `Routes.test.jsx` renders `views/Application` inside `MemoryRouter` through one `renderAt(path)` function — the only place a router upgrade has to touch — and mocks `react-ga` so no analytics load. Its cases are generated from `config.json`, so adding a dashboard adds a route test.
@@ -231,7 +232,7 @@ Replacement, as it should read:
 - A side-effect worth knowing about but not risky — a duplicate file deleted, a stray import removed — is a plain bullet like everything else.
 - Fold low-risk, mechanical fallout — a regenerated lockfile, a renamed CSS class, a fixture update — into its own short item, kept brief and after the substantive bullets, so it doesn't crowd out what the reviewer actually needs to think about.
 - Flag genuine uncertainty about your own work — "I'm not sure this handles the region-selector edge case" — distinct from rating risk. Risk-rating is banned above; naming a real unknown is not, and is often the most useful sentence in the description.
-- Never explain mechanics the team already knows: why `react-refetch` isn't mocked in a test, how the container/view split works, what `flagForUpdate` does.
+- Never explain mechanics the team already knows: why `withFetch` isn't mocked in a test, how the container/view split works, what `flagForUpdate` does.
 - Never describe your own process. Not which approach you tried first, not what a review caught, not that the branch is stacked on another. Two things that look similar but are worth keeping: deliberately deferred scope — "Ports the Nightwatch specs as-is; re-baselining the stale content assertions is a separate pass" — and a change's provenance if it matters — "Matches the Playwright config shape already used in mozmeao/springfield and mozmeao/bedrock".
 
 **Issue / Bugzilla link.** The full tracker URL, or `n/a`. List all of them where a change closes more than one, and give the context on a cross-reference: "Follow-up to #409, addressing the WebKit-specific slowness noted while porting the e2e suite."

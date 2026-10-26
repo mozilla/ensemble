@@ -30,7 +30,11 @@ measurement ID, and a consent banner.
 
 - [x] (2026-10-26) Drafted the plan on branch `react-19-upgrade`, cut from `major-updates`.
       Baseline from the improve-tests plan's outcome: Vitest 14 files, 80 tests.
-- [ ] Milestone 1: replace react-refetch with `src/lib/withFetch.jsx`.
+- [x] (2026-10-26) Milestone 1: replaced react-refetch with `src/lib/withFetch.jsx`. Vitest
+      passes 15 files, 84 tests; recorded Playwright 70 passed; live Playwright 46 passed; lint
+      clean; build succeeds; `d3-transition` still nested under `d3@4`. Turning the stale-response
+      guard off fails exactly the new "Ignores a response that arrives after a newer request has
+      started" test.
 - [ ] Milestone 2: replace react-metrics-graphics with `src/components/views/MetricsGraphics.jsx`.
 - [ ] Milestone 3: react-router-dom 5.3.4 to 6.30.x.
 - [ ] Milestone 4: React 18.3.1, React Testing Library 16, and the automatic JSX runtime.
@@ -39,7 +43,12 @@ measurement ID, and a consent banner.
 
 ## Surprises & Discoveries
 
-None yet.
+- Observation: once `withFetch` reads `window.fetch` per request, the container tests need no
+  hoisting. `vi.spyOn(window, 'fetch')` in `beforeEach` works, and `setupTests.js`'s
+  `vi.restoreAllMocks()` removes it after each test. Do not call `mockReset()` on that spy: in
+  current Vitest, resetting a spy restores the real implementation, so the next request would go to
+  the network.
+  Evidence: all five converted files pass unchanged apart from the stub setup.
 
 ## Decision Log
 

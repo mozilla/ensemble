@@ -22,8 +22,7 @@
         "metrics-graphics",
         "nightwatch",
         "node",
-        "react",
-        "react-refetch"
+        "react"
     ],
     "bugs": {
         "list": "https://github.com/mozilla/ensemble/issues",
