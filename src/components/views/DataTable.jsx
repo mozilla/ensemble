@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { prettifyNumber } from '../../lib/utils';
 
 import './css/DataTable.css';

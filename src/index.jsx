@@ -1,16 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { unregister } from './registerServiceWorker';
 
 import Application from './components/views/Application';
 
 
-ReactDOM.render((
+createRoot(document.getElementById('root')).render(
     <BrowserRouter>
         <Application />
     </BrowserRouter>
-), document.getElementById('root'));
+);
 
 // Service workers were causing issues with DataOps hosting. We struggled to
 // understand what exactly was causing the problem. It's possible that #5 in the

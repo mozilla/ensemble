@@ -16,15 +16,10 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     ignore:
-      # React majors need coordinated changes (the router, the test libraries below, react-helmet, react-ga), so they're done by hand.
+      # React 19 needs react-helmet and react-ga replaced first, so React majors are done by hand.
       - dependency-name: "react"
         update-types: ["version-update:semver-major"]
       - dependency-name: "react-dom"
-        update-types: ["version-update:semver-major"]
-      # @testing-library/react 13+ requires React 18, and @testing-library/dom is pinned to the 8.x that 12.x uses.
-      - dependency-name: "@testing-library/react"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "@testing-library/dom"
         update-types: ["version-update:semver-major"]
       # 3.x rewrites the MG.data_graphic API that views/MetricsGraphics.jsx calls (see update-deps/denied.md).
       - dependency-name: "metrics-graphics"
@@ -32,9 +27,6 @@ updates:
       # v7 requires React 18.
       - dependency-name: "react-router-dom"
         update-types: ["version-update:semver-major"]
-      # 6.10.0+ requires @testing-library/dom 10, which is pinned to 8.x (see above).
-      - dependency-name: "@testing-library/jest-dom"
-        versions: [">=6.10.0"]
       # eslint-plugin-react and eslint-plugin-jsx-a11y don't support ESLint 10 yet; remove once they do.
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]

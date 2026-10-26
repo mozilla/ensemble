@@ -25,6 +25,11 @@ module.exports = [
         },
     },
     {
+        // The automatic JSX runtime doesn't need React in scope.
+        files: ['**/*.{js,jsx}'],
+        ...react.configs.flat['jsx-runtime'],
+    },
+    {
         files: ['**/*.{js,jsx}'],
         ...jsxA11y.flatConfigs.recommended,
     },
@@ -81,15 +86,10 @@ module.exports = [
             globals: {
                 ...globals.browser,
                 ...globals.vitest,
-                // src/setupTests.js puts React on the global object for every
-                // Vitest test.
-                React: 'readonly',
             },
         },
     },
     {
-        // Defines the React global the block above declares, so it gets the
-        // Vitest globals without that declaration.
         files: ['src/setupTests.js'],
         languageOptions: {
             globals: {
