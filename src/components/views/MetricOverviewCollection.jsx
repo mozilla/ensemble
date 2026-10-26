@@ -1,5 +1,3 @@
-import React from 'react';
-
 import MetricOverviewContainer from '../containers/MetricOverviewContainer';
 
 

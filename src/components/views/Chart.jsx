@@ -1,4 +1,3 @@
-import React from 'react';
 import dateformat from 'dateformat';
 import { curveCatmullRom } from 'd3-shape';
 import distinctColors from 'distinct-colors';
