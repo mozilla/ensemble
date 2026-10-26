@@ -6,13 +6,7 @@ import Application from '../../components/views/Application';
 import { dashboards } from '../../config.json';
 
 
-// react-refetch reads window.fetch when connect() runs at import time, so the
-// stub has to exist before any container module loads.
-const fetchMock = vi.hoisted(() => {
-    const mock = vi.fn();
-    window.fetch = mock;
-    return mock;
-});
+let fetchMock;
 
 vi.mock('react-ga', () => ({
     default: { initialize: vi.fn(), set: vi.fn(), pageview: vi.fn() },
@@ -27,7 +21,7 @@ function renderAt(path) {
 }
 
 beforeEach(() => {
-    fetchMock.mockReset();
+    fetchMock = vi.spyOn(window, 'fetch');
     fetchMock.mockImplementation(() => new Promise(() => {}));
     reactGA.pageview.mockClear();
 });

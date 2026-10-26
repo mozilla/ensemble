@@ -155,11 +155,10 @@ unexpectedly, so React warnings show up as failures. A test that expects an erro
 with `vi.spyOn(console, 'error').mockImplementation(() => {})`. The existing style is top-level
 `it(...)` with long descriptive sentences. No snapshots.
 
-`react-refetch` captures `window.fetch` when `connect()` runs, which is at module import, so a stub
-set inside a test is silently ignored and the container goes to the real network. Install it with
-`vi.hoisted(() => { const mock = vi.fn(); window.fetch = mock; return mock; })` so it exists before
-the imports, and `mockReset()` it in `beforeEach`; `SummaryMetricContainer.test.jsx` is the
-simplest example. Containers whose view needs real layout (`views/Chart` uses metrics-graphics,
+Containers fetch through `src/lib/withFetch.jsx`, which calls `window.fetch` with a `Request` each
+time it fetches. Stub it with `fetchMock = vi.spyOn(window, 'fetch')` in `beforeEach` and read the
+URL from `fetchMock.mock.calls[n][0].url`; `SummaryMetricContainer.test.jsx` is the simplest
+example. The setup file restores the spy after each test. Containers whose view needs real layout (`views/Chart` uses metrics-graphics,
 `views/SummaryMetric` draws with d3) are tested by replacing that view with `vi.mock` and asserting
 on the props it received. Plain-markup views such as `views/DataTable` render for real.
 `Chart.test.jsx` renders the real `views/Chart` with `react-metrics-graphics` replaced by
@@ -348,7 +347,7 @@ Replacement, as it should read:
   actually needs to think about.
 - Flag genuine uncertainty about your own work — distinct from rating risk. Naming a real unknown is
   often the most useful sentence in the description.
-- Never explain mechanics the team already knows: why `react-refetch` isn't mocked in a test, how
+- Never explain mechanics the team already knows: why `withFetch` isn't mocked in a test, how
   the container/view split works, what `flagForUpdate` does.
 - Never describe your own process — not which approach you tried first, not what a review caught,
   not that the branch is stacked on another. Deliberately deferred scope is worth stating

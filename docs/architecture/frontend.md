@@ -34,9 +34,12 @@ This application has no state library, no hooks-based state, and no Redux — st
 | `containers/MetricOverviewContainer.jsx` | `${dashboardSource}/${activeRegion}/${slug}/index.json` | title, description, `type: 'line'` or `'table'`, axes, columns, data, annotations |
 | `containers/SummaryMetricContainer.jsx` | the same per-metric endpoint | buckets any population under 5% into an "Other" bucket |
 
-`react-refetch@3.0.1`'s `connect()` higher-order component is the entire data-fetching layer and is
-used in exactly those three files. Each one handles its fetch's pending, rejected, and fulfilled
-states itself and renders `views/Spinner.jsx` or `views/Error.jsx` accordingly. All reshaping of
+`src/lib/withFetch.jsx` is the entire data-fetching layer, used in exactly those three files. It is
+a higher-order component: `withFetch(props => url)(Container)` fetches the URL as JSON and passes
+the container a `dataFetch` prop holding `pending`, `rejected`, `fulfilled`, `value`, and `reason`.
+It refetches when the URL changes, going back to pending first, treats a non-2xx response as a
+rejection, and ignores a response that arrives after a newer request has started. Each container
+handles those states itself and renders `views/Spinner.jsx` or `views/Error.jsx` accordingly. All reshaping of
 fetched data happens client-side in each container's `formatData` method — `ChartContainer` sorts
 its populations by maximum y-value and drops nulls; `DataTableContainer` sorts rows by value,
 descending.
@@ -120,9 +123,10 @@ permanent list in this file, for the same reason the wider issue backlog isn't s
     ├── lib/
     │   ├── lazyLoad.jsx             wraps a dynamic import() in React.lazy
     │   ├── LazyBoundary.jsx         error boundary + Suspense fallback, paired with lazyLoad.jsx
+    │   ├── withFetch.jsx            the data layer: fetches JSON and passes `dataFetch` to containers
     │   └── utils.js                 bumpSort, isFloat, prettifyNumber, getPageTitle
     └── tests/
-        └── jest/                    2 unit test files, run by Vitest (see CONTRIBUTING.md)
+        └── jest/                    unit tests, run by Vitest (see CONTRIBUTING.md)
 
     tests/
     └── playwright/                  end-to-end specs, run by Playwright (see CONTRIBUTING.md);
@@ -136,15 +140,8 @@ catch-all not-found page.
 
 ## The dependency ceiling on modernizing this application
 
-Worth knowing before attempting any React upgrade: confirmed by reading their installed
-`package.json` files directly, both `react-metrics-graphics` (this application's charting library)
-and `react-refetch` (its entire data-fetching layer, described above) declare a `peerDependencies`
-constraint that caps React at version 16 (`^15||^16` and an equivalent range respectively). Neither
-has shipped a release since 2019, and the charting library's own upstream, `metrics-graphics`, has
-been stuck on a never-promoted 3.0 beta since 2022.
-
-**This application cannot move past React 16 without first replacing its chart-rendering and
-data-fetching layers.** That is a legitimate, large, separate initiative in its own right — not
-something to bundle into routine maintenance or into any build-tooling change. Any plan touching
-this application's build tooling should leave the React version, `react-router-dom`, and
-`react-refetch` untouched, and say so explicitly, rather than assume they're in scope.
+Worth knowing before attempting any React upgrade: `react-metrics-graphics` (this application's
+charting wrapper) declares a `peerDependencies` constraint of `^15||^16`, which caps React at
+version 16. It hasn't shipped a release since 2018, and its upstream, `metrics-graphics`, has been
+stuck on a never-promoted 3.0 beta since 2022. The data-fetching layer used to carry the same cap
+through `react-refetch`, which `src/lib/withFetch.jsx` replaced.

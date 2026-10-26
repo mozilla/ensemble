@@ -3,13 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import SummaryMetricContainer from '../../components/containers/SummaryMetricContainer';
 
 
-// react-refetch reads window.fetch when connect() runs at import time, so the
-// stub has to exist before the container module loads.
-const fetchMock = vi.hoisted(() => {
-    const mock = vi.fn();
-    window.fetch = mock;
-    return mock;
-});
+let fetchMock;
 
 const activeDate = '2026-01-04';
 
@@ -43,7 +37,7 @@ async function renderSummaryBar(populationValues) {
 }
 
 beforeEach(() => {
-    fetchMock.mockReset();
+    fetchMock = vi.spyOn(window, 'fetch');
 });
 
 it('Each population gets a segment sized by its share, largest first, with small ones combined into a final "Other"', async () => {
