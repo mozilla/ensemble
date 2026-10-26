@@ -50,7 +50,11 @@ measurement ID, and a consent banner.
       automatic JSX runtime. Vitest 15 files, 84 tests, exit 0; recorded Playwright 70 passed, and
       68 of 68 chromium specs passed with retries off on a cold `vite --force` server with no 504s;
       live Playwright 46 passed; lint clean; build succeeds; `d3-transition` still nested.
-- [ ] Milestone 5: react-router-dom 6 to react-router 7.
+- [x] (2026-10-26) Milestone 5: react-router-dom 6.30.6 to react-router 7.18.4, imported from
+      `react-router`. Vitest 15 files, 84 tests, exit 0, no warnings; recorded Playwright 70
+      passed; live Playwright 46 passed; lint clean; build succeeds; `d3-transition` still nested.
+      The future-flag pass on v6 was skipped: no routes use relative links or nested splats, and
+      the full suites on v7, which has both flags on by default, are the same check.
 - [ ] Milestone 6: React 19, react-helmet-async, and GA4 through react-ga4.
 
 ## Surprises & Discoveries

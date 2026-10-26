@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router';
 
 import withTracker from '../decorators/withTracker';
 import withNextButton from '../decorators/withNextButton';
