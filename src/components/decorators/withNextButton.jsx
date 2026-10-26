@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import NextButton from '../views/NextButton';
 import { nextButtons as nextButtonsConfig } from '../../config.json';
