@@ -1,12 +1,11 @@
 import { render } from '@testing-library/react';
-import MetricsGraphics from 'react-metrics-graphics';
-
 import Chart from '../../components/views/Chart';
+import MetricsGraphics from '../../components/views/MetricsGraphics';
 
 
 // metrics-graphics needs real layout; these tests check the options the view
 // computes and hands to it.
-vi.mock('react-metrics-graphics', () => ({ default: vi.fn(() => null) }));
+vi.mock('../../components/views/MetricsGraphics', () => ({ default: vi.fn(() => null) }));
 
 const twoPopulations = [
     [{ x: new Date('2026-01-04'), y: 5 }, { x: new Date('2026-01-11'), y: 4 }, { x: new Date('2026-01-18'), y: 9 }],

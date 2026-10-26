@@ -16,7 +16,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     ignore:
-      # React majors need coordinated changes (react-metrics-graphics, the router, the test libraries below), so they're done by hand.
+      # React majors need coordinated changes (the router, the test libraries below, react-helmet, react-ga), so they're done by hand.
       - dependency-name: "react"
         update-types: ["version-update:semver-major"]
       - dependency-name: "react-dom"
@@ -26,7 +26,7 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "@testing-library/dom"
         update-types: ["version-update:semver-major"]
-      # 3.x is a rewrite that's incompatible with react-metrics-graphics (see update-deps/denied.md).
+      # 3.x rewrites the MG.data_graphic API that views/MetricsGraphics.jsx calls (see update-deps/denied.md).
       - dependency-name: "metrics-graphics"
         update-types: ["version-update:semver-major"]
       # v6+ is a rewrite, and v7 requires React 18.

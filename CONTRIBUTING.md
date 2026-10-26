@@ -161,8 +161,8 @@ URL from `fetchMock.mock.calls[n][0].url`; `SummaryMetricContainer.test.jsx` is 
 example. The setup file restores the spy after each test. Containers whose view needs real layout (`views/Chart` uses metrics-graphics,
 `views/SummaryMetric` draws with d3) are tested by replacing that view with `vi.mock` and asserting
 on the props it received. Plain-markup views such as `views/DataTable` render for real.
-`Chart.test.jsx` renders the real `views/Chart` with `react-metrics-graphics` replaced by
-`vi.mock('react-metrics-graphics', () => ({ default: vi.fn(() => null) }))`, and asserts on the
+`Chart.test.jsx` renders the real `views/Chart` with `views/MetricsGraphics` replaced by
+`vi.mock('../../components/views/MetricsGraphics', () => ({ default: vi.fn(() => null) }))`, and asserts on the
 options it computes. `SummaryMetric.test.jsx` renders the real d3 summary bar inside
 `<div id="application"><main>`, with `HTMLElement.prototype.offsetWidth` spied to 490: jsdom
 reports 0px, and at 490px the bar draws at its 450px maximum, so segment widths are predictable.

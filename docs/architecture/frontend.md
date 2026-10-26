@@ -115,7 +115,7 @@ permanent list in this file, for the same reason the wider issue backlog isn't s
     ├── components/
     │   ├── containers/              6 stateful, data-fetching .jsx files (above)
     │   ├── decorators/              withTracker.jsx (react-ga), withNextButton.jsx
-    │   └── views/                   19 presentational .jsx files
+    │   └── views/                   20 presentational .jsx files
     │       ├── styl/                Stylus source, hand-edited; includes/lib.styl holds shared variables
     │       ├── css/                 generated from styl/, gitignored — see CONTRIBUTING.md
     │       ├── fonts/FiraSans/      8 weights/styles of webfonts
@@ -140,8 +140,8 @@ catch-all not-found page.
 
 ## The dependency ceiling on modernizing this application
 
-Worth knowing before attempting any React upgrade: `react-metrics-graphics` (this application's
-charting wrapper) declares a `peerDependencies` constraint of `^15||^16`, which caps React at
-version 16. It hasn't shipped a release since 2018, and its upstream, `metrics-graphics`, has been
-stuck on a never-promoted 3.0 beta since 2022. The data-fetching layer used to carry the same cap
-through `react-refetch`, which `src/lib/withFetch.jsx` replaced.
+Two abandoned packages used to cap React at version 16: `react-refetch`, the data layer, and
+`react-metrics-graphics`, the chart wrapper. Local replacements have taken their place:
+`src/lib/withFetch.jsx` and `views/MetricsGraphics.jsx`, which calls `MG.data_graphic` directly.
+`metrics-graphics` itself stays on 2.15.6, because its only newer release is a 3.0 beta, unpromoted
+since 2022, that rewrites the API.
