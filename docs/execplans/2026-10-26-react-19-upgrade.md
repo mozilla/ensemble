@@ -41,7 +41,10 @@ measurement ID, and a consent banner.
       clean; build succeeds; `d3-transition` still nested. Live Playwright had 1 failure (a
       `toBeVisible` timeout) on the first run and 46 passed on the immediate re-run, so it was not
       this change.
-- [ ] Milestone 3: react-router-dom 5.3.4 to 6.30.x.
+- [x] (2026-10-26) Milestone 3: react-router-dom 5.3.4 to 6.30.6. Vitest 15 files, 84 tests;
+      recorded Playwright 70 passed; lint clean; build succeeds; `d3-transition` still nested. Live
+      Playwright 45 passed, 1 flaky: the hardware "Charts render" flake described in Surprises,
+      which happens on `major-updates` too.
 - [ ] Milestone 4: React 18.3.1, React Testing Library 16, and the automatic JSX runtime.
 - [ ] Milestone 5: react-router-dom 6 to react-router 7.
 - [ ] Milestone 6: React 19, react-helmet-async, and GA4 through react-ga4.
@@ -54,6 +57,11 @@ measurement ID, and a consent banner.
   current Vitest, resetting a spy restores the real implementation, so the next request would go to
   the network.
   Evidence: all five converted files pass unchanged apart from the stub setup.
+- Observation: the live hardware "Charts render" spec sometimes times out waiting for
+  `#graphics-metric-overview-1 svg`. It happens on this branch's base as well, and never on
+  recorded data, so it comes from live-data latency, not this work. Retries absorb it in CI.
+  Evidence: with `--retries=0`, live: 1 of 8 failed on Milestone 3 and 1 of 16 failed on
+  `major-updates`, both on that locator. Recorded: 20 of 20 passed.
 
 ## Decision Log
 
@@ -100,6 +108,21 @@ measurement ID, and a consent banner.
   `index.html` already holds a static `<title>`, and pages nest, so the built-in hoisting would
   leave two titles and repeated meta tags. react-helmet-async supports React 16 through 19 and
   replaces tags the way react-helmet does now.
+  Date/Author: 2026-10-26, Stephanie Hobson.
+
+- Decision: in `views/Main.jsx`, keep creating the lazy route components inside render rather than
+  hoisting them to module scope, as Milestone 3 first planned.
+  Rationale: `React.lazy` caches a rejected import for good. Recreating it on each navigation
+  (`Main` re-renders only when the location changes) is what lets a route whose chunk failed to
+  load retry when visited again, which `LazyBoundary`'s pathname key exists to support. Hoisting
+  would buy stable component types that the pathname key throws away anyway.
+  Date/Author: 2026-10-26, Stephanie Hobson.
+- Decision: write `withNextButton` and `withTracker` as function components that call
+  `useLocation()`, with `withTracker` sending its page view from a `useEffect` on the pathname,
+  rather than class components behind a hook wrapper.
+  Rationale: neither needs state of its own, and the effect states "track when the path changes"
+  directly. It also moves the page view out of `getDerivedStateFromProps`, which runs during
+  render and can run more than once under React 18.
   Date/Author: 2026-10-26, Stephanie Hobson.
 
 ## Outcomes & Retrospective
