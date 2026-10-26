@@ -30,7 +30,7 @@ src/
 ├── index.jsx                    entry: ReactDOM.render + BrowserRouter
 ├── config.json                  the route/dashboard table + next-button flow
 ├── registerServiceWorker.js     create-react-app leftover; only unregister() is called (SW deliberately off)
-├── setupTests.js                Vitest setup: enzyme adapter; puts React and shallow on global
+├── setupTests.js                Vitest setup: puts React on global, jest-dom matchers, fails on console.error
 ├── components/
 │   ├── containers/              6 stateful/data-fetching .jsx
 │   ├── decorators/              withTracker.jsx (react-ga), withNextButton.jsx
@@ -46,7 +46,9 @@ src/
 └── tests/
     └── jest/                    2 unit test files, run by Vitest (the directory name predates Vitest)
 tests/playwright/
-├── specs/                       e2e specs (.spec.js, CommonJS), incl. dashboards/
+├── specs/                       e2e specs (.spec.js, CommonJS), incl. dashboards/ and fixtures/; run on the recording and on live data
+├── fixtures/                    recorded transposer JSON, written by `npm run record:fixtures`
+├── fixtureData.js               `test` that serves fixtures/ (or live data, with liveData) and fails on page/console errors; readFixture
 └── utils.js                     shared helpers: linkWorks, linksWork, flagForUpdate, metricTitleIsCorrect
 ```
 
@@ -56,7 +58,7 @@ There is no `pages/`, `store/`, `hooks/`, `api/`, `locales/`, or `data/`. `index
 
 MozMEAO is taking this repo over. Before that work started there were 810 commits — 515 in 2018, 92 in 2020, **nothing in 2021–2024**, three in 2025, the last `f655559` on 2025-05-07. The toolchain has since been replaced (#441): create-react-app, Jest and Nightwatch gave way to Vite, Vitest and Playwright, and two ESLint configs became one. Code outside the toolchain has barely been exercised since 2020.
 
-- **CI runs on GitHub Actions; there is no CD.** `.github/workflows/ci.yml` runs lint, the Vitest unit tests, and the Playwright end-to-end tests on every push to `main` and every pull request. There is no `.circleci/`, `Dockerfile`, `docker-compose`, or `Jenkinsfile` — earlier automation was deliberately removed: CircleCI disabled 2018-02-22 (`433a465`), Docker/Dockerflow removed 2018-08-23 (`d3bb561`), `.github/dependabot.yml` deleted 2020-07-29 (`7c7006f`, "Disable non-security updates from Dependabot").
+- **CI runs on GitHub Actions; there is no CD.** `.github/workflows/ci.yml` runs lint, the Vitest unit tests, a production build (`npm run build`, not browser-tested), and the Playwright end-to-end tests on every push to `main` and every pull request. The Playwright specs run twice: on recorded data in "End-to-end tests", which the `main` ruleset requires, and on live data in "Live data tests", which it doesn't. There is no `.circleci/`, `Dockerfile`, `docker-compose`, or `Jenkinsfile` — earlier automation was deliberately removed: CircleCI disabled 2018-02-22 (`433a465`), Docker/Dockerflow removed 2018-08-23 (`d3bb561`), `.github/dependabot.yml` deleted 2020-07-29 (`7c7006f`, "Disable non-security updates from Dependabot").
 - **The deploy is a static build on Google Cloud Storage** (confirmed by `x-goog-*` headers on the live site). `https://data.firefox.com/version.json` reports `1.2.1` / commit `f655559`, so **the deployed site predates the Vite toolchain on `main`**; nothing built by Vite has shipped yet. The mechanism that pushes `build/` to GCS is **not in this repo and is currently unknown** — finding and documenting it is takeover work, not something to guess at.
 - **Node 24.** `.nvmrc` holds `24` and `engines` requires `^24.15.0`. A plain `npm install` works with no flags.
 - **A fresh clone will not render styles until you compile Stylus.** `src/components/views/css/*` is gitignored and every component does a side-effect `import './css/Foo.css';` — run `npm run build:css` or the app, and Vitest, fail to resolve those imports. `npm start` compiles it for you.
@@ -76,8 +78,11 @@ npm start                            # npm-run-all --parallel watch:css watch:ap
 npm run build:css                    # one-shot Stylus compile
 
 npm run lint                         # lint:js (flat-config ESLint, .js and .jsx) + lint:styl (stylint)
-npm run test:jest                    # vitest run (Enzyme, 2 files)
-npm run test:playwright              # playwright test; starts the dev server itself if :3000 is free
+npm run test:jest                    # vitest run (React Testing Library)
+npm run test:playwright              # every Playwright project; starts the dev server itself if :3000 is free
+npm run test:playwright:recorded     # specs on tests/playwright/fixtures/ (CI's required "End-to-end tests")
+npm run test:playwright:live         # the same specs on real data.firefox.com (CI's non-required "Live data tests")
+npm run record:fixtures              # re-record tests/playwright/fixtures/ from data.firefox.com
 npm test                             # lint -> test:jest -> test:playwright
 
 npm run build:app                    # vite build
@@ -105,7 +110,7 @@ Run one Vitest file: `npx vitest run src/tests/jest/Dashboard.test.jsx`. Run one
 
 **ESLint is one flat config, `eslint.config.js`, covering `.js` and `.jsx`.** `npm run lint:js` runs `eslint .`; the build does not lint. Warnings don't fail the run.
 
-Errors: `eqeqeq`, `no-var`, `prefer-const`, `no-console`, `no-global-assign`, `no-redeclare` and `no-shadow` — the latter two with `builtinGlobals: true`, so **do not name a variable `name`, `status`, `history`, `event`, etc.** Warnings: `semi: always`, `prefer-arrow-callback`, `comma-dangle` (trailing commas **required** for multiline arrays/objects/imports/exports, **never** for function args/params). Off: `react/prop-types`, `react/display-name`, `jsx-a11y/no-onchange`. `react/no-unescaped-entities` forbids only `>` and `}`. `jsx-a11y/recommended` is on, so a11y violations are errors; `jsx-a11y/label-has-associated-control` requires `htmlFor`. `settings.react.version` is `'detect'`. `src/tests/jest/**/*.test.jsx` also gets `@vitest/eslint-plugin`'s recommended rules and the `React`/`shallow` globals. **Quote style is not enforced** (there is no `quotes` rule) — single quotes by convention. The config's own `ignores` excludes `build`.
+Errors: `eqeqeq`, `no-var`, `prefer-const`, `no-console`, `no-global-assign`, `no-redeclare` and `no-shadow` — the latter two with `builtinGlobals: true`, so **do not name a variable `name`, `status`, `history`, `event`, etc.** Warnings: `semi: always`, `prefer-arrow-callback`, `comma-dangle` (trailing commas **required** for multiline arrays/objects/imports/exports, **never** for function args/params). Off: `react/prop-types`, `react/display-name`, `jsx-a11y/no-onchange`. `react/no-unescaped-entities` forbids only `>` and `}`. `jsx-a11y/recommended` is on, so a11y violations are errors; `jsx-a11y/label-has-associated-control` requires `htmlFor`. `settings.react.version` is `'detect'`. `src/tests/jest/**/*.test.jsx` also gets `@vitest/eslint-plugin`'s recommended rules, the `React` global, and a `no-shadow` exception for React Testing Library's `screen` (which otherwise collides with `window.screen`). **Quote style is not enforced** (there is no `quotes` rule) — single quotes by convention. The config's own `ignores` excludes `build`.
 
 ## Styling: Stylus, outside Vite
 
@@ -139,9 +144,28 @@ This applies to everything written for a person to read: ExecPlans, PR descripti
 
 ## Testing Guidelines
 
-**Vitest + enzyme**, configured in the `test` block of `vite.config.mjs` (`jsdom`, `globals: true`, `include: ['src/tests/jest/**/*.test.jsx']`). Only two files, both in `src/tests/jest/`, named `PascalCase.test.jsx` — **not colocated, no `__tests__` directories.** `src/setupTests.js` puts `React` and `shallow` on `global`, so **test files import neither**: they `import Dashboard from '../../components/views/Dashboard';` and call bare `shallow(<Dashboard … />)`. Existing style is top-level `it(...)` with long descriptive sentences, a `beforeAll` that builds a `requiredProps` object, and assertions via `.find(selector).exists()` and `.html()).toContain(...)`. Shallow rendering only; no snapshots; `react-refetch` is never mocked; there are no container tests.
+**Vitest + React Testing Library**, configured in the `test` block of `vite.config.mjs` (`jsdom`, `globals: true`, `include: ['src/tests/jest/**/*.test.jsx']`). Files live in `src/tests/jest/`, named `PascalCase.test.jsx` — **not colocated, no `__tests__` directories.** `@testing-library/react` is pinned to 12.x, the last line that supports React 16; `@testing-library/dom` is pinned to the 8.x it uses so `@testing-library/user-event` shares the same copy. `src/setupTests.js` puts `React` on `global` (the classic JSX runtime needs it in scope), so **test files don't import React**; they import `render` and `screen` from `@testing-library/react`. It also registers the jest-dom matchers (`toHaveTextContent`, `toBeInTheDocument`), and **fails any test that calls `console.error` unexpectedly**, so React warnings surface as failures — a test that expects an error replaces `console.error` with `vi.spyOn(console, 'error').mockImplementation(() => {})`. Tests render the real component tree into jsdom and assert on the DOM (`container.querySelector('#dashboard-description')`, or `innerHTML` where the markup itself is the point, as in the sanitization test). Existing style is top-level `it(...)` with long descriptive sentences. No snapshots.
 
-**Playwright** specs in `tests/playwright/specs/` are **`camelCase.spec.js` or `kebab-case.spec.js`, CommonJS**, using `@playwright/test`'s `test`/`expect`. `playwright.config.js` has two Chromium projects: `chromium` runs everything except `jsDisabled.spec.js`, and `chromium-no-js` runs only that spec with `javaScriptEnabled: false`, asserting on the `id="enable-javascript"` `<noscript>` block in `index.html`. Playwright starts `npm start` itself unless a server is already on `:3000`. Set `PLAYWRIGHT_BASE_URL` to test another environment (`PLAYWRIGHT_BASE_URL=https://data.firefox.com npx playwright test`). `tests/playwright/utils.js` exports `linkWorks`, `linksWork`, `metricTitleIsCorrect`, and `flagForUpdate` — which **deliberately fails when an element count changes**, to force a human to look. The `dashboards/*.spec.js` specs assert exact metric titles and section ordering **against live production data**, so upstream data changes break them by design.
+- **Stubbing the network:** `react-refetch` captures `window.fetch` when `connect()` runs, which is at module import. Setting `window.fetch` inside a test or `beforeEach` is silently ignored and the container hits the real network. Install the stub with `vi.hoisted(() => { const mock = vi.fn(); window.fetch = mock; return mock; })` so it exists before the imports, then `mockReset()` it in `beforeEach`. The container tests (`SummaryMetricContainer.test.jsx` is the simplest) show the pattern.
+- **Testing data shaping:** containers that hand formatted props to a view that needs real layout (`views/Chart` → metrics-graphics, `views/SummaryMetric` → d3) are tested by replacing the view with `vi.mock('../../components/views/Chart', () => ({ default: vi.fn(() => null) }))` and asserting on the props it was last called with. Views that are plain markup (`views/DataTable`) render for real.
+- **Testing chart views:** `Chart.test.jsx` renders the real `views/Chart` with `vi.mock('react-metrics-graphics', () => ({ default: vi.fn(() => null) }))` and asserts on the options it computes (bounds, units, UTC formatting, legend, markers, colors). `SummaryMetric.test.jsx` renders the real d3 summary bar inside `<div id="application"><main>`, with `vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(490)` — jsdom reports 0px, and at 490px the bar draws at its 450px maximum, so segment widths are predictable.
+- **Routing:** `Routes.test.jsx` renders `views/Application` inside `MemoryRouter` through one `renderAt(path)` function — the only place a router upgrade has to touch — and mocks `react-ga` so no analytics load. Its cases are generated from `config.json`, so adding a dashboard adds a route test.
+
+**Playwright** specs in `tests/playwright/specs/` are **`camelCase.spec.js` or `kebab-case.spec.js`, CommonJS**. Every spec except `jsDisabled.spec.js` imports `test`, `expect` (and, where needed, `readFixture`) from **`tests/playwright/fixtureData.js`**, not `@playwright/test`. `tests/playwright/utils.js` exports `linkWorks`, `linksWork`, `metricTitleIsCorrect`, `changeRegionAndWaitForMetrics`, and `flagForUpdate` — which **deliberately fails when an element count changes**, to force a human to look.
+
+**The same specs run in two modes**, chosen by Playwright project in `playwright.config.js`:
+
+| Project | Data | CI check | Required to merge |
+|---|---|---|---|
+| `chromium` (all but `jsDisabled`) + `chromium-no-js` (`jsDisabled` only, `javaScriptEnabled: false`) | The recording in `tests/playwright/fixtures/` | "End-to-end tests" (`npm run test:playwright:recorded`) | Yes |
+| `live-data` (all but `fixtures/` and `jsDisabled`) | The real data.firefox.com | "Live data tests" (`npm run test:playwright:live`) | No |
+
+In recorded mode, `fixtureData.js`'s `test` answers every `https://data.firefox.com/datasets/desktop/**` request from `tests/playwright/fixtures/` (paths mirror the URL), answers other third-party requests (Google Analytics) with an empty 200, and **fails the test on any page error, console error, or dataset request with no recording**. Only the default region and `Germany` are recorded; a metric request for any other region is served the default region's file for the same metric, so specs can pick any region — a missing metric or dashboard still fails. A spec that expects errors sets `test.use({ allowedErrors: /pattern/ })` — a single RegExp, because `test.use()` reads an array as a `[value, options]` pair. Override one response with a later `page.route()`, which takes precedence (`errors.spec.js`, `descriptions.spec.js`). Specs about what a chart draws — `chart-series`, `region-data`, `summary-bars`, `dates`, `boundaries` — serve a small controlled JSON body for one metric this way, so their assertions don't depend on what was recorded. The `fixtures/` specs read expected values from the recording with `readFixture('hardware/index.json')`; the `dashboards/` specs hardcode exact titles and ordering, which matches the recording and is what the live job checks against reality. In `live-data` mode the page is left alone.
+
+**The live check breaks by design** when upstream data changes (weekly). A red "Live data tests" means the recording is stale, not that the change is broken: fix it by re-recording in a separate pull request.
+
+- **Run against live data:** `npm run test:playwright:live` (dev server + real data). Against a deployed site: `PLAYWRIGHT_BASE_URL=https://data.firefox.com npm run test:playwright:live`. If `:3000` is taken by something else, Playwright silently reuses it — start `npx vite --port 3001 --strictPort` and set `PLAYWRIGHT_BASE_URL=http://localhost:3001`.
+- **Update the recording:** (1) `npm run record:fixtures` (each dashboard's `index.json`, plus every metric and summary metric for the default region and `Germany`, trimmed to the 12 most recent dates); (2) `git diff --stat tests/playwright/fixtures` and skim for new/removed metrics, regions, titles, or odd populations; (3) `npm run test:playwright:recorded` — `fixtures/` failures mean the data's shape changed, `dashboards/` failures mean titles or ordering changed, so update those hardcoded expectations; (4) `npm run test:playwright:live` should now agree; (5) commit the recording and spec updates together ("Re-record Playwright fixtures").
 
 **Tests describe the code as it is now.** Assert what the code does; never add a test whose purpose is to prove that removed behaviour is absent — a negative assertion about history passes forever while documenting nothing. Each test builds only the data it needs; no shared mega-fixture. Keep assertions at the point where the thing is rendered rather than behind a `_getElement(wrapper)`-style indirection layer, so a failure points straight at the markup it cares about.
 
@@ -152,8 +176,7 @@ This applies to everything written for a person to read: ExecPlans, PR descripti
 | Switching branches without reinstalling | `node_modules` can still hold another branch's packages. Run `npm install` after a branch switch before trusting any result. |
 | Gitignored `src/components/views/css/` | Fresh clone cannot resolve the CSS imports until `npm run build:css` runs. Never hand-edit `css/` — edit `styl/`. |
 | Renaming a landmark ID | Breaks Playwright selectors silently. |
-| First visit to a route on the Vite dev server | Can 504 or fail a dynamic import ("Outdated Optimize Dep") while Vite pre-bundles a new dependency. A reload fixes it; production builds don't do this. |
-| `path.mg-line1` in a Playwright locator | metrics-graphics puts the class on many invisible hover paths too. Use `.first()` or the locator throws a strict-mode error. |
+| `path.mg-line1` in a Playwright locator | metrics-graphics puts the class on many invisible hover paths too, and a population with one data point draws a zero-size line (shown as a dot instead). To check a chart drew, use `path.mg-main-line` with `.filter({ visible: true }).first()`. |
 | `build:version.json` | Needs `build/` to already exist and `git` on PATH; must follow `build:app`. |
 | `no-shadow` / `no-redeclare` with `builtinGlobals` | Naming a local `name`, `status`, `history`, `event` is a hard error. |
 

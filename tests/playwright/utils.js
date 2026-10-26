@@ -66,7 +66,16 @@ async function changeRegionAndWaitForMetrics(page, index, numMetrics) {
     await metricsLoaded;
 }
 
+// How the app shows a percentage (prettifyNumber plus the unit): floats get
+// exactly three decimal places, integers none.
+function formatPercent(value) {
+    return Number.isInteger(value)
+        ? `${value.toLocaleString('en-US')}%`
+        : `${value.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}%`;
+}
+
 module.exports = {
+    formatPercent,
     linkWorks,
     linksWork,
     flagForUpdate,

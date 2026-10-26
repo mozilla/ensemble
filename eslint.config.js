@@ -73,15 +73,27 @@ module.exports = [
         },
         rules: {
             ...vitest.configs.recommended.rules,
+            // React Testing Library's `screen` export shadows window.screen;
+            // importing it under that name is the library's documented idiom.
+            'no-shadow': ['error', { builtinGlobals: true, allow: ['screen'] }],
         },
         languageOptions: {
             globals: {
                 ...globals.browser,
                 ...globals.vitest,
-                // In src/setupTests.js, these globals are defined in such a way
-                // that they are available to all Vitest tests.
+                // src/setupTests.js puts React on the global object for every
+                // Vitest test.
                 React: 'readonly',
-                shallow: 'readonly',
+            },
+        },
+    },
+    {
+        // Defines the React global the block above declares, so it gets the
+        // Vitest globals without that declaration.
+        files: ['src/setupTests.js'],
+        languageOptions: {
+            globals: {
+                ...globals.vitest,
             },
         },
     },

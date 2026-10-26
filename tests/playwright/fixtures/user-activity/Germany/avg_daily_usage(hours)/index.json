@@ -1,0 +1,67 @@
+{
+    "title": "Daily Usage",
+    "description": [
+        "Daily Usage shows the hours spent browsing for a typical Firefox Desktop client in a typical day of use. Globally, the typical Firefox client averages around 4.5 hours of use per day."
+    ],
+    "type": "line",
+    "axes": {
+        "y": {
+            "unit": "hours per day"
+        }
+    },
+    "data": {
+        "populations": {
+            "default": [
+                {
+                    "x": "2026-09-21",
+                    "y": 4.908532772
+                },
+                {
+                    "x": "2026-08-31",
+                    "y": 4.888539798
+                },
+                {
+                    "x": "2026-07-27",
+                    "y": 4.890976002
+                },
+                {
+                    "x": "2026-08-17",
+                    "y": 4.905641105
+                },
+                {
+                    "x": "2026-10-12",
+                    "y": 4.923479385
+                },
+                {
+                    "x": "2026-09-14",
+                    "y": 4.834337969
+                },
+                {
+                    "x": "2026-09-28",
+                    "y": 4.874121456
+                },
+                {
+                    "x": "2026-08-03",
+                    "y": 4.924976957
+                },
+                {
+                    "x": "2026-08-10",
+                    "y": 4.859320729
+                },
+                {
+                    "x": "2026-09-07",
+                    "y": 4.863572183
+                },
+                {
+                    "x": "2026-08-24",
+                    "y": 4.924580331
+                },
+                {
+                    "x": "2026-10-05",
+                    "y": 4.929526131
+                }
+            ]
+        }
+    },
+    "apiVersion": "2.0.0"
+}
