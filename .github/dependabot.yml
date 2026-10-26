@@ -29,7 +29,7 @@ updates:
       # 3.x rewrites the MG.data_graphic API that views/MetricsGraphics.jsx calls (see update-deps/denied.md).
       - dependency-name: "metrics-graphics"
         update-types: ["version-update:semver-major"]
-      # v6+ is a rewrite, and v7 requires React 18.
+      # v7 requires React 18.
       - dependency-name: "react-router-dom"
         update-types: ["version-update:semver-major"]
       # 6.10.0+ requires @testing-library/dom 10, which is pinned to 8.x (see above).

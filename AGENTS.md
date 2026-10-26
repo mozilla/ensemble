@@ -13,7 +13,7 @@
 
 **Adding a dashboard is adding one entry to `dashboards`.** The `source` values are **absolute production URLs baked into the repo** — there is no env var for the data source, so you cannot point the app at a local transposer without editing `config.json`.
 
-**Data flow** (no state library, no hooks, no Redux — `this.state` in class containers, plus a `sessionStorage` key `preferredRegion` set in `DashboardContainer.jsx`):
+**Data flow** (no state library, no state hooks, no Redux — `this.state` in class containers, plus a `sessionStorage` key `preferredRegion` set in `DashboardContainer.jsx`):
 
 | Container | Fetches | Notes |
 |---|---|---|
@@ -101,7 +101,7 @@ Run one Vitest file: `npx vitest run src/tests/jest/Dashboard.test.jsx`. Run one
 - **PascalCase filenames matching the default-exported component.** Decorators are camelCase with a `with` prefix; `lib/lazyLoad.jsx` and `lib/withFetch.jsx` are camelCase because they are helpers, not components.
 - **One component per file, always `export default`.** There are no named component exports anywhere in the repo; the only named exports at all are the four helpers in `lib/utils.js`.
 - **The container/view split is the organizing principle.** `containers/X.jsx` holds state and fetching and renders `views/X.jsx` with formatted props (`ChartContainer`→`Chart`, `DataTableContainer`→`DataTable`). Keep new state out of `views/`.
-- Function components are the default (15 of 20 views), written as anonymous default-exported arrows — `export default props => (...)` — with no `displayName` (hence `react/display-name: off`). Use a class only where state, refs, or lifecycle are genuinely needed: all 6 containers plus `SummaryMetric.jsx` (d3 + `React.createRef`), `MetricsGraphics.jsx` (metrics-graphics + `React.createRef`), `Spinner.jsx`, `MetricOverview.jsx`, `Footer.jsx`, and `lib/LazyBoundary.jsx` (error boundaries must be classes).
+- Function components are the default (15 of 20 views), written as anonymous default-exported arrows — `export default props => (...)` — with no `displayName` (hence `react/display-name: off`). The router is read with react-router 6's `useLocation()` hook, in `views/Main.jsx` and both decorators (`withTracker` sends its page view from a `useEffect` on the pathname). Use a class only where state, refs, or lifecycle are genuinely needed: all 6 containers plus `SummaryMetric.jsx` (d3 + `React.createRef`), `MetricsGraphics.jsx` (metrics-graphics + `React.createRef`), `Spinner.jsx`, `MetricOverview.jsx`, `Footer.jsx`, and `lib/LazyBoundary.jsx` (error boundaries must be classes).
 - Leading underscore for private class-property handlers (`_onRegionChange`, `_drawChart`, `_setChartWidth`) — applied inconsistently (`setChartSize` in `ChartContainer.jsx`); prefer the underscore in new code.
 - Locals named `maybeX` hold a JSX fragment **or `null`** (`maybeDescription`, `maybeSummaryMetrics`, `maybeRegion`, `maybeGraphURL`). Keep the idiom.
 - Styles attach via a global CSS side-effect import of the **generated** file at the top of the component: `import './css/Dashboard.css';`. Some components import several (`Chart.jsx` pulls `metrics-graphics/dist/metricsgraphics.css`, `./css/Chart.css`, `./css/Metric.css`). `Metric.css` and `LabelledSelector.css` are shared partials with no component of their own.

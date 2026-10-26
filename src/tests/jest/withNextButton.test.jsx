@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Route } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 import withNextButton from '../../components/decorators/withNextButton';
 import { nextButtons } from '../../config.json';
@@ -11,7 +11,9 @@ const PageWithNextButton = withNextButton(Page);
 function renderAt(path) {
     return render(
         <MemoryRouter initialEntries={[path]}>
-            <Route component={PageWithNextButton} />
+            <Routes>
+                <Route path="*" element={<PageWithNextButton />} />
+            </Routes>
         </MemoryRouter>
     );
 }
