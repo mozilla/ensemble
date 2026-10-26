@@ -1,5 +1,3 @@
-import React from 'react';
-
 import MetricOverviewCollection from './MetricOverviewCollection';
 
 import './css/DashboardSection.css';

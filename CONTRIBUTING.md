@@ -143,13 +143,12 @@ configures the Vite build) — `environment: 'jsdom'`, `globals: true`, `setupFi
 Vitest's own default file-discovery glob doesn't also try to run Playwright's `.spec.js` files.
 Test files live in `src/tests/jest/`, named `PascalCase.test.jsx` (the directory is still
 named `jest` even though Vitest is what actually runs these — a naming leftover from before this
-repository's toolchain migration, not worth a rename on its own). `@testing-library/react` is pinned
-to 12.x, the last line that supports React 16, and `@testing-library/dom` is pinned to the 8.x it
-uses so `@testing-library/user-event` shares the same copy. `src/setupTests.js` puts `React` on the
-global object, because the classic JSX runtime needs it in scope, so test files don't import it.
-They import `render` and `screen` from `@testing-library/react` and assert on the rendered DOM —
+repository's toolchain migration, not worth a rename on its own). JSX uses the automatic runtime, so test
+files don't import React. They import `render` and `screen` from `@testing-library/react` and assert on the rendered DOM —
 `container.querySelector('#dashboard-description')`, or `innerHTML` where the markup itself is the
-point, as in the sanitization test. The setup file also registers the jest-dom matchers
+point, as in the sanitization test. Wait with React Testing Library's
+`waitFor` or `findBy*`, not `vi.waitFor`: React 18 warns when a lazily loaded route finishes outside
+React's act(), and only RTL's helpers allow for that while they wait. The setup file also registers the jest-dom matchers
 (`toHaveTextContent`, `toBeInTheDocument`) and fails any test that calls `console.error`
 unexpectedly, so React warnings show up as failures. A test that expects an error replaces it first
 with `vi.spyOn(console, 'error').mockImplementation(() => {})`. The existing style is top-level

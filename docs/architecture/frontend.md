@@ -108,10 +108,10 @@ permanent list in this file, for the same reason the wider issue backlog isn't s
 ## File layout
 
     src/
-    ├── index.jsx                    entry: ReactDOM.render + BrowserRouter
+    ├── index.jsx                    entry: createRoot + BrowserRouter
     ├── config.json                  the route/dashboard table + next-button flow (above)
     ├── registerServiceWorker.js     only unregister() is called
-    ├── setupTests.js                puts React on the global object; jest-dom matchers; fails on console.error
+    ├── setupTests.js                jest-dom matchers; fails on console.error
     ├── components/
     │   ├── containers/              6 stateful, data-fetching .jsx files (above)
     │   ├── decorators/              withTracker.jsx (react-ga), withNextButton.jsx

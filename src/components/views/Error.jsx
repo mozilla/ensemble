@@ -1,6 +1,3 @@
-import React from 'react';
-
-
 export default props => {
     let maybeMessage = null;
 

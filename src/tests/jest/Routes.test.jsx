@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import reactGA from 'react-ga';
 
@@ -43,7 +43,7 @@ it('/contact shows the contact page', async () => {
 it.each(dashboards)('/dashboard/$key requests its index from $source', async ({ key, source }) => {
     const { container } = renderAt(`/dashboard/${key}`);
 
-    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
+    await waitFor(() => expect(fetchMock).toHaveBeenCalled());
     expect(fetchMock.mock.calls[0][0].url).toBe(`${source}/index.json`);
     expect(container.querySelector('#not-found')).toBeNull();
 });
@@ -56,7 +56,7 @@ it.each([
 ])('%s shows Not Found', async path => {
     const { container } = renderAt(path);
 
-    await vi.waitFor(() => expect(container.querySelector('#not-found')).toBeInTheDocument());
+    await waitFor(() => expect(container.querySelector('#not-found')).toBeInTheDocument());
 });
 
 it.each([
@@ -67,11 +67,12 @@ it.each([
 ])('%s sends a pageview for its path', async path => {
     renderAt(path);
 
-    await vi.waitFor(() => expect(reactGA.pageview).toHaveBeenCalledWith(path));
+    await waitFor(() => expect(reactGA.pageview).toHaveBeenCalledWith(path));
 });
 
-it('The header links to every dashboard in config.json and the contact page', () => {
+it('The header links to every dashboard in config.json and the contact page', async () => {
     const { container } = renderAt('/');
+    await screen.findByRole('link', { name: 'Proceed to User Activity' });
 
     const links = [...container.querySelectorAll('#main-navigation a')].map(link => [link.textContent, link.getAttribute('href')]);
     expect(links).toEqual([

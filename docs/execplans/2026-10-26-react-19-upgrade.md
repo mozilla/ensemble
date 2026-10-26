@@ -45,7 +45,11 @@ measurement ID, and a consent banner.
       recorded Playwright 70 passed; lint clean; build succeeds; `d3-transition` still nested. Live
       Playwright 45 passed, 1 flaky: the hardware "Charts render" flake described in Surprises,
       which happens on `major-updates` too.
-- [ ] Milestone 4: React 18.3.1, React Testing Library 16, and the automatic JSX runtime.
+- [x] (2026-10-26) Milestone 4: React 18.3.1, `@testing-library/react` 16.3.3,
+      `@testing-library/dom` 10.4.2, `@testing-library/jest-dom` 7.0.1, `createRoot`, and the
+      automatic JSX runtime. Vitest 15 files, 84 tests, exit 0; recorded Playwright 70 passed, and
+      68 of 68 chromium specs passed with retries off on a cold `vite --force` server with no 504s;
+      live Playwright 46 passed; lint clean; build succeeds; `d3-transition` still nested.
 - [ ] Milestone 5: react-router-dom 6 to react-router 7.
 - [ ] Milestone 6: React 19, react-helmet-async, and GA4 through react-ga4.
 
@@ -57,6 +61,19 @@ measurement ID, and a consent banner.
   current Vitest, resetting a spy restores the real implementation, so the next request would go to
   the network.
   Evidence: all five converted files pass unchanged apart from the stub setup.
+- Observation: on React 18, a test that waits with `vi.waitFor`, or returns while a lazy route is
+  still loading, fails the whole Vitest run. Every test still passes, but React logs "A suspended
+  resource finished loading inside a test, but the event was not wrapped in act(...)" when the
+  `React.lazy` chunk resolves. `setupTests.js` throws on that `console.error` outside any test, and
+  Vitest reports it as an unhandled rejection and exits 1. React Testing Library's `waitFor` and
+  `findBy*` turn off React's act environment while waiting, so they don't trigger it.
+  Evidence: `Routes.test.jsx` produced 12 unhandled rejections with "Tests 84 passed" and exit 1.
+  Switching its three `vi.waitFor` calls to RTL's `waitFor`, and making the header-links test wait
+  for the page, brought it to exit 0.
+- Observation: the dev server pre-bundles dependencies correctly once the classic-runtime
+  `optimizeDeps` workaround is gone. On React 18 the dependency scan finds `react/jsx-dev-runtime`.
+  Evidence: `npx vite --force` then the chromium Playwright project, retries off: 68 passed, and no
+  "Outdated Optimize Dep" or re-optimization in the server log.
 - Observation: the live hardware "Charts render" spec sometimes times out waiting for
   `#graphics-metric-overview-1 svg`. It happens on this branch's base as well, and never on
   recorded data, so it comes from live-data latency, not this work. Retries absorb it in CI.
