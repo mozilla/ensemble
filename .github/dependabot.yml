@@ -29,6 +29,17 @@ updates:
       # 3.x is a rewrite that's incompatible with react-metrics-graphics (see update-deps/denied.md).
       - dependency-name: "metrics-graphics"
         update-types: ["version-update:semver-major"]
+      # v6+ is a rewrite, and v7 requires React 18.
+      - dependency-name: "react-router-dom"
+        update-types: ["version-update:semver-major"]
+      # 6.10.0+ requires @testing-library/dom 10, which is pinned to 8.x (see above).
+      - dependency-name: "@testing-library/jest-dom"
+        versions: [">=6.10.0"]
+      # eslint-plugin-react and eslint-plugin-jsx-a11y don't support ESLint 10 yet; remove once they do.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@eslint/js"
+        update-types: ["version-update:semver-major"]
     schedule:
       interval: "monthly"
     cooldown:
