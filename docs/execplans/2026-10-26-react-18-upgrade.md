@@ -120,7 +120,8 @@ and a consent banner.
 ## Decision Log
 
 - Decision: one plan covering all three upgrades, done in dependency order on one branch,
-  `react-18-upgrade` (first named `react-19-upgrade`), opened as a single pull request stacked on `major-updates`.
+  `react-18-upgrade` (first named `react-19-upgrade`), opened as a single pull request
+  (#465) stacked on `deps` (#463), which is the same commit as `major-updates`.
   Rationale: each upgrade blocks the next. React 18 needs react-refetch,
   react-metrics-graphics, and React Testing Library 12 gone. React 19 needs react-ga and
   react-helmet gone. The user chose the single stacked branch. There is no issue yet, so the branch
