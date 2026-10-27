@@ -1,14 +1,17 @@
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
+import { HelmetProvider } from 'react-helmet-async';
 import { unregister } from './registerServiceWorker';
 
 import Application from './components/views/Application';
 
 
 createRoot(document.getElementById('root')).render(
-    <BrowserRouter>
-        <Application />
-    </BrowserRouter>
+    <HelmetProvider>
+        <BrowserRouter>
+            <Application />
+        </BrowserRouter>
+    </HelmetProvider>
 );
 
 // Service workers were causing issues with DataOps hosting. We struggled to

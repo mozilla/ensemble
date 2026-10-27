@@ -27,13 +27,13 @@ Metric `description` strings are rendered as inline Markdown through `markdown-i
 
 ```
 src/
-├── index.jsx                    entry: createRoot + BrowserRouter
+├── index.jsx                    entry: createRoot + HelmetProvider + BrowserRouter
 ├── config.json                  the route/dashboard table + next-button flow
 ├── registerServiceWorker.js     create-react-app leftover; only unregister() is called (SW deliberately off)
 ├── setupTests.js                Vitest setup: jest-dom matchers, fails on console.error
 ├── components/
 │   ├── containers/              6 stateful/data-fetching .jsx
-│   ├── decorators/              withTracker.jsx (react-ga), withNextButton.jsx
+│   ├── decorators/              withTracker.jsx (GA4 via react-ga4), withNextButton.jsx
 │   └── views/                   20 presentational .jsx
 │       ├── styl/                Stylus SOURCE (hand-edited); includes/lib.styl
 │       ├── css/                 GENERATED, GITIGNORED — holds only a README stub
@@ -93,7 +93,7 @@ npm run size                         # source-map-explorer on build/assets/index
 
 Run one Vitest file: `npx vitest run src/tests/jest/Dashboard.test.jsx`. Run one Playwright spec: `npx playwright test contact.spec.js`.
 
-**Environment:** `.env` **is checked into git** and holds only public build-time config — `VITE_GA_TRACKING_ID='UA-00000000-0'` (placeholder), `VITE_SITE_TITLE='Firefox Public Data Report'`, `VITE_VALUE_DECIMAL_PLACES=3`. Consumed through `import.meta.env` by `decorators/withTracker.jsx` and `lib/utils.js`. Override inline: `VITE_SITE_TITLE='…' npm start`.
+**Environment:** `.env` **is checked into git** and holds only public build-time config — `VITE_GA_MEASUREMENT_ID='G-XXXXXXXXXX'` (placeholder; the real GA4 measurement ID is a deploy decision outside this repo), `VITE_SITE_TITLE='Firefox Public Data Report'`, `VITE_VALUE_DECIMAL_PLACES=3`. Consumed through `import.meta.env` by `decorators/withTracker.jsx` and `lib/utils.js`. Override inline: `VITE_SITE_TITLE='…' npm start`.
 
 ## Coding Style & Naming Conventions
 
@@ -151,7 +151,7 @@ This applies to everything written for a person to read: ExecPlans, PR descripti
 - **Waiting for lazy routes:** wait with React Testing Library's `waitFor` / `findBy*`, never `vi.waitFor`. RTL turns off React's act() check while it waits, so a `React.lazy` component can resolve. Under `vi.waitFor`, or after a test that returns while a lazy route is still loading, React 18 logs "A suspended resource finished loading inside a test, but the event was not wrapped in act(...)", and the console.error trap turns that into an unhandled error that fails the run.
 - **Testing data shaping:** containers that hand formatted props to a view that needs real layout (`views/Chart` → metrics-graphics, `views/SummaryMetric` → d3) are tested by replacing the view with `vi.mock('../../components/views/Chart', () => ({ default: vi.fn(() => null) }))` and asserting on the props it was last called with. Views that are plain markup (`views/DataTable`) render for real.
 - **Testing chart views:** `Chart.test.jsx` renders the real `views/Chart` with `vi.mock('../../components/views/MetricsGraphics', () => ({ default: vi.fn(() => null) }))` and asserts on the options it computes (bounds, units, UTC formatting, legend, markers, colors). `SummaryMetric.test.jsx` renders the real d3 summary bar inside `<div id="application"><main>`, with `vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(490)` — jsdom reports 0px, and at 490px the bar draws at its 450px maximum, so segment widths are predictable.
-- **Routing:** `Routes.test.jsx` renders `views/Application` inside `MemoryRouter` through one `renderAt(path)` function — the only place a router upgrade has to touch — and mocks `react-ga` so no analytics load. Its cases are generated from `config.json`, so adding a dashboard adds a route test.
+- **Routing:** `Routes.test.jsx` renders `views/Application` inside `MemoryRouter` through one `renderAt(path)` function — the only place a router upgrade has to touch — wraps it in react-helmet-async's `HelmetProvider` (any test that renders a page with a `<Helmet>` needs one — `render(ui, { wrapper: HelmetProvider })`), and mocks `react-ga4` so no analytics load. Its cases are generated from `config.json`, so adding a dashboard adds a route test.
 
 **Playwright** specs in `tests/playwright/specs/` are **`camelCase.spec.js` or `kebab-case.spec.js`, CommonJS**. Every spec except `jsDisabled.spec.js` imports `test`, `expect` (and, where needed, `readFixture`) from **`tests/playwright/fixtureData.js`**, not `@playwright/test`. `tests/playwright/utils.js` exports `linkWorks`, `linksWork`, `metricTitleIsCorrect`, `changeRegionAndWaitForMetrics`, and `flagForUpdate` — which **deliberately fails when an element count changes**, to force a human to look.
 

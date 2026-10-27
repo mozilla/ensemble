@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import reactGA from 'react-ga';
+import { HelmetProvider } from 'react-helmet-async';
+import ReactGA from 'react-ga4';
 
 import Application from '../../components/views/Application';
 import { dashboards } from '../../config.json';
@@ -8,22 +9,23 @@ import { dashboards } from '../../config.json';
 
 let fetchMock;
 
-vi.mock('react-ga', () => ({
-    default: { initialize: vi.fn(), set: vi.fn(), pageview: vi.fn() },
+vi.mock('react-ga4', () => ({
+    default: { initialize: vi.fn(), send: vi.fn() },
 }));
 
 function renderAt(path) {
     return render(
         <MemoryRouter initialEntries={[path]}>
             <Application />
-        </MemoryRouter>
+        </MemoryRouter>,
+        { wrapper: HelmetProvider }
     );
 }
 
 beforeEach(() => {
     fetchMock = vi.spyOn(window, 'fetch');
     fetchMock.mockImplementation(() => new Promise(() => {}));
-    reactGA.pageview.mockClear();
+    ReactGA.send.mockClear();
 });
 
 it('/ shows the introduction and a button to the first dashboard', async () => {
@@ -67,7 +69,7 @@ it.each([
 ])('%s sends a pageview for its path', async path => {
     renderAt(path);
 
-    await waitFor(() => expect(reactGA.pageview).toHaveBeenCalledWith(path));
+    await waitFor(() => expect(ReactGA.send).toHaveBeenCalledWith({ hitType: 'pageview', page: path }));
 });
 
 it('The header links to every dashboard in config.json and the contact page', async () => {
