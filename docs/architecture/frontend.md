@@ -108,13 +108,13 @@ permanent list in this file, for the same reason the wider issue backlog isn't s
 ## File layout
 
     src/
-    ├── index.jsx                    entry: createRoot + BrowserRouter
+    ├── index.jsx                    entry: createRoot + HelmetProvider + BrowserRouter
     ├── config.json                  the route/dashboard table + next-button flow (above)
     ├── registerServiceWorker.js     only unregister() is called
     ├── setupTests.js                jest-dom matchers; fails on console.error
     ├── components/
     │   ├── containers/              6 stateful, data-fetching .jsx files (above)
-    │   ├── decorators/              withTracker.jsx (react-ga), withNextButton.jsx
+    │   ├── decorators/              withTracker.jsx (GA4 via react-ga4), withNextButton.jsx
     │   └── views/                   20 presentational .jsx files
     │       ├── styl/                Stylus source, hand-edited; includes/lib.styl holds shared variables
     │       ├── css/                 generated from styl/, gitignored — see CONTRIBUTING.md
@@ -145,3 +145,12 @@ Two abandoned packages used to cap React at version 16: `react-refetch`, the dat
 `src/lib/withFetch.jsx` and `views/MetricsGraphics.jsx`, which calls `MG.data_graphic` directly.
 `metrics-graphics` itself stays on 2.15.6, because its only newer release is a 3.0 beta, unpromoted
 since 2022, that rewrites the API.
+
+What holds the application on React 18 now is its lazy loading, not a dependency. React 19 keeps a
+`Suspense` fallback on screen for at least 300 ms before revealing what it was waiting for. A
+dashboard goes through two of those: the lazily loaded route in `views/Main.jsx`, then each
+metric's lazily loaded chart in `views/MetricOverview.jsx`. The dashboard's data fetch can't start
+until the first one ends. Measured on the production build with recorded data, the first chart
+appeared after 45–80 ms on React 18 and 640–700 ms on React 19. Restructure that lazy loading before
+moving to React 19, for example by loading the chart chunk with the dashboard and starting route
+chunks before the first render.

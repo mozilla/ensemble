@@ -1,4 +1,4 @@
-# Upgrade to React 19 and react-router 7, and replace react-refetch
+# Upgrade to React 18 and react-router 7, replace react-refetch, and clear the way to React 19
 
 This ExecPlan is a living document. The sections `Progress`, `Surprises & Discoveries`,
 `Decision Log`, and `Outcomes & Retrospective` must be kept up to date as work proceeds. It is
@@ -13,18 +13,22 @@ analytics library (react-ga) sends Universal Analytics hits, which Google stoppe
 site has no working page-view tracking. Each month this lasts, Dependabot has more updates it can't
 land and the next maintainer has an older React to learn.
 
-After this work the site runs on React 19 and react-router 7, with no dependency pinning React to an
+After this work the site runs on React 18 and react-router 7, and no dependency pins React to an
 old major. Fetching and chart drawing run on small local modules the team owns. Page views go to
 Google Analytics 4 once a real measurement ID is configured. To a visitor, nothing changes: every
 dashboard, chart, region selector, title, and Not Found page behaves as it does today.
 
+The plan set out to reach React 19. Every dependency now allows it, but React 19 made charts appear
+about 600 ms later (see Surprises), so the user chose to stay on React 18 until the lazy loading is
+restructured. That restructure and the React 19 bump are follow-up work.
+
 To see it working, run `npm start`, open <http://localhost:3000/dashboard/hardware>, and change the
-region. The charts redraw. Then run `npm ls react` and see `react@19.x` with no `invalid` or
+region. The charts redraw. Then run `npm ls react` and see `react@18.3.1` with no `invalid` or
 `overridden` markers.
 
-Out of scope: react-router 8 (it needs React 19.2.7 and was released this month, see Decision Log),
-converting class components to hooks beyond what the router requires, React StrictMode, a real GA4
-measurement ID, and a consent banner.
+Out of scope: React 19 (see above); react-router 8, which needs React 19.2.7; converting class
+components to hooks beyond what the router requires; React StrictMode; a real GA4 measurement ID;
+and a consent banner.
 
 ## Progress
 
@@ -55,7 +59,15 @@ measurement ID, and a consent banner.
       passed; live Playwright 46 passed; lint clean; build succeeds; `d3-transition` still nested.
       The future-flag pass on v6 was skipped: no routes use relative links or nested splats, and
       the full suites on v7, which has both flags on by default, are the same check.
-- [ ] Milestone 6: React 19, react-helmet-async, and GA4 through react-ga4.
+- [x] (2026-10-26) Milestone 6, revised: react-helmet-async 3.0.0 and GA4 through react-ga4
+      3.0.1, on React 18.3.1. Vitest 15 files, 84 tests, exit 0; recorded Playwright 70 passed with
+      retries off in 12.8 s; live Playwright 46 passed; lint clean; build succeeds; `d3-transition`
+      still nested. In a browser against the dev server: one `<title>` in `<head>`, the noindex tag
+      on `/nope`, and one GA4 `page_view` per route (`/`, then `/dashboard/hardware` after a click).
+- [x] (2026-10-26) Tried React 19.3.1 in Milestone 6. All suites passed, but charts appeared about
+      600 ms later (see Surprises). Reverted to React 18.3.1 at the user's choice.
+- [ ] Follow-up, not in this plan: restructure lazy loading so React 19's Suspense throttle doesn't
+      delay the charts, then move to React 19 and react-router 8.
 
 ## Surprises & Discoveries
 
@@ -78,6 +90,27 @@ measurement ID, and a consent banner.
   `optimizeDeps` workaround is gone. On React 18 the dependency scan finds `react/jsx-dev-runtime`.
   Evidence: `npx vite --force` then the chromium Playwright project, retries off: 68 passed, and no
   "Outdated Optimize Dep" or re-optimization in the server log.
+- Observation: React 19 makes charts appear about 600 ms later, and the cause is in this app's
+  lazy loading, not a bug. Once a `Suspense` boundary has shown its fallback, React 19 waits until
+  at least 300 ms after that fallback before revealing the content. A dashboard goes through two of
+  those: the lazily loaded route in `views/Main.jsx` and each metric's lazily loaded chart in
+  `views/MetricOverview.jsx`. The dashboard's `index.json` fetch only starts once the first one
+  ends, because `withFetch` fetches when the container mounts. The tests showed it first:
+  `regionSelector.spec.js` took 28 s instead of a few, because each `toBeVisible` that missed the
+  first poll waited for Playwright's next one, around 850 ms later.
+  Evidence: time from navigation start to the first `path.mg-main-line`, 5 loads each, recorded
+  data, production build (`vite preview`): React 18.3.1, hardware 80–113 ms and user-activity
+  42–55 ms; React 19.3.1, hardware 680–735 ms and user-activity 637–645 ms. A DOM trace on React 19
+  showed the spinner at 72 ms, every route module loaded by 117 ms, and the `index.json` request at
+  389 ms. Making the route components lazy only once, at module scope, didn't help, because
+  `page.goto` is a full page load that starts with nothing cached.
+- Observation: on React 19, react-helmet-async 3 doesn't manage `<head>` at all. It renders plain
+  `<title>` and `<meta>` elements and leaves the hoisting to React, and `HelmetProvider` does
+  nothing. So it can't deduplicate tags on React 19, which was the reason given for choosing it.
+  On React 18 it manages tags itself, as react-helmet did, and needs a `HelmetProvider` above every
+  `<Helmet>`, in tests too.
+  Evidence: `node_modules/react-helmet-async/README.md`, section "React 19". In a browser on React
+  18, `head title` counts 1 and the title changes on each navigation.
 - Observation: the live hardware "Charts render" spec sometimes times out waiting for
   `#graphics-metric-overview-1 svg`. It happens on this branch's base as well, and never on
   recorded data, so it comes from live-data latency, not this work. Retries absorb it in CI.
@@ -130,7 +163,6 @@ measurement ID, and a consent banner.
   leave two titles and repeated meta tags. react-helmet-async supports React 16 through 19 and
   replaces tags the way react-helmet does now.
   Date/Author: 2026-10-26, Stephanie Hobson.
-
 - Decision: in `views/Main.jsx`, keep creating the lazy route components inside render rather than
   hoisting them to module scope, as Milestone 3 first planned.
   Rationale: `React.lazy` caches a rejected import for good. Recreating it on each navigation
@@ -146,9 +178,60 @@ measurement ID, and a consent banner.
   render and can run more than once under React 18.
   Date/Author: 2026-10-26, Stephanie Hobson.
 
+- Decision: stay on React 18.3.1. Keep react-helmet-async and GA4, which are what React 19 needed
+  out of the way, and leave the React 19 bump to a follow-up.
+  Rationale: React 19 passed every suite, but it delayed the charts by about 600 ms on fast
+  connections (see Surprises). That is a visible regression. The fix means restructuring lazy
+  loading, which is a design change in its own right. The user chose this over accepting the delay
+  or attempting the restructure here. Dependabot keeps ignoring React majors, with a comment giving
+  the reason.
+  Date/Author: 2026-10-26, Stephanie Hobson.
+- Decision: on React 18, use react-helmet-async rather than keeping react-helmet.
+  Rationale: react-helmet's react-side-effect caps React at 18, so it would block the React 19
+  follow-up. react-helmet-async works on 16 through 19 with the same `<Helmet>` API. On React 19 it
+  becomes a thin pass-through to React's own tag hoisting (see Surprises). At that point the
+  follow-up can drop it, after checking the static `<title>` in `index.html`. This replaces the
+  rationale in the earlier react-helmet-async entry, which assumed it would deduplicate tags on
+  React 19.
+  Date/Author: 2026-10-26, Stephanie Hobson.
+- Decision: configure GA4 with `send_page_view: false` and send every page view from
+  `withTracker`.
+  Rationale: gtag sends a page view by itself when it is configured. `withTracker` also sends one
+  on mount, so without this the first page would count twice. In a browser, the data layer shows
+  one `page_view` per route.
+  Date/Author: 2026-10-26, Stephanie Hobson.
+
 ## Outcomes & Retrospective
 
-Not started.
+(2026-10-26, after Milestone 6.)
+
+**Achieved.**
+- The site runs on React 18.3.1 and react-router 7.18.4. React Testing Library is 16 and the JSX
+  runtime is automatic.
+- No dependency caps React below 19: react-refetch, react-metrics-graphics, react-helmet, and
+  react-ga are gone.
+- Fetching and chart drawing run through two small local modules, `src/lib/withFetch.jsx` and
+  `src/components/views/MetricsGraphics.jsx`.
+- Page views go to GA4 through react-ga4, one per route, once a real measurement ID replaces the
+  placeholder in `.env`.
+- Every suite passes: Vitest 15 files and 84 tests, recorded Playwright 70, and live Playwright
+  46, apart from the existing live hardware flake.
+
+**Not achieved.** React 19, the plan's original goal. It works, but it draws charts about 600 ms
+later, because its Suspense throttle stacks on this app's two levels of lazy loading. The user
+chose to stay on React 18. The next piece of work is to restructure that lazy loading. One option
+is to load the chart chunk with the dashboard rather than per metric, and to start route chunks
+before the first render. Then measure with the method in Surprises, move to React 19, and consider
+react-router 8.
+
+**Lessons.**
+- The suites caught every functional break, but nothing in them watches speed. The React 19
+  regression only showed up because one spec got slower. For the React 19 follow-up, add a
+  timing check: first chart within a budget, on recorded data, against the production build.
+- Read a package's notes for the target React version before picking it. react-helmet-async's
+  behaviour on React 19 undid the reason the plan gave for choosing it.
+- Removing the React-16-only packages while still on React 16 worked as intended. Each React
+  bump then failed only for React's own reasons: act warnings on 18, and the throttle on 19.
 
 ## Context and Orientation
 
@@ -402,9 +485,10 @@ At the end, the app imports from `react-router` 7.x.
    the default in v7.
 3. Change the Dependabot ignore to react-router majors, with the comment "v8 requires React 19.2.7".
 
-### Milestone 6: React 19, react-helmet-async, GA4
+### Milestone 6: react-helmet-async and GA4 (React 19 deferred)
 
-At the end, the app runs on React 19.x with no React-capped dependency left.
+At the end, no installed dependency caps React below 19, and the app still runs on React 18. Step
+3 was carried out and then reverted. See the Decision Log.
 
 1. Replace react-helmet with react-helmet-async 3.x. Swap the five imports, wrap the app in
    `<HelmetProvider>` in `src/index.jsx`, and do the same in any test that renders a Helmet
@@ -419,8 +503,9 @@ At the end, the app runs on React 19.x with no React-capped dependency left.
      `google-analytics.com`) with its empty 200.
 3. Run `npm install --save-exact react@19.x react-dom@19.x`, using the newest patch at least 7 days
    old. Fix whatever Vitest surfaces.
-4. Remove the Dependabot React-major ignore. Update AGENTS.md, CONTRIBUTING.md, and
-   `docs/architecture/frontend.md` for React 19, react-helmet-async, react-ga4, and the env var.
+4. Keep the Dependabot React-major ignore, with a comment explaining the chart delay. Update
+   AGENTS.md, CONTRIBUTING.md, and `docs/architecture/frontend.md` for react-helmet-async,
+   react-ga4, and the env var, and add the React 19 constraint to the architecture doc.
 5. Run every command in Concrete Steps, including live Playwright. Write Outcomes &
    Retrospective.
 
@@ -484,5 +569,12 @@ At the end of the plan:
   - removed: `react-refetch`, `react-metrics-graphics`, `react-router-dom`, `react-helmet`,
     `react-ga`;
   - added: `react-router` 7.x, `react-helmet-async` 3.x, `react-ga4` 3.x;
-  - upgraded: `react` and `react-dom` to 19.x, `@testing-library/react` to 16.x,
+  - upgraded: `react` and `react-dom` to 18.3.1, `@testing-library/react` to 16.x,
     `@testing-library/dom` to 10.x, `@testing-library/jest-dom` to 7.x.
+
+---
+
+Revision note (2026-10-26): Milestone 6 moved to React 19, measured a chart delay of about 600 ms,
+and reverted to React 18 at the user's choice. The title, Purpose, Milestone 6, Interfaces, and the
+living sections now describe a plan that ends on React 18, with React 19 cleared of dependency
+blockers but deferred.

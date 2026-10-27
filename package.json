@@ -38,8 +38,8 @@
         "npm-run-all2": "9.0.3",
         "react": "18.3.1",
         "react-dom": "18.3.1",
-        "react-ga": "3.3.1",
-        "react-helmet": "6.1.0",
+        "react-ga4": "3.0.1",
+        "react-helmet-async": "3.0.0",
         "react-router": "7.18.4",
         "react-spinners": "0.17.1",
         "stylus": "0.64.0"
