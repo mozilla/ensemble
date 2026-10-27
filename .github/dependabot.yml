@@ -16,7 +16,8 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     ignore:
-      # React 19 needs react-helmet and react-ga replaced first, so React majors are done by hand.
+      # React 19 makes charts appear about 600 ms later: its 300 ms Suspense reveal throttle stacks on the
+      # lazily loaded route and chart. Move only after restructuring that lazy loading.
       - dependency-name: "react"
         update-types: ["version-update:semver-major"]
       - dependency-name: "react-dom"
