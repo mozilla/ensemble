@@ -32,7 +32,7 @@ and a consent banner.
 
 ## Progress
 
-- [x] (2026-10-26) Drafted the plan on branch `react-19-upgrade`, cut from `major-updates`.
+- [x] (2026-10-26) Drafted the plan on branch `react-18-upgrade` (first named `react-19-upgrade`), cut from `major-updates`.
       Baseline from the improve-tests plan's outcome: Vitest 14 files, 80 tests.
 - [x] (2026-10-26) Milestone 1: replaced react-refetch with `src/lib/withFetch.jsx`. Vitest
       passes 15 files, 84 tests; recorded Playwright 70 passed; live Playwright 46 passed; lint
@@ -120,7 +120,7 @@ and a consent banner.
 ## Decision Log
 
 - Decision: one plan covering all three upgrades, done in dependency order on one branch,
-  `react-19-upgrade`, opened as a single pull request stacked on `major-updates`.
+  `react-18-upgrade` (first named `react-19-upgrade`), opened as a single pull request stacked on `major-updates`.
   Rationale: each upgrade blocks the next. React 18 needs react-refetch,
   react-metrics-graphics, and React Testing Library 12 gone. React 19 needs react-ga and
   react-helmet gone. The user chose the single stacked branch. There is no issue yet, so the branch
