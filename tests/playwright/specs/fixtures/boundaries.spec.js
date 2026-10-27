@@ -31,7 +31,7 @@ test('A population with a single data point is drawn as a dot', async ({ page })
 });
 
 test.describe('A metric whose populations are all null', () => {
-    // Pinned as current behavior, not as a design: react-metrics-graphics
+    // Pinned as current behavior, not as a design: metrics-graphics
     // throws on a chart with no points, and the error boundary around the chart
     // shows its generic "Load error". React logs the caught error too.
     test.use({ allowedErrors: /Cannot read properties of undefined \(reading 'x'\)|The above error occurred/ });

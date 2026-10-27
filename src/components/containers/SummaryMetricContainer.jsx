@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect } from 'react-refetch';
+import withFetch from '../../lib/withFetch';
 
 import SummaryMetric from '../views/SummaryMetric';
 import ErrorComponent from '../views/Error';
@@ -112,6 +112,4 @@ class SummaryMetricContainer extends React.Component {
     }
 }
 
-export default connect(props => ({
-    dataFetch: { url: `${props.dashboardSource}/${props.activeRegion}/${props.slug}/index.json` },
-}))(SummaryMetricContainer);
+export default withFetch(props => `${props.dashboardSource}/${props.activeRegion}/${props.slug}/index.json`)(SummaryMetricContainer);

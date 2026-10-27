@@ -30,7 +30,7 @@ Run one Vitest file directly: `npx vitest run src/tests/jest/Dashboard.test.jsx`
 working). Run one Playwright spec directly: `npx playwright test contact.spec.js`.
 
 **Environment:** `.env` is checked into git and holds only public build-time config —
-`VITE_GA_TRACKING_ID='UA-00000000-0'` (a placeholder),
+`VITE_GA_MEASUREMENT_ID='G-XXXXXXXXXX'` (a placeholder for a GA4 measurement ID),
 `VITE_SITE_TITLE='Firefox Public Data Report'`, `VITE_VALUE_DECIMAL_PLACES=3`. These are consumed by
 `src/components/decorators/withTracker.jsx` and `src/lib/utils.js` via `import.meta.env.VITE_*` —
 Vite's own convention, not Node's `process.env` (which is not populated in the browser bundle at
@@ -143,32 +143,32 @@ configures the Vite build) — `environment: 'jsdom'`, `globals: true`, `setupFi
 Vitest's own default file-discovery glob doesn't also try to run Playwright's `.spec.js` files.
 Test files live in `src/tests/jest/`, named `PascalCase.test.jsx` (the directory is still
 named `jest` even though Vitest is what actually runs these — a naming leftover from before this
-repository's toolchain migration, not worth a rename on its own). `@testing-library/react` is pinned
-to 12.x, the last line that supports React 16, and `@testing-library/dom` is pinned to the 8.x it
-uses so `@testing-library/user-event` shares the same copy. `src/setupTests.js` puts `React` on the
-global object, because the classic JSX runtime needs it in scope, so test files don't import it.
-They import `render` and `screen` from `@testing-library/react` and assert on the rendered DOM —
+repository's toolchain migration, not worth a rename on its own). JSX uses the automatic runtime, so test
+files don't import React. They import `render` and `screen` from `@testing-library/react` and assert on the rendered DOM —
 `container.querySelector('#dashboard-description')`, or `innerHTML` where the markup itself is the
-point, as in the sanitization test. The setup file also registers the jest-dom matchers
+point, as in the sanitization test. Wait with React Testing Library's
+`waitFor` or `findBy*`, not `vi.waitFor`: React 18 warns when a lazily loaded route finishes outside
+React's act(), and only RTL's helpers allow for that while they wait. The setup file also registers the jest-dom matchers
 (`toHaveTextContent`, `toBeInTheDocument`) and fails any test that calls `console.error`
 unexpectedly, so React warnings show up as failures. A test that expects an error replaces it first
 with `vi.spyOn(console, 'error').mockImplementation(() => {})`. The existing style is top-level
 `it(...)` with long descriptive sentences. No snapshots.
 
-`react-refetch` captures `window.fetch` when `connect()` runs, which is at module import, so a stub
-set inside a test is silently ignored and the container goes to the real network. Install it with
-`vi.hoisted(() => { const mock = vi.fn(); window.fetch = mock; return mock; })` so it exists before
-the imports, and `mockReset()` it in `beforeEach`; `SummaryMetricContainer.test.jsx` is the
-simplest example. Containers whose view needs real layout (`views/Chart` uses metrics-graphics,
+Containers fetch through `src/lib/withFetch.jsx`, which calls `window.fetch` with a `Request` each
+time it fetches. Stub it with `fetchMock = vi.spyOn(window, 'fetch')` in `beforeEach` and read the
+URL from `fetchMock.mock.calls[n][0].url`; `SummaryMetricContainer.test.jsx` is the simplest
+example. The setup file restores the spy after each test. Containers whose view needs real layout (`views/Chart` uses metrics-graphics,
 `views/SummaryMetric` draws with d3) are tested by replacing that view with `vi.mock` and asserting
 on the props it received. Plain-markup views such as `views/DataTable` render for real.
-`Chart.test.jsx` renders the real `views/Chart` with `react-metrics-graphics` replaced by
-`vi.mock('react-metrics-graphics', () => ({ default: vi.fn(() => null) }))`, and asserts on the
+`Chart.test.jsx` renders the real `views/Chart` with `views/MetricsGraphics` replaced by
+`vi.mock('../../components/views/MetricsGraphics', () => ({ default: vi.fn(() => null) }))`, and asserts on the
 options it computes. `SummaryMetric.test.jsx` renders the real d3 summary bar inside
 `<div id="application"><main>`, with `HTMLElement.prototype.offsetWidth` spied to 490: jsdom
 reports 0px, and at 490px the bar draws at its 450px maximum, so segment widths are predictable.
 `Routes.test.jsx` renders `views/Application` inside `MemoryRouter` through a single `renderAt(path)`
-function, so a router upgrade changes one place, and mocks `react-ga`. Its route cases come from
+function, so a router upgrade changes one place, wraps it in react-helmet-async's `HelmetProvider`,
+and mocks `react-ga4`. Any test that renders a page with a `<Helmet>` needs that provider:
+`render(ui, { wrapper: HelmetProvider })`. Its route cases come from
 `config.json`. ESLint
 allows the name `screen` in test files despite `no-shadow`'s `builtinGlobals`, because importing
 React Testing Library's `screen` is that library's documented idiom.
@@ -348,7 +348,7 @@ Replacement, as it should read:
   actually needs to think about.
 - Flag genuine uncertainty about your own work — distinct from rating risk. Naming a real unknown is
   often the most useful sentence in the description.
-- Never explain mechanics the team already knows: why `react-refetch` isn't mocked in a test, how
+- Never explain mechanics the team already knows: why `withFetch` isn't mocked in a test, how
   the container/view split works, what `flagForUpdate` does.
 - Never describe your own process — not which approach you tried first, not what a review caught,
   not that the branch is stacked on another. Deliberately deferred scope is worth stating

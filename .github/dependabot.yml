@@ -16,25 +16,18 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     ignore:
-      # React majors need coordinated changes (react-refetch, the router, the test libraries below), so they're done by hand.
+      # React 19 makes charts appear about 600 ms later: its 300 ms Suspense reveal throttle stacks on the
+      # lazily loaded route and chart. Move only after restructuring that lazy loading.
       - dependency-name: "react"
         update-types: ["version-update:semver-major"]
       - dependency-name: "react-dom"
         update-types: ["version-update:semver-major"]
-      # @testing-library/react 13+ requires React 18, and @testing-library/dom is pinned to the 8.x that 12.x uses.
-      - dependency-name: "@testing-library/react"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "@testing-library/dom"
-        update-types: ["version-update:semver-major"]
-      # 3.x is a rewrite that's incompatible with react-metrics-graphics (see update-deps/denied.md).
+      # 3.x rewrites the MG.data_graphic API that views/MetricsGraphics.jsx calls (see update-deps/denied.md).
       - dependency-name: "metrics-graphics"
         update-types: ["version-update:semver-major"]
-      # v6+ is a rewrite, and v7 requires React 18.
-      - dependency-name: "react-router-dom"
+      # v8 requires React 19.2.7 or later.
+      - dependency-name: "react-router"
         update-types: ["version-update:semver-major"]
-      # 6.10.0+ requires @testing-library/dom 10, which is pinned to 8.x (see above).
-      - dependency-name: "@testing-library/jest-dom"
-        versions: [">=6.10.0"]
       # eslint-plugin-react and eslint-plugin-jsx-a11y don't support ESLint 10 yet; remove once they do.
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]

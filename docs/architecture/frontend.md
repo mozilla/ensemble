@@ -34,9 +34,12 @@ This application has no state library, no hooks-based state, and no Redux — st
 | `containers/MetricOverviewContainer.jsx` | `${dashboardSource}/${activeRegion}/${slug}/index.json` | title, description, `type: 'line'` or `'table'`, axes, columns, data, annotations |
 | `containers/SummaryMetricContainer.jsx` | the same per-metric endpoint | buckets any population under 5% into an "Other" bucket |
 
-`react-refetch@3.0.1`'s `connect()` higher-order component is the entire data-fetching layer and is
-used in exactly those three files. Each one handles its fetch's pending, rejected, and fulfilled
-states itself and renders `views/Spinner.jsx` or `views/Error.jsx` accordingly. All reshaping of
+`src/lib/withFetch.jsx` is the entire data-fetching layer, used in exactly those three files. It is
+a higher-order component: `withFetch(props => url)(Container)` fetches the URL as JSON and passes
+the container a `dataFetch` prop holding `pending`, `rejected`, `fulfilled`, `value`, and `reason`.
+It refetches when the URL changes, going back to pending first, treats a non-2xx response as a
+rejection, and ignores a response that arrives after a newer request has started. Each container
+handles those states itself and renders `views/Spinner.jsx` or `views/Error.jsx` accordingly. All reshaping of
 fetched data happens client-side in each container's `formatData` method — `ChartContainer` sorts
 its populations by maximum y-value and drops nulls; `DataTableContainer` sorts rows by value,
 descending.
@@ -105,14 +108,14 @@ permanent list in this file, for the same reason the wider issue backlog isn't s
 ## File layout
 
     src/
-    ├── index.jsx                    entry: ReactDOM.render + BrowserRouter
+    ├── index.jsx                    entry: createRoot + HelmetProvider + BrowserRouter
     ├── config.json                  the route/dashboard table + next-button flow (above)
     ├── registerServiceWorker.js     only unregister() is called
-    ├── setupTests.js                puts React on the global object; jest-dom matchers; fails on console.error
+    ├── setupTests.js                jest-dom matchers; fails on console.error
     ├── components/
     │   ├── containers/              6 stateful, data-fetching .jsx files (above)
-    │   ├── decorators/              withTracker.jsx (react-ga), withNextButton.jsx
-    │   └── views/                   19 presentational .jsx files
+    │   ├── decorators/              withTracker.jsx (GA4 via react-ga4), withNextButton.jsx
+    │   └── views/                   20 presentational .jsx files
     │       ├── styl/                Stylus source, hand-edited; includes/lib.styl holds shared variables
     │       ├── css/                 generated from styl/, gitignored — see CONTRIBUTING.md
     │       ├── fonts/FiraSans/      8 weights/styles of webfonts
@@ -120,9 +123,10 @@ permanent list in this file, for the same reason the wider issue backlog isn't s
     ├── lib/
     │   ├── lazyLoad.jsx             wraps a dynamic import() in React.lazy
     │   ├── LazyBoundary.jsx         error boundary + Suspense fallback, paired with lazyLoad.jsx
+    │   ├── withFetch.jsx            the data layer: fetches JSON and passes `dataFetch` to containers
     │   └── utils.js                 bumpSort, isFloat, prettifyNumber, getPageTitle
     └── tests/
-        └── jest/                    2 unit test files, run by Vitest (see CONTRIBUTING.md)
+        └── jest/                    unit tests, run by Vitest (see CONTRIBUTING.md)
 
     tests/
     └── playwright/                  end-to-end specs, run by Playwright (see CONTRIBUTING.md);
@@ -136,15 +140,17 @@ catch-all not-found page.
 
 ## The dependency ceiling on modernizing this application
 
-Worth knowing before attempting any React upgrade: confirmed by reading their installed
-`package.json` files directly, both `react-metrics-graphics` (this application's charting library)
-and `react-refetch` (its entire data-fetching layer, described above) declare a `peerDependencies`
-constraint that caps React at version 16 (`^15||^16` and an equivalent range respectively). Neither
-has shipped a release since 2019, and the charting library's own upstream, `metrics-graphics`, has
-been stuck on a never-promoted 3.0 beta since 2022.
+Two abandoned packages used to cap React at version 16: `react-refetch`, the data layer, and
+`react-metrics-graphics`, the chart wrapper. Local replacements have taken their place:
+`src/lib/withFetch.jsx` and `views/MetricsGraphics.jsx`, which calls `MG.data_graphic` directly.
+`metrics-graphics` itself stays on 2.15.6, because its only newer release is a 3.0 beta, unpromoted
+since 2022, that rewrites the API.
 
-**This application cannot move past React 16 without first replacing its chart-rendering and
-data-fetching layers.** That is a legitimate, large, separate initiative in its own right — not
-something to bundle into routine maintenance or into any build-tooling change. Any plan touching
-this application's build tooling should leave the React version, `react-router-dom`, and
-`react-refetch` untouched, and say so explicitly, rather than assume they're in scope.
+What holds the application on React 18 now is its lazy loading, not a dependency. React 19 keeps a
+`Suspense` fallback on screen for at least 300 ms before revealing what it was waiting for. A
+dashboard goes through two of those: the lazily loaded route in `views/Main.jsx`, then each
+metric's lazily loaded chart in `views/MetricOverview.jsx`. The dashboard's data fetch can't start
+until the first one ends. Measured on the production build with recorded data, the first chart
+appeared after 45–80 ms on React 18 and 640–700 ms on React 19. Restructure that lazy loading before
+moving to React 19, for example by loading the chart chunk with the dashboard and starting route
+chunks before the first render.
