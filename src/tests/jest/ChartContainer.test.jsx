@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 
 import Chart from '../../components/views/Chart';
 import ChartContainer from '../../components/containers/ChartContainer';
@@ -132,4 +132,41 @@ it('A population whose points are all null keeps its legend entry and passes an 
 
     expect(chartProps.legend).toEqual(['Present', 'Missing']);
     expect(chartProps.data).toEqual([[{ x: new Date('2026-01-01'), y: 3 }], []]);
+});
+
+it('A burst of resize events redraws the chart once, after the events stop', () => {
+    vi.useFakeTimers();
+    try {
+        const offsetWidth = vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(900);
+        renderChart({ data: { populations: { Only: [{ x: '2026-01-01', y: 1 }] } } });
+        const callsBeforeResize = Chart.mock.calls.length;
+
+        offsetWidth.mockReturnValue(700);
+        for (let count = 0; count < 5; count++) {
+            window.dispatchEvent(new Event('resize'));
+        }
+        expect(Chart.mock.calls.length).toBe(callsBeforeResize);
+
+        act(() => vi.advanceTimersByTime(150));
+        expect(Chart.mock.calls.length).toBe(callsBeforeResize + 1);
+        expect(Chart.mock.calls.at(-1)[0]).toMatchObject({ width: 700 });
+    } finally {
+        vi.useRealTimers();
+    }
+});
+
+it('A resize that leaves the chart size unchanged does not redraw the chart', () => {
+    vi.useFakeTimers();
+    try {
+        vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(900);
+        renderChart({ data: { populations: { Only: [{ x: '2026-01-01', y: 1 }] } } });
+        const callsBeforeResize = Chart.mock.calls.length;
+
+        window.dispatchEvent(new Event('resize'));
+        act(() => vi.advanceTimersByTime(150));
+
+        expect(Chart.mock.calls.length).toBe(callsBeforeResize);
+    } finally {
+        vi.useRealTimers();
+    }
 });

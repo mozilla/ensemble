@@ -78,13 +78,17 @@ class ChartContainer extends React.Component {
 
     componentDidMount() {
         this.parentNode = document.querySelector('#application > main');
-        this.setChartSize();
-        window.addEventListener('resize', this.setChartSize);
+        this._setChartSize();
+        window.addEventListener('resize', this._onResize);
     }
 
     // Set the chart size state based on the real, rendered parent container.
-    setChartSize = () => {
+    _setChartSize = () => {
         const {width, height} = this.getChartSize();
+
+        if (width === this.state.chartWidth && height === this.state.chartHeight) {
+            return;
+        }
 
         this.setState({
             chartWidth: width,
@@ -92,8 +96,16 @@ class ChartContainer extends React.Component {
         });
     };
 
+    // Every redraw is expensive and a window drag fires dozens of resize
+    // events, so only resize once the events stop.
+    _onResize = () => {
+        clearTimeout(this.resizeTimeout);
+        this.resizeTimeout = setTimeout(this._setChartSize, 150);
+    };
+
     componentWillUnmount() {
-        window.removeEventListener('resize', this.setChartSize);
+        window.removeEventListener('resize', this._onResize);
+        clearTimeout(this.resizeTimeout);
     }
 
     memoizeFormattedData = memoizeOne(
