@@ -27,7 +27,8 @@ React 19.
 
 - [x] (2026-10-28) Drafted the plan on branch `409--hardware-resize-performance`, cut from
       `react-18-upgrade` (#465).
-- [ ] Milestone 1: measure the baseline on recorded and live data.
+- [x] (2026-10-28) Milestone 1: measured the baseline. Median main-thread long-task time for the
+      10-step resize: 1826 ms on recorded data, 76597 ms on live data (see Surprises).
 - [ ] Milestone 2: metrics-graphics skips the line animation when only the size changed.
 - [ ] Milestone 3: `ChartContainer` redraws once after a resize ends, and not at all when its size
       didn't change.
@@ -40,6 +41,17 @@ React 19.
   recorded data will understate the hang. Milestone 1 measures both.
   Evidence: `scripts/recordPlaywrightFixtures.js` trims to 12 dates; live metrics carry years of
   weekly dates.
+- Observation: the baseline hang is far worse on live data than the issue reports. In headless
+  Chromium against `vite preview`, stepping the hardware dashboard's viewport 1280 to 800 and back
+  in 10 resizes, 50 ms apart, blocked the main thread for about 77 seconds on live data and about
+  1.8 seconds on recorded data. The two runs differ only in line length.
+  Evidence: three runs each of `scripts/measureResize.js`. Recorded: long tasks 1826, 1827, 1818 ms.
+  Live: long tasks 76597, 76616, 76554 ms.
+- Observation: chart wrapper ids restart in every dashboard section, so the hardware dashboard has
+  several `#graphics-metric-overview-1` elements, one per section. To reach all 11 charts, select
+  `.metricsGraphicsCon > svg`, the element `views/MetricsGraphics.jsx` renders around each chart.
+  Evidence: `src/components/views/MetricOverviewCollection.jsx` numbers metrics from 1 within each
+  section, and prefixes the section key when there is one.
 
 ## Decision Log
 
@@ -129,8 +141,10 @@ replaces `views/Chart` with `vi.fn(() => null)` and checks the props it was last
 logs a `console.error`. Playwright specs live in `tests/playwright/specs/` and import `test` and
 `expect` from `tests/playwright/fixtureData.js`. In the `chromium` project that `test` answers
 every data request from the recording in `tests/playwright/fixtures/` (trimmed to 12 dates), and in
-the `live-data` project it lets requests reach the real site. On the hardware dashboard each chart's
-wrapper has the id `graphics-metric-overview-N`, numbered from 1.
+the `live-data` project it lets requests reach the real site. Chart wrapper ids
+(`graphics-metric-overview-N`) restart at 1 in each dashboard section, so a spec that wants every
+chart on the hardware dashboard selects `.metricsGraphicsCon > svg`, which `MetricsGraphics.jsx`
+renders once per chart.
 
 ## Plan of Work
 
@@ -138,10 +152,10 @@ wrapper has the id `graphics-metric-overview-N`, numbered from 1.
 
 Before changing anything, measure the hang so the fix can show what it changed. Write a throwaway
 script, `scripts/measureResize.js`, that is not committed. It uses `@playwright/test`'s `chromium`
-to open `/dashboard/hardware` against a running server and waits until all 11 chart `svg`s are
-visible. It then installs a `PerformanceObserver` for `longtask` entries, steps the viewport width
-1280, 1180, ... 800 and back up to 1280 (about 10 resizes, 50 ms apart), and waits until every
-`#graphics-metric-overview-N svg` has the width that matches the final viewport. It prints the total
+to open `/dashboard/hardware` against a running server and waits until there are 11
+`.metricsGraphicsCon > svg` elements. It then installs a `PerformanceObserver` for `longtask` entries, steps the viewport width
+1280, 1180, ... 800 and back up to 1280 (about 10 resizes, 50 ms apart), and waits until every chart
+`svg` has the width of `#application > main` and no long task has run for 1.5 seconds. It prints the total
 duration of long tasks and the time from the first resize until the charts settled.
 
 Run it three times against a production build with recorded data, and three times with live data.
@@ -203,13 +217,12 @@ Add `tests/playwright/specs/resize.spec.js` (CommonJS, importing from `../fixtur
 both the `chromium` and `live-data` projects, like the other specs. One test opens
 `/dashboard/hardware` at a 1280 px wide viewport and waits for all 11 chart `svg`s. It installs the
 `longtask` observer from Milestone 1, resizes through the same steps down to 800 px, and expects
-every `#graphics-metric-overview-N svg` to reach the width that matches the new layout. Read that
+every `.metricsGraphicsCon > svg` to reach the width that matches the new layout. Read that
 width from `#application > main`'s `offsetWidth` in the page, rather than hardcoding it. Then it
-expects the total long-task time to be under 2000 ms. That budget is generous on purpose. On a slow
-CI runner the fixed code should still pass easily, and the old code, at 10 seconds or more on live
-data, would fail it. If the recorded-data baseline from Milestone 1 already comes in under 2000 ms,
-tighten the budget to sit between the before and after numbers, and record that in the Decision
-Log.
+expects the total long-task time to stay under a budget set between the before and after numbers
+on recorded data. Milestone 1 measured 1826 ms before the fix on recorded data, so the budget has to
+be below that. Pick it once Milestone 3's numbers are in, leaving room for a slow CI runner, and
+record the choice in the Decision Log.
 
 Run the measurement once more on the final code. Write the before and after medians into Outcomes &
 Retrospective, ready for the pull request. Delete `scripts/measureResize.js`. Update `AGENTS.md`:
