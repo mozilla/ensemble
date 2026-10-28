@@ -27,38 +27,53 @@ React 19.
 
 - [x] (2026-10-28) Drafted the plan on branch `409--hardware-resize-performance`, cut from
       `react-18-upgrade` (#465).
-- [x] (2026-10-28) Milestone 1: measured the baseline. Median main-thread long-task time for the
-      10-step resize: 1826 ms on recorded data, 76597 ms on live data (see Surprises).
+- [x] (2026-10-28) Milestone 1: measured the baseline. Median long-task time for the resize
+      sequence: 1342 ms on recorded data, 61076 ms on live data (see Surprises).
 - [x] (2026-10-28) Milestone 2: metrics-graphics skips the line animation when only the size
-      changed. Vitest 16 files, 87 tests. Median long-task time: 52 ms recorded (was 1826), 3254 ms
-      live (was 76597). The size-only test fails with the change reverted.
-- [ ] Milestone 3: `ChartContainer` redraws once after a resize ends, and not at all when its size
-      didn't change.
-- [ ] Milestone 4: Playwright resize spec with a timing budget; before and after numbers recorded.
+      changed. Vitest 16 files, 87 tests. Median long-task time: 54 ms recorded, 2173 ms live. The
+      size-only test fails with the change reverted.
+- [x] (2026-10-28) Milestone 3: `ChartContainer` redraws once, 150 ms after the last resize event,
+      and not at all when its size didn't change. Vitest 16 files, 89 tests; each new test fails
+      with its half of the change reverted. Median long-task time: 0 ms recorded, 261 ms live.
+      Underscore-convention notes in `AGENTS.md` and `CONTRIBUTING.md` updated for the rename.
+- [x] (2026-10-28) Milestone 4: `tests/playwright/specs/fixtures/resize.spec.js` with a 1000 ms
+      budget. Recorded Playwright 71 passed, live Playwright 46 passed, lint clean. `AGENTS.md`'s
+      headline-bug bullet replaced with a Footguns row; `CONTRIBUTING.md`'s live-flake note no longer
+      blames #409. Measurement script deleted.
 
 ## Surprises & Discoveries
 
-- Observation: the recorded Playwright data is trimmed to the 12 most recent dates, so its lines
-  are much shorter than the live ones. The animation cost grows with line length, so a baseline on
-  recorded data will understate the hang. Milestone 1 measures both.
-  Evidence: `scripts/recordPlaywrightFixtures.js` trims to 12 dates; live metrics carry years of
-  weekly dates.
-- Observation: the baseline hang is far worse on live data than the issue reports. In headless
-  Chromium against `vite preview`, stepping the hardware dashboard's viewport 1280 to 800 and back
-  in 10 resizes, 50 ms apart, blocked the main thread for about 77 seconds on live data and about
-  1.8 seconds on recorded data. The two runs differ only in line length.
-  Evidence: three runs each of `scripts/measureResize.js`. Recorded: long tasks 1826, 1827, 1818 ms.
-  Live: long tasks 76597, 76616, 76554 ms.
+- Observation: the hang is far worse on live data than the issue reports. In headless Chromium
+  against a production build (`vite preview`), stepping the hardware dashboard's viewport 1280,
+  1180, 1080, 980, 880, 800, 880, 960, 50 ms apart, blocked the main thread for about 61 seconds on
+  live data and about 1.3 seconds on recorded data. The recording keeps only 12 dates, and the
+  animation's cost grows with line length.
+  Evidence: medians of three runs of the throwaway measurement script, long-task total in ms.
+
+      before the fix     recorded 1342   live 61076
+      after Milestone 2  recorded   54   live  2173
+      after Milestone 3  recorded    0   live   261 (charts at the new width 480 ms after the last resize)
+
+- Observation: a resize sequence that ends at its starting width measures nothing once
+  `ChartContainer` skips redraws when the size is unchanged. The first measurement went 1280 to 800
+  and back to 1280, and showed 0 ms after Milestone 3 because no chart redrew at all. The sequence
+  now ends at 960, and all three rows above were re-measured with it.
+  Evidence: after Milestone 3, the round trip gave 0 ms on live data; ending at 960 gave 261 ms.
 - Observation: chart wrapper ids restart in every dashboard section, so the hardware dashboard has
-  several `#graphics-metric-overview-1` elements, one per section. To reach all 11 charts, select
+  several `#graphics-metric-overview-1` elements. To reach all 11 charts, select
   `.metricsGraphicsCon > svg`, the element `views/MetricsGraphics.jsx` renders around each chart.
   Evidence: `src/components/views/MetricOverviewCollection.jsx` numbers metrics from 1 within each
-  section, and prefixes the section key when there is one.
-- Observation: the line animation was almost all of the cost. Turning it off for size-only redraws
-  cut the resize run from 1826 ms to 52 ms of long tasks on recorded data, and from 76597 ms to
-  3254 ms on live data. What remains on live data is 11 full redraws per resize event.
-  Evidence: three runs each of `scripts/measureResize.js` after Milestone 2. Recorded: 60, 52, 51
-  ms. Live: 3254, 3254, 3213 ms.
+  section.
+- Observation: on recorded data, a Playwright spec can't tell whether the line animation is back.
+  With the debounce in place, each chart redraws once, and one animated redraw of a 12-point line
+  takes less than the 50 ms that counts as a long task. The spec serves every hardware metric with
+  260 weekly points instead. Then the dev server shows about 150 ms for the fixed code, about 5980 ms
+  with the animation back, and about 1565 ms without the debounce.
+  Evidence: `resize.spec.js` with a near-zero budget, two runs per variant, reading "Received".
+- Observation: the summary bars read the same per-metric files as the line charts. Several slugs,
+  such as `gpuVendor`, are both. They look up values by the dashboard's dates, so generated data
+  must include those dates or the bars throw "Cannot read properties of undefined (reading 'y')".
+  Evidence: `SummaryMetricContainer.formatData` finds the point where `dp.x === activeDate`.
 
 ## Decision Log
 
@@ -83,10 +98,28 @@ React 19.
   not the listeners. A shared, debounced listener would still redraw all 11 charts at the same
   moment, and it would add module-level state to a component that has none.
   Date/Author: 2026-10-28, Stephanie Hobson.
+- Decision: the resize spec lives in `tests/playwright/specs/fixtures/`, runs on recorded data
+  only, and serves generated 260-week data for every hardware metric. Its budget is 1000 ms of
+  long tasks.
+  Rationale: specs that replace data responses live in `fixtures/`, which the live-data project
+  skips. Live data is too variable for a timing budget anyway. Long lines are needed to catch the
+  animation coming back (see Surprises). 1000 ms leaves the fixed code about six times headroom
+  for a slow CI runner, and still fails if either half of the fix is reverted.
+  Date/Author: 2026-10-28, Stephanie Hobson.
 
 ## Outcomes & Retrospective
 
-Not started.
+Resizing the hardware dashboard no longer hangs. On live data, the resize sequence went from about
+61 seconds of blocked main thread to about a quarter of a second. The charts reach the new width
+about half a second after the last resize. Region changes still animate. Two Vitest tests and one
+Playwright spec fail if either half of the fix is reverted.
+
+Not checked here: the Firefox profile, and the by-hand checks in Validation and Acceptance, which
+need a person at a real browser. The summary bars still don't resize, as before.
+
+Lessons. Most of the cost was one library default, `transition_on_update`, and not the number of
+listeners the issue pointed at. Measure before choosing the fix. And check that a benchmark makes
+the code do work: a resize that ends where it started measured a no-op as a 100% improvement.
 
 ## Context and Orientation
 
@@ -161,7 +194,7 @@ Before changing anything, measure the hang so the fix can show what it changed. 
 script, `scripts/measureResize.js`, that is not committed. It uses `@playwright/test`'s `chromium`
 to open `/dashboard/hardware` against a running server and waits until there are 11
 `.metricsGraphicsCon > svg` elements. It then installs a `PerformanceObserver` for `longtask` entries, steps the viewport width
-1280, 1180, ... 800 and back up to 1280 (about 10 resizes, 50 ms apart), and waits until every chart
+from 1280 through 1180, 1080, 980, 880, 800, 880, and 960, 50 ms apart, and waits until every chart
 `svg` has the width of `#application > main` and no long task has run for 1.5 seconds. It prints the total
 duration of long tasks and the time from the first resize until the charts settled.
 
@@ -221,21 +254,27 @@ and 89 tests to pass. Re-run the Milestone 1 script and record the numbers.
 
 ### Milestone 4: guard it in Playwright and record the result
 
-Add `tests/playwright/specs/resize.spec.js` (CommonJS, importing from `../fixtureData`). It runs in
-both the `chromium` and `live-data` projects, like the other specs. One test opens
-`/dashboard/hardware` at a 1280 px wide viewport and waits for all 11 chart `svg`s. It installs the
-`longtask` observer from Milestone 1, resizes through the same steps down to 800 px, and expects
-every `.metricsGraphicsCon > svg` to reach the width that matches the new layout. Read that
-width from `#application > main`'s `offsetWidth` in the page, rather than hardcoding it. Then it
-expects the total long-task time to stay under a budget set between the before and after numbers
-on recorded data. Milestone 1 measured 1826 ms before the fix on recorded data, so the budget has to
-be below that. Pick it once Milestone 3's numbers are in, leaving room for a slow CI runner, and
-record the choice in the Decision Log.
+Add `tests/playwright/specs/fixtures/resize.spec.js` (CommonJS, importing `test`, `expect`, and
+`readFixture` from `../../fixtureData`). It lives in `fixtures/` because it replaces data
+responses, so only the recorded-data `chromium` project runs it. In `beforeEach` it routes every
+`/hardware/default/<slug>/index.json` request to the recorded metric with its populations replaced
+by 260 weekly points. The points count back from the hardware dashboard's newest date, because the
+summary bars read the same files and look values up by those dates. The test opens
+`/dashboard/hardware` at a 1280 px wide viewport, waits for 11 `.metricsGraphicsCon > svg`
+elements, and installs a `longtask` observer. It steps the viewport through 1180, 1080, 980, 880,
+800, 880, and 960, then polls until every chart `svg` has the `offsetWidth` of `#application >
+main`. After one more second, it expects the long-task total to be under 1000 ms.
 
-Run the measurement once more on the final code. Write the before and after medians into Outcomes &
-Retrospective, ready for the pull request. Delete `scripts/measureResize.js`. Update `AGENTS.md`:
-its "Headline known bug" bullet describes #409 as open. Change it to name what was fixed, or remove
-it if the issue is closed when this merges.
+Check the budget from both sides: with a near-zero budget, read the "Received" value for the fixed
+code, then for the code with Milestone 2 reverted, then with Milestone 3 reverted. The fixed code
+should sit well under 1000 ms, and both reverted versions well over it.
+
+Re-run the measurement for all three versions with the same resize sequence, and write the medians
+into Surprises & Discoveries and Outcomes & Retrospective. Delete `scripts/measureResize.js`. In
+`AGENTS.md`, remove the "Headline known bug" bullet about #409 and add a Footguns row saying why
+size-only redraws must not animate. In `CONTRIBUTING.md`, the note on the live "Charts render"
+retry blamed #409, but that test is about the first load, which this work doesn't change. Keep the
+note and drop the #409 reference.
 
 ## Concrete Steps
 
@@ -245,7 +284,8 @@ All commands run from the repository root.
     npm run build:css
     npx playwright install chromium
 
-Baseline and after each milestone (Milestone 1's script, not committed):
+Baseline and after each milestone (Milestone 1's script, deleted in Milestone 4; recreate it from
+Milestone 1's description if you need it again):
 
     npm run build:app
     npx vite preview --port 3001 --strictPort &
@@ -260,7 +300,8 @@ Tests after each milestone:
     npm run test:playwright:live
 
 Expected after Milestone 3: `npm run test:jest` reports 16 files and 89 tests passed. The recorded
-Playwright run reports every spec passing, and after Milestone 4 that includes `resize.spec.js`.
+Playwright run reports every spec passing. After Milestone 4 that is 71 specs, including
+`fixtures/resize.spec.js`.
 
 ## Validation and Acceptance
 
@@ -272,7 +313,8 @@ Playwright run reports every spec passing, and after Milestone 4 that includes `
    second, as before.
 4. `MetricsGraphics.test.jsx`'s size-only test fails if Milestone 2's change is reverted.
    `ChartContainer.test.jsx`'s five-events test fails if Milestone 3's debounce is reverted.
-5. `resize.spec.js` passes in the recorded `chromium` project and in `live-data`.
+5. `npm run test:playwright:recorded` passes, including `fixtures/resize.spec.js`. Reverting either
+   Milestone 2 or Milestone 3 makes that spec fail on its long-task budget.
 6. Optional: record a Firefox profile (<https://profiler.firefox.com/>) while resizing. It shows no
    `getPointAtLength` time.
 
@@ -304,3 +346,9 @@ At the end of the work, `src/components/views/MetricsGraphics.jsx` has
 `src/components/containers/ChartContainer.jsx` has `_setChartSize()`, which measures and calls
 `setState` only when the size changed, and `_onResize()`, which debounces `_setChartSize` by
 150 ms through `this.resizeTimeout`. `window`'s `resize` listener is `_onResize`.
+
+Revision note (2026-10-28): the resize spec moved from `tests/playwright/specs/` to
+`tests/playwright/specs/fixtures/` and serves generated 260-week data. On the recording's 12-point
+lines it couldn't detect the animation coming back. The measurement sequence now ends at 960 px
+instead of returning to 1280 px, because a round trip measured a no-op once unchanged sizes were
+skipped.

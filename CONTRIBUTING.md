@@ -225,8 +225,8 @@ means the recording is stale, and the fix is to update it in a separate pull req
 4. If port 3000 is already in use by something else, start `npx vite --port 3001 --strictPort` in
    another terminal and run with `PLAYWRIGHT_BASE_URL=http://localhost:3001`.
 5. Expect failures when upstream data has changed. Read them as "the recording is stale", not "the
-   code is broken". The hardware dashboard renders slowly on the full live data (#409), so its
-   "Charts render" test can need the retry.
+   code is broken". The hardware dashboard is slow to draw on first load with the full live
+   data, so its "Charts render" test can need the retry.
 
 ### Updating the recorded data
 
