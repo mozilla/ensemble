@@ -29,7 +29,9 @@ React 19.
       `react-18-upgrade` (#465).
 - [x] (2026-10-28) Milestone 1: measured the baseline. Median main-thread long-task time for the
       10-step resize: 1826 ms on recorded data, 76597 ms on live data (see Surprises).
-- [ ] Milestone 2: metrics-graphics skips the line animation when only the size changed.
+- [x] (2026-10-28) Milestone 2: metrics-graphics skips the line animation when only the size
+      changed. Vitest 16 files, 87 tests. Median long-task time: 52 ms recorded (was 1826), 3254 ms
+      live (was 76597). The size-only test fails with the change reverted.
 - [ ] Milestone 3: `ChartContainer` redraws once after a resize ends, and not at all when its size
       didn't change.
 - [ ] Milestone 4: Playwright resize spec with a timing budget; before and after numbers recorded.
@@ -52,6 +54,11 @@ React 19.
   `.metricsGraphicsCon > svg`, the element `views/MetricsGraphics.jsx` renders around each chart.
   Evidence: `src/components/views/MetricOverviewCollection.jsx` numbers metrics from 1 within each
   section, and prefixes the section key when there is one.
+- Observation: the line animation was almost all of the cost. Turning it off for size-only redraws
+  cut the resize run from 1826 ms to 52 ms of long tasks on recorded data, and from 76597 ms to
+  3254 ms on live data. What remains on live data is 11 full redraws per resize event.
+  Evidence: three runs each of `scripts/measureResize.js` after Milestone 2. Recorded: 60, 52, 51
+  ms. Live: 3254, 3254, 3213 ms.
 
 ## Decision Log
 
@@ -181,7 +188,8 @@ Add `src/tests/jest/MetricsGraphics.test.jsx`. It mocks `metrics-graphics` with
 `MetricsGraphics` with some `data`, then re-renders with the same `data` array and a new `width`,
 and checks that the last `data_graphic` call had `transition_on_update: false` and the new width.
 It then re-renders with a new `data` array and checks that the last call had no
-`transition_on_update` key. Run `npm run test:jest` and expect 16 files and 86 tests to pass.
+`transition_on_update` key. A third test checks that the chart is drawn into the component's own `.metricsGraphicsCon`
+element. Run `npm run test:jest` and expect 16 files and 87 tests to pass.
 Re-run the Milestone 1 script and record the numbers.
 
 ### Milestone 3: one redraw per resize, and none when the size didn't change
@@ -209,7 +217,7 @@ Extend `src/tests/jest/ChartContainer.test.jsx` with two tests that use `vi.useF
 been called again. After `vi.advanceTimersByTime(150)` inside `act`, `Chart` has been called once
 more, with `width: 700`. The second dispatches a `resize` without changing the width, advances the
 timers, and checks that `Chart` wasn't called again. Run `npm run test:jest` and expect 16 files
-and 88 tests to pass. Re-run the Milestone 1 script and record the numbers.
+and 89 tests to pass. Re-run the Milestone 1 script and record the numbers.
 
 ### Milestone 4: guard it in Playwright and record the result
 
@@ -251,7 +259,7 @@ Tests after each milestone:
     npm run test:playwright:recorded
     npm run test:playwright:live
 
-Expected after Milestone 3: `npm run test:jest` reports 16 files and 88 tests passed. The recorded
+Expected after Milestone 3: `npm run test:jest` reports 16 files and 89 tests passed. The recorded
 Playwright run reports every spec passing, and after Milestone 4 that includes `resize.spec.js`.
 
 ## Validation and Acceptance
