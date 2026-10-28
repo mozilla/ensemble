@@ -58,8 +58,7 @@ plain text, so a real credential never belongs in one, and this `.env` file deli
   plus `SummaryMetric.jsx` (d3 + `React.createRef`), `Spinner.jsx`, `MetricOverview.jsx`,
   `Footer.jsx`, and `LazyBoundary.jsx` (an error boundary, which must be a class component).
 - Leading underscore for private class-property handlers (`_onRegionChange`, `_drawChart`,
-  `_setChartWidth`) — applied inconsistently (`setChartSize` in `ChartContainer.jsx`); prefer the
-  underscore in new code.
+  `_setChartSize`). Keep using it in new code.
 - Locals named `maybeX` hold a JSX fragment or `null` (`maybeDescription`, `maybeSummaryMetrics`,
   `maybeRegion`, `maybeGraphURL`). Keep the idiom.
 - Styles attach via a global CSS side-effect import of the generated file at the top of the
