@@ -64,7 +64,7 @@ MozMEAO is taking this repo over. Before that work started there were 810 commit
 - **Node 24.** `.nvmrc` holds `24` and `engines` requires `^24.15.0`. A plain `npm install` works with no flags.
 - **A fresh clone will not render styles until you compile Stylus.** `src/components/views/css/*` is gitignored and every component does a side-effect `import './css/Foo.css';` — run `npm run build:css` or the app, and Vitest, fail to resolve those imports. `npm start` compiles it for you.
 - **Headline known bug: issue #409** — the hardware dashboard takes >10 s to re-render on resize/zoom and can trigger Firefox's slow-script dialog. Most user-visible defect; lives in the d3/metrics-graphics redraw path (`views/SummaryMetric.jsx`, `containers/ChartContainer.jsx`, `views/Chart.jsx`).
-- About 30 open issues, oldest from 2018. Other notables: #313 (`MetricOverviewContainer` does not reject when metric data 404s — cited in an inline comment there), #245 (React code-splitting), #46 (localize content). #333 (replace `@babel/polyfill`) is still open, but the polyfill was removed in #441. The remote also carries about 30 stale `dependabot/npm_and_yarn/*` branches and three `%archive-*` branches.
+- Open issues date back to 2018, and many predate the toolchain replacement. Check an old issue against the current code before working on it.
 - Upstream data is **live and current** — transposer `dates` arrays are sorted newest-first and are updated weekly. The app is unmaintained; the data is not.
 
 ## Build, Test, and Development Commands
@@ -182,7 +182,7 @@ In recorded mode, `fixtureData.js`'s `test` answers every `https://data.firefox.
 | `build:version.json` | Needs `build/` to already exist and `git` on PATH; must follow `build:app`. |
 | `no-shadow` / `no-redeclare` with `builtinGlobals` | Naming a local `name`, `status`, `history`, `event` is a hard error. |
 
-**Known rot, for recognition only — this file is not a roadmap:** `registerServiceWorker.js` exists but only `unregister()` is called, and its registration path still reads create-react-app's `process.env.PUBLIC_URL`; `dateformat@3.0.3` is several majors behind, because newer majors change its export shape (see `docs/architecture/frontend.md`).
+**Known rot, for recognition only — this file is not a roadmap:** `registerServiceWorker.js` exists but only `unregister()` is called, and its registration path still reads create-react-app's `process.env.PUBLIC_URL`.
 
 ## Workflow guidelines
 
