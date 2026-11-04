@@ -10,9 +10,11 @@ async function fetchJSON(url) {
     }));
 
     if (!response.ok) {
-        // An error response may have no body, or one that isn't JSON.
+        // An error response may have no body, or one that isn't JSON (Cloud
+        // Storage answers a missing file with XML), and HTTP/2 responses have
+        // no statusText.
         const body = await response.json().catch(() => null);
-        throw new Error(body?.error || body?.message || response.statusText);
+        throw new Error(body?.error || body?.message || response.statusText || `HTTP ${response.status}`);
     }
 
     if (response.status === 204 || response.headers.get('content-length') === '0') {
