@@ -2,7 +2,7 @@ const { test, expect, readFixture } = require('../../fixtureData');
 
 
 // The browser logs the failed request, and the container logs the reason.
-test.use({ allowedErrors: /status of 500|Internal Server Error/ });
+test.use({ allowedErrors: /status of (500|404)|Internal Server Error|Not Found/ });
 
 const internalServerError = { status: 500, json: { error: 'Internal Server Error' } };
 
@@ -27,4 +27,22 @@ test('A metric that fails to load shows #metric-overview-fetch-error while the o
 
     await expect(page.locator('#metric-overview-fetch-error')).toBeVisible();
     await expect(page.locator('#metric-overview-2 h4')).toHaveText(secondMetric.title);
+});
+
+test('A metric that does not exist shows #metric-overview-fetch-error', async ({ page }) => {
+    const dashboard = readFixture('user-activity/index.json');
+    const [firstSlug] = dashboard.metrics;
+    // This is how Cloud Storage, which hosts the data, answers a missing file.
+    await page.route(
+        url => decodeURIComponent(url.pathname).endsWith(`/user-activity/${dashboard.defaultCategory}/${firstSlug}/index.json`),
+        route => route.fulfill({
+            status: 404,
+            contentType: 'application/xml; charset=UTF-8',
+            body: "<?xml version='1.0' encoding='UTF-8'?><Error><Code>NoSuchKey</Code></Error>",
+        })
+    );
+
+    await page.goto('/dashboard/user-activity');
+
+    await expect(page.locator('#metric-overview-fetch-error')).toBeVisible();
 });
