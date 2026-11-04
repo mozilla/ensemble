@@ -13,13 +13,14 @@ async function fetchJSON(url) {
         return undefined;
     }
 
-    const body = await response.json();
-
     if (!response.ok) {
-        throw new Error(body.error || body.message || response.statusText);
+        // Error bodies aren't always JSON: Cloud Storage answers a missing
+        // file with XML, and HTTP/2 responses have no statusText.
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.error || body.message || response.statusText || `HTTP ${response.status}`);
     }
 
-    return body;
+    return response.json();
 }
 
 /**

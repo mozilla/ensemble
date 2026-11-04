@@ -64,7 +64,7 @@ MozMEAO is taking this repo over. Before that work started there were 810 commit
 - **Node 24.** `.nvmrc` holds `24` and `engines` requires `^24.15.0`. A plain `npm install` works with no flags.
 - **A fresh clone will not render styles until you compile Stylus.** `src/components/views/css/*` is gitignored and every component does a side-effect `import './css/Foo.css';` — run `npm run build:css` or the app, and Vitest, fail to resolve those imports. `npm start` compiles it for you.
 - **Headline known bug: issue #409** — the hardware dashboard takes >10 s to re-render on resize/zoom and can trigger Firefox's slow-script dialog. Most user-visible defect; lives in the d3/metrics-graphics redraw path (`views/SummaryMetric.jsx`, `containers/ChartContainer.jsx`, `views/Chart.jsx`).
-- About 30 open issues, oldest from 2018. Other notables: #313 (`MetricOverviewContainer` does not reject when metric data 404s — cited in an inline comment there), #245 (React code-splitting), #46 (localize content). #333 (replace `@babel/polyfill`) is still open, but the polyfill was removed in #441. The remote also carries about 30 stale `dependabot/npm_and_yarn/*` branches and three `%archive-*` branches.
+- About 30 open issues, oldest from 2018. Other notables: #245 (React code-splitting), #46 (localize content). #333 (replace `@babel/polyfill`) is still open, but the polyfill was removed in #441. The remote also carries about 30 stale `dependabot/npm_and_yarn/*` branches and three `%archive-*` branches.
 - Upstream data is **live and current** — transposer `dates` arrays are sorted newest-first and are updated weekly. The app is unmaintained; the data is not.
 
 ## Build, Test, and Development Commands
