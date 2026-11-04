@@ -39,11 +39,6 @@ class MetricOverviewContainer extends React.Component {
             // normal.
 
             return null;
-
-        // Due to the way ensemble is currently hosted, this code is not run
-        // when metric data is not found.
-        //
-        // https://github.com/mozilla/ensemble/issues/313
         } else if (dataFetch.rejected) {
             if (dataFetch.reason && dataFetch.reason.message) {
                 // eslint-disable-next-line no-console
