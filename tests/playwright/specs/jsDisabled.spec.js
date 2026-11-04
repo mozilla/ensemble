@@ -20,3 +20,7 @@ test('Correct <noscript> message is displayed when JavaScript is disabled', asyn
     await expect(page.locator('#enable-javascript')).toBeVisible();
     await expect(page.locator('#enable-javascript')).toHaveText('You need to enable JavaScript to run this app.');
 });
+
+test('index.html has an og:title for crawlers that do not run JavaScript', async ({ page }) => {
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Firefox Public Data Report');
+});
