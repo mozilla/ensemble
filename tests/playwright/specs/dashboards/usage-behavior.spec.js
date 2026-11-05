@@ -29,14 +29,14 @@ test('Metric titles and order are correct', async ({ page }) => {
 });
 
 // Any drawn line counts: a population with a single data point draws a
-// zero-size line path (metrics-graphics shows it as a dot instead), so the
+// zero-size line path (the chart shows it as a dot instead), so the
 // first population's line alone isn't a reliable signal.
 test('Charts render', async ({ page }) => {
     await expect(page.locator('#metric-overview-1 svg')).toBeVisible();
-    await expect(page.locator('#metric-overview-1 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
+    await expect(page.locator('#metric-overview-1 g.chart-line path').filter({ visible: true }).first()).toBeVisible();
 
     await expect(page.locator('#metric-overview-2 svg')).toBeVisible();
-    await expect(page.locator('#metric-overview-2 path.mg-main-line').filter({ visible: true }).first()).toBeVisible();
+    await expect(page.locator('#metric-overview-2 g.chart-line path').filter({ visible: true }).first()).toBeVisible();
 
     await flagForUpdate(page, '.chart', 'charts in the usage dashboard', 2);
 });

@@ -84,15 +84,11 @@ The one real, structural gap: **there is no Content-Security-Policy**, and the f
 holding — true as of this writing, but not enforced by any test or header. Adding a CSP is a genuine
 piece of security work, not something this documentation pass does on its own.
 
-## Three confirmed code defects, not yet filed as issues
+## Confirmed code defects, not yet filed as issues
 
 Found while verifying this repository's own claims about itself, and confirmed by reading the exact
 lines named:
 
-- `views/Chart.jsx` line 112 checks `props.suggestedYMax`, but line 113 reads
-  `props.suggestedMax` — a prop name that does not exist anywhere else in the codebase. This is
-  currently latent because no live metric sets a `suggestedYMax`, but it will silently produce the
-  wrong chart y-axis maximum the moment one does.
 - `views/SummaryMetric.jsx` line 46 sets `this.arrowIgnoreThreshold = 4` in the constructor, but
   line 131 reads `this.ignoreThreshold` — a property that is never set anywhere. The "hide the
   arrow on small bars" logic this line implements has never worked.
@@ -100,7 +96,7 @@ lines named:
   event listener anywhere in the file (confirmed: no `addEventListener` call exists in it at all).
   The four hardware summary bars this component renders do not respond to window resize.
 
-None of these three are filed as GitHub issues as of this writing. Whoever picks one up should file
+None of these are filed as GitHub issues as of this writing. Whoever picks one up should file
 it as an issue first — these are exactly the kind of finding that belongs in the tracker, not as a
 permanent list in this file, for the same reason the wider issue backlog isn't summarized in
 `system-overview.md`.
@@ -141,10 +137,9 @@ catch-all not-found page.
 ## The dependency ceiling on modernizing this application
 
 Two abandoned packages used to cap React at version 16: `react-refetch`, the data layer, and
-`react-metrics-graphics`, the chart wrapper. Local replacements have taken their place:
-`src/lib/withFetch.jsx` and `views/MetricsGraphics.jsx`, which calls `MG.data_graphic` directly.
-`metrics-graphics` itself stays on 2.15.6, because its only newer release is a 3.0 beta, unpromoted
-since 2022, that rewrites the API.
+`react-metrics-graphics`, the chart wrapper. `src/lib/withFetch.jsx` replaced the first. The charts
+now draw with Observable Plot, a maintained library built on d3 7, through
+`views/ObservablePlot.jsx`, which replaced the second and the abandoned `metrics-graphics` under it.
 
 What holds the application on React 18 now is its lazy loading, not a dependency. React 19 keeps a
 `Suspense` fallback on screen for at least 300 ms before revealing what it was waiting for. A

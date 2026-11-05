@@ -1,127 +1,236 @@
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import Chart from '../../components/views/Chart';
-import MetricsGraphics from '../../components/views/MetricsGraphics';
 
 
-// metrics-graphics needs real layout; these tests check the options the view
-// computes and hands to it.
-vi.mock('../../components/views/MetricsGraphics', () => ({ default: vi.fn(() => null) }));
+const dates = ['2026-01-04', '2026-01-11', '2026-01-18'].map(date => new Date(date));
 
 const twoPopulations = [
-    [{ x: new Date('2026-01-04'), y: 5 }, { x: new Date('2026-01-11'), y: 4 }, { x: new Date('2026-01-18'), y: 9 }],
-    [{ x: new Date('2026-01-04'), y: 7 }, { x: new Date('2026-01-11'), y: 2 }, { x: new Date('2026-01-18'), y: 8 }],
+    [{ x: dates[0], y: 5 }, { x: dates[1], y: 4 }, { x: dates[2], y: 9 }],
+    [{ x: dates[0], y: 7 }, { x: dates[1], y: 2 }, { x: dates[2], y: 8 }],
 ];
 
-function optionsFor(props) {
-    MetricsGraphics.mockClear();
-    render(<Chart width={600} height={400} {...props} />);
-    return MetricsGraphics.mock.calls.at(-1)[0];
+function renderChart(props) {
+    const { container } = render(<Chart width={600} height={400} legend={['High', 'Low']} {...props} />);
+    const svg = container.querySelector('svg.chart-svg');
+    return { container, svg };
+}
+
+function yDomain(props) {
+    return renderChart(props).svg.scale('y').domain;
+}
+
+function lineStrokes(svg) {
+    return [...svg.querySelectorAll('g.chart-line path')].map(path => path.getAttribute('stroke'));
+}
+
+function legendEntries(container) {
+    return [...container.querySelectorAll('.legend .legend-entry')].map(entry => ({
+        text: entry.textContent.trim(),
+        color: entry.style.color,
+    }));
+}
+
+function cssColor(hex) {
+    const element = document.createElement('span');
+    element.style.color = hex;
+    return element.style.color;
+}
+
+function pathXCoordinates(path) {
+    return [...path.getAttribute('d').matchAll(/[MLC]([-\d.]+),/g)].map(match => Number(match[1]));
 }
 
 it('The y range starts at 0 for positive data and ends 10% above the highest value', () => {
-    const options = optionsFor({ data: twoPopulations });
+    const [low, high] = yDomain({ data: twoPopulations });
 
-    expect(options.min_y).toBe(0);
-    expect(options.max_y).toBeCloseTo(9.9);
+    expect(low).toBe(0);
+    expect(high).toBeCloseTo(9.9);
 });
 
 it('A suggested minimum below the data is used, and one that would crop data is ignored', () => {
-    const highData = [[{ x: new Date('2026-01-04'), y: 100 }, { x: new Date('2026-01-11'), y: 101 }]];
+    const highData = [[{ x: dates[0], y: 100 }, { x: dates[1], y: 101 }]];
 
-    expect(optionsFor({ data: highData }).min_y).toBe(92);
-    expect(optionsFor({ data: highData, suggestedYMin: 50 }).min_y).toBe(50);
-    expect(optionsFor({ data: highData, suggestedYMin: 95 }).min_y).toBe(92);
+    expect(yDomain({ data: highData, legend: ['Only'] })[0]).toBe(92);
+    expect(yDomain({ data: highData, legend: ['Only'], suggestedYMin: 50 })[0]).toBe(50);
+    expect(yDomain({ data: highData, legend: ['Only'], suggestedYMin: 95 })[0]).toBe(92);
 });
 
 it('A suggested maximum above the data is used, and one that would crop data is ignored', () => {
-    expect(optionsFor({ data: twoPopulations, suggestedYMax: 100 }).max_y).toBe(100);
-    expect(optionsFor({ data: twoPopulations, suggestedYMax: 9.5 }).max_y).toBeCloseTo(9.9);
+    expect(yDomain({ data: twoPopulations, suggestedYMax: 100 })[1]).toBe(100);
+    expect(yDomain({ data: twoPopulations, suggestedYMax: 9.5 })[1]).toBeCloseTo(9.9);
 });
 
 it('A % unit is appended to the y-axis ticks; other units become a y-axis label', () => {
-    const percentOptions = optionsFor({ data: twoPopulations, yUnit: '%' });
-    expect(percentOptions).toMatchObject({ yax_units: '%', yax_units_append: true });
-    expect(percentOptions).not.toHaveProperty('y_label');
-    expect(percentOptions).not.toHaveProperty('left');
+    const percent = renderChart({ data: twoPopulations, yUnit: '%' }).svg;
+    const percentTicks = [...percent.querySelectorAll('g[aria-label="y-axis tick label"] text')].map(tick => tick.textContent);
+    expect(percentTicks.length).toBeGreaterThan(1);
+    percentTicks.forEach(tick => expect(tick).toMatch(/^[\d.,]+%$/));
+    expect(percent.querySelector('g[aria-label="y-axis label"]')).toBeNull();
 
-    const hoursOptions = optionsFor({ data: twoPopulations, yUnit: 'hours' });
-    expect(hoursOptions).toMatchObject({ y_label: 'hours', left: 80 });
-    expect(hoursOptions).not.toHaveProperty('yax_units');
+    const hours = renderChart({ data: twoPopulations, yUnit: 'hours' }).svg;
+    expect(hours.querySelector('g[aria-label="y-axis label"]')).toHaveTextContent('hours');
+    [...hours.querySelectorAll('g[aria-label="y-axis tick label"] text')].forEach(tick => expect(tick.textContent).not.toMatch(/hours/));
 });
 
-it('Dates are shown in UTC, and hovered values carry their unit', () => {
-    const percentOptions = optionsFor({ data: twoPopulations, yUnit: '%' });
+it('Large y-axis values are abbreviated', () => {
+    const svg = renderChart({ data: [[{ x: dates[0], y: 150000000 }, { x: dates[1], y: 200000000 }]], legend: ['Only'] }).svg;
+    const ticks = [...svg.querySelectorAll('g[aria-label="y-axis tick label"] text')].map(tick => tick.textContent);
 
-    expect(percentOptions.utc_time).toBe(true);
-    expect(percentOptions.x_mouseover({ x: new Date('2026-01-04') })).toBe('January 4, 2026: ');
-    expect(percentOptions.y_mouseover({ y: 12.5 })).toBe('12.500%');
-
-    const hoursOptions = optionsFor({ data: twoPopulations, yUnit: 'hours' });
-    expect(hoursOptions.y_mouseover({ y: 1500 })).toBe('1,500 hours');
-
-    const unitlessOptions = optionsFor({ data: twoPopulations });
-    expect(unitlessOptions.y_mouseover({ y: 1500 })).toBe('1,500');
+    expect(ticks).toContain('200M');
 });
 
-it('The legend and its target are passed only when the legend is shown', () => {
-    const shown = optionsFor({ data: twoPopulations, showLegend: true, legend: ['High', 'Low'], legendTarget: '#metric-overview-1 .legend' });
-    expect(shown).toMatchObject({ legend: ['High', 'Low'], legend_target: '#metric-overview-1 .legend' });
+it('Hovering shows the date in UTC and the value with its unit, labelled with the population', () => {
+    const { container, svg } = renderChart({ data: twoPopulations, yUnit: 'hours' });
+    const readout = container.querySelector('.chart-readout');
 
-    const hidden = optionsFor({ data: twoPopulations, showLegend: false, legend: ['High', 'Low'], legendTarget: '#metric-overview-1 .legend' });
-    expect(hidden).not.toHaveProperty('legend');
-    expect(hidden).not.toHaveProperty('legend_target');
+    expect(readout).toHaveTextContent(/^$/);
+
+    act(() => {
+        svg.value = { x: dates[0], y: 1500, population: 'Low' };
+        svg.dispatchEvent(new Event('input'));
+    });
+    expect(readout).toHaveTextContent('Low — January 4, 2026: 1,500 hours');
+    expect(readout.querySelector('span').style.color).toBe(cssColor('#05b378'));
+
+    act(() => {
+        svg.value = null;
+        svg.dispatchEvent(new Event('input'));
+    });
+    expect(readout).toHaveTextContent(/^$/);
 });
 
-it('Annotation markers are forwarded unchanged', () => {
-    const markers = [{ x: new Date('2026-01-11'), label: 'Firefox 150' }];
+it('A hovered % value has no space before its unit, and a single population is not named', () => {
+    const { container, svg } = renderChart({ data: [twoPopulations[0]], legend: ['Only'], yUnit: '%' });
 
-    expect(optionsFor({ data: twoPopulations, markers }).markers).toBe(markers);
-    expect(optionsFor({ data: twoPopulations })).not.toHaveProperty('markers');
+    act(() => {
+        svg.value = { x: dates[1], y: 12.5, population: 'Only' };
+        svg.dispatchEvent(new Event('input'));
+    });
+    expect(container.querySelector('.chart-readout')).toHaveTextContent('— January 11, 2026: 12.500%');
 });
 
-it('Charts with more than 11 populations get one generated color per population', () => {
-    expect(optionsFor({ data: twoPopulations, numPopulations: 11 })).not.toHaveProperty('colors');
+it('The legend lists every population in order, in the color of its line', () => {
+    const { container, svg } = renderChart({ data: twoPopulations, showLegend: true });
 
-    const colors = optionsFor({ data: twoPopulations, numPopulations: 12 }).colors;
-    expect(colors).toHaveLength(12);
-    expect(new Set(colors).size).toBe(12);
-    colors.forEach(color => expect(color).toMatch(/^#[0-9a-f]{6}$/i));
+    expect(legendEntries(container)).toEqual([
+        { text: '— High', color: cssColor('#4040e8') },
+        { text: '— Low', color: cssColor('#05b378') },
+    ]);
+    expect(lineStrokes(svg)).toEqual(['#4040e8', '#05b378']);
 });
 
-it('The data and size are passed through', () => {
-    const options = optionsFor({ data: twoPopulations });
+it('The legend is left out when it is not shown', () => {
+    const { container } = renderChart({ data: twoPopulations, showLegend: false });
 
-    expect(options).toMatchObject({ data: twoPopulations, width: 600, height: 400, x_accessor: 'x', y_accessor: 'y' });
+    expect(container.querySelector('.legend')).toBeNull();
+});
+
+it('A population with no points keeps its legend entry and color, and the others keep theirs', () => {
+    const { container, svg } = renderChart({
+        data: [twoPopulations[0], [], twoPopulations[1]],
+        legend: ['High', 'Missing', 'Low'],
+        showLegend: true,
+    });
+
+    expect(legendEntries(container).map(entry => entry.text)).toEqual(['— High', '— Missing', '— Low']);
+    expect(legendEntries(container)[1].color).toBe(cssColor('#05b378'));
+    expect(lineStrokes(svg)).toEqual(['#4040e8', '#db4437']);
+});
+
+it('Charts with more than 11 populations get one generated color per population, matching the legend', () => {
+    const twelvePopulations = [...Array(12).keys()].map(index => dates.map(x => ({ x, y: 100 - index })));
+    const legend = twelvePopulations.map((population, index) => `Population ${index + 1}`);
+    const { container, svg } = renderChart({ data: twelvePopulations, legend, numPopulations: 12, showLegend: true });
+
+    const strokes = lineStrokes(svg);
+    expect(strokes).toHaveLength(12);
+    expect(new Set(strokes).size).toBe(12);
+    expect(legendEntries(container).map(entry => entry.color)).toEqual(strokes.map(cssColor));
+});
+
+it('Up to 11 populations use the site palette, the 11th being black', () => {
+    const elevenPopulations = [...Array(11).keys()].map(index => dates.map(x => ({ x, y: 100 - index })));
+    const legend = elevenPopulations.map((population, index) => `Population ${index + 1}`);
+    const strokes = lineStrokes(renderChart({ data: elevenPopulations, legend, numPopulations: 11 }).svg);
+
+    expect(strokes[0]).toBe('#4040e8');
+    expect(strokes[10]).toBe('#000000');
+});
+
+it('Lines are drawn in date order even when the data is not', () => {
+    const shuffled = [[{ x: dates[2], y: 9 }, { x: dates[0], y: 5 }, { x: dates[1], y: 4 }]];
+    const original = structuredClone(shuffled);
+    const svg = renderChart({ data: shuffled, legend: ['Only'] }).svg;
+
+    const xs = pathXCoordinates(svg.querySelector('g.chart-line path'));
+    xs.slice(1).forEach((x, index) => expect(x).toBeGreaterThanOrEqual(xs[index]));
+    expect(shuffled).toEqual(original);
+});
+
+it('A single population is shaded below its line; several populations are not', () => {
+    expect(renderChart({ data: [twoPopulations[0]], legend: ['Only'] }).svg.querySelector('g.chart-area path')).not.toBeNull();
+    expect(renderChart({ data: twoPopulations }).svg.querySelector('g.chart-area')).toBeNull();
+});
+
+it('A population with a single point is drawn as a dot', () => {
+    const svg = renderChart({ data: [[{ x: dates[0], y: 9 }], twoPopulations[1]] }).svg;
+
+    expect(svg.querySelectorAll('g.chart-point circle')).toHaveLength(1);
+});
+
+it('Annotations inside the date range are drawn; ones outside it are not', () => {
+    const markers = [
+        { x: dates[1], label: 'Firefox 150' },
+        { x: new Date('2025-06-01'), label: 'Too early' },
+    ];
+    const svg = renderChart({ data: twoPopulations, markers }).svg;
+
+    expect(svg.querySelectorAll('g.chart-marker line')).toHaveLength(1);
+    expect([...svg.querySelectorAll('g.chart-marker-label text')].map(text => text.textContent)).toEqual(['Firefox 150']);
+    expect(svg.scale('x').domain).toEqual([dates[0], dates[2]]);
+});
+
+it('Annotation labels that would overlap go on separate rows; distant ones share a row', () => {
+    const near = renderChart({
+        data: twoPopulations,
+        width: 375,
+        markers: [
+            { x: dates[0], label: 'Firefox 150' },
+            { x: new Date('2026-01-05'), label: 'Firefox 151' },
+            { x: new Date('2026-01-06'), label: 'Firefox 152' },
+        ],
+    }).svg;
+    const nearRows = [...near.querySelectorAll('g.chart-marker-label')].map(row => row.getAttribute('transform'));
+    expect(nearRows).toHaveLength(3);
+    expect(new Set(nearRows).size).toBe(3);
+
+    const far = renderChart({
+        data: twoPopulations,
+        width: 900,
+        markers: [{ x: dates[0], label: 'Firefox 150' }, { x: dates[2], label: 'Firefox 151' }],
+    }).svg;
+    expect(far.querySelectorAll('g.chart-marker-label')).toHaveLength(1);
+    expect(far.querySelectorAll('g.chart-marker-label text')).toHaveLength(2);
 });
 
 it('Zero values are part of the range, which then starts at 0', () => {
-    const options = optionsFor({ data: [[{ x: new Date('2026-01-04'), y: 0 }, { x: new Date('2026-01-11'), y: 10 }]] });
-
-    expect(options.min_y).toBe(0);
-    expect(options.max_y).toBe(11);
+    expect(yDomain({ data: [[{ x: dates[0], y: 0 }, { x: dates[1], y: 10 }]], legend: ['Only'] })).toEqual([0, 11]);
 });
 
 it('A constant series sits on the bottom of a range that ends 10% above it', () => {
-    const options = optionsFor({ data: [[{ x: new Date('2026-01-04'), y: 5 }, { x: new Date('2026-01-11'), y: 5 }]] });
-
-    expect(options.min_y).toBe(5);
-    expect(options.max_y).toBe(5.5);
+    expect(yDomain({ data: [[{ x: dates[0], y: 5 }, { x: dates[1], y: 5 }]], legend: ['Only'] })).toEqual([5, 5.5]);
 });
 
 it('A series that is constantly 0 gets an empty range, [0, 0]', () => {
     // Pinned as current behavior: the 10% padding is relative, so it adds
     // nothing to 0. No metric has had an all-zero series so far.
-    const options = optionsFor({ data: [[{ x: new Date('2026-01-04'), y: 0 }, { x: new Date('2026-01-11'), y: 0 }]] });
-
-    expect(options.min_y).toBe(0);
-    expect(options.max_y).toBe(0);
+    expect(yDomain({ data: [[{ x: dates[0], y: 0 }, { x: dates[1], y: 0 }]], legend: ['Only'] })).toEqual([0, 0]);
 });
 
-it('A chart with no plottable points gets non-finite bounds', () => {
-    // Pinned as current behavior. metrics-graphics then throws while drawing;
-    // the fixtures/boundaries.spec.js Playwright spec covers what the page shows.
-    const options = optionsFor({ data: [[], []] });
+it('A chart with no plottable points shows a message instead', () => {
+    const { container, svg } = renderChart({ data: [[], []], showLegend: true });
 
-    expect(options.min_y).toBe(Infinity);
-    expect(options.max_y).toBe(-Infinity);
+    expect(svg).toBeNull();
+    expect(container.querySelector('.legend')).toBeNull();
+    expect(container.querySelector('.chart-empty')).toHaveTextContent('No data to show for this metric.');
 });
