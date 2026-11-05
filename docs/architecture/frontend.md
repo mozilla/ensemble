@@ -75,9 +75,9 @@ the browser. All four have since been removed from this repository entirely (`re
 `npm-run-all` replaced, `nightwatch` and `request` no longer used at all), which is why the critical
 count is now zero.
 
-The only advisory against a package bundled into the shipped build is a `d3-color` ReDoS (pulled in
-by `metrics-graphics`'s `d3@4`). It needs an attacker-controlled color string, and this application
-has none. Every other flagged package is a build or lint tool.
+Removing `metrics-graphics` also removed the only advisory against a package bundled into the
+shipped build, a `d3-color` ReDoS pulled in by its `d3@4`. Every other flagged package is a build
+or lint tool.
 
 The one real, structural gap: **there is no Content-Security-Policy**, and the four
 `dangerouslySetInnerHTML` sites above rely entirely on `markdown-it`'s `html: false` default
