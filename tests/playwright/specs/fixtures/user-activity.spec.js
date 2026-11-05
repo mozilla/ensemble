@@ -18,7 +18,7 @@ test('Dashboard and metric titles come from the data, in order', async ({ page }
 
 test('Every metric draws a line chart', async ({ page }) => {
     for (const index of dashboard.metrics.keys()) {
-        await expect(page.locator(`#metric-overview-${index + 1} path.mg-line1`).first()).toBeVisible();
+        await expect(page.locator(`#metric-overview-${index + 1} g.chart-line path`).first()).toBeVisible();
     }
 });
 
@@ -27,7 +27,7 @@ test('The region selector starts on the default region', async ({ page }) => {
 });
 
 test('Choosing a region loads every metric for it and remembers the choice', async ({ page }) => {
-    await expect(page.locator('#metric-overview-1 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#metric-overview-1 g.chart-line path').first()).toBeVisible();
 
     const germanyRequests = dashboard.metrics.map(slug => page.waitForResponse(response => (
         decodeURIComponent(response.url()).endsWith(`/user-activity/Germany/${slug}/index.json`) && response.ok()
@@ -36,7 +36,7 @@ test('Choosing a region loads every metric for it and remembers the choice', asy
     await Promise.all(germanyRequests);
 
     await expect(page.locator('#region-selector')).toHaveValue('Germany');
-    await expect(page.locator('#metric-overview-1 path.mg-line1').first()).toBeVisible();
+    await expect(page.locator('#metric-overview-1 g.chart-line path').first()).toBeVisible();
     expect(await page.evaluate(() => sessionStorage.getItem('preferredRegion'))).toBe('Germany');
 
     await page.reload();

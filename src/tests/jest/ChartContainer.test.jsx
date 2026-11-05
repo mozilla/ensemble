@@ -4,7 +4,7 @@ import Chart from '../../components/views/Chart';
 import ChartContainer from '../../components/containers/ChartContainer';
 
 
-// The real view hands the data to metrics-graphics, which needs real layout.
+// The real view draws an SVG chart; these tests check the props it is given.
 vi.mock('../../components/views/Chart', () => ({ default: vi.fn(() => null) }));
 
 // ChartContainer measures #application > main to size the chart.

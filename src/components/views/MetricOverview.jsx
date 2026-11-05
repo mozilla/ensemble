@@ -66,7 +66,6 @@ class MetricOverview extends React.Component {
             const numPopulations = Object.keys(props.data.populations).length;
             MetricContainer = (
                 <this.ChartContainer
-                    legendTarget={`#${props.identifier} .legend`}
                     title={props.title}
                     data={props.data}
                     axes={props.axes}
@@ -96,7 +95,6 @@ class MetricOverview extends React.Component {
                     <LazyBoundary>
                         {MetricContainer}
                     </LazyBoundary>
-                    <div className="legend" />
                 </div>
             </div>
         );

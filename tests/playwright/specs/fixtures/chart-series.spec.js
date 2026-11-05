@@ -28,26 +28,32 @@ test.beforeEach(async ({ page }) => {
     await page.goto('/dashboard/user-activity');
 });
 
+// Plot sets each line's stroke as an attribute, and the legend sets each
+// entry's color inline; both compute to the same rgb() string when they match.
+async function lineWithColor(metricOverview, color) {
+    const lines = metricOverview.locator('g.chart-line path');
+    for (const line of await lines.all()) {
+        if (await line.evaluate(element => getComputedStyle(element).stroke) === color) return line;
+    }
+    return null;
+}
+
 test('Every population is drawn once, in order, with a matching legend entry', async ({ page }) => {
     const metricOverview = page.locator('#metric-overview-1');
-    const lines = metricOverview.locator('path.mg-main-line');
 
-    await expect(lines.filter({ visible: true })).toHaveCount(expectedOrder.length);
+    await expect(metricOverview.locator('g.chart-line path')).toHaveCount(expectedOrder.length);
     await expect(metricOverview.locator('.legend span')).toHaveText(expectedOrder.map(populationName => new RegExp(populationName)));
 
     let previousTop = -Infinity;
     const colors = new Set();
     for (const [index, populationName] of expectedOrder.entries()) {
-        const lineNumber = index + 1;
-        const legendEntry = metricOverview.locator(`.legend .mg-line${lineNumber}-legend-color`);
-        const line = metricOverview.locator(`path.mg-main-line.mg-line${lineNumber}`);
-
+        const legendEntry = metricOverview.locator('.legend .legend-entry').nth(index);
         await expect(legendEntry).toHaveText(new RegExp(populationName));
 
         const legendColor = await legendEntry.evaluate(element => getComputedStyle(element).color);
-        const lineColor = await line.evaluate(element => getComputedStyle(element).stroke);
-        expect(lineColor, `${populationName}'s line and legend entry share a color`).toBe(legendColor);
-        colors.add(lineColor);
+        const line = await lineWithColor(metricOverview, legendColor);
+        expect(line, `${populationName}'s line and legend entry share a color`).not.toBeNull();
+        colors.add(legendColor);
 
         // Higher values are drawn nearer the top of the chart.
         const lineTop = (await line.boundingBox()).y;
@@ -56,4 +62,53 @@ test('Every population is drawn once, in order, with a matching legend entry', a
     }
 
     expect(colors.size, 'Each population has its own color').toBe(expectedOrder.length);
+});
+
+async function reloadWithFirstMetric(page, populations) {
+    const metric = readFixture(`user-activity/${dashboard.defaultCategory}/${slug}/index.json`);
+    await page.route(
+        url => decodeURIComponent(url.pathname).endsWith(`/user-activity/${dashboard.defaultCategory}/${slug}/index.json`),
+        route => route.fulfill({ json: { ...metric, axes: {}, data: { populations } } })
+    );
+    await page.reload();
+}
+
+test('A population with no data keeps its legend entry, and every line matches its legend color', async ({ page }) => {
+    await reloadWithFirstMetric(page, {
+        High: dashboard.dates.map(date => ({ x: date, y: 300 })),
+        Missing: dashboard.dates.map(date => ({ x: date, y: null })),
+        Low: dashboard.dates.map(date => ({ x: date, y: 100 })),
+    });
+    const metricOverview = page.locator('#metric-overview-1');
+
+    // A population with no points sorts last, as if its highest value were 0.
+    await expect(metricOverview.locator('.legend .legend-entry')).toHaveText([/High/, /Low/, /Missing/]);
+    await expect(metricOverview.locator('g.chart-line path')).toHaveCount(2);
+
+    for (const populationName of ['High', 'Low']) {
+        const legendEntry = metricOverview.locator('.legend .legend-entry').filter({ hasText: populationName });
+        const legendColor = await legendEntry.evaluate(element => getComputedStyle(element).color);
+        expect(await lineWithColor(metricOverview, legendColor), `${populationName}'s line matches its legend entry`).not.toBeNull();
+    }
+});
+
+test('A line is drawn in date order even when its data is not', async ({ page }) => {
+    // Stepping through the dates 5 at a time visits each of the 12 once, out
+    // of order.
+    const shuffledDates = dashboard.dates.map((date, index) => dashboard.dates[(index * 5) % dashboard.dates.length]);
+    await reloadWithFirstMetric(page, {
+        Only: shuffledDates.map((date, index) => ({ x: date, y: 100 + index })),
+    });
+
+    const chart = page.locator('#metric-overview-1 svg.chart-svg');
+    const readout = page.locator('#metric-overview-1 .chart-readout');
+    const box = await chart.boundingBox();
+    const readoutDates = [];
+    for (const fraction of [.1, .3, .5, .7, .9]) {
+        await page.mouse.move(box.x + box.width * fraction, box.y + box.height / 2);
+        await expect(readout).not.toBeEmpty();
+        readoutDates.push(Date.parse((await readout.textContent()).match(/— (.*):/)[1]));
+    }
+
+    readoutDates.slice(1).forEach((date, index) => expect(date).toBeGreaterThan(readoutDates[index]));
 });

@@ -127,8 +127,7 @@ class ChartContainer extends React.Component {
     memoizeMarkers = memoizeOne(
         annotations => {
             return annotations.map(annotationMeta => {
-                // Rename "date" to "x". MG requires that the name of this
-                // property matches the value of x_accessor.
+                // Rename "date" to "x", the property the chart's marks read.
                 return {
                     x: new Date(annotationMeta.date),
                     label: annotationMeta.label,
@@ -138,10 +137,9 @@ class ChartContainer extends React.Component {
     );
 
     render() {
-        // Don't render the chart until a proper width has been determined. If
-        // we didn't do this, if we instead started with some default width and
-        // then switched to the proper width, the chart would animate shortly
-        // after loading.
+        // Don't render the chart until a proper width has been determined, so
+        // that it isn't drawn once at a default width and again straight after
+        // at the real one.
         if (!this.state.chartWidth) return null;
 
         const extraProps = {};
