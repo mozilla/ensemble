@@ -74,8 +74,7 @@ count is now zero.
 
 Of the advisories that do affect packages actually bundled into the shipped build, each sits behind
 a code path this application doesn't exercise: `markdown-it`'s flagged `linkify`/`smartquotes` rules
-are the ones disabled by the `zero` preset described above; a flagged `d3-color` ReDoS advisory
-needs an attacker-controlled color string, and this application has none; a flagged `react-router`
+are the ones disabled by the `zero` preset described above; a flagged `react-router`
 regex advisory needs parameterized routes, and this application's four routes
 (`/`, `/contact`, `/dashboard/<key>`, and a catch-all) are all static.
 

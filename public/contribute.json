@@ -19,9 +19,9 @@
         "d3",
         "javascript",
         "jest",
-        "metrics-graphics",
         "nightwatch",
         "node",
+        "observable-plot",
         "react"
     ],
     "bugs": {
