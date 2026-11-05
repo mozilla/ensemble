@@ -134,10 +134,9 @@ catch-all not-found page.
 ## The dependency ceiling on modernizing this application
 
 Two abandoned packages used to cap React at version 16: `react-refetch`, the data layer, and
-`react-metrics-graphics`, the chart wrapper. Local replacements have taken their place:
-`src/lib/withFetch.jsx` and `views/MetricsGraphics.jsx`, which calls `MG.data_graphic` directly.
-`metrics-graphics` itself stays on 2.15.6, because its only newer release is `3.0.0-beta1` from 2022,
-which npm tags `latest` but was never released as stable, and which rewrites the API.
+`react-metrics-graphics`, the chart wrapper. `src/lib/withFetch.jsx` replaced the first. The charts
+now draw with Observable Plot, a maintained library built on d3 7, through
+`views/ObservablePlot.jsx`, which replaced the second and the abandoned `metrics-graphics` under it.
 
 What holds the application on React 18 now is its lazy loading, not a dependency. React 19 keeps a
 `Suspense` fallback on screen for at least 300 ms before revealing what it was waiting for. A

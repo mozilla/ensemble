@@ -2,9 +2,35 @@
     margin-top: 20px;
 }
 
-/* Work around the following issue, which has been fixed, but not yet released
-   to NPM. Any version of metrics-graphics after 2.15.6 should include the fix.
-   https://github.com/metricsgraphics/metrics-graphics/issues/839 */
-.mg-active-datapoint-container {
-    transform: translate(0, -50px);
+.chart-readout {
+    font-size: .9rem;
+    font-weight: 400;
+    margin: 0 20px 0 0;
+    min-height: 1.5em;
+    text-align: right;
+}
+
+.chart-marker-label text {
+    fill: #000;
+    font-size: .8rem;
+    opacity: .6;
+}
+
+.chart-empty {
+    text-align: center;
+}
+
+.chart-svg {
+    g[aria-label$='tick label'] text {
+        fill: #000;
+        font-size: .9rem;
+        opacity: .6;
+    }
+    g[aria-label$='-axis tick'] {
+        stroke: #b3b2b2;
+    }
+    g[aria-label$='-axis label'] text {
+        font-size: .8rem;
+        text-transform: uppercase;
+    }
 }

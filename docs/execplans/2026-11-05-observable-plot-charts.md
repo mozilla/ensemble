@@ -21,7 +21,7 @@ To see it working, run `npm start`, open `http://localhost:3000/dashboard/user-a
 ## Progress
 
 - [x] (2026-11-05) Milestone 1 (prototyping): Plot 0.6.18 installed. It renders in jsdom, and hover works the same in Chromium and Firefox. Baselines recorded in Artifacts and Notes. The spike code was deleted.
-- [ ] Milestone 2: draw every line chart with Observable Plot, with Vitest, Playwright, styles, and docs updated to match.
+- [x] (2026-11-05) Milestone 2: every line chart draws with Observable Plot. Vitest has 15 files and 92 tests, recorded Playwright has 78 tests, and lint is clean. Resizing the hardware dashboard is about 100× faster (see Artifacts and Notes).
 - [ ] Milestone 3: remove the `metrics-graphics` package and check the dependency tree and bundle size.
 - [ ] Outcomes & Retrospective written.
 
@@ -44,6 +44,18 @@ To see it working, run `npm start`, open `http://localhost:3000/dashboard/user-a
 
 - Observation: installing Plot left metrics-graphics' d3 4 tree as it was. `node_modules/d3` is still 4.13.0, with its own nested `d3-transition` 1.1.1 and `d3-selection` 1.3.0. Plot's d3 7 installs under `node_modules/@observablehq/plot/node_modules/`. The October hoisting breakage did not recur, so metrics-graphics keeps working until Milestone 3 removes it.
   Evidence: `find node_modules -path '*d3-transition/package.json'` and the matching `d3-selection` search, after `npm install --save-exact @observablehq/plot@0.6.18`.
+
+- Observation: metrics-graphics had four visible defaults that Plot does not share, and that this plan first missed. It shades the area under a single-population chart (`area: true`, drawn only when there is one line, fill `#0000ff` at 0.2 opacity). It draws 3 y ticks (`yax_count: 3`), abbreviated ("200M"), and 6 x ticks (`xax_count: 6`). Its lines are thinner. And on a multi-line chart its readout starts with the hovered population's name in that line's color ("de — June 17, 2024: 11.340%"). Milestone 2 reproduces all four.
+  Evidence: side-by-side screenshots of the base and this branch. `node_modules/metrics-graphics/dist/metricsgraphics.js` lines 698–755 and 4847, and `metricsgraphics.css` (`path.mg-main-area`, `.mg-area1-color`).
+
+- Observation: a `.8rem` annotation label is 20px tall in Fira Sans, so label rows must be 20px apart, not 16px.
+  Evidence: `getBoundingClientRect()` on the labels at 375px wide showed 20px-high boxes on rows 16px apart.
+
+- Observation: Plot's pointer does not respond in the chart's margins outside the plotting area. After a click unpins the readout, it updates only on the next pointer move.
+  Evidence: the Playwright corner and click cases in `fixtures/region-data.spec.js`. The corner case hovers just inside the plotting area, after scrolling the chart into view.
+
+- Observation: drawing with Plot makes resizing the hardware dashboard about 100 times faster, in both browsers.
+  Evidence: the five-step resize timings in Artifacts and Notes, 55,375 ms down to 559 ms in Chromium and 66,761 ms down to 720 ms in Firefox.
 
 - Observation: the manual resize protocol is impractical. A scripted run of 23 viewport steps × 3 runs on the hardware dashboard kept Chromium's renderer at 100% CPU for over 15 minutes without finishing the first browser. Each resize step takes seconds, which is #409.
   Evidence: `ps` showed `chrome-headless-shell` at 99.8% CPU. The run was stopped and replaced by the five-step protocol under Concrete Steps.
@@ -88,6 +100,18 @@ To see it working, run `npm start`, open `http://localhost:3000/dashboard/user-a
 
 - Decision: measure resize with a Playwright script over five widths, one run per browser, instead of dragging the window by hand while profiling.
   Rationale: a script gives the same steps before and after, and runs in Chromium and Firefox without a person at the keyboard. The longer 23-step protocol does not finish in reasonable time on the base branch (see Surprises & Discoveries).
+  Date/Author: 2026-11-05, Stephanie Hobson.
+
+- Decision: render the hover readout as HTML above the chart, from `ObservablePlot.jsx`, instead of as a Plot text mark.
+  Rationale: the readout names the hovered population in its line's color, followed by the date and value in black. A Plot text mark has one fill and cannot measure text to place a second mark beside it. Plot reports the hovered point as the SVG's `value` and fires an `input` event. `ObservablePlot` keeps that point in its own state and redraws the SVG only when `options` change, so hovering never rebuilds the chart.
+  Date/Author: 2026-11-05, Stephanie Hobson.
+
+- Decision: keep `assignMarkerRows` private to `Chart.jsx` and test it through the drawn labels.
+  Rationale: `AGENTS.md` keeps named exports to `lib/utils.js`. The Vitest and Playwright label cases check the rows it produces.
+  Date/Author: 2026-11-05, Stephanie Hobson.
+
+- Decision: rewrite `docs/architecture/frontend.md`'s "dependency ceiling" paragraph in Milestone 2, not Milestone 3. Also remove that file's bullet about a `suggestedMax` typo in `Chart.jsx`.
+  Rationale: Milestone 2's grep acceptance covers that file, and the paragraph named `views/MetricsGraphics.jsx`. The typo was already fixed in `c8422fb`, and the rewrite removes the lines the bullet cites. The bullet about `SummaryMetric.jsx`'s arrow threshold in the same list was also fixed earlier (`96b5afc`) and is left for a separate docs pass.
   Date/Author: 2026-11-05, Stephanie Hobson.
 
 - Decision: stack the branch on `react-18-upgrade`.
@@ -365,10 +389,22 @@ Milestone 1 spike, in-browser hover on `/dashboard/hardware`'s first chart (36 l
     click, then move:   readout stays pinned
     console errors:     none
 
-Resize baseline on the base build, five steps (1200, 1000, 800, 1000, 1400 wide), milliseconds per step:
+Resize on the hardware dashboard, five steps (1200, 1000, 800, 1000, 1400 wide), milliseconds per step:
 
-    chromium   11355  12158   9854   9878  12130   total 55375
-    firefox    15755  14803  10722  10754  14727   total 66761
+    base       chromium   11355  12158   9854   9878  12130   total 55375
+    base       firefox    15755  14803  10722  10754  14727   total 66761
+    Plot       chromium     141    101     99     96    122   total   559
+    Plot       firefox      173    150    133    133    131   total   720
+
+Lazy chart chunk after Milestone 2, with metrics-graphics still installed but no longer imported:
+
+    build/assets/ChartContainer-BfSAjc2W.js   302.33 kB │ gzip: 101.34 kB   (was 492.38 kB │ 154.29 kB)
+
+After Milestone 2:
+
+    npm run test:jest                   15 files, 92 tests passing
+    npm run test:playwright:recorded    78 passed
+    npm run lint                        clean
 
 ## Interfaces and Dependencies
 
