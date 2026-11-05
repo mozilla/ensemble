@@ -22,8 +22,8 @@ To see it working, run `npm start`, open `http://localhost:3000/dashboard/user-a
 
 - [x] (2026-11-05) Milestone 1 (prototyping): Plot 0.6.18 installed. It renders in jsdom, and hover works the same in Chromium and Firefox. Baselines recorded in Artifacts and Notes. The spike code was deleted.
 - [x] (2026-11-05) Milestone 2: every line chart draws with Observable Plot. Vitest has 15 files and 92 tests, recorded Playwright has 78 tests, and lint is clean. Resizing the hardware dashboard is about 100× faster (see Artifacts and Notes).
-- [ ] Milestone 3: remove the `metrics-graphics` package and check the dependency tree and bundle size.
-- [ ] Outcomes & Retrospective written.
+- [x] (2026-11-05) Milestone 3: `metrics-graphics`, its d3 4, and `d3-shape` are uninstalled. `d3-scale` and `d3-selection` are pinned to the patch versions d3 7 uses, so each is installed once. `npm test` passes.
+- [x] (2026-11-05) Outcomes & Retrospective written.
 
 ## Surprises & Discoveries
 
@@ -114,13 +114,27 @@ To see it working, run `npm start`, open `http://localhost:3000/dashboard/user-a
   Rationale: Milestone 2's grep acceptance covers that file, and the paragraph named `views/MetricsGraphics.jsx`. The typo was already fixed in `c8422fb`, and the rewrite removes the lines the bullet cites. The bullet about `SummaryMetric.jsx`'s arrow threshold in the same list was also fixed earlier (`96b5afc`) and is left for a separate docs pass.
   Date/Author: 2026-11-05, Stephanie Hobson.
 
+- Decision: bump ensemble's exact pins from `d3-scale` 4.0.2 to 4.0.3 and from `d3-selection` 3.0.0 to 3.0.1, and uninstall `d3-shape`.
+  Rationale: Plot's d3 7.9.2 requires 4.0.3 and 3.0.1. With the old pins, npm installed a second copy of each under Plot. Matching patch versions leaves one copy. Nothing in `src/` imports `d3-shape` now that Plot takes the curve by name.
+  Date/Author: 2026-11-05, Stephanie Hobson.
+
+- Decision: also remove metrics-graphics from `.github/dependabot.yml` (an ignore rule), `.claude/skills/update-deps/denied.md` (a denied update), and `public/contribute.json` (a keyword, replaced by `observable-plot`). Also drop `docs/architecture/frontend.md`'s note about a `d3-color` advisory.
+  Rationale: the whole-tree grep in Milestone 3 found them. The `d3-color` advisory came from d3 4, and `npm audit` no longer reports it.
+  Date/Author: 2026-11-05, Stephanie Hobson.
+
 - Decision: stack the branch on `react-18-upgrade`.
   Rationale: `views/MetricsGraphics.jsx`, the single place metrics-graphics is called, only exists on that branch chain (itself stacked on `deps`). On `main`, `Chart.jsx` still imports `react-metrics-graphics`.
   Date/Author: 2026-11-05, Stephanie Hobson.
 
 ## Outcomes & Retrospective
 
-Not started.
+Every line chart now draws with Observable Plot 0.6.18. The lines, colors, legend, markers, y-axis bounds and units, and hover readout match the metrics-graphics charts, checked side by side on the User Activity, Usage Behavior, and Hardware dashboards. The deliberate changes landed as planned. Charts don't animate, a click pins the readout, and a metric with no data says "No data to show for this metric." metrics-graphics, d3 4, its nested `d3-transition`, and the `d3-color` advisory are gone. The app now has one copy of each d3 module.
+
+The unplanned result is the most useful one. Resizing the hardware dashboard went from about 55 seconds to about half a second in Chromium, and from 67 seconds to 0.7 seconds in Firefox, for the same five steps. That is most of #409's complaint. The unthrottled resize listener in `ChartContainer.jsx` is still there, and #409's own plan should start from these numbers. The lazy chart chunk shrank from 492 kB to 265 kB (154 kB to 90 kB gzipped).
+
+Tests grew from 84 to 92 in Vitest and from 70 to 78 recorded Playwright cases. `Chart.test.jsx` now asserts on the drawn SVG instead of on an options object.
+
+Lessons. The plan's first draft treated "same chart" as lines, colors, and hover. It missed metrics-graphics' quieter defaults: the area fill, tick counts and formats, line weight, and the colored name in the readout. Only side-by-side screenshots found those. The two reviews before execution found real problems: unsorted dates on every User Activity chart, and labels that one text mark could not stagger. Both would have shipped. The Milestone 1 spike confirmed them cheaply.
 
 ## Context and Orientation
 
@@ -405,6 +419,12 @@ After Milestone 2:
     npm run test:jest                   15 files, 92 tests passing
     npm run test:playwright:recorded    78 passed
     npm run lint                        clean
+
+After Milestone 3:
+
+    npm ls d3                           d3@7.9.2 under @observablehq/plot only
+    npm test                            lint clean; Vitest 15 files, 92 tests; Playwright 124 passed (recorded and live)
+    build/assets/ChartContainer-Btl1BEIQ.js   265.06 kB │ gzip: 89.54 kB
 
 ## Interfaces and Dependencies
 
