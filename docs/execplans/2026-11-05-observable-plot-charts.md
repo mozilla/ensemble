@@ -20,7 +20,7 @@ To see it working, run `npm start`, open `http://localhost:3000/dashboard/user-a
 
 ## Progress
 
-- [ ] Milestone 1 (prototyping): prove Observable Plot renders in jsdom and in Chromium, and take baseline size and resize measurements.
+- [x] (2026-11-05) Milestone 1 (prototyping): Plot 0.6.18 installed. It renders in jsdom, and hover works the same in Chromium and Firefox. Baselines recorded in Artifacts and Notes. The spike code was deleted.
 - [ ] Milestone 2: draw every line chart with Observable Plot, with Vitest, Playwright, styles, and docs updated to match.
 - [ ] Milestone 3: remove the `metrics-graphics` package and check the dependency tree and bundle size.
 - [ ] Outcomes & Retrospective written.
@@ -37,7 +37,16 @@ To see it working, run `npm start`, open `http://localhost:3000/dashboard/user-a
   Evidence: `node_modules/metrics-graphics/dist/metricsgraphics.js`, about line 719 (`x_sort: true`) and line 4615. A scan of the `type: 'line'` metrics in `tests/playwright/fixtures/**/index.json` finds 22 populations whose dates both rise and fall. They include every User Activity chart (MAU, average daily usage, intensity, latest version, new users) in both recorded regions, plus Usage Behavior's locale and add-on charts.
 
 - Observation: Plot's `dy` is one value for the whole mark, not a per-datum channel. So one `Plot.text` mark cannot put different labels on different rows.
-  Evidence: Observable Plot's mark options: `dx` and `dy` are constant options.
+  Evidence: Observable Plot's mark options: `dx` and `dy` are constant options. The Milestone 1 spike confirmed the workaround. Plot applies `dy` as a `transform` on the mark's `<g>` (`translate(0.5,-39.5)` and `translate(0.5,-24.5)` for `dy` of -40 and -25), and each `<text>` keeps the same `y="0.71em"`. Tests that check label rows must read the group's `transform`, not the text's `y`.
+
+- Observation: Plot labels each axis with its channel name unless told otherwise, so a chart shows "↑ y" and "x →".
+  Evidence: a screenshot of the Milestone 1 spike on `/dashboard/hardware`. Set `label: null` on both scales, except where the y unit is shown as a label.
+
+- Observation: installing Plot left metrics-graphics' d3 4 tree as it was. `node_modules/d3` is still 4.13.0, with its own nested `d3-transition` 1.1.1 and `d3-selection` 1.3.0. Plot's d3 7 installs under `node_modules/@observablehq/plot/node_modules/`. The October hoisting breakage did not recur, so metrics-graphics keeps working until Milestone 3 removes it.
+  Evidence: `find node_modules -path '*d3-transition/package.json'` and the matching `d3-selection` search, after `npm install --save-exact @observablehq/plot@0.6.18`.
+
+- Observation: the manual resize protocol is impractical. A scripted run of 23 viewport steps × 3 runs on the hardware dashboard kept Chromium's renderer at 100% CPU for over 15 minutes without finishing the first browser. Each resize step takes seconds, which is #409.
+  Evidence: `ps` showed `chrome-headless-shell` at 99.8% CPU. The run was stopped and replaced by the five-step protocol under Concrete Steps.
 
 ## Decision Log
 
@@ -71,6 +80,14 @@ To see it working, run `npm start`, open `http://localhost:3000/dashboard/user-a
 
 - Decision: work on the placeholder branch `observable-plot-charts` until there is an issue, then rename it `<issue>--observable-plot-charts`.
   Rationale: chosen by the user on 2026-11-05. `AGENTS.md` names branches after issues, and no issue exists for this work yet. When one does, restate it in Context and Orientation.
+  Date/Author: 2026-11-05, Stephanie Hobson.
+
+- Decision: test the drawn chart in Vitest rather than mocking the chart component.
+  Rationale: the Milestone 1 spike showed Plot renders real SVG in jsdom: paths with `stroke` attributes, `className` on each mark's `<g>`, rules, and `svg.scale('y').domain`. Pointer hover cannot be triggered in jsdom, so the readout stays a Playwright concern.
+  Date/Author: 2026-11-05, Stephanie Hobson.
+
+- Decision: measure resize with a Playwright script over five widths, one run per browser, instead of dragging the window by hand while profiling.
+  Rationale: a script gives the same steps before and after, and runs in Chromium and Firefox without a person at the keyboard. The longer 23-step protocol does not finish in reasonable time on the base branch (see Surprises & Discoveries).
   Date/Author: 2026-11-05, Stephanie Hobson.
 
 - Decision: stack the branch on `react-18-upgrade`.
@@ -275,7 +292,14 @@ Setup and baselines (Milestone 1):
 
 `npm run size` analyzes only `index-*.js`, and the chart code is in a lazily loaded chunk, so name that chunk explicitly. Record its file name, raw size, and gzipped size (`gzip -c build/assets/<chart-chunk>.js | wc -c`).
 
-Resize baseline. Run `npm run build && npx vite preview --port 4173`. Open `http://localhost:4173/dashboard/hardware` in Chromium. Wait for every chart to draw, start a Performance recording, and drag the window from 1400px to 800px wide and back over about 5 seconds. Stop the recording and note the total scripting time and the longest task. Do this three times, then repeat in Firefox with its Profiler. Record all six runs.
+Resize baseline. Run `npm run build && npx vite preview --port 4173 --strictPort`. The preview uses live data from data.firefox.com. Then run a short Playwright script, kept outside the repository, for Chromium and then Firefox:
+
+1. Open `http://localhost:4173/dashboard/hardware` at 1400×900.
+2. Wait for `#plugins-metric-overview-1 svg`, then 1.5 seconds more.
+3. Set the viewport width to 1200, 1000, 800, 1000, and 1400 in turn, keeping 900 high.
+4. After each step, wait for two animation frames, then record the milliseconds the step took.
+
+Record each step's time and the total for both browsers. Run it against the base build and this branch's build on the same machine, with nothing else heavy running.
 
 Spike:
 
@@ -324,7 +348,27 @@ Every step is a file edit or an npm command, and is safe to repeat. If a lockfil
 
 ## Artifacts and Notes
 
-None yet. Record the baselines and after-numbers for the chart chunk size and the resize profiles here, and any Plot behavior that surprised you.
+Baselines on the base branch (`react-18-upgrade` plus this plan), 2026-11-05:
+
+    npm run test:jest                   15 files, 84 tests passing
+    npm run test:playwright:recorded    70 passed
+    npm run build, lazy chart chunk:
+      build/assets/ChartContainer-BDrT8WnZ.js   492.38 kB │ gzip: 154.29 kB
+
+Milestone 1 spike, in-browser hover on `/dashboard/hardware`'s first chart (36 lines), identical in Chromium and Firefox:
+
+    0.5,0.3 of frame:   August 15, 2022: 12.397%
+    0.5,0.9 of frame:   October 3, 2022: 1.016%
+    top-left corner:    January 7, 2019: 9.513%
+    bottom-right:       October 12, 2026: 1.121%
+    mouse off chart:    readout cleared
+    click, then move:   readout stays pinned
+    console errors:     none
+
+Resize baseline on the base build, five steps (1200, 1000, 800, 1000, 1400 wide), milliseconds per step:
+
+    chromium   11355  12158   9854   9878  12130   total 55375
+    firefox    15755  14803  10722  10754  14727   total 66761
 
 ## Interfaces and Dependencies
 
