@@ -2,12 +2,19 @@
     margin-top: 20px;
 }
 
+/* A fixed single line whose text can't widen the chart around it, so that
+   showing or clearing the hovered value never moves anything on the page. */
 .chart-readout {
+    contain: inline-size; // @stylint ignore
     font-size: .9rem;
     font-weight: 400;
+    height: 28px;
+    line-height: 28px;
     margin: 0 20px 0 0;
-    min-height: 1.5em;
+    overflow: hidden;
     text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .chart-marker-label text {
