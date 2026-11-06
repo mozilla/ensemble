@@ -178,7 +178,7 @@ In recorded mode, `fixtureData.js`'s `test` answers every `https://data.firefox.
 | Switching branches without reinstalling | `node_modules` can still hold another branch's packages. Run `npm install` after a branch switch before trusting any result. |
 | Gitignored `src/components/views/css/` | Fresh clone cannot resolve the CSS imports until `npm run build:css` runs. Never hand-edit `css/` — edit `styl/`. |
 | Renaming a landmark ID | Breaks Playwright selectors silently. |
-| `g.chart-line path` in a Playwright locator | A population with one data point draws a zero-size line (shown as a dot, `g.chart-point circle`). To check a chart drew, use `g.chart-line path` with `.filter({ visible: true }).first()`. Match a line to its population by its stroke color against the legend entry's color, not by index: a population with no points keeps its legend entry but draws no line. |
+| `g.chart-line path` in a Playwright locator | A population with one data point, or a point with gaps on both sides, draws a zero-size line piece (shown as a dot, `g.chart-point circle`). A line breaks wherever its population skips a date that another population on the chart has. To check a chart drew, use `g.chart-line path` with `.filter({ visible: true }).first()`. Match a line to its population by its stroke color against the legend entry's color, not by index: a population with no points keeps its legend entry but draws no line. |
 | `build:version.json` | Needs `build/` to already exist and `git` on PATH; must follow `build:app`. |
 | `no-shadow` / `no-redeclare` with `builtinGlobals` | Naming a local `name`, `status`, `history`, `event` is a hard error. |
 
