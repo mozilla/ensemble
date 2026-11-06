@@ -200,6 +200,8 @@ export default props => {
         y: yOptions,
         color: { domain: legend, range: colors },
         marks: [
+            Plot.frame({ anchor: 'left', stroke: '#b3b2b2', className: 'chart-axis-line' }),
+            Plot.frame({ anchor: 'bottom', stroke: '#b3b2b2', className: 'chart-axis-line' }),
             Plot.ruleX(markersInRange, { x: 'x', stroke: '#b3b2b2', strokeDasharray: '3,1', className: 'chart-marker' }),
             ...markerLabelMarks,
             ...maybeArea,
