@@ -95,3 +95,39 @@ test.describe('Hovering a chart', () => {
         await expect(page.locator('#metric-overview-1 .chart-readout')).toHaveText(/Worldwide low/);
     });
 });
+
+for (const width of [1280, 375]) {
+    test.describe(`At ${width}px wide`, () => {
+        test.use({ viewport: { width, height: 800 } });
+
+        test('hovering and clicking a chart doesn\'t move anything on the page', async ({ page }) => {
+            const metric = readFixture(`user-activity/${dashboard.defaultCategory}/${slug}/index.json`);
+            const longName = 'A population with a name long enough to wrap on a phone';
+            await page.route(
+                url => decodeURIComponent(url.pathname).endsWith(`/user-activity/${dashboard.defaultCategory}/${slug}/index.json`),
+                route => route.fulfill({ json: { ...metric, axes: {}, data: { populations: {
+                    [longName]: dashboard.dates.map(date => ({ x: date, y: 1000 })),
+                    Short: dashboard.dates.map(date => ({ x: date, y: 500 })),
+                } } } })
+            );
+            await page.reload();
+
+            const chart = page.locator('#metric-overview-1 svg.chart-svg');
+            const nextMetric = page.locator('#metric-overview-2');
+            await chart.scrollIntoViewIfNeeded();
+            const chartTop = (await chart.boundingBox()).y;
+            const nextMetricTop = (await nextMetric.boundingBox()).y;
+
+            const line = await page.locator('#metric-overview-1 g.chart-line path').first().boundingBox();
+            await page.mouse.move(line.x + line.width / 2, line.y + 3);
+            await expect(page.locator('#metric-overview-1 .chart-readout')).toContainText(longName);
+            expect((await chart.boundingBox()).y).toBe(chartTop);
+            expect((await nextMetric.boundingBox()).y).toBe(nextMetricTop);
+
+            await page.mouse.down();
+            await page.mouse.up();
+            expect((await chart.boundingBox()).y).toBe(chartTop);
+            expect((await nextMetric.boundingBox()).y).toBe(nextMetricTop);
+        });
+    });
+}
