@@ -22,9 +22,6 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "react-dom"
         update-types: ["version-update:semver-major"]
-      # 3.x rewrites the MG.data_graphic API that views/MetricsGraphics.jsx calls (see update-deps/denied.md).
-      - dependency-name: "metrics-graphics"
-        update-types: ["version-update:semver-major"]
       # v8 requires React 19.2.7 or later.
       - dependency-name: "react-router"
         update-types: ["version-update:semver-major"]

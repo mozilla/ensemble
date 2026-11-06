@@ -64,8 +64,7 @@ plain text, so a real credential never belongs in one, and this `.env` file deli
   `maybeRegion`, `maybeGraphURL`). Keep the idiom.
 - Styles attach via a global CSS side-effect import of the generated file at the top of the
   component: `import './css/Dashboard.css';`. Some components import several (`Chart.jsx` pulls
-  `metrics-graphics/dist/metricsgraphics.css`, `./css/Chart.css`, `./css/Metric.css`). `Metric.css`
-  and `LabelledSelector.css` are shared partials with no component of their own.
+  `./css/Chart.css` and `./css/Metric.css`). `Metric.css` and `LabelledSelector.css` are shared partials with no component of their own.
 - No TypeScript, no PropTypes, no CSS-in-JS or CSS Modules, no Prettier, no i18n. No MPL license
   headers on source files (unlike other MozMEAO repositories) — do not add them.
 - `.editorconfig`: LF, final newline, trim trailing whitespace, 4-space indent for
@@ -130,8 +129,7 @@ arriving after a long gap. Optimize for them.
   needs none. Delete comments that restate the code.
 - Comments must stand on their own. Never reference a spec, a plan document, a requirement label, or
   a ticket ID as the explanation — the comment must make sense to someone who has only the file in
-  front of them. A cross-reference alongside a self-contained explanation is fine; that is how the
-  `metrics-graphics` workaround notes in `views/Chart.jsx` read.
+  front of them. A cross-reference alongside a self-contained explanation is fine.
 - Never describe code that no longer exists. After a refactor, delete the comments it falsified.
   Prefer deleting an obsolete comment, branch, or test over leaving it beside its replacement.
 
@@ -157,12 +155,13 @@ with `vi.spyOn(console, 'error').mockImplementation(() => {})`. The existing sty
 Containers fetch through `src/lib/withFetch.jsx`, which calls `window.fetch` with a `Request` each
 time it fetches. Stub it with `fetchMock = vi.spyOn(window, 'fetch')` in `beforeEach` and read the
 URL from `fetchMock.mock.calls[n][0].url`; `SummaryMetricContainer.test.jsx` is the simplest
-example. The setup file restores the spy after each test. Containers whose view needs real layout (`views/Chart` uses metrics-graphics,
+example. The setup file restores the spy after each test. Containers whose view needs real layout (`views/Chart` uses Observable Plot,
 `views/SummaryMetric` draws with d3) are tested by replacing that view with `vi.mock` and asserting
 on the props it received. Plain-markup views such as `views/DataTable` render for real.
-`Chart.test.jsx` renders the real `views/Chart` with `views/MetricsGraphics` replaced by
-`vi.mock('../../components/views/MetricsGraphics', () => ({ default: vi.fn(() => null) }))`, and asserts on the
-options it computes. `SummaryMetric.test.jsx` renders the real d3 summary bar inside
+`Chart.test.jsx` renders the real `views/Chart`, because Observable Plot draws real SVG in jsdom, and
+asserts on the drawn chart: `svg.scale('y').domain`, tick text, line strokes against legend colors,
+and the `chart-*` classes on each mark. jsdom can't hover, so the readout tests set `svg.value` and
+dispatch an `input` event, as Plot does. `SummaryMetric.test.jsx` renders the real d3 summary bar inside
 `<div id="application"><main>`, with `HTMLElement.prototype.offsetWidth` spied to 490: jsdom
 reports 0px, and at 490px the bar draws at its 450px maximum, so segment widths are predictable.
 `Routes.test.jsx` renders `views/Application` inside `MemoryRouter` through a single `renderAt(path)`
@@ -261,7 +260,7 @@ style indirection layer, so a failure points straight at the markup it cares abo
 | Renaming a landmark ID | Breaks Playwright selectors silently. |
 | `build:version.json` | Needs `build/` to already exist and `git` on PATH; must follow `build:app`. |
 | `no-shadow` / `no-redeclare` with `builtinGlobals` | Naming a local `name`, `status`, `history`, `event` is a hard error. |
-| `metrics-graphics` charts and `path.mg-line1` | Each chart renders many invisible `.mg-voronoi` hover paths that also carry the `mg-line1` class (confirmed: 292 matches for one chart), and a population with a single data point draws a zero-size line path, shown as a dot instead. To check that a chart drew a line, use `path.mg-main-line` with `.filter({ visible: true }).first()`. |
+| Observable Plot charts and `g.chart-line path` | A population with a single data point draws a zero-size line path, shown as a dot (`g.chart-point circle`) instead. To check that a chart drew a line, use `g.chart-line path` with `.filter({ visible: true }).first()`. A population with no points keeps its legend entry but draws no line, so match lines to legend entries by color, not by index. |
 
 Known rot, recorded for recognition only, not as a roadmap: `react-app-polyfill` and
 `babel-polyfill`, plus a `browserslist` of `>0.2%, not dead, not ie <= 10, not op_mini all`, were

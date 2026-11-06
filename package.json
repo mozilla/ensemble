@@ -26,15 +26,14 @@
         "record:fixtures": "node scripts/recordPlaywrightFixtures.js"
     },
     "dependencies": {
-        "d3-scale": "4.0.2",
-        "d3-selection": "3.0.0",
-        "d3-shape": "3.2.0",
+        "@observablehq/plot": "0.6.18",
+        "d3-scale": "4.0.3",
+        "d3-selection": "3.0.1",
         "dateformat": "5.0.4",
         "distinct-colors": "3.0.0",
         "markdown-it": "15.0.3",
         "markdown-it-sup": "2.0.0",
         "memoize-one": "6.0.0",
-        "metrics-graphics": "2.15.6",
         "npm-run-all2": "9.0.3",
         "react": "18.3.1",
         "react-dom": "18.3.1",

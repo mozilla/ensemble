@@ -1,47 +1,72 @@
 import dateformat from 'dateformat';
-import { curveCatmullRom } from 'd3-shape';
 import distinctColors from 'distinct-colors';
+import * as Plot from '@observablehq/plot';
 
 import { prettifyNumber } from '../../lib/utils';
-import MetricsGraphics from './MetricsGraphics';
+import ObservablePlot from './ObservablePlot';
 
-import 'metrics-graphics/dist/metricsgraphics.css';
 import './css/Chart.css';
 import './css/Metric.css';
 
 
+// The colors the site has always used for the first eleven populations. Charts
+// with more populations than this get a generated color for each population
+// instead.
+const paletteForUpToElevenPopulations = [
+    '#4040e8',
+    '#05b378',
+    '#db4437',
+    '#f8b128',
+    '#5c5c5c',
+    '#4682b4',
+    '#f673bf',
+    '#0b73b0',
+    '#006400',
+    '#92514f',
+    '#000000',
+];
+
+// Room above the chart for each row of annotation labels.
+const markerLabelRowHeight = 20;
+
+// An estimate of how wide one character of an annotation label is, used to
+// decide which labels would overlap if they shared a row.
+const markerLabelCharacterWidth = 7;
+const markerLabelGap = 8;
+
+const defaultMarginLeft = 50;
+
+// Writes 200,000,000 as "200M", so long y-axis values fit beside the axis.
+const compactNumber = new Intl.NumberFormat('en-US', { notation: 'compact' });
+const marginRight = 20;
+
+// Give each marker a row so that no two labels in the same row overlap. Row 0
+// sits just above the chart, and each later row sits above the one before it.
+function assignMarkerRows(markers, xToPixel) {
+    const rowEnds = [];
+
+    return markers.toSorted((markerA, markerB) => markerA.x - markerB.x).map(marker => {
+        const halfWidth = (marker.label.length * markerLabelCharacterWidth) / 2;
+        const center = xToPixel(marker.x);
+        let row = rowEnds.findIndex(rowEnd => center - halfWidth >= rowEnd + markerLabelGap);
+        if (row === -1) {
+            row = rowEnds.length;
+            rowEnds.push(0);
+        }
+        rowEnds[row] = center + halfWidth;
+        return { ...marker, row };
+    });
+}
+
 export default props => {
-    const extraOptions = {};
-
-    // ensure that times are formatted using UTC
-    extraOptions.utc_time = true;
-
-    // metrics-graphics will give each population up to this number a unique
-    // color. (The 11th unique color is black.) If a chart has more populations
-    // than this, all remaining populations will also be colored black.
-    const mgNumUniqueColors = 11;
-
     // Units that can appear right after a value, without a space in between
     const spacelessUnits = ['%'];
 
     // Units that can appear to the right of the tick marks on the y-axis
     const appendableUnits = ['%'];
 
-    // Some units are small enough that they can appear to the right of the tick
-    // marks on the y-axis. Everything else should be shown as a label instead;
-    if (appendableUnits.includes(props.yUnit)) {
-        extraOptions.yax_units = props.yUnit;
-        extraOptions.yax_units_append = true;
-    } else {
-        extraOptions.y_label = props.yUnit;
-
-        // Work around this bug:
-        // https://github.com/metricsgraphics/metrics-graphics/issues/838
-        extraOptions.left = 80;
-    }
-
     // Build the string that will be used to represent the y-axis unit in the
-    // tooltip.
+    // hovered value.
     let yUnitString;
     if (props.yUnit) {
         yUnitString = spacelessUnits.includes(props.yUnit) ? props.yUnit : ' ' + props.yUnit;
@@ -49,41 +74,30 @@ export default props => {
         yUnitString = '';
     }
 
+    const legend = props.legend || props.data.map((population, index) => `Population ${index + 1}`);
+
+    // Plot joins a line's points in the order it is given them, and the data
+    // does not always arrive in date order.
+    const points = props.data.flatMap((population, index) => (
+        population.toSorted((pointA, pointB) => pointA.x - pointB.x).map(point => ({ ...point, population: legend[index] }))
+    ));
+
+    if (!points.length) {
+        return <p className="chart-empty">No data to show for this metric.</p>;
+    }
+
+    const singlePoints = props.data.flatMap((population, index) => (
+        population.length === 1 ? [{ ...population[0], population: legend[index] }] : []
+    ));
+
     // The minimum and maximum y values among all populations.
-    //
-    // Remember that props.data is a two-dimensional array. The outer array
-    // contains all populations and the inner array, which represents a single
-    // population, contains all of the data points for that population.
-    //
-    // For example, if props.data were the following two-dimensional array, minY
-    // would be 2 and maxY would be 9.
-    //
-    // [
-    //     [
-    //         { x: 1, y: 5 },
-    //         { x: 2, y: 4 },
-    //         { x: 3, y: 9 }
-    //     ],
-    //     [
-    //         { x: 1, y: 7 },
-    //         { x: 2, y: 2 },
-    //         { x: 3, y: 8 }
-    //     ]
-    //  ]
-    const allYValues = props.data.reduce((accumulator, currentDataset) => {
-        return accumulator.concat(currentDataset.map(dataPoint => dataPoint.y));
-    }, []);
+    const allYValues = points.map(point => point.y);
     const maxY = Math.max(...allYValues);
     const minY = Math.min(...allYValues);
 
     // The minimum and maximum y values that can actually be used on the y
-    // scale.
-    //
-    // These numbers are just minY and maxY with some padding added. The padding
-    // is added because there is a bug in metrics-graphics where the curve of a
-    // line can be cut off unless this padding is added.
-    //
-    // https://github.com/mozilla/metrics-graphics/issues/823
+    // scale: minY and maxY with some padding added, so that the curve of a line
+    // through the highest or lowest point is not cut off.
     const padding = .1;
     const minVisibleY = minY - (minY * padding);
     const maxVisibleY = maxY + (maxY * padding);
@@ -112,52 +126,110 @@ export default props => {
         maxYToShow = props.suggestedYMax;
     }
 
-    if (props.showLegend) {
-        extraOptions.legend = props.legend;
-        extraOptions.legend_target = props.legendTarget;
+    // Some units are small enough that they can appear to the right of the tick
+    // marks on the y-axis. Everything else is shown as a label instead.
+    let marginLeft = defaultMarginLeft;
+    const yOptions = { domain: [minYToShow, maxYToShow], label: null, ticks: 3, tickFormat: tick => compactNumber.format(tick) };
+    if (appendableUnits.includes(props.yUnit)) {
+        yOptions.tickFormat = tick => compactNumber.format(tick) + props.yUnit;
+    } else if (props.yUnit) {
+        marginLeft = 80;
+        Object.assign(yOptions, { label: props.yUnit, labelAnchor: 'center', labelArrow: 'none' });
     }
 
-    if (props.markers) {
-        extraOptions.markers = props.markers;
-    }
+    // The x domain comes from the data alone, so that an annotation outside it
+    // neither widens the chart nor gets drawn.
+    const allXValues = points.map(point => point.x);
+    const xDomain = [Math.min(...allXValues), Math.max(...allXValues)];
+    const markersInRange = (props.markers || []).filter(marker => marker.x >= xDomain[0] && marker.x <= xDomain[1]);
 
-    // If we have more populations than metrics-graphics can assign unique
-    // colors to, we need to generate a unique color for each population
-    // manually.
-    //
-    // The settings passed to distinctColors were chosen such that the generated
-    // colors will be readable on a white background.
-    if (props.numPopulations > mgNumUniqueColors) {
-        extraOptions.colors = distinctColors({
+    const frameWidth = props.width - marginLeft - marginRight;
+    const xToPixel = x => xDomain[1] === xDomain[0] ? 0 : ((x - xDomain[0]) / (xDomain[1] - xDomain[0])) * frameWidth;
+    const markersWithRows = assignMarkerRows(markersInRange, xToPixel);
+    const markerRowCount = markersWithRows.length ? Math.max(...markersWithRows.map(marker => marker.row)) + 1 : 0;
+    const marginTop = (markerRowCount * markerLabelRowHeight) + 10;
+
+    const markerLabelMarks = [...Array(markerRowCount).keys()].map(row => Plot.text(
+        markersWithRows.filter(marker => marker.row === row),
+        { x: 'x', text: 'label', frameAnchor: 'top', dy: -((row + 1) * markerLabelRowHeight), className: 'chart-marker-label' }
+    ));
+
+    let colors;
+    if (props.numPopulations > paletteForUpToElevenPopulations.length) {
+        // The settings passed to distinctColors were chosen such that the
+        // generated colors will be readable on a white background.
+        colors = distinctColors({
             count: props.numPopulations,
             lightMin: 30,
             lightMax: 85,
             chromaMin: 10,
-        }).map(c => c.hex());
+        }).map(color => color.hex());
+    } else {
+        colors = paletteForUpToElevenPopulations;
+    }
+
+    // Large enough that every spot on the chart is within reach of some point,
+    // as the hover worked before.
+    const hoverRadius = Math.hypot(props.width, props.height);
+
+    // On a chart with several lines, the hovered value is labelled with its
+    // population's name in that population's color.
+    const renderReadout = point => (
+        <>
+            <span style={{ color: colors[legend.indexOf(point.population)] }}>
+                {props.data.length > 1 ? `${point.population} — ` : '— '}
+            </span>
+            {dateformat(point.x, 'mmmm d, yyyy', true) + ': ' + prettifyNumber(point.y) + yUnitString}
+        </>
+    );
+
+    // A chart with a single population is shaded below its line.
+    const maybeArea = props.data.length === 1 ? [
+        Plot.areaY(points, { x: 'x', y1: minYToShow, y2: 'y', curve: 'catmull-rom', fill: '#0000ff', fillOpacity: .2, className: 'chart-area' }),
+    ] : [];
+
+    const options = {
+        width: props.width,
+        height: props.height,
+        marginTop,
+        marginLeft,
+        marginRight,
+        className: 'chart-svg',
+        style: { fontFamily: 'inherit', fontSize: '11px' },
+        x: { type: 'utc', domain: xDomain, label: null, ticks: 6 },
+        y: yOptions,
+        color: { domain: legend, range: colors },
+        marks: [
+            Plot.frame({ anchor: 'left', stroke: '#b3b2b2', className: 'chart-axis-line' }),
+            Plot.frame({ anchor: 'bottom', stroke: '#b3b2b2', className: 'chart-axis-line' }),
+            Plot.ruleX(markersInRange, { x: 'x', stroke: '#b3b2b2', strokeDasharray: '3,1', className: 'chart-marker' }),
+            ...markerLabelMarks,
+            ...maybeArea,
+            Plot.line(points, { x: 'x', y: 'y', z: 'population', stroke: 'population', strokeWidth: 1, curve: 'catmull-rom', className: 'chart-line' }),
+            Plot.dot(singlePoints, { x: 'x', y: 'y', fill: 'population', r: 3, className: 'chart-point' }),
+            Plot.dot(points, Plot.pointer({ x: 'x', y: 'y', fill: 'population', r: 4, maxRadius: hoverRadius, className: 'chart-hover-point' })),
+        ],
+    };
+
+    let maybeLegend = null;
+    if (props.showLegend) {
+        maybeLegend = (
+            <div className="legend">
+                {legend.map((populationName, index) => (
+                    <span key={populationName} className="legend-entry" style={{ color: colors[index] }}>
+                        — {populationName}
+                    </span>
+                ))}
+            </div>
+        );
     }
 
     return (
-        <div className="metric chart">
-            <MetricsGraphics
-                data={props.data}
-                x_accessor="x"
-                y_accessor="y"
-
-                show_tooltips={false}
-
-                height={props.height}
-                width={props.width}
-
-                x_mouseover={dp => dateformat(dp.x, 'mmmm d, yyyy', true) + ': '}
-                y_mouseover={dp => prettifyNumber(dp.y) + yUnitString}
-
-                min_y={minYToShow}
-                max_y={maxYToShow}
-
-                interpolate={curveCatmullRom.alpha(0.5)}
-
-                {...extraOptions}
-            />
-        </div>
+        <>
+            <div className="metric chart">
+                <ObservablePlot options={options} renderReadout={renderReadout} />
+            </div>
+            {maybeLegend}
+        </>
     );
 };
