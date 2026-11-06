@@ -24,6 +24,7 @@ how to work in the code, not what the code is.
                                           # one isn't already running on :3000
     npm run test:playwright:recorded     # specs on the recording (CI's required check)
     npm run test:playwright:live         # the same specs on live data (CI's non-required check)
+    npm run test:playwright:deployed     # live minus @spa-fallback; the post-deploy smoke test
     npm run record:fixtures              # re-record tests/playwright/fixtures/
 
 Run one Vitest file directly: `npx vitest run src/tests/jest/Dashboard.test.jsx` (confirmed
@@ -221,8 +222,11 @@ means the recording is stale, and the fix is to update it in a separate pull req
 2. Run `npm run test:playwright:live`. It starts the local dev server and runs the specs against
    data.firefox.com.
 3. To test a deployed site instead, run
-   `PLAYWRIGHT_BASE_URL=https://data.firefox.com npm run test:playwright:live`. Any other
+   `PLAYWRIGHT_BASE_URL=https://data.firefox.com npm run test:playwright:deployed`. Any other
    environment works the same way; with `PLAYWRIGHT_BASE_URL` set, no local server is started.
+   `test:playwright:deployed` is `test:playwright:live` minus the `@spa-fallback` specs, which expect
+   unknown paths to fall back to `index.html`: the dev server does that, the deployed bucket returns
+   a plain 404 (see `docs/architecture/deploy.md`). The deploy workflow runs this after each deploy.
 4. If port 3000 is already in use by something else, start `npx vite --port 3001 --strictPort` in
    another terminal and run with `PLAYWRIGHT_BASE_URL=http://localhost:3001`.
 5. Expect failures when upstream data has changed. Read them as "the recording is stale", not "the

@@ -154,7 +154,7 @@ jobs:
                   set -euo pipefail
                   # First, straight from the bucket, bypassing the CDN: did the
                   # upload land?
-                  deployed="$(curl -fsS "https://storage.googleapis.com/$BUCKET/version.json" | node -p "JSON.parse(require('fs').readFileSync(0)).commit")"
+                  deployed="$(curl -fsS --max-time 20 "https://storage.googleapis.com/$BUCKET/version.json" | node -p "JSON.parse(require('fs').readFileSync(0)).commit")"
                   test "$deployed" = "$GITHUB_SHA" || { echo "version.json has $deployed, expected $GITHUB_SHA" >&2; exit 1; }
 
                   # Then through the public URL. The CDN can keep serving the
@@ -164,23 +164,27 @@ jobs:
                   # must run against the new build, not the old one.
                   bundle="$(grep -o 'assets/index-[^"]*\.js' build/index.html)"
                   routes="/ $(node -p "require('./src/config.json').dashboards.map(d => '/dashboard/' + d.key).join(' ')") /contact"
-                  for attempt in $(seq 1 30); do
+                  deadline=$((SECONDS + 300))
+                  while :; do
                       stale=""
                       for path in $routes; do
-                          curl -fsS "$URL$path" | grep -q "$bundle" || stale="$stale $path"
+                          curl -fsS --max-time 20 "$URL$path" | grep -q "$bundle" || stale="$stale $path"
                       done
                       if [ -z "$stale" ]; then
                           echo "all routes serve $bundle"
                           break
                       fi
-                      echo "attempt $attempt: still serving the previous build at:$stale"
+                      if [ "$SECONDS" -ge "$deadline" ]; then
+                          echo "the CDN did not pick up the new build within 5 minutes; still serving the previous build at:$stale" >&2
+                          exit 1
+                      fi
+                      echo "still serving the previous build at:$stale"
                       sleep 10
                   done
-                  test -z "$stale" || { echo "the CDN did not pick up the new build within 5 minutes" >&2; exit 1; }
 
                   # Unknown paths still 404, and the transposer's data is untouched.
-                  test "$(curl -s -o /dev/null -w '%{http_code}' "$URL/no-such-page")" = 404
-                  test "$(curl -s -o /dev/null -w '%{http_code}' "$URL/datasets/desktop/hardware/index.json")" = 200
+                  test "$(curl -s --max-time 20 -o /dev/null -w '%{http_code}' "$URL/no-such-page")" = 404
+                  test "$(curl -s --max-time 20 -o /dev/null -w '%{http_code}' "$URL/datasets/desktop/hardware/index.json")" = 200
 
     smoke-test:
         name: Smoke test ${{ needs.target.outputs.environment }}
@@ -202,9 +206,12 @@ jobs:
             - name: Install Playwright browsers
               run: npx playwright install --with-deps chromium
             - name: Run the live-data specs against the deployed site
-              # With PLAYWRIGHT_BASE_URL set, no local server is started. These
-              # specs read real data.firefox.com data, so a failure here can
-              # also mean upstream data changed; see CONTRIBUTING.md.
+              # With PLAYWRIGHT_BASE_URL set, no local server is started. The
+              # @spa-fallback specs are skipped: they need unknown paths to
+              # fall back to index.html, which the bucket does not do (the
+              # deploy job checks the 404 status itself). These specs read real
+              # data.firefox.com data, so a failure here can also mean upstream
+              # data changed; see CONTRIBUTING.md.
               env:
                   PLAYWRIGHT_BASE_URL: ${{ needs.target.outputs.url }}
-              run: npm run test:playwright:live
+              run: npm run test:playwright:deployed
