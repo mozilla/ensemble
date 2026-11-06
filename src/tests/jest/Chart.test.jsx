@@ -331,3 +331,66 @@ it('Hovering a legend entry reports its population, and leaving reports none', (
     fireEvent.mouseLeave(lowEntry);
     expect(onLegendHover).toHaveBeenLastCalledWith(null);
 });
+
+const threePopulations = [
+    [{ x: dates[0], y: 100 }, { x: dates[1], y: 110 }, { x: dates[2], y: 120 }],
+    [{ x: dates[0], y: 10 }, { x: dates[2], y: 12 }],
+    [{ x: dates[1], y: 1 }, { x: dates[2], y: 2 }],
+];
+const threeNames = ['Big', 'Medium', 'Small'];
+
+it('A hidden population is not drawn, and the others keep their colors and the dates', () => {
+    const shown = renderChart({ data: threePopulations, legend: threeNames, showLegend: true }).svg;
+    const { container, svg } = renderChart({ data: threePopulations, legend: threeNames, showLegend: true, hiddenPopulations: ['Big'] });
+
+    expect(lineStrokes(svg)).toEqual(['#05b378', '#db4437']);
+    expect(svg.scale('x').domain).toEqual(shown.scale('x').domain);
+    expect([...container.querySelectorAll('.legend-entry')].map(entry => entry.getAttribute('aria-pressed'))).toEqual(['false', 'true', 'true']);
+});
+
+it('The y range fits the populations that are shown', () => {
+    expect(yDomain({ data: threePopulations, legend: threeNames })[1]).toBeCloseTo(132);
+    expect(yDomain({ data: threePopulations, legend: threeNames, hiddenPopulations: ['Big'] })[1]).toBeCloseTo(13.2);
+});
+
+it('The last population with points that is shown can\'t be hidden', () => {
+    const { container } = renderChart({
+        data: [...threePopulations, []],
+        legend: [...threeNames, 'Empty'],
+        showLegend: true,
+        hiddenPopulations: ['Big', 'Medium'],
+    });
+    const disabled = [...container.querySelectorAll('.legend-entry')].map(entry => entry.disabled);
+
+    expect(disabled).toEqual([false, false, true, false]);
+});
+
+it('If every population with points is hidden, they are all shown', () => {
+    const svg = renderChart({ data: threePopulations, legend: threeNames, hiddenPopulations: threeNames }).svg;
+
+    expect(lineStrokes(svg)).toHaveLength(3);
+});
+
+it('Clicking a legend entry toggles its population, and focusing one highlights it', () => {
+    const onLegendToggle = vi.fn();
+    const onLegendHover = vi.fn();
+    const { container } = renderChart({ data: threePopulations, legend: threeNames, showLegend: true, hiddenPopulations: ['Small'], onLegendToggle, onLegendHover });
+    const [big, , small] = container.querySelectorAll('.legend-entry');
+
+    fireEvent.click(big);
+    expect(onLegendToggle).toHaveBeenLastCalledWith('Big');
+
+    fireEvent.focus(big);
+    expect(onLegendHover).toHaveBeenLastCalledWith('Big');
+    fireEvent.blur(big);
+    expect(onLegendHover).toHaveBeenLastCalledWith(null);
+
+    fireEvent.mouseEnter(small);
+    expect(onLegendHover).toHaveBeenLastCalledWith(null);
+});
+
+it('A highlighted population that is hidden doesn\'t fade the others', () => {
+    const svg = renderChart({ data: threePopulations, legend: threeNames, hiddenPopulations: ['Big'], highlightedPopulation: 'Big' }).svg;
+
+    expect(lineOpacities(svg).every(opacity => opacity === null || opacity === '1')).toBe(true);
+});

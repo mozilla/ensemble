@@ -38,7 +38,7 @@ async function hoveredValue(page) {
 }
 
 test('Changing the region redraws the chart with that region\'s data', async ({ page }) => {
-    const legend = page.locator('#metric-overview-1 .legend span');
+    const legend = page.locator('#metric-overview-1 .legend .legend-entry');
 
     await expect(legend).toHaveText([/Worldwide high/, /Worldwide low/]);
     expect(await hoveredValue(page)).toMatch(/: (1,000|500)$/);
