@@ -234,3 +234,14 @@ it('A chart with no plottable points shows a message instead', () => {
     expect(container.querySelector('.legend')).toBeNull();
     expect(container.querySelector('.chart-empty')).toHaveTextContent('No data to show for this metric.');
 });
+
+it('The y and x axes are drawn as grey lines along the left and bottom of the chart', () => {
+    const svg = renderChart({ data: twoPopulations }).svg;
+    const axisLines = [...svg.querySelectorAll('line.chart-axis-line')];
+
+    expect(axisLines).toHaveLength(2);
+    axisLines.forEach(line => expect(line.getAttribute('stroke')).toBe('#b3b2b2'));
+    const [left, bottom] = axisLines;
+    expect(left.getAttribute('x1')).toBe(left.getAttribute('x2'));
+    expect(bottom.getAttribute('y1')).toBe(bottom.getAttribute('y2'));
+});
