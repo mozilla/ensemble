@@ -1,16 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { HelmetProvider } from 'react-helmet-async';
 
 import DashboardContainer from '../../components/containers/DashboardContainer';
 
 
-// react-refetch reads window.fetch when connect() runs at import time, so the
-// stub has to exist before the container module loads.
-const fetchMock = vi.hoisted(() => {
-    const mock = vi.fn();
-    window.fetch = mock;
-    return mock;
-});
+let fetchMock;
 
 const source = 'https://data.example/user-activity';
 
@@ -43,13 +38,13 @@ const multiRegionDashboard = {
 };
 
 beforeEach(() => {
-    fetchMock.mockReset();
+    fetchMock = vi.spyOn(window, 'fetch');
 });
 
 it('Requests the dashboard index from its source and shows a spinner while waiting', async () => {
     fetchMock.mockImplementation(() => new Promise(() => {}));
 
-    const { container } = render(<DashboardContainer source={source} />);
+    const { container } = render(<DashboardContainer source={source} />, { wrapper: HelmetProvider });
 
     expect(container.querySelector('.spinner')).toBeInTheDocument();
     await waitFor(() => expect(requestedUrls()).toEqual([`${source}/index.json`]));
@@ -59,7 +54,7 @@ it('When the request fails, #dashboard-fetch-error is rendered', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     fetchMock.mockImplementation(() => jsonResponse({ error: 'Internal Server Error' }, 500));
 
-    const { container } = render(<DashboardContainer source={source} />);
+    const { container } = render(<DashboardContainer source={source} />, { wrapper: HelmetProvider });
 
     await waitFor(() => expect(container.querySelector('#dashboard-fetch-error')).toBeInTheDocument());
 });
@@ -67,7 +62,7 @@ it('When the request fails, #dashboard-fetch-error is rendered', async () => {
 it('When the request succeeds, the dashboard renders and metrics load for the default region', async () => {
     serveDashboard(multiRegionDashboard);
 
-    const { container } = render(<DashboardContainer source={source} />);
+    const { container } = render(<DashboardContainer source={source} />, { wrapper: HelmetProvider });
 
     await waitFor(() => expect(container.querySelector('#dashboard-title')).toHaveTextContent('User Activity'));
     expect(screen.getByLabelText('Region')).toHaveValue('Worldwide');
@@ -78,7 +73,7 @@ it('A preferred region saved in sessionStorage is used instead of the default', 
     sessionStorage.setItem('preferredRegion', 'Brazil');
     serveDashboard(multiRegionDashboard);
 
-    render(<DashboardContainer source={source} />);
+    render(<DashboardContainer source={source} />, { wrapper: HelmetProvider });
 
     await waitFor(() => expect(screen.getByLabelText('Region')).toHaveValue('Brazil'));
     await waitFor(() => expect(requestedUrls()).toContain(`${source}/Brazil/daily-usage/index.json`));
@@ -87,7 +82,7 @@ it('A preferred region saved in sessionStorage is used instead of the default', 
 it('Choosing a region saves it to sessionStorage and loads metrics for it', async () => {
     const user = userEvent.setup();
     serveDashboard(multiRegionDashboard);
-    render(<DashboardContainer source={source} />);
+    render(<DashboardContainer source={source} />, { wrapper: HelmetProvider });
     await screen.findByLabelText('Region');
 
     await user.selectOptions(screen.getByLabelText('Region'), 'Germany');
@@ -106,7 +101,7 @@ it('A dashboard with one region shows no region selector and ignores the saved p
         categories: ['default'],
     });
 
-    const { container } = render(<DashboardContainer source={source} />);
+    const { container } = render(<DashboardContainer source={source} />, { wrapper: HelmetProvider });
 
     await waitFor(() => expect(container.querySelector('#dashboard-title')).toHaveTextContent('Hardware'));
     expect(container.querySelector('#region-selector')).toBeNull();

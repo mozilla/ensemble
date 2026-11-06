@@ -3,13 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import MetricOverviewContainer from '../../components/containers/MetricOverviewContainer';
 
 
-// react-refetch reads window.fetch when connect() runs at import time, so the
-// stub has to exist before the container module loads.
-const fetchMock = vi.hoisted(() => {
-    const mock = vi.fn();
-    window.fetch = mock;
-    return mock;
-});
+let fetchMock;
 
 const pendingRequests = {};
 
@@ -36,7 +30,7 @@ function renderForRegion(activeRegion, rerender) {
 }
 
 beforeEach(() => {
-    fetchMock.mockReset();
+    fetchMock = vi.spyOn(window, 'fetch');
     fetchMock.mockImplementation(request => new Promise(resolve => {
         pendingRequests[request.url] = resolve;
     }));

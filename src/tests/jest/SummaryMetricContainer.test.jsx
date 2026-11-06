@@ -4,13 +4,7 @@ import SummaryMetric from '../../components/views/SummaryMetric';
 import SummaryMetricContainer from '../../components/containers/SummaryMetricContainer';
 
 
-// react-refetch reads window.fetch when connect() runs at import time, so the
-// stub has to exist before the container module loads.
-const fetchMock = vi.hoisted(() => {
-    const mock = vi.fn();
-    window.fetch = mock;
-    return mock;
-});
+let fetchMock;
 
 // The real view draws with d3 into a measured parent node.
 vi.mock('../../components/views/SummaryMetric', () => ({ default: vi.fn(() => null) }));
@@ -39,7 +33,7 @@ async function dataPassedToView() {
 }
 
 beforeEach(() => {
-    fetchMock.mockReset();
+    fetchMock = vi.spyOn(window, 'fetch');
     SummaryMetric.mockClear();
 });
 

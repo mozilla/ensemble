@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { HelmetProvider } from 'react-helmet-async';
 
 import Dashboard from '../../components/views/Dashboard';
 
@@ -17,7 +18,8 @@ it('When a description prop is present, p#dashboard-description is rendered', ()
         <Dashboard
             {...requiredProps}
             description="Example description"
-        />
+        />,
+        { wrapper: HelmetProvider }
     );
 
     expect(container.querySelector('#dashboard-description')).toHaveTextContent('Example description');
@@ -29,7 +31,8 @@ it('When a description prop is not present, an empty string, undefined, or null,
             <Dashboard
                 {...requiredProps}
                 {...descriptionProps}
-            />
+            />,
+            { wrapper: HelmetProvider }
         );
 
         expect(container.querySelector('#dashboard-description')).toBeNull();

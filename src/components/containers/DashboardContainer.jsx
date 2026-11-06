@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect } from 'react-refetch';
+import withFetch from '../../lib/withFetch';
 
 import Spinner from '../views/Spinner';
 import ErrorComponent from '../views/Error';
@@ -70,6 +70,4 @@ class DashboardContainer extends React.Component {
     }
 }
 
-export default connect(props => ({
-    dataFetch: { url: `${props.source}/index.json` },
-}))(DashboardContainer);
+export default withFetch(props => `${props.source}/index.json`)(DashboardContainer);
