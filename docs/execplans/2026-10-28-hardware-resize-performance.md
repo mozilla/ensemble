@@ -309,8 +309,8 @@ Playwright run reports every spec passing. After Milestone 4 that is 71 specs, i
    from wide to narrow and back. The charts redraw to the new width within about a second of letting
    go, and Firefox shows no slow-script dialog.
 2. On the same page, press Cmd + three times and Cmd − three times. The charts follow each step.
-3. Change the region to Germany. The lines animate from the old values to the new ones over about a
-   second, as before.
+3. Open <http://localhost:3000/dashboard/user-activity> and change the region to Germany. The lines
+   animate from the old values to the new ones over about a second, as before.
 4. `MetricsGraphics.test.jsx`'s size-only test fails if Milestone 2's change is reverted.
    `ChartContainer.test.jsx`'s five-events test fails if Milestone 3's debounce is reverted.
 5. `npm run test:playwright:recorded` passes, including `fixtures/resize.spec.js`. Reverting either
