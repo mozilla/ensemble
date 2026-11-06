@@ -135,6 +135,27 @@ test('A line breaks across weeks its population is missing from, and a point lef
     expect(await dot.evaluate(element => getComputedStyle(element).fill)).toBe(sparseColor);
 });
 
+test('Hovering a legend entry fades every other line until the pointer leaves', async ({ page }) => {
+    const metricOverview = page.locator('#metric-overview-1');
+    const opacities = () => metricOverview.locator('g.chart-line path')
+        .evaluateAll(paths => paths.map(path => getComputedStyle(path).strokeOpacity));
+
+    await expect(metricOverview.locator('g.chart-line path')).toHaveCount(expectedOrder.length);
+    expect(await opacities()).toEqual(['1', '1', '1']);
+
+    const bravo = metricOverview.locator('.legend .legend-entry').filter({ hasText: 'Bravo' });
+    const bravoColor = await bravo.evaluate(element => getComputedStyle(element).color);
+    await bravo.hover();
+
+    await expect.poll(opacities).toContain('0.15');
+    const bravoLine = await lineWithColor(metricOverview, bravoColor);
+    expect(await bravoLine.evaluate(element => getComputedStyle(element).strokeOpacity)).toBe('1');
+    expect((await opacities()).filter(opacity => opacity === '0.15')).toHaveLength(2);
+
+    await page.mouse.move(0, 0);
+    await expect.poll(opacities).toEqual(['1', '1', '1']);
+});
+
 test.describe('On a narrow screen', () => {
     test.use({ viewport: { width: 375, height: 800 } });
 

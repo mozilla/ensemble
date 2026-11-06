@@ -16,6 +16,7 @@ class ChartContainer extends React.Component {
         this.state = {
             chartWidth: 0,
             chartHeight: this.maxChartHeight,
+            highlightedPopulation: null,
         };
         this.parentNode = null;
     }
@@ -81,6 +82,10 @@ class ChartContainer extends React.Component {
         this._setChartSize();
         window.addEventListener('resize', this._onResize);
     }
+
+    _onLegendHover = populationName => {
+        this.setState({ highlightedPopulation: populationName });
+    };
 
     // Set the chart size state based on the real, rendered parent container.
     _setChartSize = () => {
@@ -165,6 +170,8 @@ class ChartContainer extends React.Component {
                 width={this.state.chartWidth}
                 height={this.state.chartHeight}
                 numPopulations={this.props.numPopulations}
+                highlightedPopulation={this.state.highlightedPopulation}
+                onLegendHover={this._onLegendHover}
 
                 yUnit = {this.props.axes.y && this.props.axes.y.unit}
                 xUnit = {this.props.axes.x && this.props.axes.x.unit}
