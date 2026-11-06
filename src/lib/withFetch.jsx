@@ -9,17 +9,17 @@ async function fetchJSON(url) {
         mode: 'cors',
     }));
 
+    if (!response.ok) {
+        // An error response may have no body, or one that isn't JSON.
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.error || body?.message || response.statusText);
+    }
+
     if (response.status === 204 || response.headers.get('content-length') === '0') {
         return undefined;
     }
 
-    const body = await response.json();
-
-    if (!response.ok) {
-        throw new Error(body.error || body.message || response.statusText);
-    }
-
-    return body;
+    return response.json();
 }
 
 /**

@@ -59,6 +59,18 @@ it('Rejects a non-2xx response with the message from its JSON body', async () =>
     expect(await screen.findByText('rejected: Metric not found')).toBeInTheDocument();
 });
 
+it('Rejects an empty non-2xx response with its status text', async () => {
+    render(<ShowFetchState slug="one" />);
+
+    pendingRequests['https://data.example/one.json'](new Response(null, {
+        status: 404,
+        statusText: 'Not Found',
+        headers: { 'Content-Length': '0' },
+    }));
+
+    expect(await screen.findByText('rejected: Not Found')).toBeInTheDocument();
+});
+
 it('Ignores a response that arrives after a newer request has started', async () => {
     const { rerender } = render(<ShowFetchState slug="slow" />);
     rerender(<ShowFetchState slug="fast" />);

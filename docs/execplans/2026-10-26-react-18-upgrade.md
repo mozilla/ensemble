@@ -66,6 +66,11 @@ and a consent banner.
       on `/nope`, and one GA4 `page_view` per route (`/`, then `/dashboard/hardware` after a click).
 - [x] (2026-10-26) Tried React 19.3.1 in Milestone 6. All suites passed, but charts appeared about
       600 ms later (see Surprises). Reverted to React 18.3.1 at the user's choice.
+- [x] (2026-11-06) Review fix: `withFetch` rejects an empty non-2xx response with its status text
+      instead of fulfilling with `undefined`. The new test "Rejects an empty non-2xx response with
+      its status text" failed before the fix with "Cannot read properties of undefined (reading
+      'title')". Vitest 15 files, 85 tests, exit 0; recorded Playwright 70 passed; lint clean;
+      build succeeds.
 - [ ] Follow-up, not in this plan: restructure lazy loading so React 19's Suspense throttle doesn't
       delay the charts, then move to React 19 and react-router 8.
 
@@ -179,6 +184,12 @@ and a consent banner.
   render and can run more than once under React 18.
   Date/Author: 2026-10-26, Stephanie Hobson.
 
+- Decision: reject an empty non-2xx response with its status text, where react-refetch fulfilled
+  it with `undefined`.
+  Rationale: all three containers read `dataFetch.value` once a fetch fulfills. An empty 404 or 500
+  therefore crashed them instead of showing their fetch-error view. Copilot raised this in review
+  on #465.
+  Date/Author: 2026-11-06, Stephanie Hobson.
 - Decision: stay on React 18.3.1. Keep react-helmet-async and GA4, which are what React 19 needed
   out of the way, and leave the React 19 bump to a follow-up.
   Rationale: React 19 passed every suite, but it delayed the charts by about 600 ms on fast
@@ -289,7 +300,8 @@ from `node_modules/react-refetch/lib/components/connect.js` and `lib/utils/build
    The tests read `.url` off the `Request` they receive.
 2. A non-2xx response rejects. The reason's message comes from the parsed JSON body (the `error`
    or `message` field, falling back to the status text). A 204 or empty body fulfills with
-   `undefined`.
+   `undefined`, even on a non-2xx status. `withFetch` doesn't copy that part: an empty 404 or 500
+   rejects with the status text (see Decision Log).
 3. It refetches in `componentDidUpdate` only when the URL string changes.
 4. On a refetch it first resets `dataFetch` to pending. `MetricOverviewContainer`'s
    `shouldComponentUpdate` returns false while pending. That is how the previous region's chart
