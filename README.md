@@ -25,7 +25,8 @@ Any of the environment variables in *.env* can be overridden. For example:
 
 Run `npm run build:app` to produce a static build in `build/` (see `CONTRIBUTING.md` for the full
 command reference). See [`docs/architecture/deploy.md`](docs/architecture/deploy.md) for where that build is
-hosted, how it has been uploaded, and who can write to the buckets. There is no deploy automation yet.
+hosted and how it is deployed: pushes to `main` deploy to stage and GitHub releases deploy to prod,
+via `.github/workflows/deploy.yml`.
 
 Any of the environment variables in *.env* can be overridden.
 

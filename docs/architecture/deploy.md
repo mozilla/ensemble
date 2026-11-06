@@ -1,8 +1,8 @@
 # Deploy
 
 This file describes where the built site is hosted, how requests reach it, who can change it, and
-how it has been uploaded in the past. It records what was verified on 2026-11-06; every claim names
-its source so it can be re-checked. There is no deploy automation. Building one is WT-1916.
+how it is deployed. It records what was verified on 2026-11-06; every claim names its source so it
+can be re-checked. Deploys run from `.github/workflows/deploy.yml`; see "How deploys work" below.
 
 For the data the site renders, see `data-pipeline.md`. For the code, see `frontend.md`.
 
@@ -24,7 +24,7 @@ Workgroup = a managed group of people granted access to GCP resources.
 | DNS | CNAME to `dfc-prod.data-static-websites.prod.webservices.mozgcp.net` | no vanity domain |
 | Front-end content | v1.2.1, commit `f655559`, uploaded 2025-05-12 | v1.2.0, commit `f0658a8`, uploaded 2023-06-14 |
 | `datasets/` content | rewritten weekly by the transposer | snapshot from 2023-06-19, never updated |
-| Deep links | work (see below) | return 404 |
+| Deep links | work (see below) | 404 until the first deploy from `main` |
 
 Both buckets belong to the `data-static-websites` tenant in
 [`mozilla/webservices-infra`](https://github.com/mozilla/webservices-infra/tree/main/data-static-websites),
@@ -83,12 +83,12 @@ publicly readable through the bucket's default object ACL.
 around them: no console access to the load balancer, CDN, logs, or monitoring. Data Engineering
 said in DENG-11646 that they will make no further changes to the website side.
 
-No GitHub Actions identity can write to either bucket. Nothing in `data-static-websites/` references
-Workload Identity Federation. The pattern other tenants use is in
-`webservices-infra/springfield/tf/prod/bucket.tf`: a service account, `roles/iam.workloadIdentityUser`
-bound to a principal of the form
-`principal://iam.googleapis.com/projects/324168772199/locations/global/workloadIdentityPools/github-actions/subject/repo:<org>/<repo>:environment:<env>`,
-and `roles/storage.objectAdmin` on the bucket.
+GitHub Actions deploys through a dedicated `ensemble-deploy` service account in each project,
+defined in `data-static-websites/tf/{stage,prod}/ensemble_deploy.tf` (webservices-infra PR #13480,
+merged 2026-11-06). It holds `roles/storage.objectUser` on the ensemble bucket only, and
+`roles/iam.workloadIdentityUser` for the principal
+`principal://iam.googleapis.com/projects/324168772199/locations/global/workloadIdentityPools/github-actions/subject/repo:mozilla/ensemble:environment:<stage|prod>`,
+so only a job admitted to the matching GitHub environment can impersonate it. No keys exist anywhere.
 
 ## How the data shares the bucket
 
@@ -104,6 +104,31 @@ missing from the source (`gsutil rsync -d`, `gcloud storage rsync --delete-unmat
 run against the bucket root would delete the live data. Any deploy must exclude `datasets/` or sync
 only its own prefixes.
 
+## How deploys work
+
+`.github/workflows/deploy.yml`. A push to `main` deploys to stage. Publishing a GitHub release (not
+a pre-release) deploys to prod. A manual run deploys the current ref to a chosen environment; the
+`prod` GitHub environment only accepts tags, so a prod re-run or rollback is "run the workflow from
+tag X". Deploys to one environment are serialised and never cancelled midway.
+
+The job authenticates with Workload Identity Federation (no secrets or variables in the repo), builds,
+then uploads in this order:
+
+1. `assets/`, with `cache-control: public, max-age=31536000, immutable`.
+2. `img/`, `manifest.json`, `contribute.json` and the Search Console file, one hour.
+3. `index.html` and `version.json`, `no-cache, max-age=0, must-revalidate`, last so a visitor never
+   sees a new page before its assets exist.
+4. A copy of `index.html` at `dashboard/<key>` for each dashboard in `src/config.json`, plus
+   `contact`, with an explicit `text/html` content type. These are the deep links.
+
+Nothing is deleted: no rsync, no delete flags. `datasets/` is never touched, and old hashed assets
+stay in the bucket because the CDN can serve a stale `index.html` for a while after an upload.
+
+The workflow then checks `version.json` straight from the bucket, waits (bounded at five minutes) for
+the public URL to serve the new bundle at the root and every route, checks an unknown path still 404s
+and the hardware dataset still answers, and finally runs the live Playwright project against the
+deployed URL as a smoke test. A failed smoke test does not undo the deploy; it flags it.
+
 ## How deploys have happened
 
 - Until 2018-07 the site ran on Heroku with the create-react-app buildpack (`app.json`,
@@ -114,15 +139,15 @@ only its own prefixes.
 - 2023-06 Data Engineering created the GCS buckets above and uploaded v1.2.0 to stage.
 - 2025-05-12 someone uploaded v1.2.1 to prod by hand, then the four route copies. No record of the
   commands used exists.
+- 2026-11 the GitHub Actions workflow above replaced hand uploads (WT-1916).
 
 ## Open questions
 
 - What else, if anything, is in the prod bucket besides the v1.2.1 build and `datasets/`. Needs a
   bucket listing with authenticated `gcloud`.
-- Whether `legacyBucketWriter` is enough to overwrite objects and set `cache-control` on upload.
-  Test on stage, never on prod.
-- Whether a stale-while-revalidate window of up to a day after a deploy is acceptable, given that
-  cache purging is not available with bucket-only access.
+- The CDN policy still forces caching and rewrites every `cache-control` to `public,max-age=0`, so
+  the headers set at upload are not yet honoured at the edge. Switching the ensemble entry to
+  `CACHE_ALL_STATIC` with a long `max_ttl` is a pending follow-up in webservices-infra.
 
 ## Sources
 
@@ -133,4 +158,4 @@ only its own prefixes.
   `mozilla/ensemble-transposer` `src/processData.js`, `main` on 2026-11-06.
 - Live response headers from `data.firefox.com`, the stage hostname, and
   `storage.googleapis.com/<bucket>/<object>` for both buckets, 2026-11-06.
-- Jira DENG-11646 and webservices-infra PR #12598.
+- Jira DENG-11646, webservices-infra PR #12598 and PR #13480.
