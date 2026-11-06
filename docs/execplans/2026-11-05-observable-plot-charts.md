@@ -57,6 +57,9 @@ To see it working, run `npm start`, open `http://localhost:3000/dashboard/user-a
 - Observation: the first HTML readout moved the page on hover, in two ways. When empty, it was 21.6px tall (`min-height: 1.5em`). When filled, it took the page's 28px `line-height`, which pushed the chart down 6.4px. Fixing the height with `white-space: nowrap` caused a second shift. A long population name then widened the chart's container to 628px on a 375px screen, the legend reflowed from 104px to 38px tall, and the next metric jumped 66px. `.chart-readout` now has a fixed 28px height and line-height, `nowrap` with an ellipsis, and `contain: inline-size`, so its text cannot size anything around it. stylint doesn't know `contain`, so that line carries `// @stylint ignore`.
   Evidence: the "hovering and clicking a chart doesn't move anything on the page" cases in `fixtures/region-data.spec.js`, at 1280px and 375px, fail without these styles and pass with them.
 
+- Observation: metrics-graphics drew grey axis lines (`#b3b2b2`) along the left and bottom of the plotting area, and Plot draws only ticks and labels by default. `Plot.frame({ anchor: 'left' })` and `Plot.frame({ anchor: 'bottom' })` draw them back. An anchored frame renders a bare `<line>` that carries the `className` and `stroke` itself, with no `<g>` around it, so tests select `line.chart-axis-line`.
+  Evidence: `class Frame` in `node_modules/@observablehq/plot/dist/plot.js`, and the "y and x axes are drawn as grey lines" case in `src/tests/jest/Chart.test.jsx`.
+
 - Observation: drawing with Plot makes resizing the hardware dashboard about 100 times faster, in both browsers.
   Evidence: the five-step resize timings in Artifacts and Notes, 55,375 ms down to 559 ms in Chromium and 66,761 ms down to 720 ms in Firefox.
 
@@ -445,7 +448,7 @@ At the end of Milestone 2, these exist:
 - `src/components/views/Chart.jsx`: the same props as today, minus `legendTarget`: `data`, `legend`, `showLegend`, `markers`, `width`, `height`, `numPopulations`, `yUnit`, `suggestedYMin`, and `suggestedYMax`. It renders the chart and legend, or the empty message.
 - Stable class names that tests rely on:
   - `chart-svg` is on the `<svg>`.
-  - `chart-line`, `chart-point`, `chart-marker`, `chart-marker-label`, `chart-hover-point`, and `chart-readout` are each on a mark's `<g>`.
+  - `chart-line`, `chart-point`, `chart-marker`, `chart-marker-label`, and `chart-hover-point` are each on a mark's `<g>`. `chart-axis-line` is on each of the two axis `<line>`s, and `chart-readout` on the HTML readout above the chart.
   - `legend-entry` is on each legend `<span>`.
   - `chart-empty` is on the no-data message.
 
