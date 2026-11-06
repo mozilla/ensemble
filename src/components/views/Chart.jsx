@@ -111,18 +111,28 @@ export default props => {
         return <p className="chart-empty">No data to show for this metric.</p>;
     }
 
+    // Populations hidden from the legend are left out of everything drawn and
+    // of the y range, but still count toward the dates and the x range, so the
+    // chart doesn't shift sideways when one is hidden.
+    let hiddenPopulations = props.hiddenPopulations || [];
+    if (points.every(point => hiddenPopulations.includes(point.population))) {
+        hiddenPopulations = [];
+    }
+    const visiblePopulations = legend.filter(populationName => !hiddenPopulations.includes(populationName));
+    const visiblePoints = points.filter(point => visiblePopulations.includes(point.population));
+
     const chartDates = [...new Set(points.map(point => +point.x))].sort((dateA, dateB) => dateA - dateB);
-    const linePoints = legend.flatMap(populationName => withGaps(
+    const linePoints = visiblePopulations.flatMap(populationName => withGaps(
         points.filter(point => point.population === populationName),
         chartDates,
         populationName
     ));
-    const loosePoints = legend.flatMap(populationName => isolatedPoints(
+    const loosePoints = visiblePopulations.flatMap(populationName => isolatedPoints(
         linePoints.filter(point => point.population === populationName)
     ));
 
     // The minimum and maximum y values among all populations.
-    const allYValues = points.map(point => point.y);
+    const allYValues = visiblePoints.map(point => point.y);
     const maxY = Math.max(...allYValues);
     const minY = Math.min(...allYValues);
 
@@ -199,6 +209,11 @@ export default props => {
         colors = paletteForUpToElevenPopulations;
     }
 
+    // While a legend entry is hovered, every other population fades so that
+    // the hovered one stands out.
+    const highlightedPopulation = visiblePopulations.includes(props.highlightedPopulation) ? props.highlightedPopulation : null;
+    const opacityFor = point => (highlightedPopulation && point.population !== highlightedPopulation ? .15 : 1);
+
     // Large enough that every spot on the chart is within reach of some point,
     // as the hover worked before.
     const hoverRadius = Math.hypot(props.width, props.height);
@@ -236,9 +251,9 @@ export default props => {
             Plot.ruleX(markersInRange, { x: 'x', stroke: '#b3b2b2', strokeDasharray: '3,1', className: 'chart-marker' }),
             ...markerLabelMarks,
             ...maybeArea,
-            Plot.line(linePoints, { x: 'x', y: 'y', z: 'population', stroke: 'population', strokeWidth: 1, curve: 'catmull-rom', className: 'chart-line' }),
-            Plot.dot(loosePoints, { x: 'x', y: 'y', fill: 'population', r: 3, className: 'chart-point' }),
-            Plot.dot(points, Plot.pointer({ x: 'x', y: 'y', fill: 'population', r: 4, maxRadius: hoverRadius, className: 'chart-hover-point' })),
+            Plot.line(linePoints, { x: 'x', y: 'y', z: 'population', stroke: 'population', strokeOpacity: opacityFor, strokeWidth: 1, curve: 'catmull-rom', className: 'chart-line' }),
+            Plot.dot(loosePoints, { x: 'x', y: 'y', fill: 'population', fillOpacity: opacityFor, r: 3, className: 'chart-point' }),
+            Plot.dot(visiblePoints, Plot.pointer({ x: 'x', y: 'y', fill: 'population', r: 4, maxRadius: hoverRadius, className: 'chart-hover-point' })),
         ],
     };
 
@@ -246,11 +261,31 @@ export default props => {
     if (props.showLegend) {
         maybeLegend = (
             <div className="legend">
-                {legend.map((populationName, index) => (
-                    <span key={populationName} className="legend-entry" style={{ color: colors[index] }}>
-                        — {populationName}
-                    </span>
-                ))}
+                {legend.map((populationName, index) => {
+                    const hidden = hiddenPopulations.includes(populationName);
+                    // Hiding the last population with points left would leave
+                    // nothing to draw.
+                    const onlyOneShown = !hidden && visiblePoints.length > 0
+                        && visiblePoints.every(point => point.population === populationName);
+                    return (
+                        <button
+                            key={populationName}
+                            type="button"
+                            className="legend-entry"
+                            style={{ color: colors[index] }}
+                            aria-pressed={!hidden}
+                            disabled={onlyOneShown}
+                            title={onlyOneShown ? null : `${hidden ? 'Show' : 'Hide'} ${populationName}`}
+                            onClick={() => props.onLegendToggle?.(populationName)}
+                            onMouseEnter={() => props.onLegendHover?.(hidden ? null : populationName)}
+                            onMouseLeave={() => props.onLegendHover?.(null)}
+                            onFocus={() => props.onLegendHover?.(hidden ? null : populationName)}
+                            onBlur={() => props.onLegendHover?.(null)}
+                        >
+                            — {populationName}
+                        </button>
+                    );
+                })}
             </div>
         );
     }

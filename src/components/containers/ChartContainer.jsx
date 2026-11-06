@@ -16,6 +16,8 @@ class ChartContainer extends React.Component {
         this.state = {
             chartWidth: 0,
             chartHeight: this.maxChartHeight,
+            highlightedPopulation: null,
+            hiddenPopulations: [],
         };
         this.parentNode = null;
     }
@@ -81,6 +83,32 @@ class ChartContainer extends React.Component {
         this.setChartSize();
         window.addEventListener('resize', this.setChartSize);
     }
+
+    componentDidUpdate(previousProps) {
+        // Another region's data can have different populations, so choices
+        // made in the legend don't carry over.
+        if (previousProps.data !== this.props.data) {
+            this.setState({ highlightedPopulation: null, hiddenPopulations: [] });
+        }
+    }
+
+    _onLegendHover = populationName => {
+        this.setState({ highlightedPopulation: populationName });
+    };
+
+    // A population that is shown again is under the pointer, so it is
+    // highlighted; one that is hidden can't be.
+    _onLegendToggle = populationName => {
+        this.setState(({ hiddenPopulations }) => {
+            const hiding = !hiddenPopulations.includes(populationName);
+            return {
+                hiddenPopulations: hiding
+                    ? [...hiddenPopulations, populationName]
+                    : hiddenPopulations.filter(hiddenName => hiddenName !== populationName),
+                highlightedPopulation: hiding ? null : populationName,
+            };
+        });
+    };
 
     // Set the chart size state based on the real, rendered parent container.
     setChartSize = () => {
@@ -153,6 +181,10 @@ class ChartContainer extends React.Component {
                 width={this.state.chartWidth}
                 height={this.state.chartHeight}
                 numPopulations={this.props.numPopulations}
+                highlightedPopulation={this.state.highlightedPopulation}
+                onLegendHover={this._onLegendHover}
+                hiddenPopulations={this.state.hiddenPopulations}
+                onLegendToggle={this._onLegendToggle}
 
                 yUnit = {this.props.axes.y && this.props.axes.y.unit}
                 xUnit = {this.props.axes.x && this.props.axes.x.unit}

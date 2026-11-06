@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 
 import Chart from '../../components/views/Chart';
 import ChartContainer from '../../components/containers/ChartContainer';
@@ -132,4 +132,46 @@ it('A population whose points are all null keeps its legend entry and passes an 
 
     expect(chartProps.legend).toEqual(['Present', 'Missing']);
     expect(chartProps.data).toEqual([[{ x: new Date('2026-01-01'), y: 3 }], []]);
+});
+
+it('Hovering a legend entry highlights that population, and leaving it clears the highlight', () => {
+    const chartProps = renderChart({
+        data: { populations: { High: [{ x: '2026-01-01', y: 9 }], Low: [{ x: '2026-01-01', y: 1 }] } },
+    });
+    expect(chartProps.highlightedPopulation).toBeNull();
+
+    act(() => chartProps.onLegendHover('Low'));
+    expect(Chart.mock.calls.at(-1)[0].highlightedPopulation).toBe('Low');
+
+    act(() => chartProps.onLegendHover(null));
+    expect(Chart.mock.calls.at(-1)[0].highlightedPopulation).toBeNull();
+});
+
+it('Clicking a legend entry hides its population, and clicking again shows and highlights it', () => {
+    const chartProps = renderChart({
+        data: { populations: { High: [{ x: '2026-01-01', y: 9 }], Low: [{ x: '2026-01-01', y: 1 }] } },
+    });
+    expect(chartProps.hiddenPopulations).toEqual([]);
+
+    act(() => chartProps.onLegendHover('Low'));
+    act(() => chartProps.onLegendToggle('Low'));
+    expect(Chart.mock.calls.at(-1)[0]).toMatchObject({ hiddenPopulations: ['Low'], highlightedPopulation: null });
+
+    act(() => chartProps.onLegendToggle('Low'));
+    expect(Chart.mock.calls.at(-1)[0]).toMatchObject({ hiddenPopulations: [], highlightedPopulation: 'Low' });
+});
+
+it('New data, such as another region\'s, clears hidden and highlighted populations', () => {
+    const firstData = { populations: { High: [{ x: '2026-01-01', y: 9 }], Low: [{ x: '2026-01-01', y: 1 }] } };
+    const { rerender } = render(
+        <div id="application"><main><ChartContainer axes={{}} data={firstData} /></main></div>
+    );
+    act(() => Chart.mock.calls.at(-1)[0].onLegendToggle('Low'));
+    act(() => Chart.mock.calls.at(-1)[0].onLegendHover('High'));
+    expect(Chart.mock.calls.at(-1)[0]).toMatchObject({ hiddenPopulations: ['Low'], highlightedPopulation: 'High' });
+
+    const secondData = { populations: { High: [{ x: '2026-01-01', y: 5 }], Low: [{ x: '2026-01-01', y: 2 }] } };
+    rerender(<div id="application"><main><ChartContainer axes={{}} data={secondData} /></main></div>);
+
+    expect(Chart.mock.calls.at(-1)[0]).toMatchObject({ hiddenPopulations: [], highlightedPopulation: null });
 });

@@ -42,7 +42,7 @@ test('Every population is drawn once, in order, with a matching legend entry', a
     const metricOverview = page.locator('#metric-overview-1');
 
     await expect(metricOverview.locator('g.chart-line path')).toHaveCount(expectedOrder.length);
-    await expect(metricOverview.locator('.legend span')).toHaveText(expectedOrder.map(populationName => new RegExp(populationName)));
+    await expect(metricOverview.locator('.legend .legend-entry')).toHaveText(expectedOrder.map(populationName => new RegExp(populationName)));
 
     let previousTop = -Infinity;
     const colors = new Set();
@@ -133,4 +133,60 @@ test('A line breaks across weeks its population is missing from, and a point lef
     const dot = metricOverview.locator('g.chart-point circle');
     await expect(dot).toHaveCount(1);
     expect(await dot.evaluate(element => getComputedStyle(element).fill)).toBe(sparseColor);
+});
+
+test('Hovering a legend entry fades every other line until the pointer leaves', async ({ page }) => {
+    const metricOverview = page.locator('#metric-overview-1');
+    const opacities = () => metricOverview.locator('g.chart-line path')
+        .evaluateAll(paths => paths.map(path => getComputedStyle(path).strokeOpacity));
+
+    await expect(metricOverview.locator('g.chart-line path')).toHaveCount(expectedOrder.length);
+    expect(await opacities()).toEqual(['1', '1', '1']);
+
+    const bravo = metricOverview.locator('.legend .legend-entry').filter({ hasText: 'Bravo' });
+    const bravoColor = await bravo.evaluate(element => getComputedStyle(element).color);
+    await bravo.hover();
+
+    await expect.poll(opacities).toContain('0.15');
+    const bravoLine = await lineWithColor(metricOverview, bravoColor);
+    expect(await bravoLine.evaluate(element => getComputedStyle(element).strokeOpacity)).toBe('1');
+    expect((await opacities()).filter(opacity => opacity === '0.15')).toHaveLength(2);
+
+    await page.mouse.move(0, 0);
+    await expect.poll(opacities).toEqual(['1', '1', '1']);
+});
+
+test('Clicking a legend entry hides its line until it is clicked again', async ({ page }) => {
+    const metricOverview = page.locator('#metric-overview-1');
+    const lines = metricOverview.locator('g.chart-line path');
+    const alpha = metricOverview.locator('.legend .legend-entry').filter({ hasText: 'Alpha' });
+    const alphaColor = await alpha.evaluate(element => getComputedStyle(element).color);
+
+    await alpha.click();
+    await expect(lines).toHaveCount(2);
+    expect(await lineWithColor(metricOverview, alphaColor)).toBeNull();
+    await expect(alpha).toHaveAttribute('aria-pressed', 'false');
+    expect(await alpha.evaluate(element => getComputedStyle(element).textDecorationLine)).toBe('line-through');
+
+    await alpha.click();
+    await expect(lines).toHaveCount(3);
+    expect(await lineWithColor(metricOverview, alphaColor)).not.toBeNull();
+    await expect(alpha).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('Legend entries work from the keyboard, and the last line shown can\'t be hidden', async ({ page }) => {
+    const metricOverview = page.locator('#metric-overview-1');
+    const lines = metricOverview.locator('g.chart-line path');
+    const entries = metricOverview.locator('.legend .legend-entry');
+
+    await entries.nth(0).focus();
+    await expect.poll(() => lines.evaluateAll(paths => paths.filter(path => getComputedStyle(path).strokeOpacity === '0.15').length)).toBe(2);
+
+    await page.keyboard.press('Enter');
+    await expect(lines).toHaveCount(2);
+    await entries.nth(1).focus();
+    await page.keyboard.press('Space');
+    await expect(lines).toHaveCount(1);
+
+    await expect(entries.nth(2)).toBeDisabled();
 });
