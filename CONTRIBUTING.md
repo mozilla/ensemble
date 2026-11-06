@@ -58,8 +58,7 @@ plain text, so a real credential never belongs in one, and this `.env` file deli
   plus `SummaryMetric.jsx` (d3 + `React.createRef`), `Spinner.jsx`, `MetricOverview.jsx`,
   `Footer.jsx`, and `LazyBoundary.jsx` (an error boundary, which must be a class component).
 - Leading underscore for private class-property handlers (`_onRegionChange`, `_drawChart`,
-  `_setChartWidth`) — applied inconsistently (`setChartSize` in `ChartContainer.jsx`); prefer the
-  underscore in new code.
+  `_setChartSize`). Keep using it in new code.
 - Locals named `maybeX` hold a JSX fragment or `null` (`maybeDescription`, `maybeSummaryMetrics`,
   `maybeRegion`, `maybeGraphURL`). Keep the idiom.
 - Styles attach via a global CSS side-effect import of the generated file at the top of the
@@ -226,8 +225,8 @@ means the recording is stale, and the fix is to update it in a separate pull req
 4. If port 3000 is already in use by something else, start `npx vite --port 3001 --strictPort` in
    another terminal and run with `PLAYWRIGHT_BASE_URL=http://localhost:3001`.
 5. Expect failures when upstream data has changed. Read them as "the recording is stale", not "the
-   code is broken". The hardware dashboard renders slowly on the full live data (#409), so its
-   "Charts render" test can need the retry.
+   code is broken". The hardware dashboard is slow to draw on first load with the full live
+   data, so its "Charts render" test can need the retry.
 
 ### Updating the recorded data
 
