@@ -96,9 +96,9 @@ To see it working, run `npm start`, open `http://localhost:3000/dashboard/user-a
   Rationale: #409 (the hardware dashboard redraws slowly on resize) has its own branch. A measured regression must still be investigated and reported to the user before this work merges.
   Date/Author: 2026-11-05, Stephanie Hobson.
 
-- Decision: work on the placeholder branch `observable-plot-charts` until there is an issue, then rename it `<issue>--observable-plot-charts`.
-  Rationale: chosen by the user on 2026-11-05. `AGENTS.md` names branches after issues, and no issue exists for this work yet. When one does, restate it in Context and Orientation.
-  Date/Author: 2026-11-05, Stephanie Hobson.
+- Decision: work on the placeholder branch `observable-plot-charts` until there is an issue, then rename it. Issue #481 was filed on 2026-11-06, and the branch is now `481--observable-plot-charts`.
+  Rationale: chosen by the user on 2026-11-05. `AGENTS.md` names branches after issues, and no issue existed when the work started.
+  Date/Author: 2026-11-05, updated 2026-11-06, Stephanie Hobson.
 
 - Decision: test the drawn chart in Vitest rather than mocking the chart component.
   Rationale: the Milestone 1 spike showed Plot renders real SVG in jsdom: paths with `stroke` attributes, `className` on each mark's `<g>`, rules, and `svg.scale('y').domain`. Pointer hover cannot be triggered in jsdom, so the readout stays a Playwright concern.
@@ -143,6 +143,8 @@ Tests grew from 84 to 92 in Vitest and from 70 to 78 recorded Playwright cases. 
 Lessons. The plan's first draft treated "same chart" as lines, colors, and hover. It missed metrics-graphics' quieter defaults: the area fill, tick counts and formats, line weight, and the colored name in the readout. Only side-by-side screenshots found those. The two reviews before execution found real problems: unsorted dates on every User Activity chart, and labels that one text mark could not stagger. Both would have shipped. The Milestone 1 spike confirmed them cheaply.
 
 ## Context and Orientation
+
+This work tracks issue #481, <https://github.com/mozilla/ensemble/issues/481>, "Replace metrics-graphics with Observable Plot". It was filed after the work began and records this plan's outcome: why metrics-graphics has to go, the choice of Observable Plot over plain d3, Chart.js, and the metrics-graphics 3.0 beta, the three deliberate visible changes, and the resize and bundle-size results. It links two related issues. #409 is the slow hardware-dashboard resize, which this change largely addresses. #339 is lines drawn across weeks where a population is missing from the data. It still happens after this change and is left for its own change, outlined in a comment on that issue.
 
 The app is a React 18 single-page app built with Vite. It fetches all its data at runtime from data.firefox.com. Read `AGENTS.md` at the repository root for the conventions. The parts that matter here follow. All paths describe the `react-18-upgrade` branch.
 
@@ -325,7 +327,7 @@ Run everything from the repository root, `/Users/shobson/Sites/ensemble`, on Nod
 
 Setup and baselines (Milestone 1):
 
-    git switch -c observable-plot-charts react-18-upgrade    # already done; rename once there is an issue
+    git switch -c 481--observable-plot-charts react-18-upgrade    # already done
     npm install
     npm run build:css
     npm run test:jest                 # record "N files, M tests passing"
