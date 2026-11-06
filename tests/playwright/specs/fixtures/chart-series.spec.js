@@ -113,6 +113,28 @@ test('A line is drawn in date order even when its data is not', async ({ page })
     readoutDates.slice(1).forEach((date, index) => expect(date).toBeGreaterThan(readoutDates[index]));
 });
 
+test('A line breaks across weeks its population is missing from, and a point left on its own is a dot', async ({ page }) => {
+    // Oldest first. Sparse is missing two runs of weeks, leaving one week on
+    // its own between them.
+    const oldestFirst = dashboard.dates.toSorted();
+    const sparseWeeks = oldestFirst.filter((date, index) => ![3, 4, 6, 7].includes(index));
+    await reloadWithFirstMetric(page, {
+        Steady: oldestFirst.map(date => ({ x: date, y: 300 })),
+        Sparse: sparseWeeks.map(date => ({ x: date, y: 100 })),
+    });
+    const metricOverview = page.locator('#metric-overview-1');
+    const sparseColor = await metricOverview.locator('.legend .legend-entry').filter({ hasText: 'Sparse' })
+        .evaluate(element => getComputedStyle(element).color);
+
+    const sparseLine = await lineWithColor(metricOverview, sparseColor);
+    const visiblePieces = (await sparseLine.getAttribute('d')).split('M').filter(piece => /[LC]/.test(piece));
+    expect(visiblePieces, 'the line is drawn in two pieces, either side of the gaps').toHaveLength(2);
+
+    const dot = metricOverview.locator('g.chart-point circle');
+    await expect(dot).toHaveCount(1);
+    expect(await dot.evaluate(element => getComputedStyle(element).fill)).toBe(sparseColor);
+});
+
 test.describe('On a narrow screen', () => {
     test.use({ viewport: { width: 375, height: 800 } });
 
