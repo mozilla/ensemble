@@ -293,3 +293,64 @@ it('The y and x axes are drawn as grey lines along the left and bottom of the ch
     expect(left.getAttribute('x1')).toBe(left.getAttribute('x2'));
     expect(bottom.getAttribute('y1')).toBe(bottom.getAttribute('y2'));
 });
+
+const weeks = ['2026-01-04', '2026-01-11', '2026-01-18', '2026-01-25', '2026-02-01', '2026-02-08'].map(date => new Date(date));
+
+// Counts the visible pieces of a line. Plot writes an isolated point as a
+// lone move-to, which draws nothing, so only pieces that go somewhere count.
+function lineSegments(svg, stroke) {
+    const path = [...svg.querySelectorAll('g.chart-line path')].find(line => line.getAttribute('stroke') === stroke);
+    return path.getAttribute('d').split('M').filter(piece => /[LC]/.test(piece)).length;
+}
+
+it('A population\'s line breaks across weeks it is missing from, when other populations have those weeks', () => {
+    const svg = renderChart({
+        data: [
+            weeks.map((x, index) => ({ x, y: 10 + index })),
+            [weeks[0], weeks[1], weeks[4], weeks[5]].map(x => ({ x, y: 5 })),
+        ],
+    }).svg;
+
+    expect(lineSegments(svg, '#4040e8')).toBe(1);
+    expect(lineSegments(svg, '#05b378')).toBe(2);
+    expect(svg.querySelectorAll('g.chart-point circle')).toHaveLength(0);
+});
+
+it('A point with a gap on both sides is drawn as a dot', () => {
+    const svg = renderChart({
+        data: [
+            weeks.map((x, index) => ({ x, y: 10 + index })),
+            [weeks[0], weeks[1], weeks[3], weeks[5]].map(x => ({ x, y: 5 })),
+        ],
+    }).svg;
+
+    expect(lineSegments(svg, '#05b378')).toBe(1);
+    const dots = [...svg.querySelectorAll('g.chart-point circle')];
+    expect(dots).toHaveLength(2);
+    dots.forEach(dot => expect(dot.getAttribute('fill')).toBe('#05b378'));
+});
+
+it('A week that no population has does not break the lines', () => {
+    const everyWeekButOne = weeks.filter((x, index) => index !== 2);
+    const svg = renderChart({
+        data: [
+            everyWeekButOne.map((x, index) => ({ x, y: 10 + index })),
+            everyWeekButOne.map(x => ({ x, y: 5 })),
+        ],
+    }).svg;
+
+    expect(lineSegments(svg, '#4040e8')).toBe(1);
+    expect(lineSegments(svg, '#05b378')).toBe(1);
+});
+
+it('A population that starts later than the others is drawn from its first point, with no gap before it', () => {
+    const svg = renderChart({
+        data: [
+            weeks.map((x, index) => ({ x, y: 10 + index })),
+            weeks.slice(3).map(x => ({ x, y: 5 })),
+        ],
+    }).svg;
+
+    expect(lineSegments(svg, '#05b378')).toBe(1);
+    expect(svg.querySelectorAll('g.chart-point circle')).toHaveLength(0);
+});

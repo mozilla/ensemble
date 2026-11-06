@@ -282,7 +282,7 @@ style indirection layer, so a failure points straight at the markup it cares abo
 | Renaming a landmark ID | Breaks Playwright selectors silently. |
 | `build:version.json` | Needs `build/` to already exist and `git` on PATH; must follow `build:app`. |
 | `no-shadow` / `no-redeclare` with `builtinGlobals` | Naming a local `name`, `status`, `history`, `event` is a hard error. |
-| Observable Plot charts and `g.chart-line path` | A population with a single data point draws a zero-size line path, shown as a dot (`g.chart-point circle`) instead. To check that a chart drew a line, use `g.chart-line path` with `.filter({ visible: true }).first()`. A population with no points keeps its legend entry but draws no line, so match lines to legend entries by color, not by index. |
+| Observable Plot charts and `g.chart-line path` | A population with a single data point, or a point with gaps on both sides, draws a zero-size line piece, shown as a dot (`g.chart-point circle`) instead. A line breaks wherever its population skips a date that another population on the chart has. To check that a chart drew a line, use `g.chart-line path` with `.filter({ visible: true }).first()`. A population with no points keeps its legend entry but draws no line, so match lines to legend entries by color, not by index. |
 
 Known rot, recorded for recognition only, not as a roadmap: `react-app-polyfill` and
 `babel-polyfill`, plus a `browserslist` of `>0.2%, not dead, not ie <= 10, not op_mini all`, were
