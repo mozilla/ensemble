@@ -16,6 +16,7 @@ export default () => {
                 <meta property="og:description" content={pageDescription} />
                 <meta name="description" content={pageDescription} />
             </Helmet>
+            <h2>Contact</h2>
             <p id="contact">
                 Please email us at
                 {' '}<a href="mailto:fx-public-data@mozilla.com">fx-public-data@mozilla.com</a>

@@ -7,8 +7,17 @@
         margin-bottom: 0;
         text-align: center;
     }
+    // Hidden from view but kept for screen readers, so the metric headings
+    // below it don't skip a level.
     #metrics-heading {
-        display: none;
+        clip-path: inset(50%);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        white-space: nowrap;
+        width: 1px;
     }
 }
 
