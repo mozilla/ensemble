@@ -24,7 +24,9 @@ Any of the environment variables in *.env* can be overridden. For example:
 ### In production
 
 Run `npm run build:app` to produce a static build in `build/` (see `CONTRIBUTING.md` for the full
-command reference). How that build is deployed is not documented in this repository.
+command reference). See [`docs/architecture/deploy.md`](docs/architecture/deploy.md) for where that build is
+hosted and how it is deployed: pushes to `main` deploy to stage and GitHub releases deploy to prod,
+via `.github/workflows/deploy.yml`.
 
 Any of the environment variables in *.env* can be overridden.
 
