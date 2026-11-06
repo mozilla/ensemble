@@ -27,7 +27,7 @@ test('A population with a single data point is drawn as a dot', async ({ page })
     await expect(dot).toBeVisible();
     expect(Number(await dot.getAttribute('r'))).toBeGreaterThan(0);
     await expect(metricOverview.locator('g.chart-line path')).toHaveCount(2);
-    await expect(metricOverview.locator('.legend span')).toHaveText([/Solo/, /Steady/]);
+    await expect(metricOverview.locator('.legend .legend-entry')).toHaveText([/Solo/, /Steady/]);
 });
 
 test('A metric whose populations are all null shows a message in place of its chart, and the other metrics still render', async ({ page }) => {

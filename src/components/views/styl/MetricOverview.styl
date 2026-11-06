@@ -20,11 +20,24 @@
     .legend {
         max-width: 1100px;
 
-        span {
+        .legend-entry {
+            background: none;
+            border: 0;
+            cursor: pointer;
             display: block;
+            font-family: inherit;
             font-size: .9rem;
             font-weight: 400;
             margin: 5px;
+            padding: 0;
+
+            &[aria-pressed='false'] {
+                opacity: .4;
+                text-decoration: line-through;
+            }
+            &:disabled {
+                cursor: default;
+            }
         }
     }
     .striped {
