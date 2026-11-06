@@ -175,3 +175,16 @@ it('A resize that leaves the chart size unchanged does not redraw the chart', ()
         vi.useRealTimers();
     }
 });
+
+it('Hovering a legend entry highlights that population, and leaving it clears the highlight', () => {
+    const chartProps = renderChart({
+        data: { populations: { High: [{ x: '2026-01-01', y: 9 }], Low: [{ x: '2026-01-01', y: 1 }] } },
+    });
+    expect(chartProps.highlightedPopulation).toBeNull();
+
+    act(() => chartProps.onLegendHover('Low'));
+    expect(Chart.mock.calls.at(-1)[0].highlightedPopulation).toBe('Low');
+
+    act(() => chartProps.onLegendHover(null));
+    expect(Chart.mock.calls.at(-1)[0].highlightedPopulation).toBeNull();
+});
