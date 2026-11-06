@@ -58,6 +58,31 @@ function assignMarkerRows(markers, xToPixel) {
     });
 }
 
+// Add an empty point for each date a population skips between its first and
+// last points, so its line breaks there instead of joining across the gap. A
+// date counts as skipped when another population on the chart has it.
+function withGaps(sortedPoints, chartDates, population) {
+    if (!sortedPoints.length) return [];
+
+    const pointsByDate = new Map(sortedPoints.map(point => [+point.x, point]));
+    const first = +sortedPoints[0].x;
+    const last = +sortedPoints.at(-1).x;
+
+    return chartDates
+        .filter(date => date >= first && date <= last)
+        .map(date => ({ ...(pointsByDate.get(date) || { x: new Date(date), y: null }), population }));
+}
+
+// A point with a gap or the end of its line on both sides has no line through
+// it, so it needs drawing on its own.
+function isolatedPoints(pointsWithGaps) {
+    return pointsWithGaps.filter((point, index) => (
+        point.y !== null
+        && (pointsWithGaps[index - 1]?.y ?? null) === null
+        && (pointsWithGaps[index + 1]?.y ?? null) === null
+    ));
+}
+
 export default props => {
     // Units that can appear right after a value, without a space in between
     const spacelessUnits = ['%'];
@@ -86,8 +111,14 @@ export default props => {
         return <p className="chart-empty">No data to show for this metric.</p>;
     }
 
-    const singlePoints = props.data.flatMap((population, index) => (
-        population.length === 1 ? [{ ...population[0], population: legend[index] }] : []
+    const chartDates = [...new Set(points.map(point => +point.x))].sort((dateA, dateB) => dateA - dateB);
+    const linePoints = legend.flatMap(populationName => withGaps(
+        points.filter(point => point.population === populationName),
+        chartDates,
+        populationName
+    ));
+    const loosePoints = legend.flatMap(populationName => isolatedPoints(
+        linePoints.filter(point => point.population === populationName)
     ));
 
     // The minimum and maximum y values among all populations.
@@ -185,7 +216,7 @@ export default props => {
 
     // A chart with a single population is shaded below its line.
     const maybeArea = props.data.length === 1 ? [
-        Plot.areaY(points, { x: 'x', y1: minYToShow, y2: 'y', curve: 'catmull-rom', fill: '#0000ff', fillOpacity: .2, className: 'chart-area' }),
+        Plot.areaY(linePoints, { x: 'x', y1: minYToShow, y2: 'y', curve: 'catmull-rom', fill: '#0000ff', fillOpacity: .2, className: 'chart-area' }),
     ] : [];
 
     const options = {
@@ -205,8 +236,8 @@ export default props => {
             Plot.ruleX(markersInRange, { x: 'x', stroke: '#b3b2b2', strokeDasharray: '3,1', className: 'chart-marker' }),
             ...markerLabelMarks,
             ...maybeArea,
-            Plot.line(points, { x: 'x', y: 'y', z: 'population', stroke: 'population', strokeWidth: 1, curve: 'catmull-rom', className: 'chart-line' }),
-            Plot.dot(singlePoints, { x: 'x', y: 'y', fill: 'population', r: 3, className: 'chart-point' }),
+            Plot.line(linePoints, { x: 'x', y: 'y', z: 'population', stroke: 'population', strokeWidth: 1, curve: 'catmull-rom', className: 'chart-line' }),
+            Plot.dot(loosePoints, { x: 'x', y: 'y', fill: 'population', r: 3, className: 'chart-point' }),
             Plot.dot(points, Plot.pointer({ x: 'x', y: 'y', fill: 'population', r: 4, maxRadius: hoverRadius, className: 'chart-hover-point' })),
         ],
     };
