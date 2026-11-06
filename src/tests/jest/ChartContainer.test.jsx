@@ -144,10 +144,15 @@ it('A burst of resize events redraws the chart once, after the events stop', () 
         offsetWidth.mockReturnValue(700);
         for (let count = 0; count < 5; count++) {
             window.dispatchEvent(new Event('resize'));
+            if (count < 4) {
+                act(() => vi.advanceTimersByTime(50));
+            }
         }
         expect(Chart.mock.calls.length).toBe(callsBeforeResize);
 
-        act(() => vi.advanceTimersByTime(150));
+        act(() => vi.advanceTimersByTime(149));
+        expect(Chart.mock.calls.length).toBe(callsBeforeResize);
+        act(() => vi.advanceTimersByTime(1));
         expect(Chart.mock.calls.length).toBe(callsBeforeResize + 1);
         expect(Chart.mock.calls.at(-1)[0]).toMatchObject({ width: 700 });
     } finally {
