@@ -1,4 +1,4 @@
-import { act, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import Chart from '../../components/views/Chart';
 
 
@@ -305,4 +305,29 @@ it('A population that starts later than the others is drawn from its first point
 
     expect(lineSegments(svg, '#05b378')).toBe(1);
     expect(svg.querySelectorAll('g.chart-point circle')).toHaveLength(0);
+});
+
+function lineOpacities(svg) {
+    return [...svg.querySelectorAll('g.chart-line path')].map(path => path.getAttribute('stroke-opacity'));
+}
+
+it('While a population is highlighted, the other lines and dots fade', () => {
+    const data = [twoPopulations[0], [{ x: dates[1], y: 2 }]];
+    const plain = renderChart({ data }).svg;
+    expect(lineOpacities(plain).every(opacity => opacity === null || opacity === '1')).toBe(true);
+
+    const highlighted = renderChart({ data, highlightedPopulation: 'High' }).svg;
+    expect(lineOpacities(highlighted)).toEqual(['1', '0.15']);
+    expect(highlighted.querySelector('g.chart-point circle').getAttribute('fill-opacity')).toBe('0.15');
+});
+
+it('Hovering a legend entry reports its population, and leaving reports none', () => {
+    const onLegendHover = vi.fn();
+    const { container } = renderChart({ data: twoPopulations, showLegend: true, onLegendHover });
+    const lowEntry = [...container.querySelectorAll('.legend-entry')].find(entry => entry.textContent.includes('Low'));
+
+    fireEvent.mouseEnter(lowEntry);
+    expect(onLegendHover).toHaveBeenLastCalledWith('Low');
+    fireEvent.mouseLeave(lowEntry);
+    expect(onLegendHover).toHaveBeenLastCalledWith(null);
 });

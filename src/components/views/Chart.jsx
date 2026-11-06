@@ -199,6 +199,10 @@ export default props => {
         colors = paletteForUpToElevenPopulations;
     }
 
+    // While a legend entry is hovered, every other population fades so that
+    // the hovered one stands out.
+    const opacityFor = point => (props.highlightedPopulation && point.population !== props.highlightedPopulation ? .15 : 1);
+
     // Large enough that every spot on the chart is within reach of some point,
     // as the hover worked before.
     const hoverRadius = Math.hypot(props.width, props.height);
@@ -236,8 +240,8 @@ export default props => {
             Plot.ruleX(markersInRange, { x: 'x', stroke: '#b3b2b2', strokeDasharray: '3,1', className: 'chart-marker' }),
             ...markerLabelMarks,
             ...maybeArea,
-            Plot.line(linePoints, { x: 'x', y: 'y', z: 'population', stroke: 'population', strokeWidth: 1, curve: 'catmull-rom', className: 'chart-line' }),
-            Plot.dot(loosePoints, { x: 'x', y: 'y', fill: 'population', r: 3, className: 'chart-point' }),
+            Plot.line(linePoints, { x: 'x', y: 'y', z: 'population', stroke: 'population', strokeOpacity: opacityFor, strokeWidth: 1, curve: 'catmull-rom', className: 'chart-line' }),
+            Plot.dot(loosePoints, { x: 'x', y: 'y', fill: 'population', fillOpacity: opacityFor, r: 3, className: 'chart-point' }),
             Plot.dot(points, Plot.pointer({ x: 'x', y: 'y', fill: 'population', r: 4, maxRadius: hoverRadius, className: 'chart-hover-point' })),
         ],
     };
@@ -247,7 +251,13 @@ export default props => {
         maybeLegend = (
             <div className="legend">
                 {legend.map((populationName, index) => (
-                    <span key={populationName} className="legend-entry" style={{ color: colors[index] }}>
+                    <span
+                        key={populationName}
+                        className="legend-entry"
+                        style={{ color: colors[index] }}
+                        onMouseEnter={() => props.onLegendHover?.(populationName)}
+                        onMouseLeave={() => props.onLegendHover?.(null)}
+                    >
                         — {populationName}
                     </span>
                 ))}

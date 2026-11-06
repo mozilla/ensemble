@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 
 import Chart from '../../components/views/Chart';
 import ChartContainer from '../../components/containers/ChartContainer';
@@ -132,4 +132,17 @@ it('A population whose points are all null keeps its legend entry and passes an 
 
     expect(chartProps.legend).toEqual(['Present', 'Missing']);
     expect(chartProps.data).toEqual([[{ x: new Date('2026-01-01'), y: 3 }], []]);
+});
+
+it('Hovering a legend entry highlights that population, and leaving it clears the highlight', () => {
+    const chartProps = renderChart({
+        data: { populations: { High: [{ x: '2026-01-01', y: 9 }], Low: [{ x: '2026-01-01', y: 1 }] } },
+    });
+    expect(chartProps.highlightedPopulation).toBeNull();
+
+    act(() => chartProps.onLegendHover('Low'));
+    expect(Chart.mock.calls.at(-1)[0].highlightedPopulation).toBe('Low');
+
+    act(() => chartProps.onLegendHover(null));
+    expect(Chart.mock.calls.at(-1)[0].highlightedPopulation).toBeNull();
 });
