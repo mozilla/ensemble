@@ -54,6 +54,9 @@ To see it working, run `npm start`, open `http://localhost:3000/dashboard/user-a
 - Observation: Plot's pointer does not respond in the chart's margins outside the plotting area. After a click unpins the readout, it updates only on the next pointer move.
   Evidence: the Playwright corner and click cases in `fixtures/region-data.spec.js`. The corner case hovers just inside the plotting area, after scrolling the chart into view.
 
+- Observation: the first HTML readout moved the page on hover, in two ways. When empty, it was 21.6px tall (`min-height: 1.5em`). When filled, it took the page's 28px `line-height`, which pushed the chart down 6.4px. Fixing the height with `white-space: nowrap` caused a second shift. A long population name then widened the chart's container to 628px on a 375px screen, the legend reflowed from 104px to 38px tall, and the next metric jumped 66px. `.chart-readout` now has a fixed 28px height and line-height, `nowrap` with an ellipsis, and `contain: inline-size`, so its text cannot size anything around it. stylint doesn't know `contain`, so that line carries `// @stylint ignore`.
+  Evidence: the "hovering and clicking a chart doesn't move anything on the page" cases in `fixtures/region-data.spec.js`, at 1280px and 375px, fail without these styles and pass with them.
+
 - Observation: drawing with Plot makes resizing the hardware dashboard about 100 times faster, in both browsers.
   Evidence: the five-step resize timings in Artifacts and Notes, 55,375 ms down to 559 ms in Chromium and 66,761 ms down to 720 ms in Firefox.
 
@@ -424,6 +427,10 @@ After Milestone 3:
 
     npm ls d3                           d3@7.9.2 under @observablehq/plot only
     npm test                            lint clean; Vitest 15 files, 92 tests; Playwright 124 passed (recorded and live)
+
+After fixing the hover shift (2026-11-06):
+
+    npm run test:playwright:recorded    80 passed
     build/assets/ChartContainer-Btl1BEIQ.js   265.06 kB │ gzip: 89.54 kB
 
 ## Interfaces and Dependencies
