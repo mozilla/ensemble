@@ -30,7 +30,7 @@
         "mentored": "https://github.com/mozilla/ensemble/labels/help%20wanted"
     },
     "urls": {
-        "stage": "https://data-ensemble.stage.mozaws.net/",
+        "stage": "https://dfc-stage.data-static-websites.nonprod.webservices.mozgcp.net/",
         "prod": "https://data.firefox.com/"
     }
 }
