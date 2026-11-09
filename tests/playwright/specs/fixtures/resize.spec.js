@@ -19,10 +19,13 @@ const dates = Array.from({ length: weekCount }, (unused, index) => (
     new Date(newestDate - index * 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
 ));
 
-// On the dev server this resize sequence blocks the main thread for about
-// 150 ms. Animating the lines on resize took it to about 6 s, and redrawing on
-// every resize event to about 1.5 s.
-const longTaskBudget = 1000;
+// Each redraw writes every line's d attribute once, and animating a redraw adds
+// more writes, so counting the writes catches both lines animating on resize
+// and charts redrawing on every resize event, however fast the runner is.
+//
+// Tracing slows each viewport change past ChartContainer's resize debounce, so
+// on a traced retry every chart would redraw at every width.
+test.use({ trace: 'off' });
 
 test.beforeEach(async ({ page }) => {
     await page.route(
@@ -38,17 +41,21 @@ test.beforeEach(async ({ page }) => {
     );
 });
 
-test('Hardware charts redraw to the new width after a resize without blocking the page', async ({ page }) => {
+test('Hardware charts redraw once, without animating, after a series of resizes', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto('/dashboard/hardware');
     await expect(page.locator(chartSelector)).toHaveCount(dashboard.metrics.length);
     await expect(page.locator(chartSelector).last()).toBeVisible();
 
     await page.evaluate(() => {
-        window.longTaskTotal = 0;
-        new PerformanceObserver(list => {
-            for (const entry of list.getEntries()) window.longTaskTotal += entry.duration;
-        }).observe({ type: 'longtask' });
+        window.lineWrites = new Map();
+        new MutationObserver(records => {
+            for (const record of records) {
+                if (!record.target.classList.contains('mg-main-line')) continue;
+                const chart = record.target.closest('.metricsGraphicsCon');
+                window.lineWrites.set(chart, (window.lineWrites.get(chart) || 0) + 1);
+            }
+        }).observe(document.querySelector('#application'), { subtree: true, attributeFilter: ['d'] });
     });
 
     for (const width of [1180, 1080, 980, 880, 800, 880, 960]) {
@@ -61,7 +68,11 @@ test('Hardware charts redraw to the new width after a resize without blocking th
         return [...document.querySelectorAll(selector)].every(svg => Number(svg.getAttribute('width')) === mainWidth);
     }, chartSelector)).toBe(true);
 
-    // Long-task entries are reported after the task ends.
+    // Long enough for a trailing debounced redraw or a 1 s line animation.
     await page.waitForTimeout(1000);
-    expect(await page.evaluate(() => window.longTaskTotal)).toBeLessThan(longTaskBudget);
+    const writes = await page.evaluate(() => [...document.querySelectorAll('.metricsGraphicsCon')].map(chart => ({
+        lines: chart.querySelectorAll('path.mg-main-line').length,
+        writes: window.lineWrites.get(chart) || 0,
+    })));
+    expect(writes).toEqual(writes.map(({ lines }) => ({ lines, writes: lines })));
 });
