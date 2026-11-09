@@ -1,6 +1,6 @@
 name: Deploy
 
-# Pushes to `main` will deploy to staginbg. Publishing a GitHub release (not a
+# Pushes to `main` will deploy to staging. Publishing a GitHub release (not a
 # pre-release) deploys to production.
 #
 # A manual run deploys whatever ref it was started from to the chosen
