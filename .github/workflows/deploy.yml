@@ -97,11 +97,6 @@ jobs:
                   package-manager-cache: false
             - name: Install dependencies
               run: npm ci
-            - name: Compile Stylus
-              # Must run before the Vite build: the components import the
-              # generated CSS, and `npm run build` orders build:app before
-              # build:css.
-              run: npm run build:css
             - name: Build
               run: npm run build
 

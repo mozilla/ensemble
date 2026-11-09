@@ -9,7 +9,7 @@
         "start": "npm-run-all --parallel watch:css watch:app",
         "watch:css": "stylus --watch --sourcemap src/components/views/styl/* --out ./src/components/views/css/",
         "watch:app": "vite",
-        "build": "npm-run-all build:*",
+        "build": "run-s build:css build:app build:version.json",
         "build:css": "stylus --sourcemap ./src/components/views/styl/* --out ./src/components/views/css/",
         "build:app": "vite build",
         "build:version.json": "node scripts/generateVersionJSON",
