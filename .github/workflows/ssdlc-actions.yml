@@ -1,0 +1,25 @@
+name: "SSDLC: Auditing"
+
+# Mozilla's Secure Software Development Lifecycle checks, run from the shared
+# reusable workflows in mozilla/ssdlc-actions: zizmor over the GitHub Actions
+# workflows and Semgrep over the code, both reporting into this repository's
+# code scanning alerts. Same shape as mozilla/bedrock and mozmeao/springfield.
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+    workflow_dispatch:
+
+# Default to no permissions; the job grants only what it needs.
+permissions: {}
+
+jobs:
+    code-security-analysis:
+        if: github.repository == 'mozilla/ensemble'
+        permissions:
+            security-events: write # upload zizmor and Semgrep results as code scanning alerts
+        uses: mozilla/ssdlc-actions/.github/workflows/code-security-analysis-public-repo.yml@5e1ea380f75b02891de776dcc00e74ad7cfeca9c # v1.3
