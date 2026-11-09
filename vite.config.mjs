@@ -9,9 +9,6 @@ export default defineConfig({
     },
     build: {
         outDir: 'build',
-        // Needed for `npm run size` (source-map-explorer) to inspect the
-        // production bundle's composition.
-        sourcemap: true,
     },
     test: {
         // Scope to the unit tests only - Vitest's default glob also matches

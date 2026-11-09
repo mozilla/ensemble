@@ -19,7 +19,7 @@ how to work in the code, not what the code is.
 
     npm run build:app                    # vite build; confirmed working, no flags needed
     npm run build:version.json           # writes build/version.json; must run after build:app, needs git on PATH
-    npm run size                         # source-map-explorer on build/assets/index-*.js (needs a prior build)
+    npm run size                         # source-map-explorer on build/assets/index-*.js (rebuilds build/ with source maps first)
     npm run test:playwright              # every Playwright project; starts the dev server itself if
                                           # one isn't already running on :3000
     npm run test:playwright:recorded     # specs on the recording (CI's required check)
