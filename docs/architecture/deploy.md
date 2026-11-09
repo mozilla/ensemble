@@ -22,9 +22,9 @@ Workgroup = a managed group of people granted access to GCP resources.
 | Bucket | `moz-fx-data-static-websit-8565-ensemble` | `moz-fx-data-static-websit-f7e0-ensemble` |
 | Hostname | `data.firefox.com` | `dfc-stage.data-static-websites.nonprod.webservices.mozgcp.net` |
 | DNS | CNAME to `dfc-prod.data-static-websites.prod.webservices.mozgcp.net` | no vanity domain |
-| Front-end content | v1.2.1, commit `f655559`, uploaded 2025-05-12 | v1.2.0, commit `f0658a8`, uploaded 2023-06-14 |
+| Front-end content | v1.2.1, commit `f655559`, uploaded 2025-05-12 | tracks `main`; every push to `main` deploys |
 | `datasets/` content | rewritten weekly by the transposer | snapshot from 2023-06-19, never updated |
-| Deep links | work (see below) | 404 until the first deploy from `main` |
+| Deep links | work (see below) | work (see below) |
 
 Both buckets belong to the `data-static-websites` tenant in
 [`mozilla/webservices-infra`](https://github.com/mozilla/webservices-infra/tree/main/data-static-websites),
@@ -36,9 +36,8 @@ administered by the `dataplatform/admins` workgroup. The tenant's `risk_level` i
 Ensemble is one entry, keyed `"ensemble"`, in the `cdn` map in `tf/prod/locals.tf` and
 `tf/stage/locals.tf`, plus a `module "ensemble_bucket"` block in each environment's `cdn.tf`. Both
 were added by Data Engineering in June 2023 (`d0975e2519` stage, `609c8b4fb8` prod) when the site
-moved from AWS to GCP. Stage was uploaded to once, as part of that move, and never again.
-`public/contribute.json` still lists the AWS-era stage host `data-ensemble.stage.mozaws.net`, which
-no longer resolves.
+moved from AWS to GCP. Stage was uploaded to once, as part of that move, and not again until the
+deploy workflow below.
 
 ## How requests are served
 
@@ -60,9 +59,8 @@ cannot be achieved by object metadata alone while `FORCE_CACHE_ALL` is set.
 **Deep links.** The URL map has no rewrite rules. Deep links work on prod because the bucket holds
 objects named `dashboard/hardware`, `dashboard/user-activity`, `dashboard/usage-behavior`, and
 `contact`, each a byte-identical copy of `index.html` (same etag). They were uploaded 40 minutes
-after `index.html` on 2025-05-12, by hand. Stage has no such copies, so every stage deep link
-returns 404. Any deploy process has to recreate these copies, one per route in `src/config.json`
-plus `/contact`.
+after `index.html` on 2025-05-12, by hand. Any deploy process has to recreate these copies, one per
+route in `src/config.json` plus `/contact`.
 
 **404s.** Unknown paths and trailing-slash variants (`/dashboard/hardware/`) return GCS's XML 404
 with HTTP status 404. The bucket's website configuration names `404.html`, but load-balancer backend
@@ -139,7 +137,8 @@ deployed URL as a smoke test. A failed smoke test does not undo the deploy; it f
 - 2023-06 Data Engineering created the GCS buckets above and uploaded v1.2.0 to stage.
 - 2025-05-12 someone uploaded v1.2.1 to prod by hand, then the four route copies. No record of the
   commands used exists.
-- 2026-11 the GitHub Actions workflow above replaced hand uploads (WT-1916).
+- 2026-11-09 the GitHub Actions workflow above replaced hand uploads, with its first automated
+  deploy to stage from commit `fdeafe0` (#480, WT-1916).
 
 ## Open questions
 
