@@ -3,8 +3,9 @@ Report](https://data.firefox.com), a weekly public report on the activity,
 behavior, and hardware configuration of Firefox Desktop users.
 
 Ensemble fetches data from
-[ensemble-transposer](https://github.com/mozilla/ensemble-transposer), a JSON
-server that adds metadata to the raw data hosted by Mozilla data engineers.
+[ensemble-transposer](https://github.com/mozilla/ensemble-transposer), a weekly
+job that adds metadata to the raw data published by Mozilla data engineers and
+writes the result as JSON under `data.firefox.com/datasets/`.
 See [`docs/architecture/data-pipeline.md`](docs/architecture/data-pipeline.md)
 for how that data is generated upstream, where it lives, and which
 repositories are involved.
@@ -23,8 +24,8 @@ Any of the environment variables in *.env* can be overridden. For example:
 
 ### In production
 
-Run `npm run build:app` to produce a static build in `build/` (see `CONTRIBUTING.md` for the full
-command reference). See [`docs/architecture/deploy.md`](docs/architecture/deploy.md) for where that build is
+Run `npm run build` to produce a static build in `build/` (Stylus, then Vite, then `version.json`;
+see `CONTRIBUTING.md` for the full command reference). See [`docs/architecture/deploy.md`](docs/architecture/deploy.md) for where that build is
 hosted and how it is deployed: pushes to `main` deploy to stage and GitHub releases deploy to prod,
 via `.github/workflows/deploy.yml`.
 

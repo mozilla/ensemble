@@ -51,10 +51,11 @@ Live responses carry `age:` headers of several hours. Purging the cache needs
 include.
 
 **Cache headers.** The CDN rewrites every outgoing `cache-control` to `public,max-age=0`. On the
-objects themselves, `index.html` and the route copies carry `no-cache, max-age=0, must-revalidate`
-(set when they were uploaded); everything else, including content-hashed JS, carries GCS's default
-`public, max-age=3600`. Long-lived caching of hashed assets is therefore not in effect today and
-cannot be achieved by object metadata alone while `FORCE_CACHE_ALL` is set.
+objects themselves, the deploy workflow sets the headers listed under "How deploys work", including
+`immutable` on content-hashed assets. Prod's 2025-05-12 hand upload predates that: its `index.html`
+and route copies carry `no-cache, max-age=0, must-revalidate`, and everything else carries GCS's
+default `public, max-age=3600`. Either way, long-lived caching of hashed assets is not in effect at
+the edge and cannot be achieved by object metadata alone while `FORCE_CACHE_ALL` is set.
 
 **Deep links.** The URL map has no rewrite rules. Deep links work on prod because the bucket holds
 objects named `dashboard/hardware`, `dashboard/user-activity`, `dashboard/usage-behavior`, and
@@ -109,8 +110,8 @@ a pre-release) deploys to prod. A manual run deploys the current ref to a chosen
 `prod` GitHub environment only accepts tags, so a prod re-run or rollback is "run the workflow from
 tag X". Deploys to one environment are serialised and never cancelled midway.
 
-The job authenticates with Workload Identity Federation (no secrets or variables in the repo), builds,
-then uploads in this order:
+The `deploy` job builds, authenticates with Workload Identity Federation (no secrets or variables in
+the repo), then uploads in this order:
 
 1. `assets/`, with `cache-control: public, max-age=31536000, immutable`.
 2. `img/`, `manifest.json`, `contribute.json` and the Search Console file, one hour.
@@ -124,8 +125,8 @@ stay in the bucket because the CDN can serve a stale `index.html` for a while af
 
 The workflow then checks `version.json` straight from the bucket, waits (bounded at five minutes) for
 the public URL to serve the new bundle at the root and every route, checks an unknown path still 404s
-and the hardware dataset still answers, and finally runs the live Playwright project against the
-deployed URL as a smoke test. A failed smoke test does not undo the deploy; it flags it.
+and the hardware dataset still answers. A separate `smoke-test` job then runs the live Playwright
+project against the deployed URL. A failed smoke test does not undo the deploy; it flags it.
 
 ## How deploys have happened
 
