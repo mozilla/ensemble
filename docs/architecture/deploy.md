@@ -110,7 +110,8 @@ a pre-release) deploys to prod. A manual run deploys the current ref to a chosen
 `prod` GitHub environment only accepts tags, so a prod re-run or rollback is "run the workflow from
 tag X". Deploys to one environment are serialised and never cancelled midway.
 
-The `deploy` job builds, authenticates with Workload Identity Federation (no secrets or variables in
+The `deploy` job builds with `npm run build` (Stylus, then Vite, then `version.json`; no source
+maps), authenticates with Workload Identity Federation (no secrets or variables in
 the repo), then uploads in this order:
 
 1. `assets/`, with `cache-control: public, max-age=31536000, immutable`.
