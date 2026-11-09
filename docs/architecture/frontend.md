@@ -2,7 +2,7 @@
 
 This file describes how this repository's own code is organized: a React single-page application
 built with Vite, that renders data it fetches at runtime and stores none of its own. For the system
-beyond this repository, see `system-overview.md` and `data-pipeline.md` in this directory; for how
+beyond this repository, see `deploy.md` and `data-pipeline.md` in this directory; for how
 to build, test, and change this code, see `CONTRIBUTING.md` at the repository root.
 
 ## `src/config.json` is the spine
@@ -100,7 +100,7 @@ lines named:
 None of these three are filed as GitHub issues as of this writing. Whoever picks one up should file
 it as an issue first — these are exactly the kind of finding that belongs in the tracker, not as a
 permanent list in this file, for the same reason the wider issue backlog isn't summarized in
-`system-overview.md`.
+these architecture docs.
 
 ## File layout
 

@@ -223,6 +223,7 @@ means the recording is stale, and the fix is to update it in a separate pull req
 3. To test a deployed site instead, run
    `PLAYWRIGHT_BASE_URL=https://data.firefox.com npm run test:playwright:live`. Any other
    environment works the same way; with `PLAYWRIGHT_BASE_URL` set, no local server is started.
+   The deploy workflow runs this against each environment after deploying to it.
 4. If port 3000 is already in use by something else, start `npx vite --port 3001 --strictPort` in
    another terminal and run with `PLAYWRIGHT_BASE_URL=http://localhost:3001`.
 5. Expect failures when upstream data has changed. Read them as "the recording is stale", not "the

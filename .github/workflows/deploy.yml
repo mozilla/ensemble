@@ -1,0 +1,214 @@
+name: Deploy
+
+# Pushes to `main` will deploy to staging. Publishing a GitHub release (not a
+# pre-release) deploys to production.
+#
+# A manual run deploys whatever ref it was started from to the chosen
+# environment; the prod environment only accepts tags, so a prod re-run or
+# rollback is "run from tag X". docs/architecture/deploy.md describes the
+# buckets, the CDN, and why the upload steps look the way they do.
+
+on:
+    push:
+        branches:
+            - main
+    release:
+        types:
+            - published
+    workflow_dispatch:
+        inputs:
+            environment:
+                description: Where to deploy the current ref
+                type: choice
+                options:
+                    - stage
+                    - prod
+                default: stage
+
+# One deploy per environment at a time, and never cancel one midway: a
+# half-uploaded site is worse than a late one.
+concurrency:
+    group: deploy-${{ github.event_name == 'release' && 'prod' || inputs.environment || 'stage' }}
+    cancel-in-progress: false
+
+# Read-only by default; the deploy job adds the OIDC token it needs for
+# Workload Identity Federation.
+permissions:
+    contents: read
+
+jobs:
+    target:
+        name: Choose target
+        runs-on: ubuntu-latest
+        # Pre-releases are for testing the release mechanics, not for shipping;
+        # only a full release reaches prod.
+        if: github.repository == 'mozilla/ensemble' && !(github.event_name == 'release' && github.event.release.prerelease)
+        outputs:
+            environment: ${{ steps.pick.outputs.environment }}
+            bucket: ${{ steps.pick.outputs.bucket }}
+            url: ${{ steps.pick.outputs.url }}
+            service_account: ${{ steps.pick.outputs.service_account }}
+        steps:
+            - name: Pick the environment
+              id: pick
+              env:
+                  REQUESTED: ${{ github.event_name == 'release' && 'prod' || inputs.environment || 'stage' }}
+              run: |
+                  case "$REQUESTED" in
+                      prod)
+                          echo "bucket=moz-fx-data-static-websit-8565-ensemble" >> "$GITHUB_OUTPUT"
+                          echo "url=https://data.firefox.com" >> "$GITHUB_OUTPUT"
+                          echo "service_account=ensemble-deploy@moz-fx-data-static-websit-8565.iam.gserviceaccount.com" >> "$GITHUB_OUTPUT"
+                          ;;
+                      stage)
+                          echo "bucket=moz-fx-data-static-websit-f7e0-ensemble" >> "$GITHUB_OUTPUT"
+                          echo "url=https://dfc-stage.data-static-websites.nonprod.webservices.mozgcp.net" >> "$GITHUB_OUTPUT"
+                          echo "service_account=ensemble-deploy@moz-fx-data-static-websit-f7e0.iam.gserviceaccount.com" >> "$GITHUB_OUTPUT"
+                          ;;
+                      *)
+                          echo "Unknown environment: $REQUESTED" >&2
+                          exit 1
+                          ;;
+                  esac
+                  echo "environment=$REQUESTED" >> "$GITHUB_OUTPUT"
+
+    deploy:
+        name: Deploy to ${{ needs.target.outputs.environment }}
+        needs: target
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        environment:
+            name: ${{ needs.target.outputs.environment }}
+            url: ${{ needs.target.outputs.url }}
+        permissions:
+            contents: read
+            id-token: write # for google-github-actions/auth to mint the OIDC token the Workload Identity binding trusts
+        env:
+            BUCKET: ${{ needs.target.outputs.bucket }}
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+            - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version-file: ".nvmrc"
+                  # No dependency cache: this workflow publishes what it builds,
+                  # and a poisoned cache would be a way to tamper with it.
+                  package-manager-cache: false
+            - name: Install dependencies
+              run: npm ci
+            - name: Compile Stylus
+              # Must run before the Vite build: the components import the
+              # generated CSS, and `npm run build` orders build:app before
+              # build:css.
+              run: npm run build:css
+            - name: Build
+              run: npm run build
+
+            - name: Authenticate to Google Cloud
+              uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+              with:
+                  workload_identity_provider: projects/324168772199/locations/global/workloadIdentityPools/github-actions/providers/github-actions
+                  service_account: ${{ needs.target.outputs.service_account }}
+            - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+
+            # The transposer writes its weekly output to datasets/ in this same
+            # bucket. Nothing below deletes anything: no rsync, no delete flags.
+            # Old hashed assets are left in place on purpose, because the CDN can
+            # serve a stale index.html for up to a day after an upload.
+            - name: Upload hashed assets
+              run: |
+                  gcloud storage cp --recursive \
+                      --cache-control='public, max-age=31536000, immutable' \
+                      build/assets "gs://$BUCKET/"
+            - name: Upload images and metadata files
+              run: |
+                  gcloud storage cp --recursive \
+                      --cache-control='public, max-age=3600' \
+                      build/img "gs://$BUCKET/"
+                  gcloud storage cp \
+                      --cache-control='public, max-age=3600' \
+                      build/manifest.json build/contribute.json build/google*.html "gs://$BUCKET/"
+            - name: Upload index.html, version.json and the route copies
+              # Last, so a visitor never gets a new index.html before the assets
+              # it references exist. The bucket is served straight from object
+              # names with no rewrite rule, so deep links only work because each
+              # route path holds a copy of index.html. The routes come from
+              # src/config.json plus /contact; keep this in step with Main.jsx.
+              run: |
+                  gcloud storage cp \
+                      --cache-control='no-cache, max-age=0, must-revalidate' \
+                      build/index.html build/version.json "gs://$BUCKET/"
+                  routes="$(node -p "require('./src/config.json').dashboards.map(d => 'dashboard/' + d.key).join(' ')") contact"
+                  for route in $routes; do
+                      gcloud storage cp \
+                          --content-type='text/html' \
+                          --cache-control='no-cache, max-age=0, must-revalidate' \
+                          build/index.html "gs://$BUCKET/$route"
+                  done
+
+            - name: Check the deployed site
+              env:
+                  URL: ${{ needs.target.outputs.url }}
+              run: |
+                  set -euo pipefail
+                  # First, straight from the bucket, bypassing the CDN: did the
+                  # upload land?
+                  deployed="$(curl -fsS --max-time 20 "https://storage.googleapis.com/$BUCKET/version.json" | node -p "JSON.parse(require('fs').readFileSync(0)).commit")"
+                  test "$deployed" = "$GITHUB_SHA" || { echo "version.json has $deployed, expected $GITHUB_SHA" >&2; exit 1; }
+
+                  # Then through the public URL. The CDN can keep serving the
+                  # previous index.html for a while after an upload, so wait,
+                  # within a bound, until the root page and every route copy
+                  # reference this build's bundle. The smoke test that follows
+                  # must run against the new build, not the old one.
+                  bundle="$(grep -o 'assets/index-[^"]*\.js' build/index.html)"
+                  routes="/ $(node -p "require('./src/config.json').dashboards.map(d => '/dashboard/' + d.key).join(' ')") /contact"
+                  deadline=$((SECONDS + 300))
+                  while :; do
+                      stale=""
+                      for path in $routes; do
+                          curl -fsS --max-time 20 "$URL$path" | grep -q "$bundle" || stale="$stale $path"
+                      done
+                      if [ -z "$stale" ]; then
+                          echo "all routes serve $bundle"
+                          break
+                      fi
+                      if [ "$SECONDS" -ge "$deadline" ]; then
+                          echo "the CDN did not pick up the new build within 5 minutes; still serving the previous build at:$stale" >&2
+                          exit 1
+                      fi
+                      echo "still serving the previous build at:$stale"
+                      sleep 10
+                  done
+
+                  # Unknown paths still 404, and the transposer's data is untouched.
+                  test "$(curl -s --max-time 20 -o /dev/null -w '%{http_code}' "$URL/no-such-page")" = 404
+                  test "$(curl -s --max-time 20 -o /dev/null -w '%{http_code}' "$URL/datasets/desktop/hardware/index.json")" = 200
+
+    smoke-test:
+        name: Smoke test ${{ needs.target.outputs.environment }}
+        needs: [target, deploy]
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+            - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version-file: ".nvmrc"
+                  # No dependency cache: this workflow publishes what it builds,
+                  # and a poisoned cache would be a way to tamper with it.
+                  package-manager-cache: false
+            - name: Install dependencies
+              run: npm ci
+            - name: Install Playwright browsers
+              run: npx playwright install --with-deps chromium
+            - name: Run the live-data specs against the deployed site
+              # With PLAYWRIGHT_BASE_URL set, no local server is started. These
+              # specs read real data.firefox.com data, so a failure here can
+              # also mean upstream data changed; see CONTRIBUTING.md.
+              env:
+                  PLAYWRIGHT_BASE_URL: ${{ needs.target.outputs.url }}
+              run: npm run test:playwright:live
