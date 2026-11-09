@@ -82,7 +82,6 @@ npm run test:jest                    # vitest run (React Testing Library)
 npm run test:playwright              # every Playwright project; starts the dev server itself if :3000 is free
 npm run test:playwright:recorded     # specs on tests/playwright/fixtures/ (CI's required "End-to-end tests")
 npm run test:playwright:live         # the same specs on real data.firefox.com (CI's non-required "Live data tests")
-npm run test:playwright:deployed     # live minus the @spa-fallback specs; run by deploy.yml against the deployed site
 npm run record:fixtures              # re-record tests/playwright/fixtures/ from data.firefox.com
 npm test                             # lint -> test:jest -> test:playwright
 

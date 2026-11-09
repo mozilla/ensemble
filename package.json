@@ -21,7 +21,6 @@
         "test:playwright": "playwright test",
         "test:playwright:recorded": "playwright test --project=chromium --project=chromium-no-js",
         "test:playwright:live": "playwright test --project=live-data",
-        "test:playwright:deployed": "playwright test --project=live-data --grep-invert @spa-fallback",
         "posttest": "npm audit || true",
         "size": "source-map-explorer build/assets/index-*.js --no-border-checks",
         "record:fixtures": "node scripts/recordPlaywrightFixtures.js"

@@ -206,12 +206,9 @@ jobs:
             - name: Install Playwright browsers
               run: npx playwright install --with-deps chromium
             - name: Run the live-data specs against the deployed site
-              # With PLAYWRIGHT_BASE_URL set, no local server is started. The
-              # @spa-fallback specs are skipped: they need unknown paths to
-              # fall back to index.html, which the bucket does not do (the
-              # deploy job checks the 404 status itself). These specs read real
-              # data.firefox.com data, so a failure here can also mean upstream
-              # data changed; see CONTRIBUTING.md.
+              # With PLAYWRIGHT_BASE_URL set, no local server is started. These
+              # specs read real data.firefox.com data, so a failure here can
+              # also mean upstream data changed; see CONTRIBUTING.md.
               env:
                   PLAYWRIGHT_BASE_URL: ${{ needs.target.outputs.url }}
-              run: npm run test:playwright:deployed
+              run: npm run test:playwright:live
