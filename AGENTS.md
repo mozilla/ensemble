@@ -87,7 +87,7 @@ npm test                             # lint -> test:jest -> test:playwright
 
 npm run build:app                    # vite build
 npm run build:version.json           # writes build/version.json; must run after build:app, needs git on PATH
-npm run size                         # source-map-explorer on build/assets/index-*.js (needs a prior build)
+npm run size                         # source-map-explorer on build/assets/index-*.js (rebuilds build/ with source maps first)
 ```
 
 Run one Vitest file: `npx vitest run src/tests/jest/Dashboard.test.jsx`. Run one Playwright spec: `npx playwright test contact.spec.js`.

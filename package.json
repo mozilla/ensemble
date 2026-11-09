@@ -22,7 +22,7 @@
         "test:playwright:recorded": "playwright test --project=chromium --project=chromium-no-js",
         "test:playwright:live": "playwright test --project=live-data",
         "posttest": "npm audit || true",
-        "size": "source-map-explorer build/assets/index-*.js --no-border-checks",
+        "size": "npm run build:css && vite build --sourcemap && source-map-explorer build/assets/index-*.js --no-border-checks",
         "record:fixtures": "node scripts/recordPlaywrightFixtures.js"
     },
     "dependencies": {
