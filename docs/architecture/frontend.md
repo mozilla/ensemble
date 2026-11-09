@@ -25,7 +25,8 @@ call-to-action via `src/components/decorators/withNextButton.jsx`.
 ## Data flow
 
 This application has no state library, no hooks-based state, and no Redux — state lives in
-`this.state` on class-based container components, plus one `sessionStorage` key,
+`this.state` on class components (the containers, the class `withFetch` wraps them in, `Spinner`,
+and `LazyBoundary`), plus one `sessionStorage` key,
 `preferredRegion`, set in `DashboardContainer.jsx`. Three containers do all of the data fetching:
 
 | Container | Fetches | Notes |
@@ -39,8 +40,10 @@ a higher-order component: `withFetch(props => url)(Container)` fetches the URL a
 the container a `dataFetch` prop holding `pending`, `rejected`, `fulfilled`, `value`, and `reason`.
 It refetches when the URL changes, going back to pending first, treats a non-2xx response as a
 rejection, and ignores a response that arrives after a newer request has started. Each container
-handles those states itself and renders `views/Spinner.jsx` or `views/Error.jsx` accordingly. All reshaping of
-fetched data happens client-side in each container's `formatData` method — `ChartContainer` sorts
+handles those states itself: `DashboardContainer` renders `views/Spinner.jsx` while pending, the
+two metric containers render nothing (the chart's own spinner shows instead), and all three render
+`views/Error.jsx` on rejection. All reshaping of fetched data happens client-side, in the
+`formatData` method of `ChartContainer`, `DataTableContainer`, and `SummaryMetricContainer` — `ChartContainer` sorts
 its populations by maximum y-value and drops nulls; `DataTableContainer` sorts rows by value,
 descending.
 
@@ -50,7 +53,7 @@ Metric `description` strings are rendered as inline Markdown and inserted via
 `dangerouslySetInnerHTML` — React's own escape hatch for inserting raw HTML, named the way it is
 specifically to make a reader stop and check what's flowing into it. Confirmed by reading every call
 site (`grep -rn "dangerouslySetInnerHTML" src/components/`): there are exactly four, two in
-`views/Dashboard.jsx` (lines 57 and 65) and two in `views/MetricOverview.jsx` (lines 34 and 40).
+`views/Dashboard.jsx` (lines 57 and 65) and two in `views/MetricOverview.jsx` (lines 35 and 41).
 
 The two files configure their `markdown-it` parser independently of each other, not from one shared
 configuration — worth knowing before changing either, since a change to one does not affect the
@@ -63,8 +66,8 @@ file's enabled-rule list without extending that test to match.
 
 ### Security posture, as of this writing
 
-`npm audit` reports 17 vulnerabilities against a fresh install (3 moderate, 14 high, 0 critical).
-This is down from an earlier, much worse baseline of 251 (21 of them critical), confirmed at the
+`npm audit` reports no critical vulnerabilities against a fresh install; the exact count changes
+as advisories are published, so run it rather than trusting a number here. This is down from an earlier, much worse baseline of 251 (21 of them critical), confirmed at the
 time by tracing all 21 critical-severity package names through `npm ls <name>`: every one resolved
 through exactly one of four build-only dependency roots — `react-scripts`, `nightwatch`, `request`,
 or `npm-run-all` — none of which was imported by any file under `src/`, so none of them shipped to
@@ -72,36 +75,26 @@ the browser. All four have since been removed from this repository entirely (`re
 `npm-run-all` replaced, `nightwatch` and `request` no longer used at all), which is why the critical
 count is now zero.
 
-Of the advisories that do affect packages actually bundled into the shipped build, each sits behind
-a code path this application doesn't exercise: `markdown-it`'s flagged `linkify`/`smartquotes` rules
-are the ones disabled by the `zero` preset described above; a flagged `d3-color` ReDoS advisory
-needs an attacker-controlled color string, and this application has none; a flagged `react-router`
-regex advisory needs parameterized routes, and this application's four routes
-(`/`, `/contact`, `/dashboard/<key>`, and a catch-all) are all static.
+The only advisory against a package bundled into the shipped build is a `d3-color` ReDoS (pulled in
+by `metrics-graphics`'s `d3@4`). It needs an attacker-controlled color string, and this application
+has none. Every other flagged package is a build or lint tool.
 
 The one real, structural gap: **there is no Content-Security-Policy**, and the four
 `dangerouslySetInnerHTML` sites above rely entirely on `markdown-it`'s `html: false` default
 holding — true as of this writing, but not enforced by any test or header. Adding a CSP is a genuine
 piece of security work, not something this documentation pass does on its own.
 
-## Three confirmed code defects, not yet filed as issues
+## A confirmed code defect, not yet filed as an issue
 
-Found while verifying this repository's own claims about itself, and confirmed by reading the exact
-lines named:
+Found while verifying this repository's own claims about itself. Two others found at the same time
+have since been fixed (`c8422fb`, `96b5afc`).
 
-- `views/Chart.jsx` line 112 checks `props.suggestedYMax`, but line 113 reads
-  `props.suggestedMax` — a prop name that does not exist anywhere else in the codebase. This is
-  currently latent because no live metric sets a `suggestedYMax`, but it will silently produce the
-  wrong chart y-axis maximum the moment one does.
-- `views/SummaryMetric.jsx` line 46 sets `this.arrowIgnoreThreshold = 4` in the constructor, but
-  line 131 reads `this.ignoreThreshold` — a property that is never set anywhere. The "hide the
-  arrow on small bars" logic this line implements has never worked.
 - `views/SummaryMetric.jsx` line 67 defines a `_handleResize` method that is never attached to any
   event listener anywhere in the file (confirmed: no `addEventListener` call exists in it at all).
   The four hardware summary bars this component renders do not respond to window resize.
 
-None of these three are filed as GitHub issues as of this writing. Whoever picks one up should file
-it as an issue first — these are exactly the kind of finding that belongs in the tracker, not as a
+It is not filed as a GitHub issue as of this writing. Whoever picks it up should file it as an
+issue first — this is exactly the kind of finding that belongs in the tracker, not as a
 permanent list in this file, for the same reason the wider issue backlog isn't summarized in
 these architecture docs.
 
@@ -113,7 +106,7 @@ these architecture docs.
     ├── registerServiceWorker.js     only unregister() is called
     ├── setupTests.js                jest-dom matchers; fails on console.error
     ├── components/
-    │   ├── containers/              6 stateful, data-fetching .jsx files (above)
+    │   ├── containers/              6 class components; 3 fetch via withFetch (above)
     │   ├── decorators/              withTracker.jsx (GA4 via react-ga4), withNextButton.jsx
     │   └── views/                   20 presentational .jsx files
     │       ├── styl/                Stylus source, hand-edited; includes/lib.styl holds shared variables
@@ -134,7 +127,7 @@ these architecture docs.
 
 There is no `pages/`, `store/`, `hooks/`, `api/`, or `locales/` directory — this is a small enough
 application that none has been needed. `public/` holds static files served as-is (`manifest.json`,
-`contribute.json`, `img/`); `index.html` itself lives at the repository root, Vite's convention.
+`contribute.json`, `img/`, and the Google Search Console verification file); `index.html` itself lives at the repository root, Vite's convention.
 `build/` is gitignored output. Routes are exactly `/`, `/contact`, `/dashboard/<key>`, and a
 catch-all not-found page.
 
@@ -143,8 +136,8 @@ catch-all not-found page.
 Two abandoned packages used to cap React at version 16: `react-refetch`, the data layer, and
 `react-metrics-graphics`, the chart wrapper. Local replacements have taken their place:
 `src/lib/withFetch.jsx` and `views/MetricsGraphics.jsx`, which calls `MG.data_graphic` directly.
-`metrics-graphics` itself stays on 2.15.6, because its only newer release is a 3.0 beta, unpromoted
-since 2022, that rewrites the API.
+`metrics-graphics` itself stays on 2.15.6, because its only newer release is `3.0.0-beta1` from 2022,
+which npm tags `latest` but was never released as stable, and which rewrites the API.
 
 What holds the application on React 18 now is its lazy loading, not a dependency. React 19 keeps a
 `Suspense` fallback on screen for at least 300 ms before revealing what it was waiting for. A

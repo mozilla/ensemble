@@ -14,15 +14,15 @@
         }
     },
     "keywords": [
-        "create-react-app",
         "css",
         "d3",
         "javascript",
-        "jest",
         "metrics-graphics",
-        "nightwatch",
         "node",
-        "react"
+        "playwright",
+        "react",
+        "vite",
+        "vitest"
     ],
     "bugs": {
         "list": "https://github.com/mozilla/ensemble/issues",

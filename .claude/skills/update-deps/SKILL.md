@@ -2,14 +2,14 @@
 name: update-deps
 description: Audit and update npm dependencies
 disable-model-invocation: true
-argument-hint: "[all|sync-check|<package-name>]"
+argument-hint: "[all|<package-name>]"
 allowed-tools:
   - Bash(npm outdated *)
   - Bash(npm update *)
   - Bash(npm install *)
   - Bash(npm run lint*)
   - Bash(npm test*)
-  - Bash(npm run test-build*)
+  - Bash(npm run build*)
   - Bash(npm view *)
   - Bash(npm audit --json*)
   - Bash(npm explain *)
@@ -54,7 +54,7 @@ Indirect dependencies are packages in `package-lock.json` that aren't listed in 
    - **No fix available**: report it and move on.
 4. Ask the user once whether to also refresh indirect dependencies that have no security fix pending (everything `npm update` would change within the existing ranges). Default to no; this can touch hundreds of packages.
 
-Never run `npm audit fix --force`. Its "fixes" with `isSemVerMajor: true` can be downgrades to old major versions of the parent (e.g. it suggests `@frctl/fractal@1.3.0`).
+Never run `npm audit fix --force`. Its "fixes" with `isSemVerMajor: true` can be downgrades to old major versions of the parent.
 
 ### Open Dependabot PRs
 
@@ -163,7 +163,7 @@ Record the following in `.claude/skills/update-deps/denied.md`:
 
 ## Phase 6: Execute Approved Updates
 
-Run `npm install <package>@<version>` for pinned packages, or `npm update <package>` for range-pinned packages. Verify `package-lock.json` updated correctly.
+Every direct dependency is exact-pinned, so run `npm install <package>@<version>`. Verify `package-lock.json` updated correctly.
 
 For indirect dependencies:
 
@@ -180,8 +180,8 @@ After each step, check `git diff package-lock.json` for packages that changed an
 After executing updates, offer to run verification commands:
 
 - `npm run lint` — run JS/CSS linting
-- `npm run test-build` — confirm the webpack build still succeeds
-- `npm test` — run the Jasmine browser test suite
+- `npm run build` — confirm the Stylus and Vite build still succeeds
+- `npm test` — run lint, the Vitest unit tests, and the Playwright suite
 
 Ask the user which (if any) they want to run. Run selected checks and report results.
 

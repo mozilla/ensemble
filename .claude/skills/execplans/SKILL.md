@@ -1,6 +1,6 @@
 ---
 name: execplans
-description: Write and maintain an ExecPlan — a self-contained, committed Markdown design document in docs/execplans/ — for work that spans more than one session or touches several files or subsystems. Use for a refactor crossing the container/view split, a tooling or dependency migration, adding CI or test coverage, #409's chart redraw path, or any change whose decisions and progress must survive a context reset. Also use when resuming or revising a plan already in docs/execplans/. Invoke with /execplans.
+description: Write and maintain an ExecPlan — a self-contained, committed Markdown design document in docs/execplans/ — for work that spans more than one session or touches several files or subsystems. Use for a refactor crossing the container/view split, a tooling or dependency migration, adding CI or test coverage, or any change whose decisions and progress must survive a context reset. Also use when resuming or revising a plan already in docs/execplans/. Invoke with /execplans.
 ---
 
 # ExecPlans
@@ -9,8 +9,7 @@ An ExecPlan is a Markdown design document that lives on disk and carries a piece
 design through implementation. It is the durable record: someone holding only the working tree and
 the plan file can pick the work up and finish it. Write one instead of relying on the built-in
 plan/todo tools whenever the work meets the threshold below — those tools don't survive a context
-reset, and this repo's near-term work (adding CI, broadening test coverage, fixing #409's chart
-redraw path) is exactly the kind that needs to.
+reset.
 
 Plans in this repository go in `docs/execplans/` and are committed on the working branch. **Read
 `references/PLANS.md` in full before writing or revising one** — it is the specification, and its

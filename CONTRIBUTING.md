@@ -15,8 +15,11 @@ how to work in the code, not what the code is.
 
     npm run lint                         # lint:js (flat-config ESLint, covers .js and .jsx) + lint:styl
     npm run test:jest                    # vitest run; confirmed passing, no flags
-    npm test                             # lint -> test:jest -> test:playwright
+    npm test                             # lint -> test:jest -> test:playwright -> npm audit
+                                          # (posttest; never fails)
 
+    npm run build                        # build:css -> build:app -> build:version.json (what CI and
+                                          # the deploy run)
     npm run build:app                    # vite build; confirmed working, no flags needed
     npm run build:version.json           # writes build/version.json; must run after build:app, needs git on PATH
     npm run size                         # source-map-explorer on build/assets/index-*.js (rebuilds build/ with source maps first)
@@ -48,15 +51,16 @@ plain text, so a real credential never belongs in one, and this `.env` file deli
   `with` prefix; `lib/lazyLoad.jsx` and `lib/LazyBoundary.jsx` are the exceptions (a small loader
   helper and an error-boundary component, not components themselves in the first case).
 - One component per file, always `export default`. There are no named component exports anywhere in
-  this repository; the only named exports at all are the four helpers in `lib/utils.js`.
+  this repository; the only named exports at all are the four helpers in `lib/utils.js` and
+  `unregister` in `registerServiceWorker.js`.
 - The container/view split is the organizing principle — see `docs/architecture/frontend.md`.
   `containers/X.jsx` holds state and fetching and renders `views/X.jsx` with formatted props
   (`ChartContainer` → `Chart`, `DataTableContainer` → `DataTable`). Keep new state out of `views/`.
-- Function components are the default (17 of 19 views), written as anonymous default-exported
+- Function components are the default (15 of 20 views), written as anonymous default-exported
   arrows — `export default props => (...)` — with no `displayName` (hence `react/display-name:
   off`). Use a class only where state, refs, or lifecycle are genuinely needed: all 6 containers
-  plus `SummaryMetric.jsx` (d3 + `React.createRef`), `Spinner.jsx`, `MetricOverview.jsx`,
-  `Footer.jsx`, and `LazyBoundary.jsx` (an error boundary, which must be a class component).
+  plus `SummaryMetric.jsx` (d3 + `React.createRef`), `MetricsGraphics.jsx` (metrics-graphics +
+  `React.createRef`), `Spinner.jsx`, `MetricOverview.jsx`, `Footer.jsx`, and `LazyBoundary.jsx` (an error boundary, which must be a class component).
 - Leading underscore for private class-property handlers (`_onRegionChange`, `_drawChart`,
   `_setChartSize`). Keep using it in new code.
 - Locals named `maybeX` hold a JSX fragment or `null` (`maybeDescription`, `maybeSummaryMetrics`,
@@ -76,15 +80,16 @@ plain text, so a real credential never belongs in one, and this `.env` file deli
 `.jsx`.** `npm run lint:js` runs `eslint .` with no other flags; there is no separate config for
 `.jsx` and no invisible bundled config supplying one either (unlike the old create-react-app-era
 setup, which linted `.jsx` invisibly through `react-scripts`). Errors: `eqeqeq`, `no-var`,
-`prefer-const`, `no-console`, `no-global-assign`, `no-redeclare` and `no-shadow` — the latter two
-with `builtinGlobals: true`, so do not name a variable `name`, `status`, `history`, `event`, etc.
+`prefer-const`, `no-console`, `no-global-assign`, `jsx-a11y/label-has-associated-control` (with
+`assert: 'htmlFor'`), `no-redeclare` and `no-shadow` — the latter two with `builtinGlobals: true`,
+so do not name a variable `name`, `status`, `history`, `event`, etc.
 Warnings: `semi: always`, `prefer-arrow-callback`, `comma-dangle` (trailing commas required for
 multiline arrays, objects, imports, and exports; never for function args or params). Off:
 `react/prop-types`, `react/display-name`, `jsx-a11y/no-onchange`. `react/no-unescaped-entities`
 forbids only `>` and `}`. `settings.react.version` is `'detect'` (reads the installed React version
 automatically, rather than a hardcoded string). `src/tests/jest/**/*.test.jsx` additionally gets
 `@vitest/eslint-plugin`'s recommended rules and Vitest's ambient globals (`it`, `expect`,
-`beforeAll`, etc. — the same globals `src/setupTests.js` attaches for the tests themselves). Quote
+`beforeAll`, etc. — the same globals `globals: true` in `vite.config.mjs` provides at run time). Quote
 style is not enforced (there is no `quotes` rule) — single quotes by convention. The `build`
 directory is excluded via the config's own `ignores` array (flat config's replacement for
 `.eslintignore`, which no longer exists).
@@ -103,7 +108,7 @@ spacing.` comment. Import it per-file with `@import 'includes/lib'` — it is no
 There is no mixins file; most colors are hardcoded hex inline (stylint's `colors` check is off).
 
 This styling is not BEM. ID selectors carry the page landmarks — `#application`, `#main-header`,
-`#main-navigation`, `#dashboard`, `#dashboard-sections`, `#summary-metrics`, `#region`,
+`#main-navigation`, `#dashboard`, `#summary-metrics`, `#region`,
 `#introduction` — with flat lowercase-dash classes for repeated pieces (`.metric-overview`,
 `.dashboard-section`, `.data-table-wrapper`, `.labelled-selector`, `.next-button`, `.striped`,
 `.highlighted`, `.bar-label`). Descendant nesting with `&` handles states; responsive rules live in
@@ -177,8 +182,8 @@ repository root. Specs are `camelCase.spec.js` or `kebab-case.spec.js` (matching
 page under test), CommonJS. Every spec except `jsDisabled.spec.js` imports `test`, `expect` and,
 where needed, `readFixture` from `tests/playwright/fixtureData.js` rather than from
 `@playwright/test` — for example `test('Page loads', async ({ page }) => { await
-expect(page.locator('#contact')).toBeVisible(); })`. Shared helpers (`linkWorks`, `linksWork`,
-`flagForUpdate`, `metricTitleIsCorrect`, `changeRegionAndWaitForMetrics`) live in
+expect(page.locator('#contact')).toBeVisible(); })`. Shared helpers (`formatPercent`, `linkWorks`,
+`linksWork`, `flagForUpdate`, `metricTitleIsCorrect`, `changeRegionAndWaitForMetrics`) live in
 `tests/playwright/utils.js`. `linkWorks` and `linksWork` check only links within the app and skip
 external URLs, which failed too often for reasons outside this repository. `flagForUpdate`
 deliberately fails when an element count changes, to force a human to look. Playwright starts the
@@ -266,10 +271,7 @@ style indirection layer, so a failure points straight at the markup it cares abo
 Known rot, recorded for recognition only, not as a roadmap: `react-app-polyfill` and
 `babel-polyfill`, plus a `browserslist` of `>0.2%, not dead, not ie <= 10, not op_mini all`, were
 IE11-era targeting — both removed in the Vite migration, since IE11 support was already effectively
-dead. `dateformat@3.0.3` is several majors behind current, but the newer majors change its module
-export shape in a way that needs call-site changes, not just a version bump — deliberately left
-alone (see `docs/architecture/frontend.md`'s dependency-ceiling section). `distinct-colors@3.0.0`
-has no newer major.
+dead. `distinct-colors@3.0.0` has no newer major.
 
 ## Git workflow
 
@@ -293,7 +295,7 @@ This project maintains a hand-managed version number in `package.json` that is n
 first digit for major changes, the second for medium, the third for small — historically bumped at
 deploy time. Do not bump it casually; ask.
 
-If a changeset adds a GitHub Action or workflow (there are none today), check it with
+If a changeset adds or changes a GitHub Actions workflow in `.github/workflows/`, check it with
 [Zizmor](https://zizmor.sh/) before considering the work complete.
 
 ### Writing PR descriptions

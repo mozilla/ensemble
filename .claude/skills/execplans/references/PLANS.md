@@ -39,7 +39,7 @@ Write in plain prose. Prefer sentences over lists. Avoid checklists, tables, and
 
 ## Guidelines
 
-Self-containment and plain language are paramount. Assume the reader knows web development generally — npm scripts, React, CI, git — and define what is particular to this repository ("the container/view split", "react-refetch's `connect()`", "`flagForUpdate`", "the gitignored compiled CSS") the first time it appears, naming the files or commands where it shows up. Define each term once, in `Context and Orientation`, then use it. Do not say "according to the architecture doc"; put the needed explanation in the plan.
+Self-containment and plain language are paramount. Assume the reader knows web development generally — npm scripts, React, CI, git — and define what is particular to this repository ("the container/view split", "`withFetch`'s `dataFetch` prop", "`flagForUpdate`", "the gitignored compiled CSS") the first time it appears, naming the files or commands where it shows up. Define each term once, in `Context and Orientation`, then use it. Do not say "according to the architecture doc"; put the needed explanation in the plan.
 
 Avoid common failure modes. Do not rely on undefined jargon. Do not describe "the letter of a feature" so narrowly that the resulting code compiles but does nothing meaningful. Do not outsource key decisions to the reader. When ambiguity exists, resolve it in the plan itself and explain why you chose that path. Err on the side of over-explaining user-visible effects and under-specifying incidental implementation details.
 
@@ -171,7 +171,7 @@ branch. There is nowhere else for them here, and a plan that is not in the pull 
 reviewable.
 
 `<slug>` is the kebab-case summary from the branch name, so the two line up: branch
-`409--hardware-resize-performance`, plan `docs/execplans/2026-09-20-hardware-resize-performance.md`.
+`409--hardware-resize-performance`, plan `docs/execplans/2026-10-28-hardware-resize-performance.md`.
 The date is the day the plan was started and does not change when the plan is revised.
 
 This specification is checked in at `.claude/skills/execplans/references/PLANS.md`. Cite that path
@@ -200,17 +200,19 @@ today. These do:
     npm run build:css         # required before Vitest on a fresh clone; the compiled CSS is gitignored
     npm run lint              # ESLint flat config (.js and .jsx) plus stylint
     npm run test:jest         # Vitest
-    npm run test:playwright   # Playwright, against the Vite dev server and live data.firefox.com
-    npm run build             # Vite production build plus version.json
+    npm run test:playwright   # every Playwright project, against the Vite dev server
+    npm run test:playwright:recorded  # the specs on the recorded fixtures (CI's required check)
+    npm run test:playwright:live      # the same specs on live data.firefox.com
+    npm run build             # Stylus compile, Vite production build, then version.json
     npm test                  # lint, then Vitest, then Playwright
 
-The Playwright dashboard specs assert against live production data, so a failure there can come
-from upstream data changing rather than from the commit. Re-run once before investigating, and say
-which it was.
+The recorded Playwright run is deterministic. Only `test:playwright:live` depends on upstream data,
+so a failure there can come from the data changing rather than from the commit; it usually means the
+recording is stale (see `AGENTS.md`). Say which it was.
 
 Run each command and report the actual result; never claim a pass you
-did not observe. State the expected result, not just the command: "`npm run test:jest` — 2 files, 4
-tests passing" beats "run the tests".
+did not observe. State the expected result, not just the command: "`npm run test:jest` — every file
+passes, including the new `Foo.test.jsx`" beats "run the tests".
 
 ## Record what matters, not what happened
 
@@ -264,7 +266,7 @@ neither self-contained nor, probably, correct.
 ## The plan and the pull request
 
 The plan file is part of the diff, so name it in the PR's **Significant changes and points to
-review** as one plain bullet — "Adds `docs/execplans/2026-09-14-eslint-unification.md`" — and stop
+review** as one plain bullet — "Adds `docs/execplans/2026-10-28-hardware-resize-performance.md`" — and stop
 there. The description keeps its four headings (One-line summary; Significant changes and points to
 review; Issue / Bugzilla link; Testing) and does not become a second copy of the plan. `AGENTS.md`'s
 ban on describing your own process still applies: the plan records how the work went, the
