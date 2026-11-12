@@ -18,6 +18,32 @@ function overlaps(boxA, boxB) {
         && boxA.y < boxB.y + boxB.height && boxB.y < boxA.y + boxA.height;
 }
 
+// Labels at the newest and oldest dates, where a label centered on its date
+// would run past the edge of the chart.
+async function expectEdgeLabelsInsideChart(page) {
+    const newestFirst = dashboard.dates;
+    await serveFirstMetricWithAnnotations(page, [
+        { date: newestFirst[0], label: 'Firefox 150' },
+        { date: newestFirst.at(-1), label: 'Firefox 140' },
+    ]);
+    await page.goto('/dashboard/user-activity');
+
+    const metricOverview = page.locator('#metric-overview-1');
+    const labels = metricOverview.locator('g.chart-marker-label text');
+    await expect(labels).toHaveCount(2);
+    const chartBox = await metricOverview.locator('svg.chart-svg').boundingBox();
+    for (const label of await labels.all()) {
+        const box = await label.boundingBox();
+        const labelText = await label.textContent();
+        expect(box.x, `"${labelText}" starts inside the chart`).toBeGreaterThanOrEqual(chartBox.x);
+        expect(box.x + box.width, `"${labelText}" ends inside the chart`).toBeLessThanOrEqual(chartBox.x + chartBox.width);
+    }
+}
+
+test('Labels at the newest and oldest dates stay inside the chart', async ({ page }) => {
+    await expectEdgeLabelsInsideChart(page);
+});
+
 test('Only annotations inside the chart\'s dates are drawn, clear of the hovered value', async ({ page }) => {
     await serveFirstMetricWithAnnotations(page, [
         { date: dashboard.dates[5], label: 'Inside' },
@@ -47,6 +73,10 @@ test('Only annotations inside the chart\'s dates are drawn, clear of the hovered
 
 test.describe('On a narrow screen', () => {
     test.use({ viewport: { width: 375, height: 800 } });
+
+    test('labels at the newest and oldest dates stay inside the chart', async ({ page }) => {
+        await expectEdgeLabelsInsideChart(page);
+    });
 
     test('neighboring annotation labels don\'t overlap', async ({ page }) => {
         await serveFirstMetricWithAnnotations(page, [

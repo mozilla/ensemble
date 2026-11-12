@@ -42,19 +42,21 @@ const marginRight = 20;
 
 // Give each marker a row so that no two labels in the same row overlap. Row 0
 // sits just above the chart, and each later row sits above the one before it.
-function assignMarkerRows(markers, xToPixel) {
+// A label near either end is moved inward, as labelX, so that it stays inside
+// the SVG between leftEdge and rightEdge; its rule stays on its date.
+function assignMarkerRows(markers, xToPixel, pixelToX, leftEdge, rightEdge) {
     const rowEnds = [];
 
     return markers.toSorted((markerA, markerB) => markerA.x - markerB.x).map(marker => {
         const halfWidth = (marker.label.length * markerLabelCharacterWidth) / 2;
-        const center = xToPixel(marker.x);
+        const center = Math.min(Math.max(xToPixel(marker.x), leftEdge + halfWidth), rightEdge - halfWidth);
         let row = rowEnds.findIndex(rowEnd => center - halfWidth >= rowEnd + markerLabelGap);
         if (row === -1) {
             row = rowEnds.length;
             rowEnds.push(0);
         }
         rowEnds[row] = center + halfWidth;
-        return { ...marker, row };
+        return { ...marker, row, labelX: pixelToX(center) };
     });
 }
 
@@ -144,15 +146,19 @@ export default props => {
     const markersInRange = (props.markers || []).filter(marker => marker.x >= xDomain[0] && marker.x <= xDomain[1]);
 
     const frameWidth = props.width - marginLeft - marginRight;
-    const xToPixel = x => xDomain[1] === xDomain[0] ? 0 : ((x - xDomain[0]) / (xDomain[1] - xDomain[0])) * frameWidth;
-    const markersWithRows = assignMarkerRows(markersInRange, xToPixel);
+    const singleDate = xDomain[1] === xDomain[0];
+    const xToPixel = x => singleDate ? 0 : ((x - xDomain[0]) / (xDomain[1] - xDomain[0])) * frameWidth;
+    const pixelToX = pixel => new Date(singleDate ? xDomain[0] : xDomain[0] + (pixel / frameWidth) * (xDomain[1] - xDomain[0]));
+    // Pixels here are measured from the left of the plotting area, so the SVG
+    // starts marginLeft before it.
+    const markersWithRows = assignMarkerRows(markersInRange, xToPixel, pixelToX, -marginLeft, frameWidth + marginRight);
     const markerRowCount = markersWithRows.length ? Math.max(...markersWithRows.map(marker => marker.row)) + 1 : 0;
     const markerRowsHeight = markerRowCount * markerLabelRowHeight;
     const marginTop = markerRowsHeight + 10;
 
     const markerLabelMarks = [...Array(markerRowCount).keys()].map(row => Plot.text(
         markersWithRows.filter(marker => marker.row === row),
-        { x: 'x', text: 'label', frameAnchor: 'top', dy: -((row + 1) * markerLabelRowHeight), className: 'chart-marker-label' }
+        { x: 'labelX', text: 'label', frameAnchor: 'top', dy: -((row + 1) * markerLabelRowHeight), className: 'chart-marker-label' }
     ));
 
     let colors;
