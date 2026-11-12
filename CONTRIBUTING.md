@@ -96,17 +96,18 @@ directory is excluded via the config's own `ignores` array (flat config's replac
 
 ## Supported browsers
 
-The floor is **the current Firefox ESR and Safari 15.6** (iOS Safari too). Chrome and Edge have no
-floor of their own; the build keeps Vite's default of version 111 for them.
+We support the current and previous major version of Chrome, Edge, Firefox, Safari, and iOS
+Safari. For Safari, a major version is the yearly number (26, 27), not a point release.
 
-`build.target` in `vite.config.mjs` records the floor, but it only tells Vite which syntax to
-rewrite. Vite adds no polyfills, so a built-in method newer than the floor ships as-is and throws
-on older browsers. Before using a newer built-in, check its browser compatibility table on MDN. For
-example, `Array.prototype.toSorted` needs Safari 16, so sort a copy instead
-(`[...points].sort(...)`). Test code under `tests/` runs in Node and Playwright's browsers, not the
-floor, so this doesn't apply there.
+`build.target` in `vite.config.mjs` records those floors as of the last time someone checked
+them. It only tells Vite which syntax to rewrite. Vite adds no polyfills, so a built-in method newer
+than the floor ships as-is and throws in older browsers. Before using a recently added built-in,
+check its browser compatibility table on MDN against the floor. Test code under `tests/` runs in
+Node and Playwright's browsers, so this doesn't apply there.
 
-When a new Firefox ESR ships, raise `firefox` in `build.target` to match.
+Chrome, Edge, and Firefox ship a major version every four weeks, so the numbers in `build.target`
+fall behind. That's safe: an older target only makes Vite rewrite a little more than it needs to.
+Raise them when you check, but never past the previous major.
 
 ## Styling: Stylus, outside webpack
 
