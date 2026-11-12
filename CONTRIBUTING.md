@@ -94,6 +94,20 @@ style is not enforced (there is no `quotes` rule) — single quotes by conventio
 directory is excluded via the config's own `ignores` array (flat config's replacement for
 `.eslintignore`, which no longer exists).
 
+## Supported browsers
+
+The floor is **the current Firefox ESR and Safari 15.6** (iOS Safari too). Chrome and Edge have no
+floor of their own; the build keeps Vite's default of version 111 for them.
+
+`build.target` in `vite.config.mjs` records the floor, but it only tells Vite which syntax to
+rewrite. Vite adds no polyfills, so a built-in method newer than the floor ships as-is and throws
+on older browsers. Before using a newer built-in, check its browser compatibility table on MDN. For
+example, `Array.prototype.toSorted` needs Safari 16, so sort a copy instead
+(`[...points].sort(...)`). Test code under `tests/` runs in Node and Playwright's browsers, not the
+floor, so this doesn't apply there.
+
+When a new Firefox ESR ships, raise `firefox` in `build.target` to match.
+
 ## Styling: Stylus, outside webpack
 
 `src/components/views/styl/*.styl` compiles to `src/components/views/css/*.css` via the `stylus`

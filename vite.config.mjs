@@ -9,6 +9,11 @@ export default defineConfig({
     },
     build: {
         outDir: 'build',
+        // The supported browser floor: current Firefox ESR and Safari 15.6.
+        // Chrome and Edge keep Vite 8's default. Vite only rewrites syntax for
+        // these; it adds no polyfills, so new built-in methods must be checked
+        // by hand. See "Supported browsers" in CONTRIBUTING.md.
+        target: ['firefox153', 'safari15.6', 'ios15.6', 'chrome111', 'edge111'],
     },
     test: {
         // Scope to the unit tests only - Vitest's default glob also matches
