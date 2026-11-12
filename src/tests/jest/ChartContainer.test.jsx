@@ -189,6 +189,23 @@ it('Hovering a legend entry highlights that population, and leaving it clears th
     expect(Chart.mock.calls.at(-1)[0].highlightedPopulation).toBeNull();
 });
 
+it('Hover and keyboard focus on the legend highlight independently, the pointer first', () => {
+    const chartProps = renderChart({
+        data: { populations: { High: [{ x: '2026-01-01', y: 9 }], Low: [{ x: '2026-01-01', y: 1 }] } },
+    });
+    const highlighted = () => Chart.mock.calls.at(-1)[0].highlightedPopulation;
+
+    act(() => chartProps.onLegendFocus('Low'));
+    act(() => chartProps.onLegendHover('Low'));
+    act(() => chartProps.onLegendHover(null));
+    expect(highlighted(), 'the entry still has focus').toBe('Low');
+
+    act(() => chartProps.onLegendHover('High'));
+    expect(highlighted()).toBe('High');
+    act(() => chartProps.onLegendFocus(null));
+    expect(highlighted(), 'the entry is still hovered').toBe('High');
+});
+
 it('Clicking a legend entry hides its population, and clicking again shows and highlights it', () => {
     const chartProps = renderChart({
         data: { populations: { High: [{ x: '2026-01-01', y: 9 }], Low: [{ x: '2026-01-01', y: 1 }] } },

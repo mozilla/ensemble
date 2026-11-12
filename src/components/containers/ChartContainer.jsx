@@ -16,7 +16,8 @@ class ChartContainer extends React.Component {
         this.state = {
             chartWidth: 0,
             chartHeight: this.maxChartHeight,
-            highlightedPopulation: null,
+            hoveredPopulation: null,
+            focusedPopulation: null,
             hiddenPopulations: [],
         };
         this.parentNode = null;
@@ -88,27 +89,34 @@ class ChartContainer extends React.Component {
         // Another region's data can have different populations, so choices
         // made in the legend don't carry over.
         if (previousProps.data !== this.props.data) {
-            this.setState({ highlightedPopulation: null, hiddenPopulations: [] });
+            this.setState({ hoveredPopulation: null, focusedPopulation: null, hiddenPopulations: [] });
         }
     }
 
     _onLegendHover = populationName => {
-        this.setState({ highlightedPopulation: populationName });
+        this.setState({ hoveredPopulation: populationName });
     };
 
-    // A population that is shown again is under the pointer, so it is
-    // highlighted; one that is hidden can't be.
-    _onLegendToggle = populationName => {
-        this.setState(({ hiddenPopulations }) => {
-            const hiding = !hiddenPopulations.includes(populationName);
-            return {
-                hiddenPopulations: hiding
-                    ? [...hiddenPopulations, populationName]
-                    : hiddenPopulations.filter(hiddenName => hiddenName !== populationName),
-                highlightedPopulation: hiding ? null : populationName,
-            };
-        });
+    _onLegendFocus = populationName => {
+        this.setState({ focusedPopulation: populationName });
     };
+
+    _onLegendToggle = populationName => {
+        this.setState(({ hiddenPopulations }) => ({
+            hiddenPopulations: hiddenPopulations.includes(populationName)
+                ? hiddenPopulations.filter(hiddenName => hiddenName !== populationName)
+                : [...hiddenPopulations, populationName],
+        }));
+    };
+
+    // Hover and keyboard focus are tracked apart, so that ending one doesn't
+    // cancel the other. The pointer wins while both are on the legend, and a
+    // hidden population can't be highlighted.
+    _highlightedPopulation() {
+        const { hoveredPopulation, focusedPopulation, hiddenPopulations } = this.state;
+        return [hoveredPopulation, focusedPopulation]
+            .find(populationName => populationName && !hiddenPopulations.includes(populationName)) || null;
+    }
 
     // Set the chart size state based on the real, rendered parent container.
     _setChartSize = () => {
@@ -193,8 +201,9 @@ class ChartContainer extends React.Component {
                 width={this.state.chartWidth}
                 height={this.state.chartHeight}
                 numPopulations={this.props.numPopulations}
-                highlightedPopulation={this.state.highlightedPopulation}
+                highlightedPopulation={this._highlightedPopulation()}
                 onLegendHover={this._onLegendHover}
+                onLegendFocus={this._onLegendFocus}
                 hiddenPopulations={this.state.hiddenPopulations}
                 onLegendToggle={this._onLegendToggle}
 

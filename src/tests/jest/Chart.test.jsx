@@ -356,7 +356,7 @@ it('A population that starts later than the others is drawn from its first point
 });
 
 function lineOpacities(svg) {
-    return [...svg.querySelectorAll('g.chart-line path')].map(path => path.getAttribute('stroke-opacity'));
+    return [...svg.querySelectorAll('g.chart-line path')].map(path => path.style.strokeOpacity || null);
 }
 
 it('While a population is highlighted, the other lines and dots fade', () => {
@@ -365,8 +365,28 @@ it('While a population is highlighted, the other lines and dots fade', () => {
     expect(lineOpacities(plain).every(opacity => opacity === null || opacity === '1')).toBe(true);
 
     const highlighted = renderChart({ data, highlightedPopulation: 'High' }).svg;
-    expect(lineOpacities(highlighted)).toEqual(['1', '0.15']);
-    expect(highlighted.querySelector('g.chart-point circle').getAttribute('fill-opacity')).toBe('0.15');
+    expect(lineOpacities(highlighted)).toEqual([null, '0.15']);
+    expect(highlighted.querySelector('g.chart-point circle').style.fillOpacity).toBe('0.15');
+});
+
+it('Highlighting a population restyles the chart already drawn, so a pinned readout stays', () => {
+    const chartProps = { data: twoPopulations, legend: ['High', 'Low'], width: 600, height: 400 };
+    const { container, rerender } = render(<Chart {...chartProps} />);
+    const svg = container.querySelector('svg.chart-svg');
+
+    rerender(<Chart {...chartProps} highlightedPopulation="High" />);
+    expect(container.querySelector('svg.chart-svg')).toBe(svg);
+    expect(lineOpacities(svg)).toEqual([null, '0.15']);
+
+    rerender(<Chart {...chartProps} highlightedPopulation={null} />);
+    expect(container.querySelector('svg.chart-svg')).toBe(svg);
+    expect(lineOpacities(svg)).toEqual([null, null]);
+});
+
+it('Highlighting a population with no points fades nothing', () => {
+    const svg = renderChart({ data: [twoPopulations[0], []], legend: ['High', 'Empty'], highlightedPopulation: 'Empty' }).svg;
+
+    expect(lineOpacities(svg)).toEqual([null]);
 });
 
 it('Hovering a legend entry reports its population, and leaving reports none', () => {
@@ -419,22 +439,26 @@ it('If every population with points is hidden, they are all shown', () => {
     expect(lineStrokes(svg)).toHaveLength(3);
 });
 
-it('Clicking a legend entry toggles its population, and focusing one highlights it', () => {
+it('Clicking a legend entry toggles its population, and focus is reported apart from hover', () => {
     const onLegendToggle = vi.fn();
     const onLegendHover = vi.fn();
-    const { container } = renderChart({ data: threePopulations, legend: threeNames, showLegend: true, hiddenPopulations: ['Small'], onLegendToggle, onLegendHover });
+    const onLegendFocus = vi.fn();
+    const { container } = renderChart({ data: threePopulations, legend: threeNames, showLegend: true, hiddenPopulations: ['Small'], onLegendToggle, onLegendHover, onLegendFocus });
     const [big, , small] = container.querySelectorAll('.legend-entry');
 
     fireEvent.click(big);
     expect(onLegendToggle).toHaveBeenLastCalledWith('Big');
 
     fireEvent.focus(big);
-    expect(onLegendHover).toHaveBeenLastCalledWith('Big');
+    expect(onLegendFocus).toHaveBeenLastCalledWith('Big');
     fireEvent.blur(big);
-    expect(onLegendHover).toHaveBeenLastCalledWith(null);
+    expect(onLegendFocus).toHaveBeenLastCalledWith(null);
+    expect(onLegendHover).not.toHaveBeenCalled();
 
+    // Reported even though it's hidden, so that showing it again under the
+    // pointer highlights it.
     fireEvent.mouseEnter(small);
-    expect(onLegendHover).toHaveBeenLastCalledWith(null);
+    expect(onLegendHover).toHaveBeenLastCalledWith('Small');
 });
 
 it('A highlighted population that is hidden doesn\'t fade the others', () => {
