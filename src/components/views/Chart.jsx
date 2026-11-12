@@ -216,10 +216,22 @@ export default props => {
         colors = paletteForUpToElevenPopulations;
     }
 
-    // While a legend entry is hovered, every other population fades so that
-    // the hovered one stands out.
-    const highlightedPopulation = visiblePopulations.includes(props.highlightedPopulation) ? props.highlightedPopulation : null;
-    const opacityFor = point => (highlightedPopulation && point.population !== highlightedPopulation ? .15 : 1);
+    // While a legend entry is hovered or focused, every other population fades
+    // so that it stands out. A population with no points shown has nothing to
+    // stand out with, so it fades nothing.
+    const highlightedPopulation = visiblePoints.some(point => point.population === props.highlightedPopulation)
+        ? props.highlightedPopulation
+        : null;
+    const highlightColor = highlightedPopulation && colors[legend.indexOf(highlightedPopulation)];
+    const restyle = svg => {
+        const opacityFor = paint => (highlightColor && paint !== highlightColor ? .15 : '');
+        svg.querySelectorAll('g.chart-line path').forEach(path => {
+            path.style.strokeOpacity = opacityFor(path.getAttribute('stroke'));
+        });
+        svg.querySelectorAll('g.chart-point circle').forEach(dot => {
+            dot.style.fillOpacity = opacityFor(dot.getAttribute('fill'));
+        });
+    };
 
     // Large enough that every spot on the chart is within reach of some point,
     // as the hover worked before.
@@ -269,8 +281,8 @@ export default props => {
             Plot.ruleX(markersInRange, { x: 'x', stroke: '#b3b2b2', strokeDasharray: '3,1', className: 'chart-marker' }),
             ...markerLabelMarks,
             ...maybeArea,
-            Plot.line(linePoints, { x: 'x', y: 'y', z: 'population', stroke: 'population', strokeOpacity: opacityFor, strokeWidth: 1, curve: 'catmull-rom', className: 'chart-line' }),
-            Plot.dot(loosePoints, { x: 'x', y: 'y', fill: 'population', fillOpacity: opacityFor, r: 3, className: 'chart-point' }),
+            Plot.line(linePoints, { x: 'x', y: 'y', z: 'population', stroke: 'population', strokeWidth: 1, curve: 'catmull-rom', className: 'chart-line' }),
+            Plot.dot(loosePoints, { x: 'x', y: 'y', fill: 'population', r: 3, className: 'chart-point' }),
             Plot.dot(visiblePoints, Plot.pointer({ x: 'x', y: 'y', fill: 'population', r: 4, maxRadius: hoverRadius, className: 'chart-hover-point' })),
         ],
     };
@@ -295,10 +307,10 @@ export default props => {
                             disabled={onlyOneShown}
                             title={onlyOneShown ? null : `${hidden ? 'Show' : 'Hide'} ${populationName}`}
                             onClick={() => props.onLegendToggle?.(populationName)}
-                            onMouseEnter={() => props.onLegendHover?.(hidden ? null : populationName)}
+                            onMouseEnter={() => props.onLegendHover?.(populationName)}
                             onMouseLeave={() => props.onLegendHover?.(null)}
-                            onFocus={() => props.onLegendHover?.(hidden ? null : populationName)}
-                            onBlur={() => props.onLegendHover?.(null)}
+                            onFocus={() => props.onLegendFocus?.(populationName)}
+                            onBlur={() => props.onLegendFocus?.(null)}
                         >
                             — {populationName}
                         </button>
@@ -311,7 +323,12 @@ export default props => {
     return (
         <>
             <div className="metric chart">
-                <ObservablePlot options={options} renderReadout={renderReadout} />
+                <ObservablePlot
+                    options={options}
+                    drawnFrom={{ ...props, highlightedPopulation: null }}
+                    restyle={restyle}
+                    renderReadout={renderReadout}
+                />
             </div>
             {maybeLegend}
         </>

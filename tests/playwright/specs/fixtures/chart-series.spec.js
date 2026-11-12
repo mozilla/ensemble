@@ -191,6 +191,20 @@ test('Legend entries work from the keyboard, and the last line shown can\'t be h
     await expect(entries.nth(2)).toBeDisabled();
 });
 
+test('A readout pinned by a click stays while a legend entry is hovered', async ({ page }) => {
+    const metricOverview = page.locator('#metric-overview-1');
+    const box = await metricOverview.locator('svg.chart-svg').boundingBox();
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    const readout = metricOverview.locator('.chart-readout');
+    await expect(readout).not.toBeEmpty();
+    const pinned = await readout.textContent();
+
+    await metricOverview.locator('.legend .legend-entry').filter({ hasText: 'Charlie' }).hover();
+    await expect.poll(() => metricOverview.locator('g.chart-line path')
+        .evaluateAll(paths => paths.filter(path => getComputedStyle(path).strokeOpacity === '0.15').length)).toBe(2);
+    await expect(readout).toHaveText(pinned);
+});
+
 test.describe('On a narrow screen', () => {
     test.use({ viewport: { width: 375, height: 800 } });
 
