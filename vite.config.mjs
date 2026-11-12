@@ -9,11 +9,11 @@ export default defineConfig({
     },
     build: {
         outDir: 'build',
-        // The oldest supported versions, as last checked in November 2026: the
-        // current and previous major of each browser. Vite only rewrites
-        // syntax for these and adds no polyfills. See "Supported browsers" in
-        // CONTRIBUTING.md.
-        target: ['chrome156', 'edge156', 'firefox159', 'safari26', 'ios26'],
+        // Our browser support policy is Baseline Widely available. Vite fixes
+        // the versions this means at each major release, so they lag behind
+        // the policy, which is the safe direction. Vite only rewrites syntax
+        // and adds no polyfills. See "Supported browsers" in CONTRIBUTING.md.
+        target: 'baseline-widely-available',
     },
     test: {
         // Scope to the unit tests only - Vitest's default glob also matches

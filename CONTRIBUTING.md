@@ -96,18 +96,20 @@ directory is excluded via the config's own `ignores` array (flat config's replac
 
 ## Supported browsers
 
-We support the current and previous major version of Chrome, Edge, Firefox, Safari, and iOS
-Safari. For Safari, a major version is the yearly number (26, 27), not a point release.
+We support browsers that are [Baseline Widely available](https://web.dev/baseline): the versions
+of Chrome, Edge, Firefox, and Safari, on desktop and mobile, that support every feature that has
+worked in all of them for at least 30 months. The floor moves forward on its own. To see today's
+versions, run `npx browserslist "baseline widely available"`.
 
-`build.target` in `vite.config.mjs` records those floors as of the last time someone checked
-them. It only tells Vite which syntax to rewrite. Vite adds no polyfills, so a built-in method newer
-than the floor ships as-is and throws in older browsers. Before using a recently added built-in,
-check its browser compatibility table on MDN against the floor. Test code under `tests/` runs in
-Node and Playwright's browsers, so this doesn't apply there.
+Use a web platform feature only if MDN or [webstatus.dev](https://webstatus.dev) marks it Baseline
+Widely available. A feature marked Newly available works in the latest browsers but not yet in all
+the supported ones.
 
-Chrome, Edge, and Firefox ship a major version every four weeks, so the numbers in `build.target`
-fall behind. That's safe: an older target only makes Vite rewrite a little more than it needs to.
-Raise them when you check, but never past the previous major.
+`build.target` in `vite.config.mjs` is Vite's `'baseline-widely-available'`. Vite fixes the
+versions that means at each major release, so they lag behind the policy. That is the safe
+direction: Vite rewrites a little more syntax than it needs to. Vite adds no polyfills, so a
+built-in method outside the policy ships as-is and throws in older browsers. Test code under
+`tests/` runs in Node and Playwright's browsers, so the policy doesn't apply there.
 
 ## Styling: Stylus, outside webpack
 
