@@ -191,6 +191,40 @@ it('Annotations inside the date range are drawn; ones outside it are not', () =>
     expect(svg.scale('x').domain).toEqual([dates[0], dates[2]]);
 });
 
+function labelCenters(svg) {
+    return [...svg.querySelectorAll('g.chart-marker-label text')]
+        .map(text => Number(text.getAttribute('transform').match(/translate\(([-\d.]+)/)[1]));
+}
+
+it('Labels at either end of the chart are moved inside it, but their rules stay on their dates', () => {
+    const svg = renderChart({
+        data: twoPopulations,
+        width: 600,
+        markers: [{ x: dates[0], label: 'Firefox 150 is here' }, { x: dates[2], label: 'Firefox 151' }],
+    }).svg;
+    // The chart's estimate of a label's width: 7px a character.
+    const halfWidths = [19 * 7 / 2, 11 * 7 / 2];
+    const [first, last] = labelCenters(svg);
+
+    expect(first - halfWidths[0]).toBeGreaterThan(-.01);
+    expect(last + halfWidths[1]).toBeLessThan(600.01);
+    expect(last).toBeLessThan(svg.scale('x').apply(dates[2]));
+    expect([...svg.querySelectorAll('g.chart-marker line')].map(line => Number(line.getAttribute('x1'))))
+        .toEqual([svg.scale('x').apply(dates[0]), svg.scale('x').apply(dates[2])]);
+});
+
+it('A label moved inward goes on its own row if it now overlaps its neighbor', () => {
+    // Left where it was, "Firefox 151" would start just clear of "B". Moved
+    // inside the chart, it would cover it.
+    const svg = renderChart({
+        data: twoPopulations,
+        width: 375,
+        markers: [{ x: new Date('2026-01-15T06:00:00Z'), label: 'B' }, { x: dates[2], label: 'Firefox 151' }],
+    }).svg;
+
+    expect(svg.querySelectorAll('g.chart-marker-label')).toHaveLength(2);
+});
+
 it('Annotation label rows add to the chart\'s height instead of taking space from the data', () => {
     const plain = renderChart({ data: twoPopulations, width: 315, height: 315 }).svg;
     const markers = Array.from({ length: 100 }, (unused, index) => ({
