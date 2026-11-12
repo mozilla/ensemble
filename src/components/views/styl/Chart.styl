@@ -3,18 +3,36 @@
 }
 
 /* A fixed single line whose text can't widen the chart around it, so that
-   showing or clearing the hovered value never moves anything on the page. */
+   showing or clearing the hovered value never moves anything on the page.
+   When the line is too long, only the population name is cut short. */
 .chart-readout {
     contain: inline-size; // @stylint ignore
+    display: flex;
     font-size: .9rem;
     font-weight: 400;
     height: 28px;
+    justify-content: flex-end;
     line-height: 28px;
     margin: 0 20px 0 0;
     overflow: hidden;
-    text-align: right;
+    white-space: pre;
+
+    // Application.styl sizes and spaces every span; the readout is one line of one size.
+    span {
+        font-size: inherit;
+        line-height: inherit;
+        margin: 0;
+    }
+}
+
+.chart-readout-population {
+    min-width: 0;
+    overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+}
+
+.chart-readout-value {
+    flex-shrink: 0;
 }
 
 .chart-marker-label text {

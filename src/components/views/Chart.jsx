@@ -173,15 +173,24 @@ export default props => {
     const hoverRadius = Math.hypot(props.width, props.height);
 
     // On a chart with several lines, the hovered value is labelled with its
-    // population's name in that population's color.
-    const renderReadout = point => (
-        <>
-            <span style={{ color: colors[legend.indexOf(point.population)] }}>
-                {props.data.length > 1 ? `${point.population} — ` : '— '}
-            </span>
-            {dateformat(point.x, 'mmmm d, yyyy', true) + ': ' + prettifyNumber(point.y) + yUnitString}
-        </>
-    );
+    // population's name in that population's color. Only the name gives way on
+    // a narrow chart; the legend and the title still show it in full.
+    const renderReadout = point => {
+        const color = colors[legend.indexOf(point.population)];
+        return (
+            <>
+                {props.data.length > 1 ? (
+                    <span className="chart-readout-population" style={{ color }} title={point.population}>
+                        {point.population}
+                    </span>
+                ) : null}
+                <span className="chart-readout-value">
+                    <span style={{ color }}>{props.data.length > 1 ? ' — ' : '— '}</span>
+                    {dateformat(point.x, 'mmmm d, yyyy', true) + ': ' + prettifyNumber(point.y) + yUnitString}
+                </span>
+            </>
+        );
+    };
 
     // A chart with a single population is shaded below its line.
     const maybeArea = props.data.length === 1 ? [

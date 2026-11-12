@@ -91,6 +91,7 @@ it('Hovering shows the date in UTC and the value with its unit, labelled with th
     });
     expect(readout).toHaveTextContent('Low — January 4, 2026: 1,500 hours');
     expect(readout.querySelector('span').style.color).toBe(cssColor('#05b378'));
+    expect(readout.querySelector('.chart-readout-population').title).toBe('Low');
 
     act(() => {
         svg.value = null;
