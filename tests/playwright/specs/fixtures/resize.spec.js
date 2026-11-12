@@ -6,8 +6,8 @@ const dashboard = readFixture('hardware/index.json');
 const region = dashboard.defaultCategory || dashboard.categories[0];
 
 // Chart wrapper ids restart in every dashboard section, so select every chart
-// by the element MetricsGraphics.jsx draws it into.
-const chartSelector = '.metricsGraphicsCon > svg';
+// by the SVG that Chart.jsx has Observable Plot draw.
+const chartSelector = '.observable-plot svg.chart-svg';
 
 // The recording keeps only 12 dates, and the cost of redrawing a line grows
 // with its length, so serve five years of weekly points like the live data.
@@ -19,9 +19,9 @@ const dates = Array.from({ length: weekCount }, (unused, index) => (
     new Date(newestDate - index * 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
 ));
 
-// Each redraw writes every line's d attribute once, and animating a redraw adds
-// more writes, so counting the writes catches both lines animating on resize
-// and charts redrawing on every resize event, however fast the runner is.
+// ObservablePlot.jsx replaces a chart's SVG on every redraw, so counting the
+// SVGs added catches charts redrawing on every resize event, however fast the
+// runner is.
 //
 // Tracing slows each viewport change past ChartContainer's resize debounce, so
 // on a traced retry every chart would redraw at every width.
@@ -41,21 +41,25 @@ test.beforeEach(async ({ page }) => {
     );
 });
 
-test('Hardware charts redraw once, without animating, after a series of resizes', async ({ page }) => {
+test('Hardware charts redraw once after a series of resizes', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto('/dashboard/hardware');
     await expect(page.locator(chartSelector)).toHaveCount(dashboard.metrics.length);
     await expect(page.locator(chartSelector).last()).toBeVisible();
 
     await page.evaluate(() => {
-        window.lineWrites = new Map();
+        window.redraws = new Map();
         new MutationObserver(records => {
             for (const record of records) {
-                if (!record.target.classList.contains('mg-main-line')) continue;
-                const chart = record.target.closest('.metricsGraphicsCon');
-                window.lineWrites.set(chart, (window.lineWrites.get(chart) || 0) + 1);
+                const chart = record.target.closest('.observable-plot');
+                if (!chart) continue;
+                for (const node of record.addedNodes) {
+                    if (node.matches?.('svg.chart-svg')) {
+                        window.redraws.set(chart, (window.redraws.get(chart) || 0) + 1);
+                    }
+                }
             }
-        }).observe(document.querySelector('#application'), { subtree: true, attributeFilter: ['d'] });
+        }).observe(document.querySelector('#application'), { subtree: true, childList: true });
     });
 
     for (const width of [1180, 1080, 980, 880, 800, 880, 960]) {
@@ -68,11 +72,10 @@ test('Hardware charts redraw once, without animating, after a series of resizes'
         return [...document.querySelectorAll(selector)].every(svg => Number(svg.getAttribute('width')) === mainWidth);
     }, chartSelector)).toBe(true);
 
-    // Long enough for a trailing debounced redraw or a 1 s line animation.
+    // Long enough for any trailing debounced redraw.
     await page.waitForTimeout(1000);
-    const writes = await page.evaluate(() => [...document.querySelectorAll('.metricsGraphicsCon')].map(chart => ({
-        lines: chart.querySelectorAll('path.mg-main-line').length,
-        writes: window.lineWrites.get(chart) || 0,
-    })));
-    expect(writes).toEqual(writes.map(({ lines }) => ({ lines, writes: lines })));
+    const redraws = await page.evaluate(() => [...document.querySelectorAll('.observable-plot')].map(chart => (
+        window.redraws.get(chart) || 0
+    )));
+    expect(redraws).toEqual(redraws.map(() => 1));
 });
