@@ -191,6 +191,19 @@ it('Annotations inside the date range are drawn; ones outside it are not', () =>
     expect(svg.scale('x').domain).toEqual([dates[0], dates[2]]);
 });
 
+it('Annotation label rows add to the chart\'s height instead of taking space from the data', () => {
+    const plain = renderChart({ data: twoPopulations, width: 315, height: 315 }).svg;
+    const markers = Array.from({ length: 100 }, (unused, index) => ({
+        x: new Date(dates[0].getTime() + (index * (dates[2] - dates[0]) / 99)),
+        label: 'Fx150',
+    }));
+    const annotated = renderChart({ data: twoPopulations, width: 315, height: 315, markers }).svg;
+
+    const plotHeight = svg => Math.abs(svg.scale('y').range[0] - svg.scale('y').range[1]);
+    expect(Number(annotated.getAttribute('height'))).toBeGreaterThan(315);
+    expect(plotHeight(annotated)).toBe(plotHeight(plain));
+});
+
 it('Annotation labels that would overlap go on separate rows; distant ones share a row', () => {
     const near = renderChart({
         data: twoPopulations,

@@ -147,7 +147,8 @@ export default props => {
     const xToPixel = x => xDomain[1] === xDomain[0] ? 0 : ((x - xDomain[0]) / (xDomain[1] - xDomain[0])) * frameWidth;
     const markersWithRows = assignMarkerRows(markersInRange, xToPixel);
     const markerRowCount = markersWithRows.length ? Math.max(...markersWithRows.map(marker => marker.row)) + 1 : 0;
-    const marginTop = (markerRowCount * markerLabelRowHeight) + 10;
+    const markerRowsHeight = markerRowCount * markerLabelRowHeight;
+    const marginTop = markerRowsHeight + 10;
 
     const markerLabelMarks = [...Array(markerRowCount).keys()].map(row => Plot.text(
         markersWithRows.filter(marker => marker.row === row),
@@ -199,7 +200,9 @@ export default props => {
 
     const options = {
         width: props.width,
-        height: props.height,
+        // Annotation rows grow the chart upward, so that however many there
+        // are, the data keeps the same space to draw in.
+        height: props.height + markerRowsHeight,
         marginTop,
         marginLeft,
         marginRight,
