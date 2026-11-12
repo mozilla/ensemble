@@ -112,3 +112,34 @@ test('A line is drawn in date order even when its data is not', async ({ page })
 
     readoutDates.slice(1).forEach((date, index) => expect(date).toBeGreaterThan(readoutDates[index]));
 });
+
+test.describe('On a narrow screen', () => {
+    test.use({ viewport: { width: 375, height: 800 } });
+
+    test('A long population name is cut short in the readout, but the date and value are not', async ({ page }) => {
+        const longName = 'gen12-tigerlake-gt2 integrated graphics on Windows 11';
+        await reloadWithFirstMetric(page, {
+            [longName]: dashboard.dates.map(date => ({ x: date, y: 12.5 })),
+            Other: dashboard.dates.map(date => ({ x: date, y: 1 })),
+        });
+
+        const metricOverview = page.locator('#metric-overview-1');
+        const box = await metricOverview.locator('svg.chart-svg').boundingBox();
+        // The top of the chart is nearest the long-named population's line.
+        await page.mouse.move(box.x + box.width / 2, box.y + 30);
+
+        const readout = metricOverview.locator('.chart-readout');
+        const population = readout.locator('.chart-readout-population');
+        const value = readout.locator('.chart-readout-value');
+        await expect(population).toHaveText(longName);
+        await expect(population).toHaveAttribute('title', longName);
+        await expect(value).toHaveText(/^ — \w+ \d+, \d{4}: 12\.500$/);
+
+        const [readoutBox, populationBox, valueBox] = await Promise.all([readout.boundingBox(), population.boundingBox(), value.boundingBox()]);
+        expect([readoutBox.height, populationBox.height, valueBox.height], 'the readout is one full-height line').toEqual([28, 28, 28]);
+        expect(valueBox.x, 'the date and value start inside the readout').toBeGreaterThanOrEqual(readoutBox.x);
+        expect(valueBox.x + valueBox.width).toBeLessThanOrEqual(readoutBox.x + readoutBox.width + 1);
+        expect(populationBox.width, 'the name is cut short').toBeLessThan(await population.evaluate(element => element.scrollWidth));
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
+    });
+});
