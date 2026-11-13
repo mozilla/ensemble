@@ -1,5 +1,8 @@
 import { act, fireEvent, render } from '@testing-library/react';
+import distinctColors from 'distinct-colors';
 import Chart from '../../components/views/Chart';
+
+vi.mock('distinct-colors', async importOriginal => ({ default: vi.fn((await importOriginal()).default) }));
 
 
 const dates = ['2026-01-04', '2026-01-11', '2026-01-18'].map(date => new Date(date));
@@ -381,6 +384,24 @@ it('Highlighting a population restyles the chart already drawn, so a pinned read
     rerender(<Chart {...chartProps} highlightedPopulation={null} />);
     expect(container.querySelector('svg.chart-svg')).toBe(svg);
     expect(lineOpacities(svg)).toEqual([null, null]);
+});
+
+it('With more than 11 populations, highlighting and hiding keep every population\'s generated color', () => {
+    const twelvePopulations = [...Array(12).keys()].map(index => dates.map(x => ({ x, y: 100 - index })));
+    const legend = twelvePopulations.map((population, index) => `Population ${index + 1}`);
+    const chartProps = { data: twelvePopulations, legend, numPopulations: 12, showLegend: true, width: 600, height: 400 };
+    const { container, rerender } = render(<Chart {...chartProps} />);
+    const svg = container.querySelector('svg.chart-svg');
+    const strokes = lineStrokes(svg);
+    const paletteGenerations = distinctColors.mock.calls.length;
+
+    rerender(<Chart {...chartProps} highlightedPopulation="Population 1" />);
+    expect(distinctColors.mock.calls.length, 'the palette is generated once per size').toBe(paletteGenerations);
+    expect(legendEntries(container).map(entry => entry.color)).toEqual(strokes.map(cssColor));
+    expect(lineOpacities(svg)).toEqual([null, ...Array(11).fill('0.15')]);
+
+    rerender(<Chart {...chartProps} hiddenPopulations={['Population 2']} />);
+    expect(lineStrokes(container.querySelector('svg.chart-svg'))).toEqual(strokes.toSpliced(1, 1));
 });
 
 it('Highlighting a population with no points fades nothing', () => {
