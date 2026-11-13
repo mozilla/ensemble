@@ -315,7 +315,13 @@ export default props => {
                             aria-pressed={!hidden}
                             disabled={onlyOneShown}
                             title={onlyOneShown ? null : `${hidden ? 'Show' : 'Hide'} ${populationName}`}
-                            onClick={() => props.onLegendToggle?.(populationName)}
+                            onClick={clickEvent => {
+                                props.onLegendToggle?.(populationName);
+                                // A pointer click also focuses the button,
+                                // which would keep it highlighted after the
+                                // pointer leaves. Keyboard clicks have no detail.
+                                if (clickEvent.detail > 0) props.onLegendFocus?.(null);
+                            }}
                             onMouseEnter={() => props.onLegendHover?.(populationName)}
                             onMouseLeave={() => props.onLegendHover?.(null)}
                             onFocus={() => props.onLegendFocus?.(populationName)}

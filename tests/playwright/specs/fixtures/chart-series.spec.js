@@ -174,6 +174,22 @@ test('Clicking a legend entry hides its line until it is clicked again', async (
     await expect(alpha).toHaveAttribute('aria-pressed', 'true');
 });
 
+test('A line shown again by a click isn\'t left highlighted once the pointer leaves', async ({ page }) => {
+    const metricOverview = page.locator('#metric-overview-1');
+    const lines = metricOverview.locator('g.chart-line path');
+    const opacities = () => lines.evaluateAll(paths => paths.map(path => getComputedStyle(path).strokeOpacity));
+    const alpha = metricOverview.locator('.legend .legend-entry').filter({ hasText: 'Alpha' });
+
+    await alpha.click();
+    await expect(lines).toHaveCount(2);
+    await alpha.click();
+    await expect(lines).toHaveCount(3);
+    await expect(alpha).toBeFocused();
+
+    await page.mouse.move(0, 0);
+    await expect.poll(opacities).toEqual(['1', '1', '1']);
+});
+
 test('Legend entries work from the keyboard, and the last line shown can\'t be hidden', async ({ page }) => {
     const metricOverview = page.locator('#metric-overview-1');
     const lines = metricOverview.locator('g.chart-line path');

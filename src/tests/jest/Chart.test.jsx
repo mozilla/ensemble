@@ -482,6 +482,19 @@ it('Clicking a legend entry toggles its population, and focus is reported apart 
     expect(onLegendHover).toHaveBeenLastCalledWith('Small');
 });
 
+it('A pointer click on a legend entry clears its focus highlight, a keyboard click doesn\'t', () => {
+    const onLegendFocus = vi.fn();
+    const { container } = renderChart({ data: threePopulations, legend: threeNames, showLegend: true, onLegendToggle: vi.fn(), onLegendFocus });
+    const [big] = container.querySelectorAll('.legend-entry');
+
+    fireEvent.focus(big);
+    fireEvent.click(big, { detail: 0 });
+    expect(onLegendFocus).toHaveBeenLastCalledWith('Big');
+
+    fireEvent.click(big, { detail: 1 });
+    expect(onLegendFocus).toHaveBeenLastCalledWith(null);
+});
+
 it('A highlighted population that is hidden doesn\'t fade the others', () => {
     const svg = renderChart({ data: threePopulations, legend: threeNames, hiddenPopulations: ['Big'], highlightedPopulation: 'Big' }).svg;
 
