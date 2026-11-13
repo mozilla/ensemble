@@ -26,6 +26,27 @@ const paletteForUpToElevenPopulations = [
     '#000000',
 ];
 
+// Generating a palette takes several milliseconds, and the chart renders again
+// on every legend hover and focus, so each size is generated only once.
+const generatedPalettes = new Map();
+
+function paletteFor(numPopulations) {
+    if (numPopulations <= paletteForUpToElevenPopulations.length || numPopulations === undefined) {
+        return paletteForUpToElevenPopulations;
+    }
+    if (!generatedPalettes.has(numPopulations)) {
+        // The settings passed to distinctColors were chosen such that the
+        // generated colors will be readable on a white background.
+        generatedPalettes.set(numPopulations, distinctColors({
+            count: numPopulations,
+            lightMin: 30,
+            lightMax: 85,
+            chromaMin: 10,
+        }).map(color => color.hex()));
+    }
+    return generatedPalettes.get(numPopulations);
+}
+
 // Room above the chart for each row of annotation labels.
 const markerLabelRowHeight = 20;
 
@@ -202,19 +223,7 @@ export default props => {
         { x: 'labelX', text: 'label', frameAnchor: 'top', dy: -((row + 1) * markerLabelRowHeight), className: 'chart-marker-label' }
     ));
 
-    let colors;
-    if (props.numPopulations > paletteForUpToElevenPopulations.length) {
-        // The settings passed to distinctColors were chosen such that the
-        // generated colors will be readable on a white background.
-        colors = distinctColors({
-            count: props.numPopulations,
-            lightMin: 30,
-            lightMax: 85,
-            chromaMin: 10,
-        }).map(color => color.hex());
-    } else {
-        colors = paletteForUpToElevenPopulations;
-    }
+    const colors = paletteFor(props.numPopulations);
 
     // While a legend entry is hovered or focused, every other population fades
     // so that it stands out. A population with no points shown has nothing to
