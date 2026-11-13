@@ -9,6 +9,11 @@ export default defineConfig({
     },
     build: {
         outDir: 'build',
+        // Our browser support policy is Baseline Widely available. Vite fixes
+        // the versions this means at each major release, so they lag behind
+        // the policy, which is the safe direction. Vite only rewrites syntax
+        // and adds no polyfills. See "Supported browsers" in CONTRIBUTING.md.
+        target: 'baseline-widely-available',
     },
     test: {
         // Scope to the unit tests only - Vitest's default glob also matches

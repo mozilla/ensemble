@@ -94,6 +94,23 @@ style is not enforced (there is no `quotes` rule) — single quotes by conventio
 directory is excluded via the config's own `ignores` array (flat config's replacement for
 `.eslintignore`, which no longer exists).
 
+## Supported browsers
+
+We support browsers that are [Baseline Widely available](https://web.dev/baseline): the versions
+of Chrome, Edge, Firefox, and Safari, on desktop and mobile, that support every feature that has
+worked in all of them for at least 30 months. The floor moves forward on its own. To see today's
+versions, run `npx browserslist "baseline widely available"`.
+
+Use a web platform feature only if MDN or [webstatus.dev](https://webstatus.dev) marks it Baseline
+Widely available. A feature marked Newly available works in the latest browsers but not yet in all
+the supported ones.
+
+`build.target` in `vite.config.mjs` is Vite's `'baseline-widely-available'`. Vite fixes the
+versions that means at each major release, so they lag behind the policy. That is the safe
+direction: Vite rewrites a little more syntax than it needs to. Vite adds no polyfills, so a
+built-in method outside the policy ships as-is and throws in older browsers. Test code under
+`tests/` runs in Node and Playwright's browsers, so the policy doesn't apply there.
+
 ## Styling: Stylus, outside webpack
 
 `src/components/views/styl/*.styl` compiles to `src/components/views/css/*.css` via the `stylus`
