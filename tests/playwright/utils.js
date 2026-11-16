@@ -74,7 +74,23 @@ function formatPercent(value) {
         : `${value.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}%`;
 }
 
+// A request that waits until the test lets it through, so the test can look
+// at the page while it is still loading. Returns the function that lets it
+// through.
+async function holdRequests(page, matcher, handler = route => route.fallback()) {
+    let release;
+    const released = new Promise(resolve => {
+        release = resolve;
+    });
+    await page.route(matcher, async route => {
+        await released;
+        await handler(route);
+    });
+    return release;
+}
+
 module.exports = {
+    holdRequests,
     formatPercent,
     linkWorks,
     linksWork,

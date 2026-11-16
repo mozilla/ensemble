@@ -1,4 +1,5 @@
 const { test, expect, readFixture } = require('../../fixtureData');
+const { holdRequests } = require('../../utils');
 
 
 const loadingSelector = '.spinner, .metric-overview-placeholder, .summary-metric[aria-hidden="true"]';
@@ -8,12 +9,17 @@ const pages = {
     'User Activity': '/dashboard/user-activity',
     'Usage Behavior': '/dashboard/usage-behavior',
     'Contact': '/contact',
+    'Home': '/',
 };
 
 async function waitUntilShown(page, linkText) {
     await expect(page).toHaveURL(pages[linkText]);
     if (linkText === 'Contact') {
         await expect(page.locator('#contact')).toBeVisible();
+        return;
+    }
+    if (linkText === 'Home') {
+        await expect(page.locator('#introduction')).toBeVisible();
         return;
     }
 
@@ -27,7 +33,10 @@ async function waitUntilShown(page, linkText) {
 }
 
 async function navigateTo(page, linkText) {
-    await page.locator('#main-navigation a', { hasText: linkText }).click();
+    const link = linkText === 'Home'
+        ? page.locator('#main-header h1 a')
+        : page.locator('#main-navigation a', { hasText: linkText });
+    await link.click();
     await waitUntilShown(page, linkText);
 }
 
@@ -89,4 +98,85 @@ test('The Next button opens the next page at the top, even when it was visited b
 
     expect(await page.evaluate(() => window.scrolledTo)).toContainEqual([0, 0]);
     expect(await page.evaluate(() => window.scrollY)).toBe(0);
+});
+
+function focusedElement(page) {
+    return page.evaluate(() => {
+        const element = document.activeElement;
+        return element.id ? `#${element.id}` : element.tagName.toLowerCase();
+    });
+}
+
+test('The first page leaves focus where the browser puts it', async ({ page }) => {
+    await page.goto(pages['Hardware']);
+    await waitUntilShown(page, 'Hardware');
+
+    expect(await focusedElement(page)).toBe('body');
+});
+
+test('A header link moves focus to the new page\'s heading, and Tab continues from there', async ({ page }) => {
+    await page.goto(pages['Hardware']);
+    await waitUntilShown(page, 'Hardware');
+    await navigateTo(page, 'Contact');
+
+    await expect(page.getByRole('heading', { name: 'Contact' })).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#contact a[href^="mailto:"]')).toBeFocused();
+});
+
+test('A page with no heading of its own gives focus to main', async ({ page }) => {
+    await page.goto(pages['Contact']);
+    await waitUntilShown(page, 'Contact');
+    await navigateTo(page, 'Home');
+
+    await expect(page.locator('main')).toBeFocused();
+});
+
+test('On a first visit, main holds focus until the dashboard\'s heading arrives and takes it', async ({ page }) => {
+    await page.goto(pages['Usage Behavior']);
+    await waitUntilShown(page, 'Usage Behavior');
+    const releaseDashboard = await holdRequests(page, url => decodeURIComponent(url.pathname).endsWith('/hardware/index.json'));
+
+    await page.getByRole('link', { name: 'Proceed to Hardware' }).click();
+    await expect(page.locator('main > .spinner')).toBeAttached();
+    await expect(page.locator('main')).toBeFocused();
+
+    releaseDashboard();
+    await waitUntilShown(page, 'Hardware');
+    await expect(page.locator('#dashboard-title')).toBeFocused();
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
+});
+
+test('A heading that arrives after the reader has moved focus leaves focus where it is', async ({ page }) => {
+    await page.goto(pages['Contact']);
+    await waitUntilShown(page, 'Contact');
+    const releaseDashboard = await holdRequests(page, url => decodeURIComponent(url.pathname).endsWith('/hardware/index.json'));
+
+    await page.locator('#main-navigation a', { hasText: 'Hardware' }).click();
+    await expect(page.locator('main')).toBeFocused();
+    await page.keyboard.press('Tab');
+    const movedTo = await focusedElement(page);
+    expect(movedTo).not.toBe('main');
+
+    releaseDashboard();
+    await waitUntilShown(page, 'Hardware');
+    expect(await focusedElement(page)).toBe(movedTo);
+});
+
+test('On a revisit, the Next button moves focus straight to the heading, and Back focuses the earlier page\'s heading without scrolling to the top', async ({ page }) => {
+    await page.goto(pages['Hardware']);
+    await waitUntilShown(page, 'Hardware');
+    await navigateTo(page, 'Usage Behavior');
+
+    const nextButton = page.getByRole('link', { name: 'Proceed to Hardware' });
+    await nextButton.scrollIntoViewIfNeeded();
+    await nextButton.click();
+    await expect(page.locator('#dashboard-title')).toBeFocused();
+    await expect(page.locator(loadingSelector)).toHaveCount(0);
+
+    await page.goBack();
+    await waitUntilShown(page, 'Usage Behavior');
+    await expect(page.locator('#dashboard-title')).toHaveText(readFixture('usage-behavior/index.json').title);
+    await expect(page.locator('#dashboard-title')).toBeFocused();
+    expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
 });

@@ -37,7 +37,7 @@ export default class LazyBoundary extends React.Component {
         }
 
         return (
-            <React.Suspense fallback={<Spinner />}>
+            <React.Suspense fallback={<Spinner label={this.props.loadingLabel} />}>
                 {this.props.children}
             </React.Suspense>
         );

@@ -1,19 +1,6 @@
 const { test, expect, readFixture } = require('../../fixtureData');
+const { holdRequests } = require('../../utils');
 
-
-// A request that waits until the test lets it through, so the test can measure
-// the page while it is still loading.
-async function holdRequests(page, matcher, handler = route => route.fallback()) {
-    let release;
-    const released = new Promise(resolve => {
-        release = resolve;
-    });
-    await page.route(matcher, async route => {
-        await released;
-        await handler(route);
-    });
-    return release;
-}
 
 async function box(locator) {
     await expect(locator).toBeVisible();

@@ -168,6 +168,25 @@ main.dashboard-route {
     min-height: 100vh;
 }
 
+// Main.jsx moves focus to these after a navigation, as a page load would. They
+// aren't controls, so a focus ring would only look like a stray highlight.
+main:focus,
+[data-page-heading]:focus {
+    outline: none;
+}
+
+// Hidden from view but still read by screen readers.
+.visually-hidden {
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
 a {
     color: $link-color-normal;
     text-decoration: none;

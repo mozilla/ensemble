@@ -51,6 +51,18 @@ two metric containers render a placeholder the size of what will replace it
 its populations by maximum y-value and drops nulls; `DataTableContainer` sorts rows by value,
 descending.
 
+## Moving between pages
+
+`views/Main.jsx` does on each client-side navigation what a full page load would. A link
+navigation scrolls to the top; Back and Forward keep the position the browser restores. After
+every navigation but the first page load, focus moves to the new page's heading, the element
+marked `data-page-heading` with `tabIndex={-1}`, so a screen reader reads it and Tab continues
+from there. Until the heading renders, `main` holds focus, and the heading takes it on arrival
+unless the reader has moved focus by then. Pages with no heading of their own, such as Home,
+leave focus on `main`. Only the page-level spinners (route loading and `DashboardContainer`)
+announce "Loading" to screen readers, through a `role="status"` region filled when the dots
+appear; the metric and summary placeholders are hidden from them.
+
 ## Rendering metric descriptions: a real sanitization boundary
 
 Metric `description` strings are rendered as inline Markdown and inserted via
