@@ -128,7 +128,7 @@ these architecture docs.
     │       ├── styl/                Stylus source, hand-edited; includes/lib.styl holds shared variables
     │       ├── css/                 generated from styl/, gitignored — see CONTRIBUTING.md
     │       ├── fonts/                Mozilla Headline and Mozilla Text webfonts (woff2)
-    │       └── img/                 3 assets
+    │       └── img/                 2 assets
     ├── lib/
     │   ├── fetchCache.js            withFetch's responses by URL, kept until the page reloads
     │   ├── lazyLoad.jsx             starts a dynamic import() now; renders the loaded code without suspending
