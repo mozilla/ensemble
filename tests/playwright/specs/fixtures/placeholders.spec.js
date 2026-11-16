@@ -77,3 +77,16 @@ for (const width of [375, 1280]) {
         expectSameBox(await box(firstSummaryMetric), placeholder);
     });
 }
+
+test('While a dashboard loads, the footer stays below the window', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    const releaseDashboard = await holdRequests(page, url => decodeURIComponent(url.pathname).endsWith('/hardware/index.json'));
+    await page.goto('/dashboard/hardware');
+    await expect(page.locator('main > .spinner')).toBeAttached();
+
+    const { y } = await page.locator('footer').boundingBox();
+    expect(y).toBeGreaterThanOrEqual(900);
+
+    releaseDashboard();
+    await expect(page.locator('#dashboard')).toBeVisible();
+});
