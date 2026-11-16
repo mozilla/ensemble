@@ -11,6 +11,8 @@ import fetchCache from './lib/fetchCache';
 const originalConsoleError = console.error;
 
 beforeEach(() => {
+    // jsdom has no scrolling and reports scrollTo through console.error.
+    vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
     // eslint-disable-next-line no-console
     console.error = (...args) => {
         originalConsoleError(...args);

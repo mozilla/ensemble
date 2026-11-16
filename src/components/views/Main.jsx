@@ -1,4 +1,5 @@
-import { Routes, Route, useLocation } from 'react-router';
+import { useLayoutEffect } from 'react';
+import { Routes, Route, useLocation, useNavigationType } from 'react-router';
 
 import withTracker from '../decorators/withTracker';
 import withNextButton from '../decorators/withNextButton';
@@ -17,6 +18,16 @@ const NotFound = withTracker(withNextButton(lazyLoad(() => import('./NotFound'))
 
 export default () => {
     const { pathname } = useLocation();
+    const navigationType = useNavigationType();
+
+    // BrowserRouter leaves the window scrolled where it was, and a page visited
+    // before renders at full height at once, so a new page would open part way
+    // down. Back and forward keep the browser's own scroll restoration.
+    useLayoutEffect(() => {
+        if (navigationType !== 'POP') {
+            window.scrollTo(0, 0);
+        }
+    }, [pathname, navigationType]);
 
     return (
         <main className={pathname.startsWith('/dashboard/') ? 'dashboard-route' : undefined}>
