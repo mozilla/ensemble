@@ -26,6 +26,11 @@ const paletteForUpToElevenPopulations = [
     '#000000',
 ];
 
+// A chart with a single population draws it in Firefox purple over a pale
+// purple area.
+const singlePopulationColor = '#7543e3';
+const singlePopulationAreaColor = '#f1e7f8';
+
 // Generating a palette takes several milliseconds, and the chart renders again
 // on every legend hover and focus, so each size is generated only once.
 const generatedPalettes = new Map();
@@ -223,7 +228,7 @@ export default props => {
         { x: 'labelX', text: 'label', frameAnchor: 'top', dy: -((row + 1) * markerLabelRowHeight), className: 'chart-marker-label' }
     ));
 
-    const colors = paletteFor(props.numPopulations);
+    const colors = props.data.length === 1 ? [singlePopulationColor] : paletteFor(props.numPopulations);
 
     // While a legend entry is hovered or focused, every other population fades
     // so that it stands out. A population with no points shown has nothing to
@@ -266,9 +271,10 @@ export default props => {
         );
     };
 
-    // A chart with a single population is shaded below its line.
+    // A chart with a single population is shaded below its line. The shading
+    // is opaque, so it's drawn first to keep the axes and annotations visible.
     const maybeArea = props.data.length === 1 ? [
-        Plot.areaY(linePoints, { x: 'x', y1: minYToShow, y2: 'y', curve: 'catmull-rom', fill: '#0000ff', fillOpacity: .2, className: 'chart-area' }),
+        Plot.areaY(linePoints, { x: 'x', y1: minYToShow, y2: 'y', curve: 'catmull-rom', fill: singlePopulationAreaColor, className: 'chart-area' }),
     ] : [];
 
     const options = {
@@ -285,11 +291,11 @@ export default props => {
         y: yOptions,
         color: { domain: legend, range: colors },
         marks: [
+            ...maybeArea,
             Plot.frame({ anchor: 'left', stroke: '#b3b2b2', className: 'chart-axis-line' }),
             Plot.frame({ anchor: 'bottom', stroke: '#b3b2b2', className: 'chart-axis-line' }),
             Plot.ruleX(markersInRange, { x: 'x', stroke: '#b3b2b2', strokeDasharray: '3,1', className: 'chart-marker' }),
             ...markerLabelMarks,
-            ...maybeArea,
             Plot.line(linePoints, { x: 'x', y: 'y', z: 'population', stroke: 'population', strokeWidth: 1, curve: 'catmull-rom', className: 'chart-line' }),
             Plot.dot(loosePoints, { x: 'x', y: 'y', fill: 'population', r: 3, className: 'chart-point' }),
             Plot.dot(visiblePoints, Plot.pointer({ x: 'x', y: 'y', fill: 'population', r: 4, maxRadius: hoverRadius, className: 'chart-hover-point' })),
