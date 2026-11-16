@@ -38,7 +38,7 @@ src/
 │       ├── styl/                Stylus SOURCE (hand-edited); includes/lib.styl
 │       ├── css/                 GENERATED, GITIGNORED — holds only a README stub
 │       ├── fonts/                Mozilla Headline and Mozilla Text webfonts (woff2)
-│       └── img/                 2 assets
+│       └── img/                 footer/ (Firefox logo, Protocol social icons)
 ├── lib/
 │   ├── fetchCache.js            withFetch's responses by URL, kept until the page reloads
 │   ├── lazyLoad.jsx             lazyLoad(() => import(…)): starts loading now, renders loaded code without suspending
