@@ -14,14 +14,13 @@ h1 {
 
     a {
         color: inherit;
-        border-bottom: 0;
-        background-color: #F1E7F8;
         line-height: 1.5;
         display: inline-block;
-        padding: 0 10px;
+        text-decoration: none;
 
-        &:hover {
-            border-bottom: 0;
+        &:hover, &:focus-visible {
+            color: inherit;
+            text-decoration: underline;
         }
     }
 }
@@ -42,10 +41,17 @@ h1 {
         }
 
         a {
-            border-bottom: none;
             color: #000;
             font-size: 1.1rem;
             font-weight: 200;
+            text-decoration: none;
+
+            &:hover, &:focus-visible {
+                color: #000;
+                text-decoration: underline;
+                text-decoration-thickness: 2px;
+                text-underline-offset: .3em;
+            }
         }
     }
 }

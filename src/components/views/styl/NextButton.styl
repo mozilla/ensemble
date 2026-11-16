@@ -1,4 +1,10 @@
-$btn-color = #F1E7F8;
+@import 'includes/lib';
+
+// Flare's primary button (springfield media/css/cms/components/flare-button.css),
+// with its tokens resolved to literal values.
+$btn-color = #7543e3;
+$btn-color-hover = #6132bc;
+$btn-color-active = #3a0f6e;
 
 .next-button {
     display: flex;
@@ -6,29 +12,52 @@ $btn-color = #F1E7F8;
     margin: 50px 0;
 
     a {
+        align-items: center;
         background-color: $btn-color;
-        border: 0;
-        color: #000;
-        display: inline-block;
-        height: 48px;
-        line-height: 28px;
-        padding: 10px 15px;
-        position: relative;
+        border: 2px solid transparent;
+        border-radius: 128px;
+        color: #fff;
+        display: inline-flex;
+        font-family: $font-family-text;
+        font-size: 1rem;
+        font-weight: 600;
+        gap: 12px;
+        justify-content: center;
+        line-height: 1;
+        padding: 12px 24px;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+
+        // Flare's forward icon, masked so it takes the text colour.
+        .next-button-icon {
+            background-color: currentColor;
+            display: inline-block;
+            flex-shrink: 0;
+            height: 16px;
+            margin: 0; // the global span margin would make the button taller
+            width: 16px;
+            -webkit-mask: url(../img/icons/forward-16.svg) no-repeat center / contain;
+            mask: url(../img/icons/forward-16.svg) no-repeat center / contain;
+        }
 
         &:hover {
-            border-bottom: 0;
+            background-color: $btn-color-hover;
+            color: #fff;
+            text-decoration: none;
         }
-        &::after {
-            background-color: $btn-color;
-            border: 24px solid #fff;
-            border-left: 24px solid $btn-color;
-            content: '';
-            height: 0;
-            top: 0;
-            left: 100%;
-            position: absolute;
-            width: 0;
-            z-index: -1;
+
+        &:active {
+            background-color: $btn-color-active;
+            border-color: $btn-color-active;
+            outline: none;
+        }
+
+        &:focus-visible {
+            color: #fff;
+            outline: 2px solid $btn-color;
+            outline-offset: 2px;
+            text-decoration: none;
         }
     }
 }

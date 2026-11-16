@@ -41,6 +41,8 @@ image-replaced() {
     width: 100%;
 
     // Undo the global link, paragraph, and heading styles from Application.styl.
+    // :where() keeps the resets at class-level specificity so the c-footer-*
+    // rules below can override them.
     a {
         color: #fff;
         font-weight: normal;
@@ -51,22 +53,24 @@ image-replaced() {
             color: #fff;
             text-decoration: none;
         }
+
+        &:focus-visible {
+            outline-color: #fff;
+        }
     }
 
-    p, span {
+    :where(p), :where(span) {
         font-size: inherit;
         line-height: inherit;
         margin: 0;
     }
 
-    ul {
+    :where(ul) {
         margin: 0;
         padding: 0;
     }
 }
 
-// Stylint sees the `.c-footer .c-footer-*` rules below as duplicates of the
-// resets above. They're specificity overrides.
 
 .c-footer-primary {
     box-sizing: border-box;
@@ -176,7 +180,7 @@ image-replaced() {
     }
 }
 
-.c-footer .c-footer-list { // @stylint ignore
+.c-footer-list {
     margin-bottom: 32px;
     margin-top: 16px;
 
@@ -210,7 +214,7 @@ image-replaced() {
     }
 }
 
-.c-footer .c-footer-links-social { // @stylint ignore
+.c-footer-links-social {
     li {
         display: inline-block;
         list-style-type: none;
@@ -278,7 +282,7 @@ image-replaced() {
     }
 }
 
-.c-footer .c-footer-license { // @stylint ignore
+.c-footer-license {
     margin-bottom: 32px;
 
     @media $footer-lg {

@@ -113,13 +113,20 @@ main:focus,
 }
 
 a {
-    color: $link-color-normal;
-    text-decoration: none;
+    color: $link-color;
     font-weight: bold;
+    text-decoration: none;
 }
 
-a:hover {
-    border-bottom: 1px solid $link-color-normal;
+a:hover, a:focus-visible {
+    color: $link-color-hover;
+    text-decoration: underline;
+    text-underline-offset: .15em;
+}
+
+a:focus-visible {
+    outline: 2px solid $link-color-hover;
+    outline-offset: 2px;
 }
 
 p, span {
