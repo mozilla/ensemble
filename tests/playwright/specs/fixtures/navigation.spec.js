@@ -6,6 +6,7 @@ const loadingSelector = '.spinner, .metric-overview-placeholder, .summary-metric
 const pages = {
     'Hardware': '/dashboard/hardware',
     'User Activity': '/dashboard/user-activity',
+    'Usage Behavior': '/dashboard/usage-behavior',
     'Contact': '/contact',
 };
 
@@ -63,4 +64,29 @@ test('Going back to a page already visited shows it without loading anything', a
 
     expect(await page.evaluate(() => window.loadingStatesShown)).toEqual([]);
     expect(datasetRequests).toEqual([]);
+});
+
+test('The Next button opens the next page at the top, even when it was visited before', async ({ page }) => {
+    await page.goto(pages['Hardware']);
+    await waitUntilShown(page, 'Hardware');
+    await navigateTo(page, 'Usage Behavior');
+
+    const nextButton = page.getByRole('link', { name: 'Proceed to Hardware' });
+    await nextButton.scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+    // Chromium happens to land at the top on its own, but Firefox and Safari
+    // keep the old position, so also check that the page asks for the top.
+    await page.evaluate(() => {
+        window.scrolledTo = [];
+        const originalScrollTo = window.scrollTo.bind(window);
+        window.scrollTo = (...position) => {
+            window.scrolledTo.push(position);
+            originalScrollTo(...position);
+        };
+    });
+    await nextButton.click();
+    await waitUntilShown(page, 'Hardware');
+
+    expect(await page.evaluate(() => window.scrolledTo)).toContainEqual([0, 0]);
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
 });
