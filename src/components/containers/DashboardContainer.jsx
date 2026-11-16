@@ -27,7 +27,7 @@ class DashboardContainer extends React.Component {
         const dataFetch = this.props.dataFetch;
 
         if (dataFetch.pending) {
-            return <Spinner />;
+            return <Spinner label="Loading dashboard" />;
         } else if (dataFetch.rejected) {
             if (dataFetch.reason && dataFetch.reason.message) {
                 // eslint-disable-next-line no-console
@@ -36,6 +36,7 @@ class DashboardContainer extends React.Component {
 
             return (
                 <ErrorComponent
+                    pageHeading
                     id="dashboard-fetch-error"
                     title="Error fetching dashboard"
                 />

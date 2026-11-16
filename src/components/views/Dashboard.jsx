@@ -143,12 +143,12 @@ export default props => {
             </Helmet>
             <article id="dashboard">
                 <header className="dashboard-header">
-                    <h2 id="dashboard-title" className="contrasted">{props.title}</h2>
+                    <h2 id="dashboard-title" className="contrasted" tabIndex={-1} data-page-heading>{props.title}</h2>
                     {maybeDescription}
                     {maybeRegion}
                 </header>
                 {maybeSummaryMetrics}
-                <h3 id="metrics-heading">Metrics</h3>
+                <h3 id="metrics-heading" className="visually-hidden">Metrics</h3>
                 {body}
             </article>
         </React.Fragment>

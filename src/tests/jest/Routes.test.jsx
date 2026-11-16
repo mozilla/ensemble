@@ -61,6 +61,12 @@ it.each([
     await waitFor(() => expect(container.querySelector('#not-found')).toBeInTheDocument());
 });
 
+it('A page that doesn\'t exist has its own title', async () => {
+    renderAt('/not-a-page');
+
+    await waitFor(() => expect(document.title).toMatch(/^Not Found/));
+});
+
 it.each([
     '/',
     '/contact',

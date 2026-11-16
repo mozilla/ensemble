@@ -6,7 +6,9 @@ import './css/Spinner.css';
 
 /**
  * Simple wrapper for react-spinners that uses some default options and applies
- * our custom styles.
+ * our custom styles. With a label, screen readers announce it when the dots
+ * appear: the status region is there from the start and its text arrives
+ * later, because text already in a newly added region often isn't announced.
  */
 export default class extends React.Component {
     constructor(props) {
@@ -33,6 +35,11 @@ export default class extends React.Component {
     render() {
         return (
             <div className="spinner">
+                {this.props.label ? (
+                    <span role="status" className="visually-hidden">
+                        {this.state.showSpinner ? this.props.label : null}
+                    </span>
+                ) : null}
                 <PulseLoader
                     size={20}
                     loading={this.state.showSpinner}
