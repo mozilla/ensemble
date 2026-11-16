@@ -20,7 +20,7 @@ export default () => {
     const NotFound = withTracker(withNextButton(lazyLoad(import('./NotFound'))));
 
     return (
-        <main>
+        <main className={pathname.startsWith('/dashboard/') ? 'dashboard-route' : undefined}>
             {/* Keyed on the route so a failed chunk load doesn't brick every
                 later navigation - the key change fully remounts the
                 boundary, resetting its error state, instead of leaving
