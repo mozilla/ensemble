@@ -127,7 +127,7 @@ these architecture docs.
     │   └── views/                   22 presentational .jsx files
     │       ├── styl/                Stylus source, hand-edited; includes/lib.styl holds shared variables
     │       ├── css/                 generated from styl/, gitignored — see CONTRIBUTING.md
-    │       ├── fonts/FiraSans/      8 weights/styles of webfonts
+    │       ├── fonts/                Mozilla Headline and Mozilla Text webfonts (woff2)
     │       └── img/                 3 assets
     ├── lib/
     │   ├── fetchCache.js            withFetch's responses by URL, kept until the page reloads

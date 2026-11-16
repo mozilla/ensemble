@@ -37,7 +37,7 @@ src/
 │   └── views/                   22 presentational .jsx
 │       ├── styl/                Stylus SOURCE (hand-edited); includes/lib.styl
 │       ├── css/                 GENERATED, GITIGNORED — holds only a README stub
-│       ├── fonts/FiraSans/      8 weights/styles of webfonts
+│       ├── fonts/                Mozilla Headline and Mozilla Text webfonts (woff2)
 │       └── img/                 3 assets
 ├── lib/
 │   ├── fetchCache.js            withFetch's responses by URL, kept until the page reloads
@@ -116,7 +116,7 @@ Errors: `eqeqeq`, `no-var`, `prefer-const`, `no-console`, `no-global-assign`, `n
 
 ## Styling: Stylus, outside Vite
 
-`src/components/views/styl/*.styl` → `src/components/views/css/*.css` via the `stylus` CLI (`build:css` / `watch:css`). Vite never sees the Stylus. One `.styl` per component (PascalCase, mirroring the component), plus `Application.styl` (global reset, Fira Sans `@font-face`, body type, ~217 lines) and shared partials `Metric.styl` and `LabelledSelector.styl`.
+`src/components/views/styl/*.styl` → `src/components/views/css/*.css` via the `stylus` CLI (`build:css` / `watch:css`). Vite never sees the Stylus. One `.styl` per component (PascalCase, mirroring the component), plus `Application.styl` (global reset, Mozilla Headline and Mozilla Text `@font-face`, body type, ~146 lines) and shared partials `Metric.styl` and `LabelledSelector.styl`.
 
 Shared variables live in `src/components/views/styl/includes/lib.styl` and it is nearly empty — `$base-tablet`, `$base-desktop`, `$link-color-normal = #0070ff`, and a `// TODO: padding/margin spacing.`. Import it per-file with `@import 'includes/lib'`; it is not globally injected. **No mixins file; most colors are hardcoded hex inline** (stylint's `colors` check is off).
 
