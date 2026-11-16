@@ -4,123 +4,48 @@ html {
     box-sizing: border-box;
 }
 
-/**
- * The PostScript names for these fonts can (which are specified within local())
- * can be determined by using the Font Book application on Mac.
- *
- * https://apple.stackexchange.com/a/79889
- *
- * The SVG IDs (which come after the # in the svg filename) can be determined by
- * inspecting the raw text content of the SVG files.
- */
+// Only woff2: every browser that can run this app supports it.
+// Mozilla Text has no italic axis, so italics come from static files.
 // @stylint off
 @font-face {
-    src: local('FiraSansOTLight'),
-         local('FiraSansLight'),
-         local('Fira Sans OT Light'),
-         local('Fira Sans Light'),
-         url('../fonts/FiraSans/firasansot-light-webfont.woff') format('woff'),
-         url('../fonts/FiraSans/firasansot-light-webfont.ttf') format('truetype'),
-         url('../fonts/FiraSans/firasansot-light-webfont.svg#fira_sans_otlight') format('svg');
-    font-family: FiraSansWeb;
-    font-weight: 200;
+    src: url('../fonts/mozilla-headline/MozillaHeadline-Variable.woff2') format('woff2');
+    font-family: 'Mozilla Headline VF';
+    font-display: swap;
+    font-stretch: 75% 125%;
+    font-style: normal;
+    font-weight: 200 700;
 }
 
 @font-face {
-    src: local('FiraSansOT'),
-         local('FiraSans'),
-         local('Fira Sans OT'),
-         local('Fira Sans'),
-         url('../fonts/FiraSans/firasansot-regular-webfont.woff') format('woff'),
-         url('../fonts/FiraSans/firasansot-regular-webfont.ttf') format('truetype'),
-         url('../fonts/FiraSans/firasansot-regular-webfont.svg#fira_sans_otregular') format('svg');
-    font-family: FiraSansWeb;
+    src: url('../fonts/mozilla-text/MozillaText-Variable.woff2') format('woff2');
+    font-family: 'Mozilla Text VF';
+    font-display: swap;
+    font-style: normal;
+    font-weight: 200 700;
+}
+
+@font-face {
+    src: url('../fonts/mozilla-text/MozillaText-Italic.woff2') format('woff2');
+    font-family: 'Mozilla Text VF';
+    font-display: swap;
+    font-style: italic;
     font-weight: 400;
 }
 
 @font-face {
-    src: local('FiraSansOTMedium'),
-         local('FiraSansMedium'),
-         local('Fira Sans OT Medium'),
-         local('Fira Sans Medium'),
-         url('../fonts/FiraSans/firasansot-medium-webfont.woff') format('woff'),
-         url('../fonts/FiraSans/firasansot-medium-webfont.ttf') format('truetype'),
-         url('../fonts/FiraSans/firasansot-medium-webfont.svg#fira_sans_otmedium') format('svg');
-    font-family: FiraSansWeb;
-    font-weight: 500;
-}
-
-@font-face {
-    /* Yes, the PostScript name contains a hyphen. Not a typo. */
-    src: local('FiraSansOT-Bold'),
-         local('FiraSans-Bold'),
-         local('Fira Sans OT Bold'),
-         local('Fira Sans Bold'),
-         url('../fonts/FiraSans/firasansot-bold-webfont.woff') format('woff'),
-         url('../fonts/FiraSans/firasansot-bold-webfont.ttf') format('truetype'),
-         url('../fonts/FiraSans/firasansot-bold-webfont.svg#fira_sans_otbold') format('svg');
-    font-family: FiraSansWeb;
+    src: url('../fonts/mozilla-text/MozillaText-SemiBoldItalic.woff2') format('woff2');
+    font-family: 'Mozilla Text VF';
+    font-display: swap;
+    font-style: italic;
     font-weight: 600;
 }
 
 @font-face {
-    /* Yes, the PostScript name contains a hyphen. Not a typo. */
-    src: local('FiraSansOTLight-Italic'),
-         local('FiraSansLight-Italic'),
-         local('Fira Sans OT Light Italic'),
-         local('Fira Sans Light Italic'),
-         url('../fonts/FiraSans/firasansot-lightitalic-webfont.woff') format('woff'),
-         url('../fonts/FiraSans/firasansot-lightitalic-webfont.ttf') format('truetype'),
-         url('../fonts/FiraSans/firasansot-lightitalic-webfont.svg#fira_sans_otlight_italic') format('svg');
-    font-family: FiraSansWeb;
-    font-weight: 200;
+    src: url('../fonts/mozilla-text/MozillaText-BoldItalic.woff2') format('woff2');
+    font-family: 'Mozilla Text VF';
+    font-display: swap;
     font-style: italic;
-}
-
-@font-face {
-    /* Yes, the PostScript name contains a hyphen. Not a typo. */
-    src: local('FiraSansOT-Italic'),
-         local('FiraSans-Italic'),
-         local('Fira Sans OT Italic'),
-         local('Fira Sans Italic'),
-         url('../fonts/FiraSans/firasansot-regularitalic-webfont.woff') format('woff'),
-         url('../fonts/FiraSans/firasansot-regularitalic-webfont.ttf') format('truetype'),
-         url('../fonts/FiraSans/firasansot-regularitalic-webfont.svg#fira_sans_otitalic') format('svg');
-    font-family: FiraSansWeb;
-    font-weight: 400;
-    font-style: italic;
-}
-
-@font-face {
-    /* Yes, the PostScript name contains a hyphen. Not a typo. */
-    src: local('FiraSansOTMedium-Italic'),
-         local('FiraSansMedium-Italic'),
-         local('Fira Sans OT Medium Italic'),
-         local('Fira Sans Medium Italic'),
-         url('../fonts/FiraSans/firasansot-mediumitalic-webfont.woff') format('woff'),
-         url('../fonts/FiraSans/firasansot-mediumitalic-webfont.ttf') format('truetype'),
-         url('../fonts/FiraSans/firasansot-mediumitalic-webfont.svg#fira_sans_otmedium_italic') format('svg');
-    font-family: FiraSansWeb;
-    font-weight: 500;
-    font-style: italic;
-}
-
-@font-face {
-    /**
-     * Yes, the PostScript name contains a hyphen. And yes, the word Bold comes
-     * after the hyphen, not before the hyphen like Medium and Light. Weird, but
-     * not a typo.
-     */
-    src: local('FiraSansOT-BoldItalic'),
-         local('FiraSans-BoldItalic'),
-         local('Fira Sans OT Bold Italic'),
-         local('Fira Sans Bold Italic'),
-         url('../fonts/FiraSans/firasansot-bolditalic-webfont.woff') format('woff'),
-         url('../fonts/FiraSans/firasansot-bolditalic-webfont.ttf') format('truetype'),
-         url('../fonts/FiraSans/firasansot-bolditalic-webfont.svg#fira_sans_otbold_italic') format('svg');
-    font-family: FiraSansWeb;
-    font-weight: 600;
-    font-style: italic;
+    font-weight: 700;
 }
 // @stylint on
 
@@ -131,8 +56,8 @@ html {
 
 body {
     color: #000;
-    font-family: 'Fira Sans OT', 'Fira Sans', FiraSansWeb, sans-serif;
-    font-size: 13px;
+    font-family: $font-family-text;
+    font-size: 16px;
     font-weight: 200;
     margin: 0;
     padding: 0;
@@ -203,6 +128,10 @@ p, span {
     margin: 10px 0;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    font-family: $font-family-headline;
+}
+
 h2, h3 {
     font-size: 17px;
 }
@@ -212,10 +141,11 @@ h2, h3 {
     background-color: #000;
     color: #fff;
     display: flex;
-    font-size: 14px;
-    font-weight: 200;
+    font-size: 32px;
+    font-weight: normal;
     line-height: 1.2;
     padding: 10px;
+    margin-top: 40px;
 }
 
 dd {
@@ -224,7 +154,7 @@ dd {
 
 @media $base-tablet {
     body {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     #application {

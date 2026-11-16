@@ -115,8 +115,9 @@ built-in method outside the policy ships as-is and throws in older browsers. Tes
 `src/components/views/styl/*.styl` compiles to `src/components/views/css/*.css` via the `stylus`
 CLI (`npm run build:css` / `watch:css`). Vite never sees the Stylus — this pipeline predates the
 build tool and remains fully independent of it. One `.styl` file per component (PascalCase,
-mirroring the component), plus `Application.styl` (global reset, Fira Sans `@font-face`, body type,
-roughly 217 lines) and shared partials `Metric.styl` and `LabelledSelector.styl`.
+mirroring the component), plus `Application.styl` (global reset, Mozilla Headline and Mozilla
+Text `@font-face`, body type, roughly 146 lines) and shared partials `Metric.styl` and
+`LabelledSelector.styl`.
 
 Shared variables live in `src/components/views/styl/includes/lib.styl`, and it is nearly empty:
 `$base-tablet`, `$base-desktop`, `$link-color-normal = #0070ff`, and a `// TODO: padding/margin
