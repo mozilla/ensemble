@@ -176,6 +176,16 @@ it('A single population is shaded below its line; several populations are not', 
     expect(renderChart({ data: twoPopulations }).svg.querySelector('g.chart-area')).toBeNull();
 });
 
+it('A single population is drawn in purple over an opaque pale purple area, beneath the axes', () => {
+    const { svg } = renderChart({ data: [twoPopulations[0]], legend: ['Only'] });
+    const area = svg.querySelector('g.chart-area');
+
+    expect(lineStrokes(svg)).toEqual(['#7543e3']);
+    expect(area.getAttribute('fill')).toBe('#f1e7f8');
+    expect(area.getAttribute('fill-opacity')).toBeNull();
+    expect(area.compareDocumentPosition(svg.querySelector('.chart-axis-line')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
 it('A population with a single point is drawn as a dot', () => {
     const svg = renderChart({ data: [[{ x: dates[0], y: 9 }], twoPopulations[1]] }).svg;
 
