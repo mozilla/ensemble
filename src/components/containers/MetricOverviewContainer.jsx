@@ -3,16 +3,16 @@ import withFetch from '../../lib/withFetch';
 
 import ErrorComponent from '../views/Error';
 import MetricOverview from '../views/MetricOverview';
+import MetricOverviewPlaceholder from '../views/MetricOverviewPlaceholder';
 
 
 class MetricOverviewContainer extends React.Component {
     // If the data is changing, only re-render once the request settles, with
-    // either the new data or an error. Don't show a spinner while new data is
-    // being loaded, as that would cause the scrollbar to move.
+    // either the new data or an error, so that the chart already shown keeps
+    // its place instead of giving way to a placeholder.
     //
-    // We do want the spinner to be shown on the initial render, but we don't
-    // need to do anything special here to handle that case because
-    // shouldComponentUpdate is not run for the initial render.
+    // shouldComponentUpdate is not run for the initial render, so the
+    // placeholder still shows while the first data loads.
     shouldComponentUpdate(nextProps) {
         return nextProps.dataFetch.fulfilled || nextProps.dataFetch.rejected;
     }
@@ -22,23 +22,7 @@ class MetricOverviewContainer extends React.Component {
         const dataFetch = props.dataFetch;
 
         if (dataFetch.pending) {
-
-            // Metric data loads quickly, even over a bad connection. The
-            // ChartContainer component, however, is loaded next and can take
-            // several seconds to load over a bad connection.
-            //
-            // If we show both spinners, they should look the same. They should
-            // be positioned almost identically so that the user doesn't notice
-            // a difference when the second spinner replaces the first. That can
-            // be a little tricky. We also don't test against slow connections
-            // all that often, so that styling is prone to break over time as
-            // other changes are made.
-            //
-            // An easier solution is to not show this Spinner, since it's the
-            // shorter of the two, and show the ChartContainer spinner as
-            // normal.
-
-            return null;
+            return <MetricOverviewPlaceholder inSection={props.inSection} />;
         } else if (dataFetch.rejected) {
             if (dataFetch.reason && dataFetch.reason.message) {
                 // eslint-disable-next-line no-console

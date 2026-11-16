@@ -43,6 +43,17 @@ it('Requests the metric for the dashboard source, region, and slug', async () =>
     expect(fetchMock.mock.calls[0][0].url).toBe('https://data.example/user-activity/Worldwide/daily-usage/index.json');
 });
 
+it('While the first request is in flight, a placeholder hidden from screen readers holds the metric\'s place', async () => {
+    const { container } = renderForRegion('Worldwide');
+    await waitFor(() => expect(fetchMock).toHaveBeenCalled());
+
+    const placeholder = container.querySelector('.metric-overview-placeholder');
+    expect(placeholder).toHaveAttribute('aria-hidden', 'true');
+    expect(placeholder.querySelector('h4.striped')).toBeInTheDocument();
+    expect(placeholder.querySelector('.metric-and-legend > .spinner')).toBeInTheDocument();
+    expect(container.querySelector('#metric-overview-1')).toBeNull();
+});
+
 it('When the request succeeds, the metric title is rendered', async () => {
     renderForRegion('Worldwide');
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());

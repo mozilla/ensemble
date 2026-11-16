@@ -2,6 +2,7 @@ import React from 'react';
 import withFetch from '../../lib/withFetch';
 
 import SummaryMetric from '../views/SummaryMetric';
+import SummaryMetricPlaceholder from '../views/SummaryMetricPlaceholder';
 import ErrorComponent from '../views/Error';
 
 
@@ -86,9 +87,7 @@ class SummaryMetricContainer extends React.Component {
         const dataFetch = this.props.dataFetch;
 
         if (dataFetch.pending) {
-            // Don't show a spinner for the same reason we don't show a spinner
-            // when metric data is loading. See MetricOverviewContainer.jsx.
-            return null;
+            return <SummaryMetricPlaceholder />;
         } else if (dataFetch.rejected) {
             if (dataFetch.reason && dataFetch.reason.message) {
                 // eslint-disable-next-line no-console

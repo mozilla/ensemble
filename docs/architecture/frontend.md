@@ -41,7 +41,8 @@ the container a `dataFetch` prop holding `pending`, `rejected`, `fulfilled`, `va
 It refetches when the URL changes, going back to pending first, treats a non-2xx response as a
 rejection, and ignores a response that arrives after a newer request has started. Each container
 handles those states itself: `DashboardContainer` renders `views/Spinner.jsx` while pending, the
-two metric containers render nothing (the chart's own spinner shows instead), and all three render
+two metric containers render a placeholder the size of what will replace it
+(`views/MetricOverviewPlaceholder.jsx`, `views/SummaryMetricPlaceholder.jsx`), and all three render
 `views/Error.jsx` on rejection. All reshaping of fetched data happens client-side, in the
 `formatData` method of `ChartContainer`, `DataTableContainer`, and `SummaryMetricContainer` — `ChartContainer` sorts
 its populations by maximum y-value and drops nulls; `DataTableContainer` sorts rows by value,
@@ -108,7 +109,7 @@ these architecture docs.
     ├── components/
     │   ├── containers/              6 class components; 3 fetch via withFetch (above)
     │   ├── decorators/              withTracker.jsx (GA4 via react-ga4), withNextButton.jsx
-    │   └── views/                   20 presentational .jsx files
+    │   └── views/                   22 presentational .jsx files
     │       ├── styl/                Stylus source, hand-edited; includes/lib.styl holds shared variables
     │       ├── css/                 generated from styl/, gitignored — see CONTRIBUTING.md
     │       ├── fonts/FiraSans/      8 weights/styles of webfonts

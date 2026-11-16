@@ -46,6 +46,17 @@ it('Requests the summary metric for the active region', async () => {
     expect(fetchMock.mock.calls[0][0].url).toBe('https://data.example/hardware/Worldwide/gpu-vendor/index.json');
 });
 
+it('While the request is in flight, a placeholder hidden from screen readers holds the summary metric\'s place', async () => {
+    fetchMock.mockReturnValue(new Promise(() => {}));
+
+    const { container } = renderSummaryMetric();
+    await waitFor(() => expect(fetchMock).toHaveBeenCalled());
+
+    expect(container.querySelector('.summary-metric')).toHaveAttribute('aria-hidden', 'true');
+    expect(container.querySelector('.summary-metric svg.summary-metric-placeholder-bar')).toBeInTheDocument();
+    expect(SummaryMetric).not.toHaveBeenCalled();
+});
+
 it('A single population becomes a True/False split at the active date', async () => {
     respondWith({
         title: 'Has Flash',
