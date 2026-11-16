@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { HelmetProvider } from 'react-helmet-async';
 import ReactGA from 'react-ga4';
@@ -70,6 +70,23 @@ it.each([
     renderAt(path);
 
     await waitFor(() => expect(ReactGA.send).toHaveBeenCalledWith({ hitType: 'pageview', page: path }));
+});
+
+it('Each navigation sends one pageview, including a return to a page already visited', async () => {
+    const { container } = renderAt('/contact');
+    await screen.findByText(/questions/i, { selector: '#contact' });
+    const navigationLink = linkText => [...container.querySelectorAll('#main-navigation a')].find(link => link.textContent === linkText);
+
+    fireEvent.click(navigationLink(dashboards[0].menuTitle));
+    await waitFor(() => expect(container.querySelector('#contact')).toBeNull());
+    fireEvent.click(navigationLink('Contact'));
+    await screen.findByText(/questions/i, { selector: '#contact' });
+
+    expect(ReactGA.send.mock.calls.map(([hit]) => hit.page)).toEqual([
+        '/contact',
+        `/dashboard/${dashboards[0].key}`,
+        '/contact',
+    ]);
 });
 
 it('The header links to every dashboard in config.json and the contact page', async () => {

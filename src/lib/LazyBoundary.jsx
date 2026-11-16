@@ -6,7 +6,8 @@ import ErrorComponent from '../components/views/Error';
 
 /**
  * Wraps children containing a lazyLoad'd component with a loading spinner and
- * a fallback for chunk-load failures. React.lazy/Suspense only handles the
+ * a fallback for chunk-load failures, which offers a reload because only a
+ * reload loads the code again. React.lazy/Suspense only handles the
  * loading case; catching the error case requires an error boundary class
  * component, which is why this can't be a function component.
  */
@@ -23,10 +24,15 @@ export default class LazyBoundary extends React.Component {
     render() {
         if (this.state.hasError) {
             return (
-                <ErrorComponent
-                    title="Error"
-                    message="Load error"
-                />
+                <>
+                    <ErrorComponent
+                        title="Error"
+                        message="Load error"
+                    />
+                    <button type="button" onClick={() => window.location.reload()}>
+                        Reload the page
+                    </button>
+                </>
             );
         }
 

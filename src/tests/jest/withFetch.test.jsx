@@ -103,3 +103,64 @@ it('Ignores a response that arrives after a newer request has started', async ()
 
     expect(screen.getByText('fulfilled: Fast')).toBeInTheDocument();
 });
+
+it('A URL fetched before is fulfilled from the first render, without another request', async () => {
+    const first = render(<ShowFetchState slug="one" />);
+    settle('https://data.example/one.json', { title: 'One' });
+    await screen.findByText('fulfilled: One');
+    first.unmount();
+
+    render(<ShowFetchState slug="one" />);
+
+    expect(screen.getByText('fulfilled: One')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
+it('Components asking for the same URL at once share one request', async () => {
+    render(<><ShowFetchState slug="one" /><ShowFetchState slug="one" /></>);
+
+    settle('https://data.example/one.json', { title: 'One' });
+
+    expect(await screen.findAllByText('fulfilled: One')).toHaveLength(2);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
+it('A request still in flight when its component unmounts is used by the next component to ask', async () => {
+    render(<ShowFetchState slug="one" />).unmount();
+
+    render(<ShowFetchState slug="one" />);
+    settle('https://data.example/one.json', { title: 'One' });
+
+    expect(await screen.findByText('fulfilled: One')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
+it('A failed URL is requested again by the next component to ask', async () => {
+    const first = render(<ShowFetchState slug="one" />);
+    settle('https://data.example/one.json', { error: 'Internal Server Error' }, 500);
+    await screen.findByText('rejected: Internal Server Error');
+    first.unmount();
+
+    render(<ShowFetchState slug="one" />);
+    expect(screen.getByText('pending')).toBeInTheDocument();
+    settle('https://data.example/one.json', { title: 'One' });
+
+    expect(await screen.findByText('fulfilled: One')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+});
+
+it('Going back to a fetched URL shows it at once, and a request left behind doesn\'t replace it', async () => {
+    const { rerender } = render(<ShowFetchState slug="one" />);
+    settle('https://data.example/one.json', { title: 'One' });
+    await screen.findByText('fulfilled: One');
+
+    rerender(<ShowFetchState slug="two" />);
+    expect(await screen.findByText('pending')).toBeInTheDocument();
+    rerender(<ShowFetchState slug="one" />);
+    expect(screen.getByText('fulfilled: One')).toBeInTheDocument();
+
+    settle('https://data.example/two.json', { title: 'Two' });
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(screen.getByText('fulfilled: One')).toBeInTheDocument();
+});

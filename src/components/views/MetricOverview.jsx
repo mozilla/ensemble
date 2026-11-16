@@ -10,17 +10,13 @@ import StripedHeader from './StripedHeader';
 import './css/MetricOverview.css';
 
 
+const ChartContainer = lazyLoad(() => import('../containers/ChartContainer'));
+const CustomizableDateContainer = lazyLoad(() => import('../containers/CustomizableDateContainer'));
+const DataTableContainer = lazyLoad(() => import('../containers/DataTableContainer'));
+
 class MetricOverview extends React.Component {
     constructor(props) {
         super(props);
-
-        // Lazy-load the proper components
-        if (props.type === 'line') {
-            this.ChartContainer = lazyLoad(import('../containers/ChartContainer'));
-        } else if (props.type === 'table') {
-            this.CustomizableDateContainer = lazyLoad(import('../containers/CustomizableDateContainer'));
-            this.DataTableContainer = lazyLoad(import('../containers/DataTableContainer'));
-        }
 
         this.markdownParser = markdownIt('zero').use(markdownItSup)
                                                 .enable(['link', 'entity']);
@@ -65,7 +61,7 @@ class MetricOverview extends React.Component {
         if (props.type === 'line') {
             const numPopulations = Object.keys(props.data.populations).length;
             MetricContainer = (
-                <this.ChartContainer
+                <ChartContainer
                     title={props.title}
                     data={props.data}
                     axes={props.axes}
@@ -76,14 +72,14 @@ class MetricOverview extends React.Component {
         } else if (props.type === 'table') {
             // We're omitting titleComponent here since the title is set in a previous sibling.
             MetricContainer = (
-                <this.CustomizableDateContainer
+                <CustomizableDateContainer
                     dates={Object.keys(props.data.dates).sort().reverse()}
                     metric={true}>
-                    <this.DataTableContainer
+                    <DataTableContainer
                         data={props.data}
                         columns={props.columns}
                     />
-                </this.CustomizableDateContainer>
+                </CustomizableDateContainer>
             );
         }
 
