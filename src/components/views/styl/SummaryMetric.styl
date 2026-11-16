@@ -2,3 +2,11 @@
 .bar-arrow {
     display: none;
 }
+
+// The size SummaryMetric draws its bar at: as wide as main, up to 450px. main
+// is only narrower than 450px on small screens, where it is 95vw wide.
+.summary-metric-placeholder-bar {
+    height: 90px;
+    max-width: 95vw;
+    width: 450px;
+}
