@@ -39,7 +39,10 @@ and `LazyBoundary`), plus one `sessionStorage` key,
 a higher-order component: `withFetch(props => url)(Container)` fetches the URL as JSON and passes
 the container a `dataFetch` prop holding `pending`, `rejected`, `fulfilled`, `value`, and `reason`.
 It refetches when the URL changes, going back to pending first, treats a non-2xx response as a
-rejection, and ignores a response that arrives after a newer request has started. Each container
+rejection, and ignores a response that arrives after a newer request has started. Responses are
+kept in `src/lib/fetchCache.js` until the page reloads, so a page visited before shows its data on
+the first render, and components asking for the same URL at once share one request. A failed
+request isn't kept, so the next component to ask tries again. Each container
 handles those states itself: `DashboardContainer` renders `views/Spinner.jsx` while pending, the
 two metric containers render a placeholder the size of what will replace it
 (`views/MetricOverviewPlaceholder.jsx`, `views/SummaryMetricPlaceholder.jsx`), and all three render
@@ -115,8 +118,9 @@ these architecture docs.
     │       ├── fonts/FiraSans/      8 weights/styles of webfonts
     │       └── img/                 3 assets
     ├── lib/
-    │   ├── lazyLoad.jsx             wraps a dynamic import() in React.lazy
-    │   ├── LazyBoundary.jsx         error boundary + Suspense fallback, paired with lazyLoad.jsx
+    │   ├── fetchCache.js            withFetch's responses by URL, kept until the page reloads
+    │   ├── lazyLoad.jsx             starts a dynamic import() now; renders the loaded code without suspending
+    │   ├── LazyBoundary.jsx         error boundary + Suspense fallback; a failed chunk offers a page reload
     │   ├── withFetch.jsx            the data layer: fetches JSON and passes `dataFetch` to containers
     │   └── utils.js                 bumpSort, isFloat, prettifyNumber, getPageTitle
     └── tests/

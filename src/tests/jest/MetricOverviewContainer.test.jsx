@@ -100,3 +100,20 @@ it('When the request for a new region fails, #metric-overview-fetch-error replac
     await waitFor(() => expect(container.querySelector('#metric-overview-fetch-error')).toBeInTheDocument());
     expect(screen.queryByText('Daily Usage')).toBeNull();
 });
+
+it('Going back to a region already loaded shows its metric at once, without another request', async () => {
+    const { rerender } = renderForRegion('Worldwide');
+    await waitFor(() => expect(fetchMock).toHaveBeenCalled());
+    settle('https://data.example/user-activity/Worldwide/daily-usage/index.json', { title: 'Daily Usage' });
+    await screen.findByText('Daily Usage');
+
+    renderForRegion('Germany', rerender);
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    settle('https://data.example/user-activity/Germany/daily-usage/index.json', { title: 'Tägliche Nutzung' });
+    await screen.findByText('Tägliche Nutzung');
+
+    renderForRegion('Worldwide', rerender);
+
+    expect(screen.getByText('Daily Usage')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+});
