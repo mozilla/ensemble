@@ -22,7 +22,7 @@ Workgroup = a managed group of people granted access to GCP resources.
 | Bucket | `moz-fx-data-static-websit-8565-ensemble` | `moz-fx-data-static-websit-f7e0-ensemble` |
 | Hostname | `data.firefox.com` | `dfc-stage.data-static-websites.nonprod.webservices.mozgcp.net` |
 | DNS | CNAME to `dfc-prod.data-static-websites.prod.webservices.mozgcp.net` | no vanity domain |
-| Front-end content | v1.2.1, commit `f655559`, uploaded 2025-05-12 | tracks `main`; every push to `main` deploys |
+| Front-end content | the latest GitHub release, from 2.0.0 on | tracks `main`; every push to `main` deploys |
 | `datasets/` content | rewritten weekly by the transposer | snapshot from 2023-06-19, never updated |
 | Deep links | work (see below) | work (see below) |
 
@@ -52,16 +52,13 @@ include.
 
 **Cache headers.** The CDN rewrites every outgoing `cache-control` to `public,max-age=0`. On the
 objects themselves, the deploy workflow sets the headers listed under "How deploys work", including
-`immutable` on content-hashed assets. Prod's 2025-05-12 hand upload predates that: its `index.html`
-and route copies carry `no-cache, max-age=0, must-revalidate`, and everything else carries GCS's
-default `public, max-age=3600`. Either way, long-lived caching of hashed assets is not in effect at
-the edge and cannot be achieved by object metadata alone while `FORCE_CACHE_ALL` is set.
+`immutable` on content-hashed assets. Even so, long-lived caching of hashed assets is not in effect
+at the edge and cannot be achieved by object metadata alone while `FORCE_CACHE_ALL` is set.
 
-**Deep links.** The URL map has no rewrite rules. Deep links work on prod because the bucket holds
-objects named `dashboard/hardware`, `dashboard/user-activity`, `dashboard/usage-behavior`, and
-`contact`, each a byte-identical copy of `index.html` (same etag). They were uploaded 40 minutes
-after `index.html` on 2025-05-12, by hand. Any deploy process has to recreate these copies, one per
-route in `src/config.json` plus `/contact`.
+**Deep links.** The URL map has no rewrite rules. Deep links work because the bucket holds objects
+named `dashboard/hardware`, `dashboard/user-activity`, `dashboard/usage-behavior`, and `contact`,
+each a copy of `index.html`. The deploy workflow re-uploads them on every deploy; any other deploy
+process has to recreate these copies, one per route in `src/config.json` plus `/contact`.
 
 **404s.** Unknown paths and trailing-slash variants (`/dashboard/hardware/`) return GCS's XML 404
 with HTTP status 404. The bucket's website configuration names `404.html`, but load-balancer backend
@@ -141,11 +138,13 @@ project against the deployed URL. A failed smoke test does not undo the deploy; 
   commands used exists.
 - 2026-11-09 the GitHub Actions workflow above replaced hand uploads, with its first automated
   deploy to stage from commit `fdeafe0` (#480, WT-1916).
+- The 2.0.0 GitHub release was the workflow's first deploy to prod, and the first Vite build there.
 
 ## Open questions
 
-- What else, if anything, is in the prod bucket besides the v1.2.1 build and `datasets/`. Needs a
-  bucket listing with authenticated `gcloud`.
+- What else, if anything, is in the prod bucket besides the builds and `datasets/`. The v1.2.1
+  create-react-app files are still there, since no deploy deletes. Needs a bucket listing with
+  authenticated `gcloud`.
 - The CDN policy still forces caching and rewrites every `cache-control` to `public,max-age=0`, so
   the headers set at upload are not yet honoured at the edge. Switching the ensemble entry to
   `CACHE_ALL_STATIC` with a long `max_ttl` is a pending follow-up in webservices-infra.
