@@ -116,7 +116,7 @@ Errors: `eqeqeq`, `no-var`, `prefer-const`, `no-console`, `no-global-assign`, `n
 
 ## Styling: Stylus, outside Vite
 
-`src/components/views/styl/*.styl` → `src/components/views/css/*.css` via the `stylus` CLI (`build:css` / `watch:css`). Vite never sees the Stylus. One `.styl` per component (PascalCase, mirroring the component), plus `Application.styl` (global reset, Mozilla Headline and Mozilla Text `@font-face`, body type, ~146 lines) and shared partials `Metric.styl` and `LabelledSelector.styl`.
+`src/components/views/styl/*.styl` → `src/components/views/css/*.css` via the `stylus` CLI (`build:css` / `watch:css`). Vite never sees the Stylus. One `.styl` per component (PascalCase, mirroring the component), plus `Application.styl` (global reset, Mozilla Headline and Mozilla Text `@font-face` plus their size-adjusted Arial fallbacks — re-measure the `size-adjust` values if the fonts change, `fixtures/font-fallback.spec.js` fails when they're off — body type, ~230 lines) and shared partials `Metric.styl` and `LabelledSelector.styl`.
 
 Shared variables live in `src/components/views/styl/includes/lib.styl` and it is nearly empty — `$base-tablet`, `$base-desktop`, `$link-color-normal = #0070ff`, and a `// TODO: padding/margin spacing.`. Import it per-file with `@import 'includes/lib'`; it is not globally injected. **No mixins file; most colors are hardcoded hex inline** (stylint's `colors` check is off).
 

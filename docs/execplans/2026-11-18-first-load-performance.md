@@ -55,8 +55,12 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
       on `/` and from 0.247 to 0.052 on the dashboard. Dashboard LCP went from 4288 to 4540 ms (see
       Surprises). Vitest 17 files, 143 tests. Recorded Playwright 127 passed. Each of
       `shell.spec.js`'s tests fails with its change reverted.
-- [ ] Milestone 5: fixes the measurements still call for (font fallback metrics, analytics timing,
-      early metric requests), each only if justified.
+- [x] (2026-11-18) Milestone 5, first item: fallback faces, Arial scaled with `size-adjust`. CLS
+      went from 0.052 to 0.000 on both pages, with FCP and LCP unchanged. Recorded Playwright 133
+      passed. `font-fallback.spec.js` fails without the faces, with shifts of 0.15 and 0.27 at
+      412 px.
+- [ ] Milestone 5, remaining: analytics only for a real ID; early metric requests and the late
+      "Proceed to" button, if they're still worth doing after Milestone 3.
 - [ ] Milestone 6: final measurement, clean-up, full test run, retrospective.
 
 ## Surprises & Discoveries
@@ -158,6 +162,24 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
 
   Both come from the fallback font taking a different amount of space, which is Milestone 5's
   first item.
+- Observation: the Mozilla fonts are the same width at every weight. A line of the site's text at
+  100 px measures 8428 px in Mozilla Text and 8123 px in Mozilla Headline, from weight 200 to 600.
+  Arial measures 7702 px, and Arial Bold, which the browser uses from 600, measures 8243 px. So one
+  `size-adjust` per family covers the regular weights, and Arial Bold needs its own face: 109.43%
+  and 102.25% for Mozilla Text, 105.47% and 98.55% for Mozilla Headline. Both fonts have an ascent
+  of .945 em, a descent of .255 em and no line gap, against Arial's .905, .212 and about .033.
+  Evidence: DOM widths and canvas `measureText` in Chromium against the built WOFF2 files.
+- Observation: `ascent-override`, `descent-override` and `line-gap-override` are not Baseline.
+  Safari has never shipped them, and MDN's compat data lists Safari as "preview". So the fallback
+  faces use `size-adjust` alone, which has been in Safari since 17. They still remove the shift.
+  What moved before was width: the navigation wrapping differently. Line heights are mostly fixed
+  in the stylesheet, so they don't move anything. Measured CLS fell from 0.052 to 0.000, and the
+  spec's remaining shift is under 0.003.
+- Observation: whether the old fallback shifted the page depends on the screen width. With the
+  system font as the fallback (`-apple-system` on a Mac), the swap moved the page by under 0.01 at
+  375 px and 1280 px, but by 0.15 on `/` and 0.27 on the dashboard at 412 px, where the navigation
+  wraps onto a different number of lines. `font-fallback.spec.js` runs at 375, 412 and 1280 px for
+  that reason.
 - Baseline, median of 5 cold loads on a local `vite preview` of this branch, and median of 3 on
   production (`main`). Slow 4G (562.5 ms latency, 1.44 Mbit/s down), 4× CPU slowdown, 412×915
   viewport, times in ms:
@@ -246,6 +268,14 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
   not be mistaken for it. The development server adds styles with the scripts, so the position
   check swaps the shell back in after the styles have arrived, rather than measuring before
   JavaScript runs.
+  Date/Author: 2026-11-18, Stephanie Hobson.
+
+- Decision: the fallback faces use local Arial, Liberation Sans or Arimo, with `size-adjust` only.
+  Rationale: Liberation Sans (most Linux systems, including CI's `playwright install --with-deps`)
+  and Arimo (ChromeOS) were designed with Arial's metrics, so one set of values fits all three.
+  Android has none of them and falls through to the system font as before. A system font can't
+  be the base: `local()` can't name it reliably. If the webfonts fail to load entirely, text now
+  shows in scaled Arial rather than the system font.
   Date/Author: 2026-11-18, Stephanie Hobson.
 
 ## Outcomes & Retrospective
