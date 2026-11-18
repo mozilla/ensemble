@@ -28,6 +28,7 @@ export default class LazyBoundary extends React.Component {
                     <ErrorComponent
                         title="Error"
                         message="Load error"
+                        pageHeading={this.props.pageHeading}
                     />
                     <button type="button" onClick={() => window.location.reload()}>
                         Reload the page

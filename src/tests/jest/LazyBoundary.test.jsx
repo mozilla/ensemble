@@ -66,3 +66,30 @@ it('When loading fails, shows "Load error" and a reload button, and never loads 
     expect(await screen.findByText('Load error')).toBeInTheDocument();
     expect(loader).toHaveBeenCalledTimes(1);
 });
+
+it('A deferred component starts loading only when it is first rendered', async () => {
+    const loader = vi.fn(() => Promise.resolve({ default: () => <p>Loaded</p> }));
+    const Deferred = lazyLoad(loader, { deferred: true });
+    expect(loader).not.toHaveBeenCalled();
+
+    renderInBoundary(<><Deferred /><Deferred /></>);
+
+    expect(await screen.findAllByText('Loaded')).toHaveLength(2);
+    expect(loader).toHaveBeenCalledTimes(1);
+});
+
+it('A page-level boundary marks its load error heading as the page heading; others don\'t', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const FailsToLoad = lazyLoad(() => Promise.reject(new Error('Failed to fetch dynamically imported module')));
+
+    const page = render(<LazyBoundary pageHeading><FailsToLoad /></LazyBoundary>);
+    const pageHeading = await screen.findByRole('heading', { name: 'Error' });
+    expect(pageHeading).toHaveAttribute('data-page-heading');
+    expect(pageHeading).toHaveAttribute('tabindex', '-1');
+    page.unmount();
+
+    renderInBoundary(<FailsToLoad />);
+    const heading = await screen.findByRole('heading', { name: 'Error' });
+    expect(heading).not.toHaveAttribute('data-page-heading');
+    expect(heading).not.toHaveAttribute('tabindex');
+});

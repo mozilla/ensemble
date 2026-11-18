@@ -164,3 +164,19 @@ it('Going back to a fetched URL shows it at once, and a request left behind does
 
     expect(screen.getByText('fulfilled: One')).toBeInTheDocument();
 });
+
+it('Switching from a request in flight to a URL whose cached response was empty shows it fulfilled', async () => {
+    const ShowState = withFetch(props => `https://data.example/${props.slug}.json`)(({ dataFetch }) => (
+        <p>{dataFetch.fulfilled ? 'fulfilled' : 'not fulfilled'}</p>
+    ));
+    const first = render(<ShowState slug="empty" />);
+    pendingRequests['https://data.example/empty.json'](new Response(null, { status: 204 }));
+    await screen.findByText('fulfilled');
+    first.unmount();
+
+    const { rerender } = render(<ShowState slug="slow" />);
+    expect(screen.getByText('not fulfilled')).toBeInTheDocument();
+    rerender(<ShowState slug="empty" />);
+
+    expect(screen.getByText('fulfilled')).toBeInTheDocument();
+});
