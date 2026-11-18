@@ -47,6 +47,39 @@ html {
     font-style: italic;
     font-weight: 700;
 }
+// Arial, or Liberation Sans or Arimo, which share its metrics on Linux and
+// ChromeOS, scaled so that a line of the site's text is as wide in it as in the
+// Mozilla fonts, so that text doesn't reflow when they arrive. Arial Bold is
+// wider than Arial, so it has its own scale. ascent-override and friends would
+// match the line heights too, but Safari doesn't support them.
+@font-face {
+    src: local('Arial'), local('Liberation Sans'), local('Arimo');
+    font-family: 'Mozilla Text Fallback';
+    font-weight: 200 500;
+    size-adjust: 109.43%;
+}
+
+@font-face {
+    src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('Arimo Bold');
+    font-family: 'Mozilla Text Fallback';
+    font-weight: 600 700;
+    size-adjust: 102.25%;
+}
+
+@font-face {
+    src: local('Arial'), local('Liberation Sans'), local('Arimo');
+    font-family: 'Mozilla Headline Fallback';
+    font-weight: 200 500;
+    size-adjust: 105.47%;
+}
+
+@font-face {
+    src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('Arimo Bold');
+    font-family: 'Mozilla Headline Fallback';
+    font-weight: 600 700;
+    size-adjust: 98.55%;
+}
+
 // @stylint on
 
 /* Jon Neal approach to a box-sizing reset. */
