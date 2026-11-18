@@ -9,8 +9,9 @@ test('Footer appears', async ({ page }) => {
 const notFoundPaths = ['/this-page-does-not-exist', '/dashboard/not-a-dashboard'];
 
 // The 375px window is tall enough to fit the header, the page, and the footer,
-// which on a phone is taller than many phone screens.
-for (const [width, height] of [[1280, 900], [375, 1000]]) {
+// whose sections stay expanded on a phone, making it taller than most phone
+// screens on its own.
+for (const [width, height] of [[1280, 900], [375, 1600]]) {
     for (const path of ['/contact', ...notFoundPaths]) {
         test(`On a page shorter than the window, the footer sits at the bottom of the window (${path} at ${width}×${height})`, async ({ page }) => {
             test.skip(
