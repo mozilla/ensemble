@@ -42,7 +42,10 @@ It refetches when the URL changes, going back to pending first, treats a non-2xx
 rejection, and ignores a response that arrives after a newer request has started. Responses are
 kept in `src/lib/fetchCache.js` until the page reloads, so a page visited before shows its data on
 the first render, and components asking for the same URL at once share one request. A failed
-request isn't kept, so the next component to ask tries again. Each container
+request isn't kept, so the next component to ask tries again. `src/index.jsx` uses the same cache
+before React renders: on a dashboard's URL it calls `withFetch`'s `prefetchJSON` for that
+dashboard's `index.json`. That way the request goes out while the much larger dashboard code is
+still downloading, and `DashboardContainer` joins it when it mounts. Each container
 handles those states itself: `DashboardContainer` renders `views/Spinner.jsx` while pending, the
 two metric containers render a placeholder the size of what will replace it
 (`views/MetricOverviewPlaceholder.jsx`, `views/SummaryMetricPlaceholder.jsx`), and all three render

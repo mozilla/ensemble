@@ -1,9 +1,22 @@
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router';
+import { BrowserRouter, matchPath } from 'react-router';
 import { HelmetProvider } from 'react-helmet-async';
 import { unregister } from './registerServiceWorker';
 
 import Application from './components/views/Application';
+import { prefetchJSON } from './lib/withFetch';
+import { dashboardIndexUrl } from './lib/utils';
+import { dashboards } from './config.json';
+
+
+// A dashboard's data doesn't depend on its code, which is much bigger, so ask
+// for the data now rather than once the code has arrived.
+const dashboard = dashboards.find(
+    ({ key }) => matchPath(`/dashboard/${key}`, window.location.pathname)
+);
+if (dashboard) {
+    prefetchJSON(dashboardIndexUrl(dashboard.source));
+}
 
 
 createRoot(document.getElementById('root')).render(
