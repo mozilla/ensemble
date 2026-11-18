@@ -10,11 +10,12 @@ import StripedHeader from './StripedHeader';
 import './css/MetricOverview.css';
 
 
-// Deferred because this module loads with the dashboard page's code, which
-// every page starts loading, while charts and tables show only on dashboards.
-const ChartContainer = lazyLoad(() => import('../containers/ChartContainer'), { deferred: true });
-const CustomizableDateContainer = lazyLoad(() => import('../containers/CustomizableDateContainer'), { deferred: true });
-const DataTableContainer = lazyLoad(() => import('../containers/DataTableContainer'), { deferred: true });
+// These start loading with the dashboard page's code, which every page loads
+// up front, so a visitor's first dashboard doesn't wait for the chart code
+// after its data arrives.
+const ChartContainer = lazyLoad(() => import('../containers/ChartContainer'));
+const CustomizableDateContainer = lazyLoad(() => import('../containers/CustomizableDateContainer'));
+const DataTableContainer = lazyLoad(() => import('../containers/DataTableContainer'));
 
 class MetricOverview extends React.Component {
     constructor(props) {

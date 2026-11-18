@@ -3,9 +3,8 @@ import React from 'react';
 
 /**
  * Start loading a component's code now and return a component that renders it.
- * With { deferred: true }, loading starts only when the component first
- * renders, for code that most pages never show. Pair with LazyBoundary to show
- * a spinner while loading and to handle load errors.
+ * Pair with LazyBoundary to show a spinner while loading and to handle load
+ * errors.
  *
  * Once the code has loaded, the component renders it straight away. A new
  * React.lazy suspends on its first render even when its code is already
@@ -14,23 +13,16 @@ import React from 'react';
  * A failed load stays failed until the page is reloaded. Browsers can keep a
  * failed import() too, so loading again isn't a reliable retry.
  */
-export default (loader, { deferred = false } = {}) => {
+export default loader => {
     let loadedComponent = null;
-    let loading = null;
-    const load = () => {
-        if (!loading) {
-            loading = loader().then(loadedModule => {
-                loadedComponent = loadedModule.default;
-                return loadedModule;
-            });
-            // Nothing may ever render this component, so its failure must not
-            // go unhandled. React.lazy still sees the rejection.
-            loading.catch(() => {});
-        }
-        return loading;
-    };
-    if (!deferred) load();
-    const LazyComponent = React.lazy(load);
+    const loading = loader().then(loadedModule => {
+        loadedComponent = loadedModule.default;
+        return loadedModule;
+    });
+    // Nothing may ever render this component, so its failure must not go
+    // unhandled. React.lazy still sees the rejection.
+    loading.catch(() => {});
+    const LazyComponent = React.lazy(() => loading);
 
     return props => {
         const Component = loadedComponent || LazyComponent;
