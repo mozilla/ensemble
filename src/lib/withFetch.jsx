@@ -47,6 +47,13 @@ function cachedFetch(url) {
     return fetchCache.get(url);
 }
 
+// Start fetching url before any component asks for it, so that the component
+// that does finds the request already made. A failure is left for that
+// component to retry and report.
+export function prefetchJSON(url) {
+    cachedFetch(url).promise.catch(() => {});
+}
+
 function fulfilledState(value) {
     return { pending: false, rejected: false, fulfilled: true, value };
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import withFetch from '../../lib/withFetch';
+import { dashboardIndexUrl } from '../../lib/utils';
 
 import Spinner from '../views/Spinner';
 import ErrorComponent from '../views/Error';
@@ -71,4 +72,4 @@ class DashboardContainer extends React.Component {
     }
 }
 
-export default withFetch(props => `${props.source}/index.json`)(DashboardContainer);
+export default withFetch(props => dashboardIndexUrl(props.source))(DashboardContainer);

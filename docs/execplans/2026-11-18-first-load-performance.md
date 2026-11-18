@@ -42,7 +42,10 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
 - [x] (2026-11-18) Milestone 1: baseline measured. Dashboard LCP median 5704 ms on a local
       build, 6888 ms on production. CLS on `/` is 0.686 locally and 0.563 on production. Findings
       and the re-ranked milestones are in Surprises and the Decision Log.
-- [ ] Milestone 2: start the dashboard data request at startup.
+- [x] (2026-11-18) Milestone 2: `src/index.jsx` prefetches the dashboard's `index.json`.
+      Dashboard LCP median went from 5704 to 4288 ms. Dashboard CLS rose from 0.098 to 0.247, from
+      the font swap (see Surprises). Vitest 16 files, 141 tests. Recorded Playwright 122 passed.
+      `early-data.spec.js` fails with the prefetch reverted.
 - [ ] Milestone 3: preload hints in the built `index.html`.
 - [ ] Milestone 4: static page shell in `index.html`.
 - [ ] Milestone 5: fixes the measurements still call for (font fallback metrics, analytics timing,
@@ -99,6 +102,17 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
     17 KB d3-scale-chromatic.
 
   Trimming these is a follow-up.
+- Observation: starting the dashboard request early moved the font swap's reflow into the
+  dashboard. After Milestone 2, `user-activity/index.json` runs 1593–2318 ms instead of
+  4072–4765 ms. The metrics start at 3262 ms instead of 4780 ms, waiting now only on the dashboard
+  chunk (ends 3215 ms), and LCP falls to 4288 ms. But the dashboard now renders before Mozilla Text
+  arrives (3430 ms), so the swap reflows its description and pushes everything below. That's a
+  new 0.20 shift whose sources are `section.metric-overview-collection` and `aside#region`, at
+  3442 ms. The fonts have to arrive before the content, or the fallback has to take the same
+  space. That makes Milestone 3's font preload and Milestone 5's fallback metrics more important,
+  not less.
+  Evidence: dashboard CLS runs `0.247` ×5 after, against `0.098` ×5 before. Single run: Mozilla
+  Text `1644 - 3430`, then `shift @3442 0.2008 section.metric-overview-collection, aside#region`.
 - Baseline, median of 5 cold loads on a local `vite preview` of this branch, and median of 3 on
   production (`main`). Slow 4G (562.5 ms latency, 1.44 Mbit/s down), 4× CPU slowdown, 412×915
   viewport, times in ms:
