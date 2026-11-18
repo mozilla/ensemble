@@ -5,6 +5,8 @@ import './css/Header.css';
 import { dashboards } from '../../config.json';
 
 
+// index.html shows a copy of this until React renders: keep shellHtml in
+// scripts/indexHtmlPlugin.mjs in step.
 export default () => (
     <header id="main-header">
         <h1><Link to="/">Firefox Public Data Report</Link></h1>

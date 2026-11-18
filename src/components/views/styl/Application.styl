@@ -67,7 +67,9 @@ body {
 // A column at least as tall as the window, with main taking the spare height,
 // so that on a short page the footer sits at the bottom of the window. The gap
 // above the header is padding, not an offset, so it counts toward that height.
-#application {
+// .app-shell is the copy of the header in index.html, shown until React
+// renders, and must sit exactly where #application will.
+#application, .app-shell {
     display: flex;
     flex-direction: column;
     min-height: 100svh;
@@ -90,6 +92,12 @@ main {
 // taller than this. It is the tallest the window can be, unlike the svh above,
 // so that the footer stays out of sight on phones too.
 main.dashboard-route {
+    min-height: 100vh;
+}
+
+// The same for any page, before the scripts run and while a page's code loads.
+main:empty,
+main:has(> .spinner:only-child) {
     min-height: 100vh;
 }
 
@@ -165,7 +173,7 @@ dd {
         font-size: 16px;
     }
 
-    #application {
+    #application, .app-shell {
         padding-top: 40px;
     }
 

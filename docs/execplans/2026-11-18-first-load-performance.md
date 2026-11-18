@@ -46,8 +46,15 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
       Dashboard LCP median went from 5704 to 4288 ms. Dashboard CLS rose from 0.098 to 0.247, from
       the font swap (see Surprises). Vitest 16 files, 141 tests. Recorded Playwright 122 passed.
       `early-data.spec.js` fails with the prefetch reverted.
-- [ ] Milestone 3: preload hints in the built `index.html`.
-- [ ] Milestone 4: static page shell in `index.html`.
+- [ ] Milestone 3: preload hints in the built `index.html` (in progress: blanket preloads measured
+      and rejected, see Surprises; the plugin they'll go in exists from Milestone 4. Remaining:
+      choose the preloads after the fallback font metrics, possibly per route).
+- [x] (2026-11-18) Milestone 4, done before Milestone 3: `scripts/indexHtmlPlugin.mjs` puts the
+      header and an empty `main` in `#root`, and `main` keeps a window's height while it is empty
+      or holds only the page spinner. FCP went from 1692 to 1244 ms. CLS went from 0.686 to 0.052
+      on `/` and from 0.247 to 0.052 on the dashboard. Dashboard LCP went from 4288 to 4540 ms (see
+      Surprises). Vitest 17 files, 143 tests. Recorded Playwright 127 passed. Each of
+      `shell.spec.js`'s tests fails with its change reverted.
 - [ ] Milestone 5: fixes the measurements still call for (font fallback metrics, analytics timing,
       early metric requests), each only if justified.
 - [ ] Milestone 6: final measurement, clean-up, full test run, retrospective.
@@ -113,6 +120,44 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
   not less.
   Evidence: dashboard CLS runs `0.247` ×5 after, against `0.098` ×5 before. Single run: Mozilla
   Text `1644 - 3430`, then `shift @3442 0.2008 section.metric-overview-collection, aside#region`.
+- Observation: preloading every chunk and both fonts from the HTML made things worse on a slow
+  connection. Everything downloads at once, so `index-*.js` takes until 2532 ms instead of
+  1547 ms. Before the page shell, nothing painted until that script ran. FCP went from 1692 to
+  2652 ms. Dashboard LCP went from 4288 to 4644 ms. Dashboard CLS fell to 0, though, because the
+  fonts arrived before the content. Variants measured by editing `build/index.html` by hand,
+  median of 3:
+
+      preloads (no shell)                       /: FCP  LCP   CLS     dashboard: LCP  CLS
+      none                                         1692 2256  0.686              4280 0.247
+      Mozilla Text only                            1868 2432  0.579              4380 0.046
+      both fonts                                   2220 2796  0.481              4540 0.000
+      Text + every chunk except the chart's        2288 2812  0.579              3956 0.092
+      Text + dashboard and home chunks + CSS       2280 2504  0.579              3928 0.092
+
+  With the shell in place, first paint depends only on the stylesheet, so the trade becomes LCP
+  on `/` against LCP on dashboards. All routes get the same `index.html`, so preloading the
+  dashboard's code slows the home page:
+
+      preloads (with shell)                     /: FCP  LCP   CLS     dashboard: LCP  CLS
+      none                                         1240 2260  0.052              4540 0.052
+      Mozilla Text only                            1380 2424  0.052              4176 0.052
+      Text + dashboard and home chunks + CSS       1424 2776  0.052              3832 0.098
+      everything                                   1432 3656  0.013              4632 0.013
+
+- Observation: the page shell makes the browser request both fonts as soon as the stylesheet is
+  parsed (1208 ms), because the header's text needs them. Without it they were requested at about
+  1630 ms. Their 103 KB then shares the connection with the dashboard chunk, which finishes 330 ms
+  later (3542 ms, against 3215 ms). That is where the shell's 250 ms of extra dashboard LCP comes
+  from. It is also why the 0.20 font-swap shift in the dashboard has gone: the fonts arrive before
+  the dashboard renders. Mozilla Headline is 70 KB for the headings alone, which makes it a
+  candidate for subsetting in a follow-up.
+- Observation: what's left of CLS after the shell is two small shifts in the header:
+  - 0.006 on the navigation items when Mozilla Text arrives;
+  - 0.046 when Mozilla Headline arrives, because the `h1` changes height and moves `main` and the
+    navigation.
+
+  Both come from the fallback font taking a different amount of space, which is Milestone 5's
+  first item.
 - Baseline, median of 5 cold loads on a local `vite preview` of this branch, and median of 3 on
   production (`main`). Slow 4G (562.5 ms latency, 1.44 Mbit/s down), 4× CPU slowdown, 412×915
   viewport, times in ms:
@@ -177,6 +222,30 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
   Rationale: it changes what production and stage serve, and can only be verified after a deploy.
   This branch stays app-only. The compression finding stands: until it lands, production's numbers
   will stay behind the local build's.
+  Date/Author: 2026-11-18, Stephanie Hobson.
+
+- Decision: do Milestone 4 before Milestone 3, then Milestone 5's fallback font metrics, then choose
+  the preloads.
+  Rationale: until the page paints without JavaScript, every preload delays first paint, so
+  preloads couldn't be judged fairly. With the shell, the remaining choice trades home-page LCP
+  against dashboard LCP. Whether a font preload is needed at all depends on whether matching
+  fallback metrics remove the swap shift.
+  Date/Author: 2026-11-18, Stephanie Hobson.
+- Decision: keep `main` at a window's height while it is empty (the shell) or holds only the page
+  spinner, using `main:empty, main:has(> .spinner:only-child)` in `Application.styl`. The existing
+  `main.dashboard-route` rule stays.
+  Rationale: this is what removes the footer jump on `/`. `:has()` has been Baseline Widely
+  available since 2026-06-19, according to webstatus.dev. Contact and Not Found keep their
+  short-page layout once loaded, because the rule stops applying as soon as content renders.
+  Date/Author: 2026-11-18, Stephanie Hobson.
+- Decision: the shell is a wrapper with class `app-shell` that shares `#application`'s column
+  styles. Its header is generated from `src/config.json`. `shell.spec.js` checks that it matches
+  `views/Header.jsx`, both in markup (ignoring react-router's `data-discover`) and in position,
+  at 375 and 1280 px.
+  Rationale: the tests use `#application` as the sign that React has rendered, and the shell must
+  not be mistaken for it. The development server adds styles with the scripts, so the position
+  check swaps the shell back in after the styles have arrived, rather than measuring before
+  JavaScript runs.
   Date/Author: 2026-11-18, Stephanie Hobson.
 
 ## Outcomes & Retrospective

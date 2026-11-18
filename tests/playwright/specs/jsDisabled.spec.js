@@ -24,3 +24,15 @@ test('Correct <noscript> message is displayed when JavaScript is disabled', asyn
 test('index.html has an og:title for crawlers that do not run JavaScript', async ({ page }) => {
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Firefox Public Data Report');
 });
+
+test('The header and its links show when JavaScript is disabled', async ({ page }) => {
+    await expect(page.getByRole('link', { name: 'Firefox Public Data Report' })).toHaveAttribute('href', '/');
+    const links = page.locator('#main-navigation a');
+    await expect(links).toHaveText(['User Activity', 'Usage Behavior', 'Hardware', 'Contact']);
+    expect(await links.evaluateAll(anchors => anchors.map(anchor => anchor.getAttribute('href')))).toEqual([
+        '/dashboard/user-activity',
+        '/dashboard/usage-behavior',
+        '/dashboard/hardware',
+        '/contact',
+    ]);
+});

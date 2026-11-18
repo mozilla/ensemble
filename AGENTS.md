@@ -55,7 +55,7 @@ tests/playwright/
 └── utils.js                     shared helpers: formatPercent, linkWorks, linksWork, flagForUpdate, metricTitleIsCorrect, changeRegionAndWaitForMetrics
 ```
 
-There is no `pages/`, `store/`, `hooks/`, `api/`, `locales/`, or `data/`. `index.html` at the repository root is Vite's entry point (with a hardcoded `og:image` and the `<noscript>` message). `public/` holds static files copied as-is: `manifest.json`, `contribute.json`, a Search Console verification file, and `img/`. `build/` is gitignored output. `docs/architecture/` describes the frontend and the data pipeline. Routes are exactly `/`, `/contact`, `/dashboard/<key>`, and a catch-all `NotFound`.
+There is no `pages/`, `store/`, `hooks/`, `api/`, `locales/`, or `data/`. `index.html` at the repository root is Vite's entry point (with a hardcoded `og:image` and the `<noscript>` message). `scripts/indexHtmlPlugin.mjs`, a Vite plugin, fills its empty `#root` with a copy of the header and an empty `main` (`.app-shell`), built from `src/config.json`, so something paints before the scripts run; React replaces it on its first render. Change `views/Header.jsx` and the copy together — `tests/playwright/specs/fixtures/shell.spec.js` fails when they differ. `public/` holds static files copied as-is: `manifest.json`, `contribute.json`, a Search Console verification file, and `img/`. `build/` is gitignored output. `docs/architecture/` describes the frontend and the data pipeline. Routes are exactly `/`, `/contact`, `/dashboard/<key>`, and a catch-all `NotFound`.
 
 ## Current state: read this before estimating anything
 
