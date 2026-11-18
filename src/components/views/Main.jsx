@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from 'react';
-import { Routes, Route, useLocation, useNavigationType } from 'react-router';
+import { Routes, Route, matchPath, useLocation, useNavigationType } from 'react-router';
 
 import withTracker from '../decorators/withTracker';
 import withNextButton from '../decorators/withNextButton';
@@ -15,6 +15,12 @@ const Home = withTracker(withNextButton(lazyLoad(() => import('./Home'))));
 const Contact = withTracker(lazyLoad(() => import('./Contact')));
 const DashboardContainer = withTracker(withNextButton(lazyLoad(() => import('../containers/DashboardContainer'))));
 const NotFound = withTracker(withNextButton(lazyLoad(() => import('./NotFound'))));
+
+// Matched as Routes matches them, so that a Not Found page under /dashboard/
+// keeps the short-page layout.
+const isDashboardPath = pathname => dashboards.some(
+    dashboard => matchPath(`/dashboard/${dashboard.key}`, pathname)
+);
 
 const pageHeadingSelector = '[data-page-heading]';
 
@@ -68,12 +74,12 @@ export default () => {
         <main
             ref={mainElement}
             tabIndex={-1}
-            className={pathname.startsWith('/dashboard/') ? 'dashboard-route' : undefined}
+            className={isDashboardPath(pathname) ? 'dashboard-route' : undefined}
         >
             {/* Keyed on the route so that a page whose code failed to load
                 doesn't leave "Load error" on every other page: the key
                 change remounts the boundary, resetting its error state. */}
-            <LazyBoundary key={pathname} loadingLabel="Loading page">
+            <LazyBoundary key={pathname} loadingLabel="Loading page" pageHeading>
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/contact" element={<Contact />} />

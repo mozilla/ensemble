@@ -41,7 +41,7 @@ src/
 │       └── img/                 3 assets
 ├── lib/
 │   ├── fetchCache.js            withFetch's responses by URL, kept until the page reloads
-│   ├── lazyLoad.jsx             lazyLoad(() => import(…)): starts loading now, renders loaded code without suspending
+│   ├── lazyLoad.jsx             lazyLoad(() => import(…)): starts loading now (or on first render with { deferred: true }), renders loaded code without suspending
 │   ├── LazyBoundary.jsx         error boundary + spinner for lazy-loaded components; a failed chunk offers a reload
 │   ├── withFetch.jsx            the data layer: fetches JSON and passes `dataFetch` to containers
 │   └── utils.js                 bumpSort, isFloat, prettifyNumber, getPageTitle

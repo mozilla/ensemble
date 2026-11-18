@@ -92,7 +92,7 @@ export default mapPropsToUrl => WrappedComponent => class extends React.Componen
         const entry = cachedFetch(url);
 
         if (entry.fulfilled) {
-            if (this.state.dataFetch.value !== entry.value) {
+            if (!this.state.dataFetch.fulfilled || this.state.dataFetch.value !== entry.value) {
                 this.setState({ dataFetch: fulfilledState(entry.value) });
             }
             return;
