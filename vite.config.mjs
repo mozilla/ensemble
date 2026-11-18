@@ -1,9 +1,11 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
+import indexHtmlPlugin from './scripts/indexHtmlPlugin.mjs';
+
 
 export default defineConfig({
-    plugins: [react()],
+    plugins: [react(), indexHtmlPlugin()],
     server: {
         port: 3000,
     },
