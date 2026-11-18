@@ -39,7 +39,9 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
 
 - [x] (2026-11-18) Drafted the plan on branch `516--first-load-performance`, cut from
       `468--fresh-paint` (PR #512).
-- [ ] Milestone 1: baseline measurement and bundle composition.
+- [x] (2026-11-18) Milestone 1: baseline measured. Dashboard LCP median 5704 ms on a local
+      build, 6888 ms on production. CLS on `/` is 0.686 locally and 0.563 on production. Findings
+      and the re-ranked milestones are in Surprises and the Decision Log.
 - [ ] Milestone 2: start the dashboard data request at startup.
 - [ ] Milestone 3: preload hints in the built `index.html`.
 - [ ] Milestone 4: static page shell in `index.html`.
@@ -49,7 +51,63 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
 
 ## Surprises & Discoveries
 
-None yet.
+- Observation: production sends JavaScript and CSS uncompressed. Every `assets/` response from
+  `data.firefox.com` arrives with no `content-encoding`, although the browser offered gzip, br and
+  zstd. Its `transferSize` equals the raw file size: `index-*.js` 214 KB, `DashboardContainer-*.js`
+  179 KB, `ChartContainer-*.js` 268 KB. The same build through `vite preview` transfers 70 KB,
+  69 KB and 90 KB gzipped. The transposer's JSON is uncompressed too. On a slow connection this
+  makes production's main script take 1.76 s to download, against 0.97 s for the local
+  measurement. That makes it the largest single cost found, and it lives in the deploy, not the
+  app. Production also shows `cache-control: public,max-age=0,immutable` on hashed assets, which
+  confirms the CDN rewrite that `docs/architecture/deploy.md` describes.
+  Evidence: `node scripts/measureLoad.js https://data.firefox.com 3 --headers`, every asset row
+  `h2  -  public,max-age=0,immutable`, against `h2  zstd  private, max-age=900` for Google's gtag.
+- Observation: production loads Google's gtag script for the placeholder measurement ID
+  `G-XXXXXXXXXX` from `.env`, and sends page views to it. So the deploy sets no real ID. The script
+  downloads from about 1.6 s to 3.9 s on the local build, alongside `DashboardContainer-*.js` and
+  both fonts, which competes with them for bandwidth on a slow connection.
+  Evidence: waterfall rows `/gtag/js?id=G-XXXXXXXXXX` and `/g/collect?...tid=G-XXXXXXXXXX` in both
+  runs.
+- Observation: on `/`, the footer jumps when the home page's content arrives, scoring 0.53 of CLS on
+  its own. Google counts anything over 0.25 as poor. `main` is empty while the `Home` chunk loads,
+  and the route spinner shows nothing for its first second, so the footer sits high on the screen
+  until the content pushes it down. Production (`main` branch) shows the same 0.55 shift, so this
+  isn't new on the fresh-paint branch.
+  Evidence: local `/`: `shift @2227 0.5333 footer.c-footer`; production: `shift @3159 0.5497 footer`.
+- Observation: the font swap causes the next-largest shifts. On `/`, 0.106 at 3532 ms lands just
+  after Mozilla Text arrives (3518 ms), and 0.046 at 4083 ms just after Mozilla Headline arrives
+  (4034 ms), moving `main` and the navigation. The dashboard shows the same 0.046 when Mozilla
+  Headline arrives. Both fonts are discovered only after the CSS, at about 1.63 s.
+- Observation: the dashboard request chain is as the issue describes, and each link costs about a
+  second on a slow connection. On the local build:
+  1. `index-*.js` ends at 1547 ms.
+  2. `DashboardContainer-*.js` runs 1583–3993 ms.
+  3. `user-activity/index.json` runs 4072–4765 ms. It starts only after the chunk.
+  4. The metric files run 4780–5711 ms.
+  5. LCP, a metric description paragraph, is at 5704 ms.
+
+  `ChartContainer-*.js` (90 KB gzipped) doesn't start until 4060 ms, because it is imported by
+  `MetricOverview.jsx` inside the dashboard chunk. A late `div.next-button` causes a further 0.046
+  shift at 4798 ms.
+- Observation: what the bundles hold, from `source-map-explorer` on a build with source maps:
+  - The main bundle is 126 KB react-dom, 36 KB react-router, 14 KB react-helmet-async and 6 KB
+    react-ga4.
+  - The dashboard chunk is mostly markdown-it and its dependencies: markdown-it 50 KB, entities
+    23 KB, linkify-it 11 KB and uc.micro 5 KB, about 90 KB raw. Then d3 at about 50 KB. Linkify is
+    switched off in every markdown-it instance, but its code is bundled anyway.
+  - The chart chunk is 183 KB Observable Plot, 41 KB chroma-js (pulled in by distinct-colors) and
+    17 KB d3-scale-chromatic.
+
+  Trimming these is a follow-up.
+- Baseline, median of 5 cold loads on a local `vite preview` of this branch, and median of 3 on
+  production (`main`). Slow 4G (562.5 ms latency, 1.44 Mbit/s down), 4× CPU slowdown, 412×915
+  viewport, times in ms:
+
+      page                       FCP    LCP    CLS     where
+      /                          1684   2240   0.686   local build of this branch
+      /dashboard/user-activity   1684   5704   0.098   local build of this branch
+      /                          2524   3164   0.563   production, main
+      /dashboard/user-activity   2512   6888   0.063   production, main
 
 ## Decision Log
 
@@ -72,6 +130,39 @@ None yet.
   checks *order* (this request started before that one finished) or *presence* (these tags are in
   the HTML) is deterministic. `docs/execplans/2026-10-28-hardware-resize-performance.md` worked the
   same way.
+  Date/Author: 2026-11-18, Stephanie Hobson.
+
+- Decision: keep Milestones 2, 3 and 4, plus Milestone 5's font-fallback and analytics items.
+  Leave Milestone 5's early metric requests until after Milestones 2 and 3 have been re-measured.
+  Rationale: the baseline puts each of them on the critical path.
+  - The dashboard JSON waits 2.4 s for a chunk it doesn't need (Milestone 2).
+  - The chart chunk starts 2.5 s after it could, and the fonts start only after the CSS
+    (Milestone 3).
+  - First paint comes about 490 ms after the stylesheet is ready (Milestone 4).
+  - The font swap shifts `/` by about 0.15 (Milestone 5).
+  - gtag competes with the chunks for bandwidth (Milestone 5).
+
+  Whether the metric requests still wait on the chunk depends on Milestones 2 and 3.
+  Date/Author: 2026-11-18, Stephanie Hobson.
+- Decision: fix the footer jump on `/` (CLS 0.53) in Milestone 4, by giving `main` a minimum height
+  while a page is loading, in the app as well as in the static shell.
+  Rationale: it is the largest layout shift measured and has nothing to do with fonts or data. It
+  happens because `main` is empty, both before JavaScript runs and while a route chunk loads, so
+  the shell and the loading state need the same fix.
+  Date/Author: 2026-11-18, Stephanie Hobson.
+- Decision: in Milestone 5, initialise Google Analytics only when `VITE_GA_MEASUREMENT_ID` is set to
+  a real ID, not the checked-in `G-XXXXXXXXXX` placeholder. When a real ID is set, initialise it
+  after the window's `load` event.
+  Rationale: production loads gtag for the placeholder, so it downloads alongside the critical
+  chunks and sends page views to nobody. This is the replacement for the plan's original "defer GA
+  if it competes" item.
+  Date/Author: 2026-11-18, Stephanie Hobson.
+- Decision: serving compressed assets is a separate issue and pull request, not part of this plan.
+  It means uploading with `gcloud storage cp --gzip-local-extensions=...` in
+  `.github/workflows/deploy.yml`, and asking the CDN owners about brotli.
+  Rationale: it changes what production and stage serve, and can only be verified after a deploy.
+  This branch stays app-only. The compression finding stands: until it lands, production's numbers
+  will stay behind the local build's.
   Date/Author: 2026-11-18, Stephanie Hobson.
 
 ## Outcomes & Retrospective
@@ -298,9 +389,15 @@ Extend `scripts/indexHtmlPlugin.mjs`. In both dev and build, `transformIndexHtml
 `src/config.json`. The shell is the same markup `src/components/views/Header.jsx` renders: a
 `<header id="main-header">` with an `h1` link to `/` and a `nav#main-navigation` list linking to each
 `/dashboard/<key>` with its `menuTitle`, then `/contact`. After the header comes an empty
-`<main class="page-shell"></main>`. Give `.page-shell` a `min-height` in `Application.styl` equal to
-the height `main` has while the route spinner shows, so the footer doesn't jump when the app takes
-over. The header's styles come from `Header.styl`. Check whether that CSS lands in the entry
+`<main class="page-shell"></main>`.
+
+The footer jump on `/` (see Surprises) has the same cause before and after JavaScript runs: `main`
+has no height until a page's content arrives. Give `main` a minimum height in `Application.styl`
+whenever it holds only the loading state or the shell, so that the footer starts below the fold on
+a phone-sized screen. For example, a `min-height` in `vh` on `main` that is lifted once content has
+rendered. Check how `main` is styled on this branch first, including the `dashboard-route` class and
+the "short-page layout" that `Main.jsx` mentions, and keep the short-page layout of the Contact and
+Not Found pages. Record what was chosen. The header's styles come from `Header.styl`. Check whether that CSS lands in the entry
 stylesheet, which is render-blocking and in the head. If it doesn't, the shell paints unstyled, and
 the fix is to import `Header.css` from `Application.jsx` so it does. Record which it was.
 
@@ -334,15 +431,22 @@ with the reason in the `Decision Log`.
    common system font and sets `size-adjust`, `ascent-override` and `descent-override` so the
    fallback takes the same space. Put it in the stacks in `includes/lib.styl` straight after the
    webfont. Compute the overrides from the two fonts' metrics and record them.
-2. **Analytics timing.** If the gtag request starts before the dashboard or metric data requests
-   and delays them, move `ReactGA.initialize` in `withTracker.jsx` to run after the window's `load`
-   event. Keep the first page view: react-ga4 queues `send` calls made before initialisation, but
-   confirm that in its source in `node_modules/react-ga4` and record it.
+2. **Analytics.** In `withTracker.jsx`, initialise react-ga4 only when
+   `import.meta.env.VITE_GA_MEASUREMENT_ID` is set and isn't the placeholder `G-XXXXXXXXXX`. When it
+   is a real ID, run `ReactGA.initialize` after the window's `load` event, or straight away if
+   `document.readyState` is already `complete`. Keep the first page view. Check in
+   `node_modules/react-ga4` whether `send` calls made before initialisation are queued or dropped,
+   and record which. If they're dropped, send the first page view after initialising. With the
+   placeholder, `send` must be a no-op that throws nothing. Test it in a new
+   `src/tests/jest/withTracker.test.jsx` by mocking `react-ga4`.
 3. **Early metric requests.** If the metric `index.json` requests still wait on the dashboard chunk
    after Milestones 2 and 3, extend the startup prefetch. When the dashboard file arrives, prefetch
    the metric URLs for the region `DashboardContainer` would choose. That's `preferredRegion` from
    `sessionStorage` if it is one of the dashboard's `categories`, otherwise `defaultCategory`. Move
    that choice into one shared function used by both, rather than copying it.
+
+4. **Late "Proceed to" button.** If the 0.046 shift from `div.next-button` on the dashboard is
+   still there after Milestones 2–4, reserve its space while the dashboard loads.
 
 Each change made gets a spec or test that fails without it, and the docs it touches are updated in
 the same commit.
