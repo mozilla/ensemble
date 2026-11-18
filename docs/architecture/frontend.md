@@ -131,7 +131,7 @@ these architecture docs.
     │       └── img/                 3 assets
     ├── lib/
     │   ├── fetchCache.js            withFetch's responses by URL, kept until the page reloads
-    │   ├── lazyLoad.jsx             starts a dynamic import() now, or on first render if deferred; renders the loaded code without suspending
+    │   ├── lazyLoad.jsx             starts a dynamic import() now; renders the loaded code without suspending
     │   ├── LazyBoundary.jsx         error boundary + Suspense fallback; a failed chunk offers a page reload
     │   ├── withFetch.jsx            the data layer: fetches JSON and passes `dataFetch` to containers
     │   └── utils.js                 bumpSort, isFloat, prettifyNumber, getPageTitle
