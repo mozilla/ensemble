@@ -42,7 +42,10 @@ It refetches when the URL changes, going back to pending first, treats a non-2xx
 rejection, and ignores a response that arrives after a newer request has started. Responses are
 kept in `src/lib/fetchCache.js` until the page reloads, so a page visited before shows its data on
 the first render, and components asking for the same URL at once share one request. A failed
-request isn't kept, so the next component to ask tries again. Each container
+request isn't kept, so the next component to ask tries again. `src/index.jsx` uses the same cache
+before React renders: on a dashboard's URL it calls `withFetch`'s `prefetchJSON` for that
+dashboard's `index.json`. That way the request goes out while the much larger dashboard code is
+still downloading, and `DashboardContainer` joins it when it mounts. Each container
 handles those states itself: `DashboardContainer` renders `views/Spinner.jsx` while pending, the
 two metric containers render a placeholder the size of what will replace it
 (`views/MetricOverviewPlaceholder.jsx`, `views/SummaryMetricPlaceholder.jsx`), and all three render
@@ -145,6 +148,17 @@ these architecture docs.
 There is no `pages/`, `store/`, `hooks/`, `api/`, or `locales/` directory — this is a small enough
 application that none has been needed. `public/` holds static files served as-is (`manifest.json`,
 `contribute.json`, `img/`, and the Google Search Console verification file); `index.html` itself lives at the repository root, Vite's convention.
+`scripts/indexHtmlPlugin.mjs` puts a copy of the header and an empty `main` into its `#root` at
+build time and in the dev server, so the header paints as soon as the stylesheet arrives. React
+replaces it on its first render. `src/index.jsx` renders that first time synchronously and, if a
+visitor had already tabbed to a shell link, moves focus to the same link in React's header. The dev server only adds styles once the scripts run, so there the
+plugin also links the compiled `Application.css` and `Header.css` from the head, and the shell
+doesn't paint unstyled. In a build, the same plugin lists the route chunks, what they
+import, and their stylesheets as preloads, so they download alongside the main script rather than
+after it. `lazyLoad` would fetch them anyway, so this adds no bytes. The chart chunk is left out,
+because on a slow connection it takes bandwidth from the main script before anything needs it.
+`tests/playwright/specs/fixtures/shell.spec.js` checks that the copy
+matches `views/Header.jsx` and sits in the same place.
 `build/` is gitignored output. Routes are exactly `/`, `/contact`, `/dashboard/<key>`, and a
 catch-all not-found page.
 

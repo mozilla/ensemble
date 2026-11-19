@@ -9,6 +9,10 @@ import { dashboards } from '../../config.json';
 
 let fetchMock;
 
+// withTracker reads the ID when it is imported, and loads nothing for the
+// placeholder in .env.
+vi.hoisted(() => vi.stubEnv('VITE_GA_MEASUREMENT_ID', 'G-TEST000000'));
+
 vi.mock('react-ga4', () => ({
     default: { initialize: vi.fn(), send: vi.fn() },
 }));
@@ -75,7 +79,11 @@ it.each([
 ])('%s sends a pageview for its path', async path => {
     renderAt(path);
 
-    await waitFor(() => expect(ReactGA.send).toHaveBeenCalledWith({ hitType: 'pageview', page: path }));
+    await waitFor(() => expect(ReactGA.send).toHaveBeenCalledWith({
+        hitType: 'pageview',
+        page: path,
+        location: `${window.location.origin}${path}`,
+    }));
 });
 
 it('Each navigation sends one pageview, including a return to a page already visited', async () => {
