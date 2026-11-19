@@ -77,3 +77,18 @@ test('The header in index.html is styled before the scripts run', async ({ page 
     await page.evaluate(() => document.fonts.ready);
     expect(await headerBoxes(page)).toEqual(shown);
 });
+
+test('A header link focused before the scripts run keeps focus when React takes over', async ({ page }) => {
+    const releaseScripts = await holdRequests(page, url => url.pathname === '/src/index.jsx');
+    await page.goto('/', { waitUntil: 'commit' });
+    const shellLink = page.locator('.app-shell #main-navigation a', { hasText: 'Usage Behavior' });
+    await shellLink.focus();
+    await expect(shellLink).toBeFocused();
+
+    releaseScripts();
+    await expect(page.locator('#application')).toBeAttached();
+
+    await expect(page.locator('#application #main-navigation a', { hasText: 'Usage Behavior' })).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL('/dashboard/usage-behavior');
+});

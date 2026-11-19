@@ -79,7 +79,11 @@ it.each([
 ])('%s sends a pageview for its path', async path => {
     renderAt(path);
 
-    await waitFor(() => expect(ReactGA.send).toHaveBeenCalledWith({ hitType: 'pageview', page: path }));
+    await waitFor(() => expect(ReactGA.send).toHaveBeenCalledWith({
+        hitType: 'pageview',
+        page: path,
+        location: `${window.location.origin}${path}`,
+    }));
 });
 
 it('Each navigation sends one pageview, including a return to a page already visited', async () => {

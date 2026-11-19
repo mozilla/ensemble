@@ -1,3 +1,4 @@
+import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, matchPath } from 'react-router';
 import { HelmetProvider } from 'react-helmet-async';
@@ -19,13 +20,23 @@ if (dashboard) {
 }
 
 
-createRoot(document.getElementById('root')).render(
+// React's first render replaces the header copy in index.html, whose links a
+// visitor may already have tabbed to. Render synchronously so that nothing
+// can move focus in between, then give it to the same link in React's header.
+const focusedHref = document.activeElement?.closest('.app-shell a')?.getAttribute('href');
+const root = createRoot(document.getElementById('root'));
+flushSync(() => root.render(
     <HelmetProvider>
         <BrowserRouter>
             <Application />
         </BrowserRouter>
     </HelmetProvider>
-);
+));
+if (focusedHref) {
+    [...document.querySelectorAll('#main-header a')]
+        .find(link => link.getAttribute('href') === focusedHref)
+        ?.focus();
+}
 
 // Service workers were causing issues with DataOps hosting. We struggled to
 // understand what exactly was causing the problem. It's possible that #5 in the

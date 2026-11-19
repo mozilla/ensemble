@@ -34,7 +34,7 @@ working). Run one Playwright spec directly: `npx playwright test contact.spec.js
 
 **Environment:** `.env` is checked into git and holds only public build-time config —
 `VITE_GA_MEASUREMENT_ID='G-XXXXXXXXXX'` (a placeholder for a GA4 measurement ID; with it, no
-analytics load at all, and a real ID makes them load after the page has),
+analytics load at all),
 `VITE_SITE_TITLE='Firefox Public Data Report'`, `VITE_VALUE_DECIMAL_PLACES=3`. These are consumed by
 `src/components/decorators/withTracker.jsx` and `src/lib/utils.js` via `import.meta.env.VITE_*` —
 Vite's own convention, not Node's `process.env` (which is not populated in the browser bundle at
