@@ -126,6 +126,29 @@ the public URL to serve the new bundle at the root and every route, checks an un
 and the hardware dataset still answers. A separate `smoke-test` job then runs the live Playwright
 project against the deployed URL. A failed smoke test does not undo the deploy; it flags it.
 
+## Releasing to prod
+
+Releases are tagged with the bare version, `2.1.0`, not `v2.1.0`. Run `/release` in Claude Code to
+be walked through these steps.
+
+1. **Check stage.** Every push to `main` deploys to stage, so the commit you are releasing is already
+   there. Confirm its deploy and smoke test passed:
+   `gh run list --workflow=deploy.yml --branch=main --limit 3`.
+2. **Bump the version** in a PR that touches `package.json`, `package-lock.json`, and the version
+   in `AGENTS.md`, as #513 did: `npm version 2.2.0 --no-git-tag-version`. The version isn't semver;
+   see "Versioning" in the README. Merge it just before releasing.
+3. **Publish the release.** This creates the tag on `main` and starts the prod deploy:
+   `gh release create 2.2.0 --target main --title 2.2.0 --generate-notes`. Don't mark it as a
+   pre-release: pre-releases test the release mechanics and never reach prod.
+4. **Watch the deploy**:
+   `gh run watch $(gh run list --workflow=deploy.yml --event=release --limit 1 --json databaseId -q '.[0].databaseId') --exit-status`.
+   The `prod` environment needs no approval, only a tag.
+5. **Confirm what's live:** `curl -s https://data.firefox.com/version.json` reports the version and
+   commit.
+
+To re-run a prod deploy or roll back, run the workflow from the tag:
+`gh workflow run deploy.yml --ref 2.0.0 -f environment=prod`.
+
 ## How deploys have happened
 
 - Until 2018-07 the site ran on Heroku with the create-react-app buildpack (`app.json`,

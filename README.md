@@ -27,7 +27,8 @@ Any of the environment variables in *.env* can be overridden. For example:
 Run `npm run build` to produce a static build in `build/` (Stylus, then Vite, then `version.json`;
 see `CONTRIBUTING.md` for the full command reference). See [`docs/architecture/deploy.md`](docs/architecture/deploy.md) for where that build is
 hosted and how it is deployed: pushes to `main` deploy to stage and GitHub releases deploy to prod,
-via `.github/workflows/deploy.yml`.
+via `.github/workflows/deploy.yml`. To release, follow "Releasing to prod" there, or run `/release`
+in Claude Code.
 
 Any of the environment variables in *.env* can be overridden.
 
