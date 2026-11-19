@@ -151,7 +151,11 @@ application that none has been needed. `public/` holds static files served as-is
 `contribute.json`, `img/`, and the Google Search Console verification file); `index.html` itself lives at the repository root, Vite's convention.
 `scripts/indexHtmlPlugin.mjs` puts a copy of the header and an empty `main` into its `#root` at
 build time and in the dev server, so the header paints as soon as the stylesheet arrives. React
-replaces it on its first render. `tests/playwright/specs/fixtures/shell.spec.js` checks that the copy
+replaces it on its first render. In a build, the same plugin lists the route chunks, what they
+import, and their stylesheets as preloads, so they download alongside the main script rather than
+after it. `lazyLoad` would fetch them anyway, so this adds no bytes. The chart chunk is left out,
+because on a slow connection it takes bandwidth from the main script before anything needs it.
+`tests/playwright/specs/fixtures/shell.spec.js` checks that the copy
 matches `views/Header.jsx` and sits in the same place.
 `build/` is gitignored output. Routes are exactly `/`, `/contact`, `/dashboard/<key>`, and a
 catch-all not-found page.
