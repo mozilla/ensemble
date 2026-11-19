@@ -768,9 +768,8 @@ also delete the `.app-shell` selector and the `main:empty` rule in `Application.
 nothing without it. The prefetch in `src/index.jsx` is one call, and removing it falls back to
 the container's own request.
 
-This branch is stacked on `468--fresh-paint`. When that branch changes, rebase with
-`git rebase --onto mozilla/468--fresh-paint <old base> 516--first-load-performance`. Once #512 has
-merged, rebase onto `mozilla/main` instead. Run `npm install` after either.
+This branch is based on `main`, which has included #512's fonts since #512 merged. Run
+`npm install` after switching to it or rebasing it.
 
 ## Artifacts and Notes
 
