@@ -50,6 +50,16 @@ export function shellHtml(dashboards) {
 
 const emptyRoot = '<div id="root"></div>';
 
+// A build links its stylesheet from the head, so the shell waits for it. The
+// development server adds styles with the scripts instead, so without these
+// the shell would show unstyled until they ran. Hot reloading doesn't update
+// them: a rule deleted while editing lasts until the page is reloaded.
+const devShellStyles = ['Application', 'Header'].map(name => ({
+    tag: 'link',
+    attrs: { rel: 'stylesheet', href: `/src/components/views/css/${name}.css` },
+    injectTo: 'head',
+}));
+
 export default function indexHtmlPlugin() {
     return {
         name: 'ensemble-index-html',
@@ -57,13 +67,13 @@ export default function indexHtmlPlugin() {
             // After Vite's own tags, so that the main script and stylesheet come
             // first, and so that the bundle is there to read.
             order: 'post',
-            handler(html, { bundle }) {
+            handler(html, { bundle, server }) {
                 if (!html.includes(emptyRoot)) {
                     throw new Error(`index.html no longer contains ${emptyRoot}, where the page shell goes`);
                 }
                 return {
                     html: html.replace(emptyRoot, `<div id="root">${shellHtml(config.dashboards)}</div>`),
-                    tags: bundle ? preloadTags(bundle) : [],
+                    tags: bundle ? preloadTags(bundle) : server ? devShellStyles : [],
                 };
             },
         },
