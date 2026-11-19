@@ -63,8 +63,10 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
 - [x] (2026-11-19) Milestone 5, analytics: `withTracker.jsx` loads nothing for the placeholder ID.
       With a real ID it initialises after `load` and sends page views only after that.
       `withTracker.test.jsx` has 4 tests, and 3 fail with the change reverted.
-- [ ] Milestone 5, remaining: the late "Proceed to" button (0.046 CLS on dashboards), and the early
-      metric requests, if they're still worth doing.
+- [x] (2026-11-19) Milestone 5, the late "Proceed to" button: hidden while the dashboard's
+      spinner shows. Dashboard CLS went from 0.046 to 0.000. The new test in `next-buttons.spec.js`
+      fails with the rule removed.
+- [x] (2026-11-19) Milestone 5, early metric requests: skipped (see Decision Log).
 - [ ] Milestone 6: final measurement, clean-up, full test run, retrospective.
 
 ## Surprises & Discoveries
@@ -207,6 +209,14 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
   finished.
   Evidence: `node_modules/react-ga4/dist/index.mjs`: `_gtag` calls the module's `gtag`, which
   creates `window.gtag` as a `dataLayer.push` when it is missing.
+- Observation: the "Proceed to" button's 0.046 shift came from the dashboard's loading state. While
+  `DashboardContainer` waits for its data, it renders the 200 px spinner, and `withNextButton`
+  adds the button straight after it, at about y=463 on a 412×915 screen. When the dashboard
+  arrives, the button moves below the fold. Hiding the button while the dashboard's own spinner
+  shows (`main.dashboard-route > .spinner + .next-button` in `Spinner.styl`) removes the shift.
+  The check needs care: until the dashboard's code arrives, `main > .spinner` is the route
+  spinner, and no button exists yet, so the spec waits for `.spinner + .next-button` to be
+  attached before checking that it's hidden.
 - Baseline, median of 5 cold loads on a local `vite preview` of this branch, and median of 3 on
   production (`main`). Slow 4G (562.5 ms latency, 1.44 Mbit/s down), 4× CPU slowdown, 412×915
   viewport, times in ms:
@@ -311,6 +321,14 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
   script on a slow connection. The fonts are discovered early anyway, thanks to the shell. The set
   is worked out from the bundle, not from a list of names, so a new route is covered without
   editing the plugin.
+  Date/Author: 2026-11-19, Stephanie Hobson.
+
+- Decision: skip prefetching the metrics when the dashboard file arrives.
+  Rationale: after Milestones 2 and 3, the dashboard chunk is done (1975 ms) before the dashboard's
+  `index.json` (2787 ms). The metric requests now go out 15 ms after that file arrives, so there's
+  nothing left to win. The critical step is now the dashboard file itself, which can only start
+  once the main script runs (2024 ms). Moving it earlier needs a route-specific hint in the HTML.
+  That's listed as a follow-up.
   Date/Author: 2026-11-19, Stephanie Hobson.
 
 ## Outcomes & Retrospective

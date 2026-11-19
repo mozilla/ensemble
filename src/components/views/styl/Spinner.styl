@@ -12,3 +12,9 @@ main > .spinner {
         margin-top: 0;
     }
 }
+
+// While a dashboard loads, its proceed button would sit just below the
+// spinner, then jump down the page when the dashboard arrives.
+main.dashboard-route > .spinner + .next-button {
+    display: none;
+}
