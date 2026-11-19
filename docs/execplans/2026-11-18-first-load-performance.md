@@ -46,9 +46,10 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
       Dashboard LCP median went from 5704 to 4288 ms. Dashboard CLS rose from 0.098 to 0.247, from
       the font swap (see Surprises). Vitest 16 files, 141 tests. Recorded Playwright 122 passed.
       `early-data.spec.js` fails with the prefetch reverted.
-- [ ] Milestone 3: preload hints in the built `index.html` (in progress: blanket preloads measured
-      and rejected, see Surprises; the plugin they'll go in exists from Milestone 4. Remaining:
-      choose the preloads after the fallback font metrics, possibly per route).
+- [x] (2026-11-19) Milestone 3: the plugin preloads the route chunks the main script imports
+      directly, what they import, and their CSS. The fonts and the chart chunk are left out. `/` LCP
+      went from 2248 to 2108 ms and dashboard LCP from 4532 to 3672 ms. FCP went from 1240 to
+      1288 ms. Nothing is fetched twice. Vitest `indexHtmlPlugin.test.jsx` 4 tests.
 - [x] (2026-11-18) Milestone 4, done before Milestone 3: `scripts/indexHtmlPlugin.mjs` puts the
       header and an empty `main` in `#root`, and `main` keeps a window's height while it is empty
       or holds only the page spinner. FCP went from 1692 to 1244 ms. CLS went from 0.686 to 0.052
@@ -180,6 +181,22 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
   375 px and 1280 px, but by 0.15 on `/` and 0.27 on the dashboard at 412 px, where the navigation
   wraps onto a different number of lines. `font-fallback.spec.js` runs at 375, 412 and 1280 px for
   that reason.
+- Observation: once the fallback faces stopped the swap from shifting anything, the fonts didn't
+  need preloading, and the shell already requests them as soon as the stylesheet is parsed. Of
+  the code preload sets measured with the shell and fallback faces in place (median of 5), the
+  route chunks and their CSS won on both pages:
+
+      preloads                                     /: FCP  LCP    dashboard: LCP  CLS
+      none                                            1248 2260              4540 0.000
+      dashboard and home chunks + CSS, by hand        1304 2180              3808 0.046
+      the routes' chunks + imports + CSS (shipped)    1288 2108              3672 0.046
+
+  The 0.046 is `div.next-button` appearing after the dashboard, now that the dashboard renders
+  sooner.
+- Observation: a per-route variant, an inline script choosing the preloads from
+  `location.pathname`, never fired the page's load event in the measurement, even on `/`. It
+  wasn't pursued: the static set already got most of the gain, and an inline script would need a
+  hash in any future Content-Security-Policy.
 - Baseline, median of 5 cold loads on a local `vite preview` of this branch, and median of 3 on
   production (`main`). Slow 4G (562.5 ms latency, 1.44 Mbit/s down), 4× CPU slowdown, 412×915
   viewport, times in ms:
@@ -277,6 +294,14 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
   be the base: `local()` can't name it reliably. If the webfonts fail to load entirely, text now
   shows in scaled Arial rather than the system font.
   Date/Author: 2026-11-18, Stephanie Hobson.
+
+- Decision: preload the chunks the entry imports dynamically (the routes), their static imports,
+  and their CSS. Don't preload the fonts or the chart chunk.
+  Rationale: the measurements above. Preloading everything, or the chart's 90 KB, delays the main
+  script on a slow connection. The fonts are discovered early anyway, thanks to the shell. The set
+  is worked out from the bundle, not from a list of names, so a new route is covered without
+  editing the plugin.
+  Date/Author: 2026-11-19, Stephanie Hobson.
 
 ## Outcomes & Retrospective
 
