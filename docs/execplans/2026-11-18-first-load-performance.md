@@ -78,6 +78,8 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
 - [x] (2026-11-19) Milestone 6: final measurement, measurement script deleted, full validation. Lint
       clean. Vitest 18 files, 149 tests. Recorded Playwright 134 passed. Live Playwright 62 passed.
       Build succeeds. Retrospective written. Next: push, and open the pull request stacked on #512.
+- [x] (2026-11-19) Follow-up: the shell flashed unstyled on the dev server. The plugin now links the
+      shell's two stylesheets there. The new `shell.spec.js` test fails without them.
 
 ## Surprises & Discoveries
 
@@ -227,6 +229,14 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
   The check needs care: until the dashboard's code arrives, `main > .spinner` is the route
   spinner, and no button exists yet, so the spec waits for `.spinner + .next-button` to be
   attached before checking that it's hidden.
+- Observation: the shell flashed unstyled on the dev server but not in a build. A build links
+  `index-*.css` from the head, which blocks rendering until it arrives. The dev server instead
+  adds every stylesheet as a `<style>` element from JavaScript, so the shell painted with browser
+  defaults until the scripts ran. With the entry script held, the shell's `#main-header` computed
+  `display: block` rather than `flex`. A `<link>` to `/src/components/views/css/*.css` gets plain
+  CSS from Vite only when the request accepts `text/css`, which a browser's stylesheet request
+  does (`curl` without that header gets the JavaScript module). Holding a module script also holds
+  `DOMContentLoaded`, so the spec waits for `commit`.
 - Baseline, median of 5 cold loads on a local `vite preview` of this branch, and median of 3 on
   production (`main`). Slow 4G (562.5 ms latency, 1.44 Mbit/s down), 4× CPU slowdown, 412×915
   viewport, times in ms:
@@ -339,6 +349,16 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
   nothing left to win. The critical step is now the dashboard file itself, which can only start
   once the main script runs (2024 ms). Moving it earlier needs a route-specific hint in the HTML.
   That's listed as a follow-up.
+  Date/Author: 2026-11-19, Stephanie Hobson.
+
+- Decision: fix the dev server's unstyled flash by linking the compiled `Application.css` and
+  `Header.css` from the head on the dev server only. Don't inline the header's CSS into
+  `index.html`.
+  Rationale: production has no flash, because its stylesheet already blocks rendering. Inlining
+  there would add a second copy of rules to every page's HTML that the browser waits for anyway.
+  Inlining in dev would also break: `Application.css` holds the `@font-face` rules and the column
+  layout the shell needs, and its font URLs are relative to the stylesheet. Linking keeps one copy
+  and Vite's rewritten URLs. The cost is dev-only: hot reload doesn't update the links.
   Date/Author: 2026-11-19, Stephanie Hobson.
 
 ## Outcomes & Retrospective

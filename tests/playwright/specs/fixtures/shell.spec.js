@@ -62,3 +62,18 @@ test('The footer stays below the window while the home page\'s code loads', asyn
     releaseCode();
     await expect(page.locator('#introduction')).toBeVisible();
 });
+
+test('The header in index.html is styled before the scripts run', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    const releaseScripts = await holdRequests(page, url => url.pathname === '/src/index.jsx');
+    // Module scripts run before DOMContentLoaded, so that waits for them too.
+    await page.goto('/', { waitUntil: 'commit' });
+    await expect(page.locator('.app-shell #main-header')).toHaveCSS('display', 'flex');
+    await page.evaluate(() => document.fonts.ready);
+    const shown = await headerBoxes(page);
+
+    releaseScripts();
+    await expect(page.locator('#application')).toBeAttached();
+    await page.evaluate(() => document.fonts.ready);
+    expect(await headerBoxes(page)).toEqual(shown);
+});
