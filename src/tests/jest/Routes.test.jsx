@@ -9,6 +9,10 @@ import { dashboards } from '../../config.json';
 
 let fetchMock;
 
+// withTracker reads the ID when it is imported, and loads nothing for the
+// placeholder in .env.
+vi.hoisted(() => vi.stubEnv('VITE_GA_MEASUREMENT_ID', 'G-TEST000000'));
+
 vi.mock('react-ga4', () => ({
     default: { initialize: vi.fn(), send: vi.fn() },
 }));

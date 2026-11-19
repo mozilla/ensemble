@@ -33,7 +33,8 @@ Run one Vitest file directly: `npx vitest run src/tests/jest/Dashboard.test.jsx`
 working). Run one Playwright spec directly: `npx playwright test contact.spec.js`.
 
 **Environment:** `.env` is checked into git and holds only public build-time config —
-`VITE_GA_MEASUREMENT_ID='G-XXXXXXXXXX'` (a placeholder for a GA4 measurement ID),
+`VITE_GA_MEASUREMENT_ID='G-XXXXXXXXXX'` (a placeholder for a GA4 measurement ID; with it, no
+analytics load at all, and a real ID makes them load after the page has),
 `VITE_SITE_TITLE='Firefox Public Data Report'`, `VITE_VALUE_DECIMAL_PLACES=3`. These are consumed by
 `src/components/decorators/withTracker.jsx` and `src/lib/utils.js` via `import.meta.env.VITE_*` —
 Vite's own convention, not Node's `process.env` (which is not populated in the browser bundle at
@@ -188,7 +189,8 @@ dispatch an `input` event, as Plot does. `SummaryMetric.test.jsx` renders the re
 reports 0px, and at 490px the bar draws at its 450px maximum, so segment widths are predictable.
 `Routes.test.jsx` renders `views/Application` inside `MemoryRouter` through a single `renderAt(path)`
 function, so a router upgrade changes one place, wraps it in react-helmet-async's `HelmetProvider`,
-and mocks `react-ga4`. Any test that renders a page with a `<Helmet>` needs that provider:
+and mocks `react-ga4`, stubbing `VITE_GA_MEASUREMENT_ID` to a real-looking ID first, because the
+placeholder sends nothing. Any test that renders a page with a `<Helmet>` needs that provider:
 `render(ui, { wrapper: HelmetProvider })`. Its route cases come from
 `config.json`. ESLint
 allows the name `screen` in test files despite `no-shadow`'s `builtinGlobals`, because importing

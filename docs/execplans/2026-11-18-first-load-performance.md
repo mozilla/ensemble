@@ -60,8 +60,11 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
       went from 0.052 to 0.000 on both pages, with FCP and LCP unchanged. Recorded Playwright 133
       passed. `font-fallback.spec.js` fails without the faces, with shifts of 0.15 and 0.27 at
       412 px.
-- [ ] Milestone 5, remaining: analytics only for a real ID; early metric requests and the late
-      "Proceed to" button, if they're still worth doing after Milestone 3.
+- [x] (2026-11-19) Milestone 5, analytics: `withTracker.jsx` loads nothing for the placeholder ID.
+      With a real ID it initialises after `load` and sends page views only after that.
+      `withTracker.test.jsx` has 4 tests, and 3 fail with the change reverted.
+- [ ] Milestone 5, remaining: the late "Proceed to" button (0.046 CLS on dashboards), and the early
+      metric requests, if they're still worth doing.
 - [ ] Milestone 6: final measurement, clean-up, full test run, retrospective.
 
 ## Surprises & Discoveries
@@ -197,6 +200,13 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
   `location.pathname`, never fired the page's load event in the measurement, even on `/`. It
   wasn't pursued: the static set already got most of the gain, and an inline script would need a
   hash in any future Content-Security-Policy.
+- Observation: react-ga4 doesn't drop a `send` made before `initialize`. It pushes it onto
+  `window.dataLayer`, ahead of the `js` and `config` commands that `initialize` adds. gtag reads
+  `dataLayer` in order, so a page view sent before initialising would arrive before the
+  configuration it needs. So `withTracker.jsx` sends each page view only once initialisation has
+  finished.
+  Evidence: `node_modules/react-ga4/dist/index.mjs`: `_gtag` calls the module's `gtag`, which
+  creates `window.gtag` as a `dataLayer.push` when it is missing.
 - Baseline, median of 5 cold loads on a local `vite preview` of this branch, and median of 3 on
   production (`main`). Slow 4G (562.5 ms latency, 1.44 Mbit/s down), 4× CPU slowdown, 412×915
   viewport, times in ms:
