@@ -14,17 +14,25 @@ connection each of those steps is a visible wait, and they happen one after anot
 #516 (<https://github.com/mozilla/ensemble/issues/516>), a list of routes to explore for faster
 first loads.
 
-After this work, the site header and navigation appear as soon as the stylesheet arrives, before any
-JavaScript runs. The code for every page downloads alongside the main script instead of after it.
-A dashboard's data request starts as soon as the main script runs, not after the dashboard's own
-code has arrived. The fonts are requested with the HTML, not after the stylesheet has been parsed.
-Each change is kept only if a before-and-after measurement shows it helps.
+After this work:
+
+- The site header and navigation appear as soon as the stylesheet arrives, before any JavaScript
+  runs.
+- The footer no longer jumps down the screen when a page's content arrives.
+- Each page's own code downloads alongside the main script instead of after it.
+- A dashboard's data request starts as soon as the main script runs, not after the dashboard's own
+  code has arrived.
+- Text no longer moves when the webfonts replace the fallback font.
+- No analytics script is loaded for the placeholder measurement ID.
+
+Each change was kept only because a before-and-after measurement showed it helps.
 
 To see it working, build and serve the production bundle, open
 <http://localhost:4173/dashboard/user-activity> in Chrome with DevTools' network throttling set to
 "Slow 4G" and the cache disabled, and reload. The header shows up while the scripts are still
-downloading. In the Network panel, the request for `user-activity/index.json` starts while the
-`DashboardContainer-*.js` chunk is still downloading, not after it finishes.
+downloading. In the Network panel, `DashboardContainer-*.js` starts at the same time as
+`index-*.js`, and the request for `user-activity/index.json` goes out as soon as `index-*.js` has
+run.
 
 Scope is "measure, then quick wins". These are out of scope and will be listed as follow-ups in
 `Outcomes & Retrospective`:
@@ -67,7 +75,9 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
       spinner shows. Dashboard CLS went from 0.046 to 0.000. The new test in `next-buttons.spec.js`
       fails with the rule removed.
 - [x] (2026-11-19) Milestone 5, early metric requests: skipped (see Decision Log).
-- [ ] Milestone 6: final measurement, clean-up, full test run, retrospective.
+- [x] (2026-11-19) Milestone 6: final measurement, measurement script deleted, full validation. Lint
+      clean. Vitest 18 files, 149 tests. Recorded Playwright 134 passed. Live Playwright 62 passed.
+      Build succeeds. Retrospective written. Next: push, and open the pull request stacked on #512.
 
 ## Surprises & Discoveries
 
@@ -333,7 +343,59 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
 
 ## Outcomes & Retrospective
 
-Not started.
+Every target improved, on a local production build of this branch measured as in Milestone 1
+(Slow 4G, 4× CPU, 412×915, median of 5 cold loads, times in ms):
+
+    page                       FCP          LCP          CLS
+    /                          1684 → 1288  2240 → 2088  0.686 → 0.000
+    /dashboard/user-activity   1684 → 1288  5704 → 3680  0.098 → 0.000
+
+On a phone on a slow connection, a dashboard now paints its header 0.4 s sooner, shows its
+content 2.0 s sooner, and nothing on the page jumps. The home page no longer throws its footer down
+the screen.
+
+Production will see less than this until it serves compressed files. It currently sends every
+script at full size (see Surprises). That fix is its own issue and pull request, because it
+changes the deploy rather than the app.
+
+What did the work, in order of effect:
+
+- Starting the dashboard request at startup: dashboard LCP 5704 → 4288.
+- Preloading the route chunks: dashboard LCP down another 870 ms after the shell had cost 250.
+- The static header in `index.html`, and keeping `main` a window tall while it loads: FCP
+  1692 → 1244, and the 0.53 footer shift gone.
+- Fallback fonts scaled with `size-adjust`: the font-swap shifts gone.
+- Hiding the "Proceed to" button while a dashboard loads.
+- Not loading gtag for the placeholder ID removes one competing download. It wasn't measured on
+  its own.
+
+Lessons:
+
+- On a slow connection, preloading is a zero-sum share of the bandwidth. Preloading everything
+  made every number worse. Each preload had to earn its place by measurement.
+- Fixing one thing moved a cost somewhere else twice:
+  - Fetching the dashboard's data earlier moved the font swap's reflow into the dashboard.
+  - The shell made the fonts download earlier, at the dashboard chunk's expense.
+
+  Measuring after every step is what caught both.
+- A layout-shift check has to run at a width where the shift actually happens. At 375 px and
+  1280 px the old fallback barely moved anything. At 412 px it moved the page by 0.15–0.27.
+
+Follow-ups, none of them started:
+
+- Serve compressed assets: `gcloud storage cp --gzip-local-extensions=...` in `deploy.yml`, and
+  ask the CDN owners about brotli and the `max-age=0` rewrite on hashed assets.
+- Start the dashboard data request from the HTML itself. It is now the critical step, starting
+  only when the main script has run (about 2.0 s). That needs a route-specific preload, which
+  means per-route HTML files in the deploy, or an inline script (rejected here, see Surprises).
+- Trim the dashboard chunk: about 90 KB of it is markdown-it, entities, linkify-it and uc.micro,
+  with linkify unused.
+- Trim the chart chunk: chroma-js, which distinct-colors pulls in, is 41 KB.
+- Subset Mozilla Headline (70 KB) to the characters the headings use.
+- Prerender each route's page at build time and hydrate it, which would build on the shell.
+- Replace the dashboard-level spinner with a skeleton of the dashboard.
+- Ask the transposer to inline the first metrics into the dashboard file.
+- Add a performance budget in CI once there's a stable way to measure there.
 
 ## Context and Orientation
 
@@ -505,45 +567,33 @@ starts before the `DashboardContainer` chunk's `responseEnd`.
 
 ### Milestone 3: preload hints in the built `index.html`
 
-Because `lazyLoad` starts every chunk anyway, telling the browser about them in the HTML costs no
-extra bytes. It only moves their start from "after `index.js` runs" to "while the HTML is parsed".
-The same goes for the fonts, which today wait for the CSS.
+This milestone was done after Milestone 4 and Milestone 5's fallback faces, because until the page
+painted without JavaScript, every preload delayed first paint (see the Decision Log). It was first
+planned as "preload every chunk and both fonts". Measuring that showed it slowed the main script
+down on a slow connection, so what shipped is narrower.
 
-Create `scripts/indexHtmlPlugin.mjs`, exporting a default function that returns a Vite plugin. Add
-it to `plugins` in `vite.config.mjs`. The plugin has a `transformIndexHtml` hook with
-`order: 'post'`. When the hook's context has a `bundle`, which happens only in `vite build`, it
-returns tags to inject into the head:
+Because `lazyLoad` starts the route chunks anyway, listing them in the HTML costs no extra bytes.
+It only moves their start from "after `index.js` runs" to "while the HTML is parsed". In
+`scripts/indexHtmlPlugin.mjs`, the exported `preloadTags(bundle)` takes Rollup's bundle object, as
+Vite passes it to `transformIndexHtml` in a build. It starts from the entry chunk's
+`dynamicImports`, which are the four routes `Main.jsx` lazy-loads, and follows each one's static
+`imports`, leaving out the entry. It returns a `<link rel="modulepreload" crossorigin>` for each of
+those chunks and a `<link rel="preload" as="style" crossorigin>` for each stylesheet in their
+`viteMetadata.importedCss`.
 
-- `<link rel="modulepreload" href="/assets/<file>">` for every JavaScript chunk in the bundle except
-  the entry chunk. Vite already preloads the entry and its static imports.
-- `<link rel="preload" as="style" href="...">` for every CSS asset except the entry's stylesheet,
-  which is already a `<link rel="stylesheet">`.
-- `<link rel="preload" as="font" type="font/woff2" crossorigin href="...">` for the assets whose
-  original names are `MozillaText-Variable.woff2` and `MozillaHeadline-Variable.woff2`. These are
-  the upright faces almost every page uses. The italic files are left to load on demand.
-  `crossorigin` is required on font preloads even for same-origin files, or the browser fetches the
-  font twice.
+- The chart chunk, which `MetricOverview.jsx` imports lazily, isn't reached, on purpose: its 90 KB
+  would compete with the main script.
+- The fonts aren't preloaded. The shell's text already makes the browser request them as soon as
+  the stylesheet is parsed.
+- `crossorigin` is on every tag because Vite's preload helper adds lazy chunks and stylesheets with
+  `crossOrigin = ''`. A preload whose mode doesn't match is fetched twice.
 
-Put the tag building in a separately exported pure function, `preloadTags(bundle)`. It takes Rollup's
-bundle object (`{ fileName: { type: 'chunk' | 'asset', isEntry, fileName, names, ... } }`) and returns
-Vite's `HtmlTagDescriptor` array. Test it from `src/tests/jest/indexHtmlPlugin.test.jsx` by
-importing `../../../scripts/indexHtmlPlugin.mjs` and passing a hand-built bundle. Assert that the
-entry chunk is skipped, that each other chunk gets a modulepreload, and that exactly the two
-upright fonts get a font preload with `crossorigin`.
+The hook is `order: 'post'`, so the tags follow Vite's own main script and stylesheet, and it adds
+tags only when there is a bundle, which happens only in a build. `src/tests/jest/indexHtmlPlugin.test.jsx`
+checks the set against a hand-built bundle.
 
-`eslint.config.js` gives Node and browser globals only to `.js` and `.jsx` files. A `.mjs` file
-gets the shared rules but no globals, which is fine as long as the plugin uses only imports. If it
-needs a Node global such as `process`, import it from `node:process` rather than widening the lint
-config. Run `npm run build` and `grep -E 'modulepreload|as="font"' build/index.html`, and
-confirm the hashed names match files in `build/assets/`. Re-measure.
-
-Docs: `AGENTS.md`'s description of `vite.config.mjs` and `index.html`, and the deploy comment about
-`index.html` being copied per route, stay accurate. Add one line to `AGENTS.md`'s project-structure
-notes saying that `scripts/indexHtmlPlugin.mjs` injects preload hints at build time.
-
-Acceptance: the Vitest file passes. The built `index.html` contains the tags. In the measurement the
-chunks' `startTime` falls before `index.js`'s `responseEnd`, and the fonts start before the CSS
-finishes.
+Check with `npm run build` and `grep modulepreload build/index.html`. Every `href` should name a file
+in `build/assets/`, and in the measurement no asset appears twice.
 
 ### Milestone 4: static page shell in `index.html`
 
@@ -659,17 +709,18 @@ Check after each milestone:
 Check the build output after Milestone 3:
 
     npm run build
-    grep -E 'modulepreload|as="font"' build/index.html
+    grep modulepreload build/index.html
 
 ## Validation and Acceptance
 
 When the work is complete:
 
 - `npm run lint` reports no problems.
-- `npm run test:jest` passes every file, including `withFetch.test.jsx` and
-  `indexHtmlPlugin.test.jsx`.
+- `npm run test:jest` passes every file, including the new cases in `withFetch.test.jsx`, and
+  `indexHtmlPlugin.test.jsx` and `withTracker.test.jsx`.
 - `npm run test:playwright:recorded` passes, including `fixtures/early-data.spec.js`,
-  `shell.spec.js` and the new `jsDisabled.spec.js` test.
+  `fixtures/shell.spec.js`, `fixtures/font-fallback.spec.js`, the new test in
+  `fixtures/next-buttons.spec.js` and the new `jsDisabled.spec.js` test.
 - `npm run test:playwright:live` passes. If it fails, say whether the cause was this branch or
   upstream data changing.
 - `npm run build` succeeds.
@@ -677,9 +728,11 @@ When the work is complete:
 
 Behaviour a person can check: with `npx vite preview --port 4173` running and Chrome's DevTools on
 "Slow 4G" with the cache disabled, load <http://localhost:4173/dashboard/user-activity>. The header
-and navigation appear while the scripts are still downloading. The Network panel shows every
-`assets/*.js` chunk and the two Mozilla fonts starting at about the same time as `index-*.js`, and
-`user-activity/index.json` starting before `DashboardContainer-*.js` finishes. With JavaScript
+and navigation appear while the scripts are still downloading, and nothing on the page moves as
+the fonts and the dashboard arrive. The Network panel shows the route chunks (`Home`, `Contact`,
+`DashboardContainer`, `NotFound`, `Metric` and `StripedHeader`) starting at about the same time as
+`index-*.js`. The chart chunk starts later. `user-activity/index.json` starts as soon as
+`index-*.js` has finished. No request goes to `googletagmanager.com`. With JavaScript
 disabled in DevTools, the header and its links still show, along with the "You need to enable
 JavaScript" message.
 
@@ -690,8 +743,9 @@ than the baseline, and CLS that is no worse, on both pages.
 
 Every step can be re-run. The measurement script writes nothing. The plugin's output is regenerated
 on each build or dev-server start. If the shell or the preloads cause trouble in production, remove
-the plugin from `plugins` in `vite.config.mjs`. That restores the old `index.html` exactly, without
-touching anything else. The prefetch in `src/index.jsx` is one call, and removing it falls back to
+the plugin from `plugins` in `vite.config.mjs`. That restores the old `index.html` exactly. Then
+also delete the `.app-shell` selector and the `main:empty` rule in `Application.styl`, which do
+nothing without it. The prefetch in `src/index.jsx` is one call, and removing it falls back to
 the container's own request.
 
 This branch is stacked on `468--fresh-paint`. When that branch changes, rebase with
@@ -700,8 +754,19 @@ merged, rebase onto `mozilla/main` instead. Run `npm install` after either.
 
 ## Artifacts and Notes
 
-None yet. Measurement tables and waterfalls go here and in `Surprises & Discoveries` as they're
-produced.
+The before-and-after table is in `Outcomes & Retrospective`, and the intermediate measurements are
+in `Surprises & Discoveries`. The measurement script was throwaway and has been deleted. To measure
+again, recreate it from Milestone 1's description:
+
+- a cold browser context per run;
+- CDP `Network.emulateNetworkConditions` with 562.5 ms latency, 1.6 Mbit/s × 0.9 down and
+  750 kbit/s × 0.9 up;
+- `Emulation.setCPUThrottlingRate` 4;
+- a 412×915 viewport;
+- `PerformanceObserver`s for `paint`, `largest-contentful-paint` and `layout-shift`, installed with
+  `addInitScript`;
+- the waterfall from `performance.getEntriesByType('resource')`;
+- the median of 5 runs.
 
 ## Interfaces and Dependencies
 
@@ -719,4 +784,19 @@ At the end of the work these exist:
   - `export default function indexHtmlPlugin()`, returning a Vite plugin;
   - `export function preloadTags(bundle)`, returning an array of
     `{ tag: 'link', attrs, injectTo: 'head' }`;
-  - from Milestone 4, `export function shellHtml(dashboards)`, returning the shell markup string.
+  - `export function shellHtml(dashboards)`, returning the shell markup string.
+- In `src/components/decorators/withTracker.jsx`, the module-level `analyticsReady` promise. It is
+  `null` for the placeholder or a missing ID. Otherwise it resolves once react-ga4 has been
+  initialised after the window's `load` event.
+- In `src/components/views/styl/Application.styl`, the `Mozilla Text Fallback` and
+  `Mozilla Headline Fallback` faces, named second in the font stacks in `includes/lib.styl`.
+
+## Revision notes
+
+- 2026-11-19: Milestone 3 changed from "preload every chunk and both fonts" to "preload the route
+  chunks, what they import, and their CSS", and was done after Milestones 4 and 5's fallback faces.
+  The broader set measured slower on a slow connection, and the fonts no longer needed preloading
+  once the fallback faces stopped the swap from shifting anything. Milestone 5's analytics item
+  changed from "defer if it competes" to "load nothing for the placeholder ID", at the user's
+  choice. Its early-metrics item was dropped as no longer on the critical path. Compressing
+  assets in the deploy, found in Milestone 1, was split into its own issue at the user's choice.
