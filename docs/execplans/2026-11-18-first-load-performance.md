@@ -80,6 +80,14 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
       Build succeeds. Retrospective written. Next: push, and open the pull request stacked on #512.
 - [x] (2026-11-19) Follow-up: the shell flashed unstyled on the dev server. The plugin now links the
       shell's two stylesheets there. The new `shell.spec.js` test fails without them.
+- [x] (2026-11-19) Review follow-up, two findings from an adversarial review:
+      - Focus on a shell link survives React's first render. The new `shell.spec.js` test failed
+        before the fix.
+      - With a real ID, analytics initialise on import, not after `load`, and each page view
+        carries its own `page_location`. Two of `withTracker.test.jsx`'s tests fail against the
+        old code.
+
+      Vitest 149 tests. Recorded Playwright 136 passed. Live Playwright 62 passed.
 
 ## Surprises & Discoveries
 
@@ -237,6 +245,13 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
   CSS from Vite only when the request accepts `text/css`, which a browser's stylesheet request
   does (`curl` without that header gets the JavaScript module). Holding a module script also holds
   `DOMContentLoaded`, so the spec waits for `commit`.
+- Observation: the page shell took keyboard focus away from anyone who tabbed into it before the
+  scripts ran. React's first render replaces the shell's nodes, so a focused shell link vanished,
+  and focus fell back to the document. Found by an adversarial review and reproduced in Playwright:
+  hold `/src/index.jsx`, focus a shell link, release it, and the React link isn't focused. The fix
+  in `src/index.jsx` notes the focused shell link's `href`, renders inside `flushSync` so that the
+  replacement happens straight away with nothing in between, then focuses the link with the same
+  `href` in React's header.
 - Baseline, median of 5 cold loads on a local `vite preview` of this branch, and median of 3 on
   production (`main`). Slow 4G (562.5 ms latency, 1.44 Mbit/s down), 4× CPU slowdown, 412×915
   viewport, times in ms:
@@ -359,6 +374,24 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
   Inlining in dev would also break: `Application.css` holds the `@font-face` rules and the column
   layout the shell needs, and its font URLs are relative to the stylesheet. Linking keeps one copy
   and Vite's rewritten URLs. The cost is dev-only: hot reload doesn't update the links.
+  Date/Author: 2026-11-19, Stephanie Hobson.
+
+- Decision: with a real measurement ID, initialise analytics when `withTracker.jsx` is imported, not
+  after the window's `load` event. Send each page view with its own `page_location`. This reverses
+  the earlier choice to wait for `load`. The placeholder guard stays.
+  Rationale: an adversarial review pointed out two ways the wait loses data. A slow resource can
+  hold `load` open until the visitor leaves, so the tag never loads and the visit isn't counted.
+  And views queued before gtag loads carried only `page_path`, so gtag filled in `page_location`
+  with whatever the address was when it caught up, which may be a later page. The bandwidth the
+  wait saved was never measured with a real ID. Production has no real ID, and the placeholder
+  guard is what removed gtag from the measurements.
+  Date/Author: 2026-11-19, Stephanie Hobson.
+- Decision: hand focus from a shell link to React's copy of it, rather than keeping the shell's
+  nodes and hydrating them.
+  Rationale: hydration needs the whole first render to match the server's markup. Here only the
+  header matches, and React owns `#root`. A synchronous first render followed by one `focus()` call
+  covers the one thing that can be lost in between: keyboard focus. Mouse users lose nothing,
+  because a click on a shell link before the scripts run is an ordinary page load.
   Date/Author: 2026-11-19, Stephanie Hobson.
 
 ## Outcomes & Retrospective
@@ -668,12 +701,11 @@ with the reason in the `Decision Log`.
    fallback takes the same space. Put it in the stacks in `includes/lib.styl` straight after the
    webfont. Compute the overrides from the two fonts' metrics and record them.
 2. **Analytics.** In `withTracker.jsx`, initialise react-ga4 only when
-   `import.meta.env.VITE_GA_MEASUREMENT_ID` is set and isn't the placeholder `G-XXXXXXXXXX`. When it
-   is a real ID, run `ReactGA.initialize` after the window's `load` event, or straight away if
-   `document.readyState` is already `complete`. Keep the first page view. Check in
-   `node_modules/react-ga4` whether `send` calls made before initialisation are queued or dropped,
-   and record which. If they're dropped, send the first page view after initialising. With the
-   placeholder, `send` must be a no-op that throws nothing. Test it in a new
+   `import.meta.env.VITE_GA_MEASUREMENT_ID` is set and isn't the placeholder `G-XXXXXXXXXX`. Do it
+   when the module is imported, so that it always comes before the first page view. Send each page
+   view with `location`, which react-ga4 passes on as `page_location`, built from the router's
+   path, search and hash at the time of the view. An earlier version waited for the window's
+   `load` event, which the Decision Log explains was reversed. Test it in a new
    `src/tests/jest/withTracker.test.jsx` by mocking `react-ga4`.
 3. **Early metric requests.** If the metric `index.json` requests still wait on the dashboard chunk
    after Milestones 2 and 3, extend the startup prefetch. When the dashboard file arrives, prefetch
@@ -804,9 +836,9 @@ At the end of the work these exist:
   - `export function preloadTags(bundle)`, returning an array of
     `{ tag: 'link', attrs, injectTo: 'head' }`;
   - `export function shellHtml(dashboards)`, returning the shell markup string.
-- In `src/components/decorators/withTracker.jsx`, the module-level `analyticsReady` promise. It is
-  `null` for the placeholder or a missing ID. Otherwise it resolves once react-ga4 has been
-  initialised after the window's `load` event.
+- In `src/components/decorators/withTracker.jsx`, the module-level `analyticsEnabled` boolean. It
+  is false for the placeholder or a missing ID. When it's true, react-ga4 is initialised on
+  import.
 - In `src/components/views/styl/Application.styl`, the `Mozilla Text Fallback` and
   `Mozilla Headline Fallback` faces, named second in the font stacks in `includes/lib.styl`.
 
@@ -819,3 +851,6 @@ At the end of the work these exist:
   changed from "defer if it competes" to "load nothing for the placeholder ID", at the user's
   choice. Its early-metrics item was dropped as no longer on the critical path. Compressing
   assets in the deploy, found in Milestone 1, was split into its own issue at the user's choice.
+- 2026-11-19: after an adversarial review, Milestone 5's analytics item no longer waits for `load`,
+  and each page view sends its own `page_location`. The page shell now hands keyboard focus to
+  React's header. Both changes are recorded in the Decision Log.

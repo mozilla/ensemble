@@ -151,7 +151,8 @@ application that none has been needed. `public/` holds static files served as-is
 `contribute.json`, `img/`, and the Google Search Console verification file); `index.html` itself lives at the repository root, Vite's convention.
 `scripts/indexHtmlPlugin.mjs` puts a copy of the header and an empty `main` into its `#root` at
 build time and in the dev server, so the header paints as soon as the stylesheet arrives. React
-replaces it on its first render. The dev server only adds styles once the scripts run, so there the
+replaces it on its first render. `src/index.jsx` renders that first time synchronously and, if a
+visitor had already tabbed to a shell link, moves focus to the same link in React's header. The dev server only adds styles once the scripts run, so there the
 plugin also links the compiled `Application.css` and `Header.css` from the head, and the shell
 doesn't paint unstyled. In a build, the same plugin lists the route chunks, what they
 import, and their stylesheets as preloads, so they download alongside the main script rather than
