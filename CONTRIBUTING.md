@@ -33,13 +33,15 @@ Run one Vitest file directly: `npx vitest run src/tests/jest/Dashboard.test.jsx`
 working). Run one Playwright spec directly: `npx playwright test contact.spec.js`.
 
 **Environment:** `.env` is checked into git and holds only public build-time config —
-`VITE_GA_MEASUREMENT_ID='G-XXXXXXXXXX'` (a placeholder for a GA4 measurement ID),
 `VITE_SITE_TITLE='Firefox Public Data Report'`, `VITE_VALUE_DECIMAL_PLACES=3`. These are consumed by
-`src/components/decorators/withTracker.jsx` and `src/lib/utils.js` via `import.meta.env.VITE_*` —
+`src/lib/utils.js` via `import.meta.env.VITE_*` —
 Vite's own convention, not Node's `process.env` (which is not populated in the browser bundle at
 all, except for the one special-cased `process.env.NODE_ENV` expression Vite replaces for
-library-compatibility reasons). Override any of them inline: `VITE_SITE_TITLE='…' npm start`. This
-repository is a fully client-side bundle — anything in a `VITE_*` variable ships to the browser in
+library-compatibility reasons). Override any of them inline: `VITE_SITE_TITLE='…' npm start`.
+
+Plausible's script URL is not in `.env`. The deploy workflow sets `VITE_PLAUSIBLE_SCRIPT_URL` from the `PLAUSIBLE_SCRIPT_URL` variable of each GitHub environment, and `src/lib/plausible.js` reads it, so a local run, CI, and any environment without the variable load no analytics. To try it locally, set `VITE_PLAUSIBLE_SCRIPT_URL` inline.
+
+This repository is a fully client-side bundle — anything in a `VITE_*` variable ships to the browser in
 plain text, so a real credential never belongs in one, and this `.env` file deliberately holds none.
 
 ## Coding style and naming conventions
@@ -186,8 +188,8 @@ dispatch an `input` event, as Plot does. `SummaryMetric.test.jsx` renders the re
 `<div id="application"><main>`, with `HTMLElement.prototype.offsetWidth` spied to 490: jsdom
 reports 0px, and at 490px the bar draws at its 450px maximum, so segment widths are predictable.
 `Routes.test.jsx` renders `views/Application` inside `MemoryRouter` through a single `renderAt(path)`
-function, so a router upgrade changes one place, wraps it in react-helmet-async's `HelmetProvider`,
-and mocks `react-ga4`. Any test that renders a page with a `<Helmet>` needs that provider:
+function, so a router upgrade changes one place. It wraps the app in react-helmet-async's `HelmetProvider`.
+Any test that renders a page with a `<Helmet>` needs that provider:
 `render(ui, { wrapper: HelmetProvider })`. Its route cases come from
 `config.json`. ESLint
 allows the name `screen` in test files despite `no-shadow`'s `builtinGlobals`, because importing
@@ -215,13 +217,14 @@ The same specs run in two modes, chosen by Playwright project:
   CI's "End-to-end tests" check, which the `main` ruleset requires before merging.
   `fixtureData.js`'s `test` answers every `https://data.firefox.com/datasets/desktop/**` request
   from `tests/playwright/fixtures/`, whose paths mirror the URLs, and answers other third-party
-  requests (Google Analytics) with an empty response. It fails the test on any page error, any
+  requests (Plausible) with an empty response. It fails the test on any page error, any
   console error, or any dataset request with no recording. Only the default region and `Germany`
   are recorded; a metric request for another region is served the default region's file for the
   same metric, so specs can pick any region, while a missing metric or dashboard still fails.
 - **Live**, the `live-data` project: the same specs, minus `fixtures/` (which read their expected
   values from the recording) and `jsDisabled.spec.js`, against the real data.firefox.com with no
-  interception. `npm run test:playwright:live` runs these, and so does CI's "Live data tests"
+  interception, other than signalling Global Privacy Control so the run doesn't count as visitors in
+  Plausible. `npm run test:playwright:live` runs these, and so does CI's "Live data tests"
   check, which is **not** required. `npm run test:playwright` runs every project.
 
 A spec that expects errors allows them with `test.use({ allowedErrors: /pattern/ })`. That takes a

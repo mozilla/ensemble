@@ -98,6 +98,10 @@ jobs:
             - name: Install dependencies
               run: npm ci
             - name: Build
+              # Set on each GitHub environment, so stage and prod can report to
+              # different Plausible sites. Unset, no analytics are loaded.
+              env:
+                  VITE_PLAUSIBLE_SCRIPT_URL: ${{ vars.PLAUSIBLE_SCRIPT_URL }}
               run: npm run build
 
             - name: Authenticate to Google Cloud
