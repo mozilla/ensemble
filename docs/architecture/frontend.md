@@ -98,7 +98,7 @@ or lint tool.
 The one real, structural gap: **there is no Content-Security-Policy**, and the four
 `dangerouslySetInnerHTML` sites above rely entirely on `markdown-it`'s `html: false` default
 holding — true as of this writing, but not enforced by any test or header. Adding a CSP is a genuine
-piece of security work, not something this documentation pass does on its own.
+piece of security work, not something this documentation pass does on its own. It would have to allow `pa.firefox.com` in `script-src` and `connect-src`: Plausible's script runs with full access to the page, and can't be pinned with Subresource Integrity because its contents are controlled from Plausible's side.
 
 ## A confirmed code defect, not yet filed as an issue
 
@@ -123,7 +123,7 @@ these architecture docs.
     ├── setupTests.js                jest-dom matchers; fails on console.error
     ├── components/
     │   ├── containers/              6 class components; 3 fetch via withFetch (above)
-    │   ├── decorators/              withTracker.jsx (GA4 via react-ga4), withNextButton.jsx
+    │   ├── decorators/              withNextButton.jsx
     │   └── views/                   22 presentational .jsx files
     │       ├── styl/                Stylus source, hand-edited; includes/lib.styl holds shared variables
     │       ├── css/                 generated from styl/, gitignored — see CONTRIBUTING.md
@@ -131,6 +131,7 @@ these architecture docs.
     │       └── img/                 footer/ (Firefox logo, Protocol social icons)
     ├── lib/
     │   ├── fetchCache.js            withFetch's responses by URL, kept until the page reloads
+    │   ├── plausible.js             initPlausible(): loads Plausible's script unless Global Privacy Control or Do Not Track is on
     │   ├── lazyLoad.jsx             starts a dynamic import() now; renders the loaded code without suspending
     │   ├── LazyBoundary.jsx         error boundary + Suspense fallback; a failed chunk offers a page reload
     │   ├── withFetch.jsx            the data layer: fetches JSON and passes `dataFetch` to containers

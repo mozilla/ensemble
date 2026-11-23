@@ -1,7 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import { Routes, Route, matchPath, useLocation, useNavigationType } from 'react-router';
 
-import withTracker from '../decorators/withTracker';
 import withNextButton from '../decorators/withNextButton';
 import lazyLoad from '../../lib/lazyLoad';
 import LazyBoundary from '../../lib/LazyBoundary';
@@ -11,10 +10,10 @@ import { dashboards } from '../../config.json';
 
 // Created once, so that a page already visited renders straight away when it
 // is visited again.
-const Home = withTracker(withNextButton(lazyLoad(() => import('./Home'))));
-const Contact = withTracker(lazyLoad(() => import('./Contact')));
-const DashboardContainer = withTracker(withNextButton(lazyLoad(() => import('../containers/DashboardContainer'))));
-const NotFound = withTracker(withNextButton(lazyLoad(() => import('./NotFound'))));
+const Home = withNextButton(lazyLoad(() => import('./Home')));
+const Contact = lazyLoad(() => import('./Contact'));
+const DashboardContainer = withNextButton(lazyLoad(() => import('../containers/DashboardContainer')));
+const NotFound = withNextButton(lazyLoad(() => import('./NotFound')));
 
 // Matched as Routes matches them, so that a Not Found page under /dashboard/
 // keeps the short-page layout.

@@ -1,17 +1,12 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { HelmetProvider } from 'react-helmet-async';
-import ReactGA from 'react-ga4';
 
 import Application from '../../components/views/Application';
 import { dashboards } from '../../config.json';
 
 
 let fetchMock;
-
-vi.mock('react-ga4', () => ({
-    default: { initialize: vi.fn(), send: vi.fn() },
-}));
 
 function renderAt(path) {
     return render(
@@ -25,7 +20,6 @@ function renderAt(path) {
 beforeEach(() => {
     fetchMock = vi.spyOn(window, 'fetch');
     fetchMock.mockImplementation(() => new Promise(() => {}));
-    ReactGA.send.mockClear();
 });
 
 it('/ shows the introduction and a button to the first dashboard', async () => {
@@ -65,34 +59,6 @@ it('A page that doesn\'t exist has its own title', async () => {
     renderAt('/not-a-page');
 
     await waitFor(() => expect(document.title).toMatch(/^Not Found/));
-});
-
-it.each([
-    '/',
-    '/contact',
-    ...dashboards.map(dashboard => `/dashboard/${dashboard.key}`),
-    '/not-a-page',
-])('%s sends a pageview for its path', async path => {
-    renderAt(path);
-
-    await waitFor(() => expect(ReactGA.send).toHaveBeenCalledWith({ hitType: 'pageview', page: path }));
-});
-
-it('Each navigation sends one pageview, including a return to a page already visited', async () => {
-    const { container } = renderAt('/contact');
-    await screen.findByText(/questions/i, { selector: '#contact' });
-    const navigationLink = linkText => [...container.querySelectorAll('#main-navigation a')].find(link => link.textContent === linkText);
-
-    fireEvent.click(navigationLink(dashboards[0].menuTitle));
-    await waitFor(() => expect(container.querySelector('#contact')).toBeNull());
-    fireEvent.click(navigationLink('Contact'));
-    await screen.findByText(/questions/i, { selector: '#contact' });
-
-    expect(ReactGA.send.mock.calls.map(([hit]) => hit.page)).toEqual([
-        '/contact',
-        `/dashboard/${dashboards[0].key}`,
-        '/contact',
-    ]);
 });
 
 it('The header links to every dashboard in config.json and the contact page', async () => {

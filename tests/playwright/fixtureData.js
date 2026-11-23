@@ -36,20 +36,23 @@ function readFixture(relativePath) {
 }
 
 // A `test` whose page answers every data.firefox.com dataset request from the
-// recording, answers other third-party requests (Google Analytics) with an
+// recording, answers other third-party requests (Plausible) with an
 // empty response, and fails the test on any page error, console error, or
 // request with no recording. A spec that expects errors matches them with
 // test.use({ allowedErrors: /pattern/ }). It is a single RegExp because
 // test.use() reads an array as a [value, options] pair.
 //
 // With the liveData option (the live-data project in playwright.config.js),
-// the page is left alone and requests go to the real data.firefox.com.
+// requests go to the real data.firefox.com, and the page is left alone except
+// that it signals Global Privacy Control, so Plausible isn't loaded.
 const test = base.test.extend({
     allowedErrors: [null, { option: true }],
     liveData: [false, { option: true }],
 
     page: async ({ page, baseURL, allowedErrors, liveData }, use) => {
         if (liveData) {
+            // These runs reach deployed sites, and must not count as visitors.
+            await page.addInitScript(() => Object.defineProperty(navigator, 'globalPrivacyControl', { value: true }));
             await use(page);
             return;
         }

@@ -108,8 +108,7 @@ a pre-release) deploys to prod. A manual run deploys the current ref to a chosen
 tag X". Deploys to one environment are serialised and never cancelled midway.
 
 The `deploy` job builds with `npm run build` (Stylus, then Vite, then `version.json`; no source
-maps), authenticates with Workload Identity Federation (no secrets or variables in
-the repo), then uploads in this order:
+maps), authenticates with Workload Identity Federation (no secrets in the repo), then uploads in this order:
 
 1. `assets/`, with `cache-control: public, max-age=31536000, immutable`.
 2. `img/`, `manifest.json`, `contribute.json` and the Search Console file, one hour.
@@ -117,6 +116,8 @@ the repo), then uploads in this order:
    sees a new page before its assets exist.
 4. A copy of `index.html` at `dashboard/<key>` for each dashboard in `src/config.json`, plus
    `contact`, with an explicit `text/html` content type. These are the deep links.
+
+The build gets `VITE_PLAUSIBLE_SCRIPT_URL` from the `PLAUSIBLE_SCRIPT_URL` variable of the GitHub environment it deploys to, which is how stage and prod report to different Plausible sites. Where the variable is unset, or is not an absolute URL, the bundle loads no analytics.
 
 Nothing is deleted: no rsync, no delete flags. `datasets/` is never touched, and old hashed assets
 stay in the bucket because the CDN can serve a stale `index.html` for a while after an upload.
