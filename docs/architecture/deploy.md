@@ -117,7 +117,7 @@ maps), authenticates with Workload Identity Federation (no secrets in the repo),
 4. A copy of `index.html` at `dashboard/<key>` for each dashboard in `src/config.json`, plus
    `contact`, with an explicit `text/html` content type. These are the deep links.
 
-The build gets `VITE_PLAUSIBLE_SCRIPT_URL` from the `PLAUSIBLE_SCRIPT_URL` variable of the GitHub environment it deploys to, which is how stage and prod report to different Plausible sites. Where the variable is unset, or is not an absolute URL, the bundle loads no analytics.
+The build gets `VITE_PLAUSIBLE_SCRIPT_URL` from the `PLAUSIBLE_SCRIPT_URL` variable of the GitHub environment it deploys to, which is how stage and prod report to different Plausible sites. The variable must be a per-site script on `pa.firefox.com` (`https://pa.firefox.com/js/pa-<id>.js`); the build step fails if it is unset or anything else, because the app would otherwise deploy with analytics silently off. After the upload, the site check confirms that script is served as JavaScript. Neither check confirms that page views are recorded; after changing the variable, visit stage and look for the visit in its Plausible site.
 
 Nothing is deleted: no rsync, no delete flags. `datasets/` is never touched, and old hashed assets
 stay in the bucket because the CDN can serve a stale `index.html` for a while after an upload.

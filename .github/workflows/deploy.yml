@@ -99,10 +99,19 @@ jobs:
               run: npm ci
             - name: Build
               # Set on each GitHub environment, so stage and prod can report to
-              # different Plausible sites. Unset, no analytics are loaded.
+              # different Plausible sites. The app silently loads no analytics
+              # without a valid one, so a deploy without one fails here instead.
+              # The pattern is kept in step with src/lib/measure.js.
               env:
                   VITE_PLAUSIBLE_SCRIPT_URL: ${{ vars.PLAUSIBLE_SCRIPT_URL }}
-              run: npm run build
+              run: |
+                  set -euo pipefail
+                  if ! printf '%s' "$VITE_PLAUSIBLE_SCRIPT_URL" | grep -Eqx 'https://pa\.firefox\.com/js/pa-[A-Za-z0-9_-]+\.js'; then
+                      echo "PLAUSIBLE_SCRIPT_URL on this environment is \"$VITE_PLAUSIBLE_SCRIPT_URL\", not a https://pa.firefox.com/js/pa-<id>.js script" >&2
+                      exit 1
+                  fi
+                  npm run build
+                  grep -rqF "$VITE_PLAUSIBLE_SCRIPT_URL" build/assets || { echo "the build does not contain the Plausible script URL" >&2; exit 1; }
 
             - name: Authenticate to Google Cloud
               uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
@@ -149,6 +158,7 @@ jobs:
             - name: Check the deployed site
               env:
                   URL: ${{ needs.target.outputs.url }}
+                  PLAUSIBLE_SCRIPT_URL: ${{ vars.PLAUSIBLE_SCRIPT_URL }}
               run: |
                   set -euo pipefail
                   # First, straight from the bucket, bypassing the CDN: did the
@@ -180,6 +190,10 @@ jobs:
                       echo "still serving the previous build at:$stale"
                       sleep 10
                   done
+
+                  # The Plausible script the build loads exists. Fetching it
+                  # doesn't count a visit.
+                  curl -fsS --max-time 20 -o /dev/null -w '%{content_type}' "$PLAUSIBLE_SCRIPT_URL" | grep -q javascript || { echo "$PLAUSIBLE_SCRIPT_URL is not served as JavaScript" >&2; exit 1; }
 
                   # Unknown paths still 404, and the transposer's data is untouched.
                   test "$(curl -s --max-time 20 -o /dev/null -w '%{http_code}' "$URL/no-such-page")" = 404

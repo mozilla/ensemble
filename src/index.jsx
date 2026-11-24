@@ -4,7 +4,6 @@ import { HelmetProvider } from 'react-helmet-async';
 import { unregister } from './registerServiceWorker';
 
 import Application from './components/views/Application';
-import { initPlausible } from './lib/plausible';
 
 
 createRoot(document.getElementById('root')).render(
@@ -15,8 +14,12 @@ createRoot(document.getElementById('root')).render(
     </HelmetProvider>
 );
 
-// After rendering, so that a bad script URL can't stop the site from appearing.
-initPlausible();
+// Imported dynamically, after rendering, because content blockers may block
+// this module by its name, and a failed static import would stop the whole
+// site from loading. A blocked import just means no analytics.
+import('./lib/measure')
+    .then(({ initPlausible }) => initPlausible())
+    .catch(() => {});
 
 // Service workers were causing issues with DataOps hosting. We struggled to
 // understand what exactly was causing the problem. It's possible that #5 in the

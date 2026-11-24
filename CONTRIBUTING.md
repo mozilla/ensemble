@@ -39,7 +39,7 @@ Vite's own convention, not Node's `process.env` (which is not populated in the b
 all, except for the one special-cased `process.env.NODE_ENV` expression Vite replaces for
 library-compatibility reasons). Override any of them inline: `VITE_SITE_TITLE='…' npm start`.
 
-Plausible's script URL is not in `.env`. The deploy workflow sets `VITE_PLAUSIBLE_SCRIPT_URL` from the `PLAUSIBLE_SCRIPT_URL` variable of each GitHub environment, and `src/lib/plausible.js` reads it, so a local run, CI, and any environment without the variable load no analytics. To try it locally, set `VITE_PLAUSIBLE_SCRIPT_URL` inline.
+Plausible's script URL is not in `.env`. The deploy workflow sets `VITE_PLAUSIBLE_SCRIPT_URL` from the `PLAUSIBLE_SCRIPT_URL` variable of each GitHub environment, and `src/lib/measure.js` reads it, so a local run and CI load no analytics. The app only loads a per-site script on `pa.firefox.com` (`https://pa.firefox.com/js/pa-<id>.js`), and the deploy fails if an environment's variable is unset or anything else. To try it locally, set `VITE_PLAUSIBLE_SCRIPT_URL` inline.
 
 This repository is a fully client-side bundle — anything in a `VITE_*` variable ships to the browser in
 plain text, so a real credential never belongs in one, and this `.env` file deliberately holds none.
@@ -53,8 +53,8 @@ plain text, so a real credential never belongs in one, and this `.env` file deli
   `with` prefix; `lib/lazyLoad.jsx` and `lib/LazyBoundary.jsx` are the exceptions (a small loader
   helper and an error-boundary component, not components themselves in the first case).
 - One component per file, always `export default`. There are no named component exports anywhere in
-  this repository; the only named exports at all are the four helpers in `lib/utils.js` and
-  `unregister` in `registerServiceWorker.js`.
+  this repository; the only named exports at all are the four helpers in `lib/utils.js`,
+  `initPlausible` in `lib/measure.js`, and `unregister` in `registerServiceWorker.js`.
 - The container/view split is the organizing principle — see `docs/architecture/frontend.md`.
   `containers/X.jsx` holds state and fetching and renders `views/X.jsx` with formatted props
   (`ChartContainer` → `Chart`, `DataTableContainer` → `DataTable`). Keep new state out of `views/`.
@@ -226,6 +226,11 @@ The same specs run in two modes, chosen by Playwright project:
   interception, other than signalling Global Privacy Control so the run doesn't count as visitors in
   Plausible. `npm run test:playwright:live` runs these, and so does CI's "Live data tests"
   check, which is **not** required. `npm run test:playwright` runs every project.
+
+Locally, Playwright reuses a dev server already running on port 3000 instead of starting its own.
+Its own server sets a fake `VITE_PLAUSIBLE_SCRIPT_URL` for `measure.spec.js`, so that spec fails
+against a plain `npm start`. Stop that server first, or start it as
+`VITE_PLAUSIBLE_SCRIPT_URL='https://pa.firefox.com/js/pa-test.js' npm start`.
 
 A spec that expects errors allows them with `test.use({ allowedErrors: /pattern/ })`. That takes a
 single RegExp because `test.use()` reads an array as a `[value, options]` pair. To change one

@@ -41,9 +41,9 @@ src/
 │       └── img/                 3 assets
 ├── lib/
 │   ├── fetchCache.js            withFetch's responses by URL, kept until the page reloads
-│   ├── plausible.js             initPlausible(): loads Plausible's tracker unless GPC or DNT is on
 │   ├── lazyLoad.jsx             lazyLoad(() => import(…)): starts loading now, renders loaded code without suspending
 │   ├── LazyBoundary.jsx         error boundary + spinner for lazy-loaded components; a failed chunk offers a reload
+│   ├── measure.js               initPlausible(): loads Plausible's tracker unless GPC or DNT is on
 │   ├── withFetch.jsx            the data layer: fetches JSON and passes `dataFetch` to containers
 │   └── utils.js                 bumpSort, isFloat, prettifyNumber, getPageTitle
 └── tests/
@@ -95,13 +95,13 @@ npm run size                         # source-map-explorer on build/assets/index
 
 Run one Vitest file: `npx vitest run src/tests/jest/Dashboard.test.jsx`. Run one Playwright spec: `npx playwright test contact.spec.js`.
 
-**Environment:** `.env` **is checked into git** and holds only public build-time config — `VITE_SITE_TITLE='Firefox Public Data Report'`, `VITE_VALUE_DECIMAL_PLACES=3`. Consumed through `import.meta.env` by `lib/utils.js`. Override inline: `VITE_SITE_TITLE='…' npm start`. Plausible's script URL is **not** in `.env`: `deploy.yml` builds with `VITE_PLAUSIBLE_SCRIPT_URL` set from the `PLAUSIBLE_SCRIPT_URL` variable of the `stage` or `prod` GitHub environment (the per-site script on `pa.firefox.com`; events go to `/api/event` on the same origin), and `src/lib/plausible.js` loads nothing where it is empty (or, with a console warning, where it is not an absolute URL), so local runs, CI, and the Playwright dev server (`playwright.config.js` sets a fake one for `analytics.spec.js`) never send real events.
+**Environment:** `.env` **is checked into git** and holds only public build-time config — `VITE_SITE_TITLE='Firefox Public Data Report'`, `VITE_VALUE_DECIMAL_PLACES=3`. Consumed through `import.meta.env` by `lib/utils.js`. Override inline: `VITE_SITE_TITLE='…' npm start`. Plausible's script URL is **not** in `.env`: `deploy.yml` builds with `VITE_PLAUSIBLE_SCRIPT_URL` set from the `PLAUSIBLE_SCRIPT_URL` variable of the `stage` or `prod` GitHub environment (the per-site script on `pa.firefox.com`; events go to `/api/event` on the same origin), and `src/lib/measure.js` loads nothing where it is empty (or, with a console warning, where it is not a `https://pa.firefox.com/js/pa-<id>.js` script, so a setting can't load code from another origin). `deploy.yml` fails the deploy if the variable is unset or doesn't match that pattern. Local runs, CI, and the Playwright dev server (`playwright.config.js` sets a fake one for `measure.spec.js`) never send real events.
 
 ## Coding Style & Naming Conventions
 
 - **`.jsx` for any file containing JSX** — including `src/index.jsx` and `*.test.jsx`. Plain `.js` only for non-JSX modules (`lib/utils.js`, `setupTests.js`, `registerServiceWorker.js`, the Playwright specs and helpers, and the config files at the repository root).
 - **PascalCase filenames matching the default-exported component.** Decorators are camelCase with a `with` prefix; `lib/lazyLoad.jsx` and `lib/withFetch.jsx` are camelCase because they are helpers, not components.
-- **One component per file, always `export default`.** There are no named component exports anywhere in the repo; the only named exports at all are the four helpers in `lib/utils.js` and `unregister` in `registerServiceWorker.js`.
+- **One component per file, always `export default`.** There are no named component exports anywhere in the repo; the only named exports at all are the four helpers in `lib/utils.js`, `initPlausible` in `lib/measure.js`, and `unregister` in `registerServiceWorker.js`.
 - **The container/view split is the organizing principle.** `containers/X.jsx` holds state and fetching and renders `views/X.jsx` with formatted props (`ChartContainer`→`Chart`, `DataTableContainer`→`DataTable`). Keep new state out of `views/`.
 - Function components are the default (17 of 22 views), written as anonymous default-exported arrows — `export default props => (...)` — with no `displayName` (hence `react/display-name: off`). The router is react-router 7, imported from `react-router` (not `react-router-dom`), and read with its `useLocation()` hook, in `views/Main.jsx` and `withNextButton`. Use a class only where state, refs, or lifecycle are genuinely needed: all 6 containers plus `SummaryMetric.jsx` (d3 + `React.createRef`), `ObservablePlot.jsx` (Observable Plot + `React.createRef`), `Spinner.jsx`, `MetricOverview.jsx`, `Footer.jsx`, and `lib/LazyBoundary.jsx` (error boundaries must be classes).
 - Leading underscore for private class-property handlers (`_onRegionChange`, `_drawChart`, `_setChartSize`). Keep using it in new code.

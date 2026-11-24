@@ -27,3 +27,16 @@ for (const [signal, setSignal] of [
         expect(await page.evaluate(() => window.plausible)).toBeUndefined();
     });
 }
+
+test.describe('With the analytics module blocked, as a content blocker might', () => {
+    test.use({ allowedErrors: /Failed to load resource|Failed to fetch dynamically imported module/ });
+
+    test('the site still loads', async ({ page }) => {
+        await page.route(/\/lib\/measure\.js/, route => route.abort('blockedbyclient'));
+
+        await page.goto('/');
+
+        await expect(page.locator('#introduction')).toBeVisible();
+        expect(await page.evaluate(() => window.plausible)).toBeUndefined();
+    });
+});

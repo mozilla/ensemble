@@ -33,10 +33,9 @@ module.exports = defineConfig({
         // CSS yet (src/components/views/css/ is gitignored), and watch:app on
         // its own never runs the Stylus build that produces it.
         command: 'npm start',
-        // .env has no Plausible script, so give the app one to load, for the
-        // spec that checks it is requested. Recorded mode answers it with an
-        // empty response, and the live-data project signals Global Privacy
-        // Control, so it is never really loaded.
+        // For measure.spec.js; never really loaded, as recorded mode stubs it
+        // and live-data signals Global Privacy Control. A reused `npm start`
+        // server won't have it, so that spec fails against one.
         env: { VITE_PLAUSIBLE_SCRIPT_URL: 'https://pa.firefox.com/js/pa-test.js' },
         url: 'http://localhost:3000',
         reuseExistingServer: !process.env.CI,
