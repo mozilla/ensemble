@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-`ensemble` (v2.1.0, `private: true`, MPL-2.0, `git@github.com:mozilla/ensemble.git`) is the React app behind <https://data.firefox.com/> — the **Firefox Public Data Report**. It is a **pure client-side React 18 SPA, built with Vite, and it contains no data of its own.** Every metric is fetched at runtime from **[ensemble-transposer](https://github.com/mozilla/ensemble-transposer)** (separate repo), which reformats Mozilla's public telemetry and serves JSON from the same `data.firefox.com` domain. If a number on the site looks wrong, the bug is usually not here.
+`ensemble` (v2.2.0, `private: true`, MPL-2.0, `git@github.com:mozilla/ensemble.git`) is the React app behind <https://data.firefox.com/> — the **Firefox Public Data Report**. It is a **pure client-side React 18 SPA, built with Vite, and it contains no data of its own.** Every metric is fetched at runtime from **[ensemble-transposer](https://github.com/mozilla/ensemble-transposer)** (separate repo), which reformats Mozilla's public telemetry and serves JSON from the same `data.firefox.com` domain. If a number on the site looks wrong, the bug is usually not here.
 
 **`src/config.json` is the spine.** Two arrays, and almost every structural change starts by editing one of them:
 
