@@ -131,9 +131,9 @@ these architecture docs.
     │       └── img/                 footer/ (Firefox logo, Protocol social icons)
     ├── lib/
     │   ├── fetchCache.js            withFetch's responses by URL, kept until the page reloads
-    │   ├── plausible.js             initPlausible(): loads Plausible's script unless Global Privacy Control or Do Not Track is on
     │   ├── lazyLoad.jsx             starts a dynamic import() now; renders the loaded code without suspending
     │   ├── LazyBoundary.jsx         error boundary + Suspense fallback; a failed chunk offers a page reload
+    │   ├── measure.js               initPlausible(): loads Plausible's script unless Global Privacy Control or Do Not Track is on
     │   ├── withFetch.jsx            the data layer: fetches JSON and passes `dataFetch` to containers
     │   └── utils.js                 bumpSort, isFloat, prettifyNumber, getPageTitle
     └── tests/

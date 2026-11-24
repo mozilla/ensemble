@@ -1,4 +1,4 @@
-import { initPlausible } from '../../lib/plausible';
+import { initPlausible } from '../../lib/measure';
 
 
 const scriptUrl = 'https://pa.firefox.com/js/pa-example.js';
@@ -15,7 +15,7 @@ beforeEach(() => {
     document.head.innerHTML = '';
 });
 
-it('Loads the script from the given URL and sends events to that origin\'s /api/event', () => {
+it('Loads the script from the given URL and sends events to pa.firefox.com', () => {
     initPlausible(scriptUrl);
 
     const script = document.querySelector('script');
@@ -50,6 +50,11 @@ it('Does nothing without a script URL', () => {
 it.each([
     ['without a scheme', 'pa.firefox.com/js/pa-example.js'],
     ['a path only', '/js/pa-example.js'],
+    ['on another origin', 'https://example.com/js/pa-example.js'],
+    ['on a lookalike origin', 'https://pa.firefox.com.example.com/js/pa-example.js'],
+    ['over plain HTTP', 'http://pa.firefox.com/js/pa-example.js'],
+    ['not a per-site script', 'https://pa.firefox.com/js/script.js'],
+    ['carrying a query string', 'https://pa.firefox.com/js/pa-example.js?x=1'],
 ])('Warns and loads nothing, without throwing, for a script URL that is %s', (description, badUrl) => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
