@@ -1,6 +1,6 @@
 ---
 name: release
-description: Release ensemble to prod — check stage, bump the version in a PR, publish the GitHub release, watch the deploy, and confirm what's live
+description: Release ensemble to prod — check stage, bump the version in a PR, hand the user the release command to run, watch the deploy, and confirm what's live
 disable-model-invocation: true
 argument-hint: "[<version>]"
 allowed-tools:
@@ -58,16 +58,19 @@ Once the bump PR is merged, fetch again and take the SHA to release, usually the
 Show the user any other commits that reached `main` since the version was chosen. Wait until that
 SHA's stage deploy and smoke test have passed (`gh run list --workflow=deploy.yml --commit <sha>`).
 
-Publishing the release deploys to prod, which every visitor sees. Get an explicit go-ahead naming
-the version and the SHA, then publish with `--target <sha>`, never `--target main`, which may have
-moved on. Never pass `--prerelease`.
+Publishing the release deploys to prod, which every visitor sees, so a human must run the command
+themselves. Never run it yourself, even if the user asks: `.claude/settings.json` denies it, and
+you must not look for a way around that rule. Fill in the doc's `gh release create` command with
+the version and the SHA, adding `--repo mozilla/ensemble`. Give it to the user to copy and paste,
+either into their own terminal or after `!` here. Use `--target <sha>`, never `--target main`,
+which may have moved on. Never add `--prerelease`. Wait for the user to say they've run it.
 
 ## After
 
 Wait for the deploy run whose branch is the new tag, as the doc shows. Don't take the newest
 release run straight after publishing; it may still be the previous release's. Check that run's
-`headSha` is the SHA you released, then watch it to the end, including the smoke test. Check
+`headSha` is the SHA the user released, then watch it to the end, including the smoke test. Check
 `version.json` reports the new version and that SHA. Report the result plainly. If the smoke test
 fails, the deploy still happened: read the failing tests and say whether the site or the test is at
 fault. Suggest a rollback (re-running the deploy from the previous tag) only if the site itself is
-broken, and only run one with the user's go-ahead.
+broken. Give the user the doc's `gh workflow run` command to run; don't run it yourself.

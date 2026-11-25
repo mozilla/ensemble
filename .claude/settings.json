@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(gh release create *)",
+      "Bash(gh release edit *)",
+      "Bash(gh workflow run *)",
+      "Bash(gh api *releases*)",
+      "Bash(gh api *dispatches*)"
+    ]
+  }
+}

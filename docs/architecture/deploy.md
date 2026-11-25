@@ -129,7 +129,10 @@ project against the deployed URL. A failed smoke test does not undo the deploy; 
 ## Releasing to prod
 
 Releases are tagged with the bare version, `2.1.0`, not `v2.1.0`. Run `/release` in Claude Code to
-be walked through these steps.
+be walked through these steps. A human publishes every release: `/release` does the checks and the
+bump PR, then gives you the commands for steps 3 and rollback to run yourself.
+`.claude/settings.json` denies Claude `gh release create`, `gh release edit`, `gh workflow run`, and
+the matching `gh api` calls. That rule only binds Claude. GitHub requires no approval (see step 4).
 
 1. **Bump the version** in a PR that touches `package.json`, `package-lock.json`, and the version
    in `AGENTS.md`, as #513 did: `npm version 2.2.0 --no-git-tag-version`. The version isn't semver;
