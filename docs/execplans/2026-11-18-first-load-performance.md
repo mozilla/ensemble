@@ -23,7 +23,6 @@ After this work:
 - A dashboard's data request starts as soon as the main script runs, not after the dashboard's own
   code has arrived.
 - Text no longer moves when the webfonts replace the fallback font.
-- No analytics script is loaded for the placeholder measurement ID.
 
 Each change was kept only because a before-and-after measurement showed it helps.
 
@@ -70,7 +69,9 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
       412 px.
 - [x] (2026-11-19) Milestone 5, analytics: `withTracker.jsx` loads nothing for the placeholder ID.
       With a real ID it initialises after `load` and sends page views only after that.
-      `withTracker.test.jsx` has 4 tests, and 3 fail with the change reverted.
+      `withTracker.test.jsx` has 4 tests, and 3 fail with the change reverted. Dropped on
+      2026-11-26 when the branch was rebased, because `main` replaced GA4 with Plausible (see the
+      Decision Log).
 - [x] (2026-11-19) Milestone 5, the late "Proceed to" button: hidden while the dashboard's
       spinner shows. Dashboard CLS went from 0.046 to 0.000. The new test in `next-buttons.spec.js`
       fails with the rule removed.
@@ -85,9 +86,13 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
         before the fix.
       - With a real ID, analytics initialise on import, not after `load`, and each page view
         carries its own `page_location`. Two of `withTracker.test.jsx`'s tests fail against the
-        old code.
+        old code. Dropped in the rebase below.
 
       Vitest 149 tests. Recorded Playwright 136 passed. Live Playwright 62 passed.
+- [x] (2026-11-26) Rebased onto `main` after #519 and #521, which replaced GA4 with Plausible.
+      Every conflict was in the GA4 code. The branch now leaves analytics as `main` has them and
+      no longer touches `withTracker.jsx`, which `main` deleted. Lint clean. Vitest 18 files, 155
+      tests. Playwright, recorded and live together, 202 passed.
 
 ## Surprises & Discoveries
 
@@ -228,7 +233,8 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
   configuration it needs. So `withTracker.jsx` sends each page view only once initialisation has
   finished.
   Evidence: `node_modules/react-ga4/dist/index.mjs`: `_gtag` calls the module's `gtag`, which
-  creates `window.gtag` as a `dataLayer.push` when it is missing.
+  creates `window.gtag` as a `dataLayer.push` when it is missing. `main` has since removed
+  react-ga4, so this no longer applies.
 - Observation: the "Proceed to" button's 0.046 shift came from the dashboard's loading state. While
   `DashboardContainer` waits for its data, it renders the 200 px spinner, and `withNextButton`
   adds the button straight after it, at about y=463 on a 412×915 screen. When the dashboard
@@ -393,6 +399,15 @@ Scope is "measure, then quick wins". These are out of scope and will be listed a
   covers the one thing that can be lost in between: keyboard focus. Mouse users lose nothing,
   because a click on a shell link before the scripts run is an ordinary page load.
   Date/Author: 2026-11-19, Stephanie Hobson.
+- Decision: drop Milestone 5's analytics work, both the placeholder guard and the later
+  load-on-import version, and keep `main`'s analytics unchanged.
+  Rationale: #519 replaced GA4 with Plausible and deleted `withTracker.jsx`, and #521 moved the
+  loader to `src/lib/measure.js`. `src/index.jsx` imports it dynamically after the first render,
+  and it loads nothing unless the build has a `pa.firefox.com` script URL, so local and CI builds
+  load no analytics. That already covers what the GA4 work was for: no analytics download for a
+  build without a real ID, and nothing ahead of the app's own code. Plausible tracks page views
+  itself by watching `history.pushState`, so the `page_location` fix has nothing to fix.
+  Date/Author: 2026-11-26, Stephanie Hobson.
 
 ## Outcomes & Retrospective
 
@@ -419,8 +434,10 @@ What did the work, in order of effect:
   1692 → 1244, and the 0.53 footer shift gone.
 - Fallback fonts scaled with `size-adjust`: the font-swap shifts gone.
 - Hiding the "Proceed to" button while a dashboard loads.
-- Not loading gtag for the placeholder ID removes one competing download. It wasn't measured on
-  its own.
+
+The final measurements were taken with this branch's GA4 guard in place, so gtag wasn't loaded.
+`main`'s Plausible script, which replaced GA4, loads only in deployed builds, after the first
+render, so it isn't in these numbers either.
 
 Lessons:
 
@@ -505,9 +522,11 @@ These are the pieces of the repository this plan touches, and the terms it uses 
   copies the font files into `build/assets/` with a content hash in the name. The browser only
   discovers it needs them after downloading and parsing the CSS, and only for text that is actually
   on screen.
-- **Analytics.** `src/components/decorators/withTracker.jsx` calls `ReactGA.initialize` from
-  react-ga4 when the module is evaluated. That adds Google's gtag script to the page. The checked-in
-  `.env` holds a placeholder measurement ID.
+- **Analytics.** When this plan was written, `src/components/decorators/withTracker.jsx` loaded
+  Google Analytics (GA4) through react-ga4 for the placeholder measurement ID in `.env`. `main` has
+  since replaced it with Plausible. `src/index.jsx` imports `src/lib/measure.js` dynamically after
+  the first render, and it loads `pa.firefox.com`'s script only when the build sets
+  `VITE_PLAUSIBLE_SCRIPT_URL`, which only the deploy does. This plan no longer changes analytics.
 - **Deploy.** `.github/workflows/deploy.yml` uploads `build/` to a Google Cloud Storage bucket
   behind Google's CDN. It copies the same `build/index.html` to each route path, so anything added
   to `index.html` applies to every page. `docs/architecture/deploy.md` records that the CDN rewrites
@@ -700,13 +719,9 @@ with the reason in the `Decision Log`.
    common system font and sets `size-adjust`, `ascent-override` and `descent-override` so the
    fallback takes the same space. Put it in the stacks in `includes/lib.styl` straight after the
    webfont. Compute the overrides from the two fonts' metrics and record them.
-2. **Analytics.** In `withTracker.jsx`, initialise react-ga4 only when
-   `import.meta.env.VITE_GA_MEASUREMENT_ID` is set and isn't the placeholder `G-XXXXXXXXXX`. Do it
-   when the module is imported, so that it always comes before the first page view. Send each page
-   view with `location`, which react-ga4 passes on as `page_location`, built from the router's
-   path, search and hash at the time of the view. An earlier version waited for the window's
-   `load` event, which the Decision Log explains was reversed. Test it in a new
-   `src/tests/jest/withTracker.test.jsx` by mocking `react-ga4`.
+2. **Analytics.** Dropped. This item made GA4 load nothing for the placeholder measurement ID.
+   `main` has since replaced GA4 with Plausible, which already loads after the first render and only
+   in deployed builds. The Decision Log has the details.
 3. **Early metric requests.** If the metric `index.json` requests still wait on the dashboard chunk
    after Milestones 2 and 3, extend the startup prefetch. When the dashboard file arrives, prefetch
    the metric URLs for the region `DashboardContainer` would choose. That's `preferredRegion` from
@@ -769,7 +784,7 @@ When the work is complete:
 
 - `npm run lint` reports no problems.
 - `npm run test:jest` passes every file, including the new cases in `withFetch.test.jsx`, and
-  `indexHtmlPlugin.test.jsx` and `withTracker.test.jsx`.
+  `indexHtmlPlugin.test.jsx`.
 - `npm run test:playwright:recorded` passes, including `fixtures/early-data.spec.js`,
   `fixtures/shell.spec.js`, `fixtures/font-fallback.spec.js`, the new test in
   `fixtures/next-buttons.spec.js` and the new `jsDisabled.spec.js` test.
@@ -784,7 +799,8 @@ and navigation appear while the scripts are still downloading, and nothing on th
 the fonts and the dashboard arrive. The Network panel shows the route chunks (`Home`, `Contact`,
 `DashboardContainer`, `NotFound`, `Metric` and `StripedHeader`) starting at about the same time as
 `index-*.js`. The chart chunk starts later. `user-activity/index.json` starts as soon as
-`index-*.js` has finished. No request goes to `googletagmanager.com`. With JavaScript
+`index-*.js` has finished. No analytics script loads, because a local build has no Plausible
+script URL. With JavaScript
 disabled in DevTools, the header and its links still show, along with the "You need to enable
 JavaScript" message.
 
@@ -836,9 +852,6 @@ At the end of the work these exist:
   - `export function preloadTags(bundle)`, returning an array of
     `{ tag: 'link', attrs, injectTo: 'head' }`;
   - `export function shellHtml(dashboards)`, returning the shell markup string.
-- In `src/components/decorators/withTracker.jsx`, the module-level `analyticsEnabled` boolean. It
-  is false for the placeholder or a missing ID. When it's true, react-ga4 is initialised on
-  import.
 - In `src/components/views/styl/Application.styl`, the `Mozilla Text Fallback` and
   `Mozilla Headline Fallback` faces, named second in the font stacks in `includes/lib.styl`.
 
@@ -854,3 +867,6 @@ At the end of the work these exist:
 - 2026-11-19: after an adversarial review, Milestone 5's analytics item no longer waits for `load`,
   and each page view sends its own `page_location`. The page shell now hands keyboard focus to
   React's header. Both changes are recorded in the Decision Log.
+- 2026-11-26: rebased onto `main` after #519 and #521 replaced GA4 with Plausible. Milestone 5's
+  analytics item was dropped, because `main`'s Plausible loader already does what it was for.
+  Purpose, Context, Milestone 5, Validation and Interfaces no longer describe the GA4 changes.
