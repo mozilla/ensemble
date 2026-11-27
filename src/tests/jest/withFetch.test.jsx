@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
-import withFetch from '../../lib/withFetch';
+import withFetch, { prefetchJSON } from '../../lib/withFetch';
+import fetchCache from '../../lib/fetchCache';
 
 
 let fetchMock;
@@ -179,4 +180,38 @@ it('Switching from a request in flight to a URL whose cached response was empty 
     rerender(<ShowState slug="empty" />);
 
     expect(screen.getByText('fulfilled')).toBeInTheDocument();
+});
+
+it('A URL prefetched before any component asks is fulfilled from the first render, without another request', async () => {
+    prefetchJSON('https://data.example/one.json');
+    settle('https://data.example/one.json', { title: 'One' });
+    await vi.waitUntil(() => fetchCache.get('https://data.example/one.json')?.fulfilled);
+
+    render(<ShowFetchState slug="one" />);
+
+    expect(screen.getByText('fulfilled: One')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
+it('A component asking for a URL still being prefetched joins that request', async () => {
+    prefetchJSON('https://data.example/one.json');
+    render(<ShowFetchState slug="one" />);
+    expect(screen.getByText('pending')).toBeInTheDocument();
+
+    settle('https://data.example/one.json', { title: 'One' });
+
+    expect(await screen.findByText('fulfilled: One')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
+it('A failed prefetch is requested again, and reported, by the next component to ask', async () => {
+    prefetchJSON('https://data.example/one.json');
+    settle('https://data.example/one.json', { error: 'Prefetch failed' }, 500);
+    await vi.waitUntil(() => !fetchCache.has('https://data.example/one.json'));
+
+    render(<ShowFetchState slug="one" />);
+    settle('https://data.example/one.json', { error: 'Still failing' }, 500);
+
+    expect(await screen.findByText('rejected: Still failing')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
 });

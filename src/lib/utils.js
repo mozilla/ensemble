@@ -53,6 +53,10 @@ export function prettifyNumber(n) {
     }
 }
 
+export function dashboardIndexUrl(source) {
+    return `${source}/index.json`;
+}
+
 /**
  * Return a title that can be used in a <title> element, incorporating a
  * subtitle if one is provided.
